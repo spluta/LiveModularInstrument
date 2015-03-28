@@ -1,0 +1,112 @@
+ModularVolumeObject {
+	var <group, <inBus, <outBus, <stereoOutBus, top, synth, volIn, localResponder, peak, <rms;
+
+	*new {arg group, inBus, outBus, stereoOutBus;
+		^super.newCopyArgs(group, inBus, outBus, stereoOutBus).init;
+	}
+
+	*initClass {
+		StartUp.add {
+			SynthDef("modularInput", {arg inBus, outBus, stereoOutBus, vol=1, gate=1;
+				var in, env;
+
+				env = EnvGen.kr(Env.asr(0,1,0), gate);
+
+				in = SoundIn.ar(inBus)*env;
+
+				SendPeakRMS.kr(in, 10, 3, "/vol", inBus);
+
+				Out.ar(outBus, in*Lag.kr(vol,0.01));
+				Out.ar(stereoOutBus, in*Lag.kr(vol,0.01));
+			}).writeDefFile;
+		};
+	}
+
+	init {
+		volIn = 0;
+		synth = Synth("modularInput", [\inBus, inBus, \outBus, outBus, \stereoOutBus, stereoOutBus], group);
+
+		rms = LevelIndicator();
+
+		localResponder = OSCFunc({ |msg|
+
+			if(msg[2]==inBus,{
+				{
+					rms.value = msg[4].ampdb.linlin(-40, 0, 0, 1);
+					rms.peakLevel = msg[3].ampdb.linlin(-40, 0, 0, 1);
+				}.defer
+			});
+		}, '/vol');
+	}
+
+	setVol {arg vol;
+		synth.set(\vol, vol);
+	}
+
+	mute {
+		synth.set(\gate, 0);
+	}
+
+	unmute {
+		synth.set(\gate, 1);
+	}
+
+	killMe {
+		localResponder.free;
+	}
+
+}
+
+ModularVolumeRack : Module_Mod {
+	var dispArray, win, <>outBusses, run, layouts;
+
+	init {}
+
+	init2 {arg inBusOffset;
+		outBus.postln;
+
+		run = true;
+		//win.alwaysOnTop_(true);
+
+		modName = "ModularVolumeRack";
+		this.initControlLists(outBus[0].size);
+
+		controls = List.new;
+		assignButtons = List.new;
+		layouts = List.newClear;
+
+		outBus[0].do{arg item, i;
+			dispArray = dispArray.add(ModularVolumeObject(group, i+inBusOffset, item.index, outBus[1][(i/2).floor.asInteger].index+(i%2)));
+
+			controls.add(QtEZSlider("Amp", ControlSpec(0.001, 2, \amp),
+				{arg slider;
+					dispArray[i].setVol(slider.value);
+				}, 1, true, \vert));
+			this.addAssignButton(i,1);
+
+			controls[i].value = 1;
+
+			layouts.add(VLayout(dispArray[i].rms.maxHeight_(60),
+				/*HLayout(controls[i*3].maxWidth_(20), controls[i*3+1].maxWidth_(20)),
+				HLayout(assignButtons[0].layout.maxWidth_(20), assignButtons[1].layout.maxWidth_(20)),*/
+				controls[i].maxHeight_(80).layout,
+				assignButtons[i].layout.maxWidth_(40)
+			))
+		};
+
+				win = Window("Inputs").layout_(GridLayout.rows(layouts));
+
+		win.bounds_(Rect(686, 610, 412, 246));
+		win.userCanClose_(false);
+		win.front;
+	}
+
+	killMe {
+		group.free;
+		run = false;
+		win.close;
+		dispArray.do{arg item;
+			item.killMe;
+		};
+	}
+}

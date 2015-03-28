@@ -1,0 +1,67 @@
+<ModularLiveInterface>
+    <MainProcessingWindow>
+        <Busses>
+            <soundInBusses soundInBus6="38" soundInBus1="33" soundInBus2="34" soundInBus5="37" soundInBus3="35" soundInBus4="36" soundInBus0="32" soundInBus7="39"/>
+            <internalInBusses internalBus0="40" internalBus15="160" internalBus10="120" internalBus21="208" internalBus5="80" internalBus9="112" internalBus22="216" internalBus18="184" internalBus14="152" internalBus6="88" internalBus24="232" internalBus1="48" internalBus23="224" internalBus3="64" internalBus19="192" internalBus4="72" internalBus12="136" internalBus17="176" internalBus11="128" internalBus2="56" internalBus20="200" internalBus16="168" internalBus8="104" internalBus13="144" internalBus7="96"/>
+        </Busses>
+        <ModularSynthBar0>
+            <MainModularObject0>
+                <LoopBuf path="/Users/sam/Music/Logic/timetablePiece/Bounces/gappyFlexitone.aif" bounds="Rect(866, 379, 80, 310)"/>
+            </MainModularObject0>
+            <MainModularObject1>
+                <LoopBuf path="/Users/sam/Music/Logic/timetablePiece/Bounces/slappingFans.aif" bounds="Rect(1150, 417, 80, 310)"/>
+            </MainModularObject1>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar0>
+        <ModularSynthBar1>
+            <MainModularObject0 inBus0="40">
+                <Freeze manta4="nil" controls3="1" controls1="1.1773677988366" midi4="nil" manta2="nil" manta1="nil" midi0="nil" controls4="0" manta0="nil" midi3="nil" manta3="nil" controls0="1" bounds="Rect(962, 374, 130, 310)" controls2="0.15804028918769" midi2="nil" midi1="nil"/>
+            </MainModularObject0>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar1>
+        <ModularSynthBar2>
+            <MainModularObject0 inBus1="80" inBus0="40">
+                <BuchlaFilters manta0="nil" controls1="1" controls0="0" bounds="Rect(637, 424, 155, 55)" midi0="[ 62, 1 ]" manta1="nil" midi1="[ 63, 1 ]"/>
+            </MainModularObject0>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar2>
+        <ModularSynthBar3>
+            <MainModularObject0 inBus0="120">
+                <AmpMod controls1="0" manta2="nil" manta1="nil" midi0="nil" manta0="nil" controls0="0" bounds="Rect(209, 61, 300, 80)" controls2="[ 11.781007751938, 17.546511627907 ]" midi2="nil" midi1="[ 68, 1 ]"/>
+            </MainModularObject0>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar3>
+        <ModularSynthBar4>
+            <MainModularObject0/>
+            <MainModularObject1 inBus4="160" inBus1="40" inBus3="120" inBus2="80" inBus0="35" inBus5="48">
+                <LoopVidBuf controls1="1" manta2="nil" manta1="nil" midi0="[ 73, 1 ]" manta0="nil" controls0="0" bounds="Rect(566, 341, 200, 50)" controls2="1" midi2="nil" midi1="[ 74, 1 ]"/>
+            </MainModularObject1>
+            <MainModularObject2 inBus0="160">
+                <SnareSwitch controls3="0" controls1="0" manta2="nil" manta1="nil" midi0="[ 60, 1 ]" manta0="nil" midi3="nil" manta3="nil" controls0="1" bounds="Rect(318, 645, 135, 100)" controls2="0" midi2="nil" midi1="[ 61, 1 ]"/>
+            </MainModularObject2>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar4>
+    </MainProcessingWindow>
+    <ModularMainMixer bounds="Rect(640, 0, 505, 294)">
+        <Mixer0 volSlider="0.9811320754717" inBus0="216" outBus="0" midi="nil" label="" manta="nil" numBusses="6"/>
+        <Mixer1 inBus1="40" outBus="2" midi="nil" manta="nil" numBusses="2" inBus3="120" volSlider="0" inBus0="160" inBus2="80" label=""/>
+        <Mixer2 inBus1="48" volSlider="1" inBus0="208" outBus="2" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer3 volSlider="1" inBus0="48" outBus="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer4 volSlider="0" outBus="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer5 volSlider="0" outBus="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer6 volSlider="0" outBus="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer7 volSlider="0" outBus="0" midi="nil" label="" manta="nil" numBusses="2"/>
+    </ModularMainMixer>
+</ModularLiveInterface>

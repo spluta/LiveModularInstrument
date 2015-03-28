@@ -1,0 +1,55 @@
+<ModularLiveInterface>
+    <MainProcessingWindow>
+        <Busses>
+            <soundInBusses soundInBus6="22" soundInBus1="17" soundInBus2="18" soundInBus5="21" soundInBus3="19" soundInBus4="20" soundInBus0="16" soundInBus7="23"/>
+            <internalInBusses internalBus0="24" internalBus15="144" internalBus10="104" internalBus21="192" internalBus5="64" internalBus9="96" internalBus22="200" internalBus18="168" internalBus14="136" internalBus6="72" internalBus24="216" internalBus1="32" internalBus23="208" internalBus3="48" internalBus19="176" internalBus4="56" internalBus12="120" internalBus17="160" internalBus11="112" internalBus2="40" internalBus20="184" internalBus16="152" internalBus8="88" internalBus13="128" internalBus7="80"/>
+        </Busses>
+        <ModularSynthBar0>
+            <MainModularObject0 inBus1="17" inBus0="16">
+                <TFreeze controls6="0.19066429836875" manta2="nil" manta1="nil" midi0="[ 60, 1 ]" midi3="[ 63, 1 ]" controls0="0" controls5="2" bounds="Rect(946, 536, 130, 320)" controls2="0" midi1="[ 61, 1 ]" manta4="nil" controls3="0" controls1="1" midi4="[ 64, 1 ]" controls4="0" manta0="nil" manta3="nil" midi2="[ 62, 1 ]"/>
+            </MainModularObject0>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar0>
+        <ModularSynthBar1>
+            <MainModularObject0/>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar1>
+        <ModularSynthBar2>
+            <MainModularObject0/>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar2>
+        <ModularSynthBar3>
+            <MainModularObject0/>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar3>
+        <ModularSynthBar4>
+            <MainModularObject0/>
+            <MainModularObject1/>
+            <MainModularObject2/>
+            <MainModularObject3/>
+            <MainModularObject4/>
+        </ModularSynthBar4>
+    </MainProcessingWindow>
+    <ModularMainMixer bounds="Rect(720, 0, 505, 244)">
+        <Mixer0 volSlider="0.71698113207547" inBus0="24" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer1 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer2 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer3 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer4 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer5 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer6 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+        <Mixer7 volSlider="0" midi="nil" label="" manta="nil" numBusses="2"/>
+    </ModularMainMixer>
+</ModularLiveInterface>

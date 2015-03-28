@@ -1,0 +1,70 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf510
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs26 \cf0 (\
+	f = 27.5;\
+	c = ([1,2].choose)*f*([8,9,10,11,12].choose);\
+	a = f*([1,2,3,4,5,6,7,8,9].choose)+c;\
+	b = f*([1,2,3,4,5,6,7,8,9].choose)+c;\
+	if(a==b, \{b = b+f\});\
+	a.postln;b.postln;a.cpsmidi.postln;b.cpsmidi.postln;\
+	d.set(\\pee, a, \\tinkle, b);\
+)\
+	SynthDef("poop", \{arg pee, tinkle; Out.ar(0, (LFTri.ar(pee, 0, 0.5)*LFTri.ar(tinkle, 0, 0.5)).dup)\}).load;\
+	\
+	SynthDef("poop", \{arg pee, tinkle; Out.ar(0, [LFTri.ar(pee, 0, 0.5), LFTri.ar(tinkle, 0, 0.5)])\}).load;\
+\
+	d = Synth("poop", [\\pee, 200, \\tinkle, 415]);\
+[\
+[345, 375],\
+[270, 180],\
+[300, 285],\
+[225, 255],\
+[435, 375],\
+[255, 270],\
+[285, 240],\
+[420, 360],\
+[450, 390],\
+[270, 315],\
+\
+[357.5, 302.5],\
+[330, 495],\
+[385, 302.5],\
+[467.5, 495],\
+[495, 302],\
+[330, 385],\
+[467.5, 522.5]\
+].scramble\
+\
+(\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs18 \cf0 g = Pseq([ [ 270, 180 ], [ 435, 375 ], [ 357.5, 302.5 ], [ 385, 302.5 ], [ 270, 255 ], [ 240, 285 ], [ 450, 390 ], [ 315, 270 ], [ 300, 285 ], [ 375, 345 ], [ 495, 330 ], [ 255, 225 ], [ 495, 302 ], [ 385, 330 ], [ 495, 467.5 ] ], 1).asStream;
+\fs26 \
+\
+t = Task.new(\{\{\
+	#a, b = g.next;\
+	[a,b].postln;\
+	[a,b].cpsmidi.postln;\
+	d.set(\\pee, a, \\tinkle, b);\
+	30.wait;\
+\}.loop\});\
+t.start\
+)\
+\
+34.5.midicps*[3,4,5,6,7,8,9,10,11]\
+(41.5.midicps*[3,4,5,6,7,8,9,10,11]).cpsmidi\
+\
+(\
+	\
+	a = 57.midicps*([1,2,3,4,5,6,7,8,9].choose);\
+	b = 15*([1,2,3,4,5,6,7,8,9].choose)+c;\
+	if(a==b, \{b = b+15\});\
+	a.postln;b.postln;a.cpsmidi.postln;b.cpsmidi.postln;\
+	d.set(\\pee, a, \\tinkle, b);\
+)\
+	SynthDef("poop", \{arg pee, tinkle; Out.ar(0, LFTri.ar(pee, 0, 0.5)*LFTri.ar(tinkle, 0, 0.5))\}).load;\
+\
+	d = Synth("poop", [\\pee, 400, \\tinkle, 415]);}

@@ -1,0 +1,282 @@
+<ModularLiveInterface>
+    <MainProcessingWindow manta2="nil" manta1="nil" midi0="nil" manta0="nil" midi3="nil" mantaIsSet="true" manta3="nil" bounds="Rect(59, 457, 1028, 534)" midi2="nil" midi1="nil">
+        <Busses>
+            <soundInBusses soundInBus6="50" soundInBus1="45" soundInBus2="46" soundInBus5="49" soundInBus3="47" soundInBus4="48" soundInBus0="44" soundInBus7="51"/>
+            <stereoSoundInBusses stereoSoundInBus2="56" stereoSoundInBus3="58" stereoSoundInBus1="54" stereoSoundInBus0="52"/>
+            <internalInBusses internalBus56="748" internalBus10="460" internalBus54="572" internalBus92="636" internalBus29="332" internalBus98="844" internalBus46="348" internalBus30="500" internalBus14="492" internalBus74="612" internalBus80="220" internalBus34="532" internalBus48="364" internalBus76="788" internalBus4="92" internalBus12="476" internalBus17="676" internalBus20="100" internalBus89="452" internalBus16="668" internalBus42="156" internalBus37="716" internalBus51="548" internalBus50="540" internalBus27="316" internalBus81="228" internalBus15="660" internalBus41="148" internalBus52="556" internalBus62="196" internalBus39="732" internalBus60="180" internalBus5="260" internalBus9="292" internalBus65="380" internalBus44="172" internalBus22="116" internalBus18="684" internalBus58="764" internalBus73="604" internalBus85="420" internalBus1="68" internalBus79="812" internalBus87="436" internalBus95="820" internalBus68="404" internalBus78="804" internalBus53="564" internalBus8="284" internalBus13="484" internalBus55="740" internalBus90="620" internalBus82="236" internalBus91="628" internalBus47="356" internalBus0="60" internalBus25="300" internalBus67="396" internalBus21="108" internalBus93="644" internalBus6="268" internalBus33="524" internalBus23="124" internalBus3="84" internalBus28="324" internalBus70="580" internalBus97="836" internalBus99="852" internalBus75="780" internalBus11="468" internalBus43="164" internalBus88="444" internalBus38="724" internalBus96="828" internalBus40="140" internalBus64="212" internalBus59="772" internalBus35="700" internalBus31="508" internalBus71="588" internalBus61="188" internalBus94="652" internalBus36="708" internalBus45="340" internalBus63="204" internalBus49="372" internalBus57="756" internalBus72="596" internalBus86="428" internalBus24="132" internalBus32="516" internalBus19="692" internalBus66="388" internalBus69="412" internalBus26="308" internalBus77="796" internalBus84="252" internalBus83="244" internalBus2="76" internalBus7="276"/>
+        </Busses>
+        <ModularSynthBar0>
+            <MainModularObject0>
+                <ModularObjectLayer0 setup0="setup0">
+                    <CrackleSynth controls6="nil" manta2="nil" manta1="nil" lemur0="['/Fader0/x', 1]" lemur4="['/MultiBall0/x', 3]" midi0="nil" lemur3="['/Button4/x', 0]" midi3="nil" bounds="Rect(1013, 517, 350, 291)" controls5="a QSlider2D" midi1="nil" manta4="nil" lemur2="['/Fader2/x', 1]" lemur1="['/Fader1/x', 1]" midi4="nil" midi5="nil" lemur5="['/MultiBall1/x', 3]" manta0="nil" manta3="nil" manta5="nil" midi2="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject0>
+            <MainModularObject1>
+                <ModularObjectLayer0 setup0="setup0">
+                    <CrackleSynth controls6="nil" manta2="nil" manta1="nil" lemur0="['/Fader11/x', 1]" lemur4="['/MultiBall2/x', 3]" midi0="nil" lemur3="['/Button5/x', 0]" midi3="nil" bounds="Rect(1024, 427, 350, 290)" controls5="a QSlider2D" midi1="nil" manta4="nil" lemur2="['/Fader13/x', 1]" lemur1="['/Fader12/x', 1]" midi4="nil" midi5="nil" lemur5="['/MultiBall3/x', 3]" manta0="nil" manta3="nil" manta5="nil" midi2="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 inBus4="48" inBus1="45" setup2="setup2" inBus3="47" inBus2="46" inBus0="44">
+                    <BuchlaModelSolo mantaIsSet="true" controls1="6" bounds="Rect(802, 528, 140, 280)" controls0="0" straightPitch="60" straightPitchBool="false" controls2="0"/>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3 inBus4="48" inBus1="45" setup3="setup3" inBus3="47" inBus2="46" inBus0="44">
+                    <ResonDraw controls3="0" lemur2="['/MultiBall4/x', 3]" lemur1="['/Fader31/x', 1]" manta2="nil" manta1="nil" lemur0="['/Fader30/x', 1]" midi0="nil" manta0="nil" bounds="Rect(759, 157, 351, 259)" midi2="nil" midi1="nil"/>
+                </ModularObjectLayer3>
+            </MainModularObject1>
+            <MainModularObject2>
+                <ModularObjectLayer0 inBus4="48" inBus1="45" setup0="setup0" inBus3="47" inBus2="46" inBus0="44">
+                    <LargeArcLoops controls3="[ 1, 2 ]" lemur1="['/Button12/x', 0]" controls1="0" midi0="nil" manta1="nil" lemur0="['/Fader7/x', 1]" manta0="nil" controls0="0" bounds="Rect(869, 472, 203, 243)" controls2="[ 9.2281879194631, 17.181208053691 ]" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2" inBus0="468">
+                    <BitInterrupter manta2="[ 22, 1 ]" manta1="nil" lemur0="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="0" bounds="Rect(655, 377, 135, 270)" controls2="0" midi1="nil" controls3="94.074074074074" lemur2="nil" lemur1="nil" controls1="1" controls4="0" manta0="[ 21, 0 ]" manta3="nil" midi2="nil"/>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3 inBus4="49" inBus1="45" setup3="setup3" inBus3="48" inBus2="46" inBus0="44">
+                    <GFNoiseMini manta2="nil" manta1="nil" lemur0="['[ /Switches31/x, 1, 0, 0 ]', 0]" midi0="nil" lemur3="['/Fader32/x', 1]" midi3="nil" controls0="1" bounds="Rect(1097, 414, 300, 100)" controls2="0" midi1="nil" controls3="0" lemur2="['[ /Switches31/x, 0, 0, 1 ]', 0]" lemur1="['[ /Switches31/x, 0, 1, 0 ]', 0]" controls1="0" controls4="0" manta0="nil" manta3="nil" midi2="nil"/>
+                </ModularObjectLayer3>
+            </MainModularObject2>
+            <MainModularObject3>
+                <ModularObjectLayer0 inBus4="48" inBus1="44" setup0="setup0" inBus3="47" inBus2="45" inBus0="46">
+                    <DownShift manta2="nil" manta1="nil" lemur0="['/Fader6/x', 1]" midi0="nil" lemur3="['/Button11/x', 0]" midi3="nil" controls0="0" bounds="Rect(1230, 508, 210, 300)" controls2="[ 5.3020134228188, 9.5771812080537 ]" midi1="nil" controls3="1" lemur2="nil" lemur1="nil" controls1="1" controls4="0" manta0="nil" manta3="nil" midi2="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2">
+                    <UpDownSines manta2="nil" manta1="[ 12, 0 ]" lemur0="['/Fader20/x', 1]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="0" controls5="0" bounds="Rect(972, 538, 210, 270)" controls2="0" midi1="nil" manta4="nil" controls3="0" lemur2="nil" lemur1="nil" midi4="nil" controls1="0" midi5="nil" lemur5="nil" controls4="[ 282.06103166104, 12500 ]" manta0="nil" manta3="nil" manta5="nil" midi2="nil"/>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3 inBus4="49" inBus1="45" setup3="setup3" inBus3="48" inBus2="46" inBus0="44">
+                    <BandPassFreeze midi7="nil" manta7="nil" manta2="nil" manta1="nil" lemur0="['/Fader33/x', 1]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="1.1375607161649" bounds="Rect(798, 475, 130, 330)" controls2="1.5701612442732" midi1="nil" manta4="nil" controls3="0" lemur2="['/Fader35/x', 1]" lemur7="nil" lemur1="['/Fader34/x', 1]" midi4="nil" controls1="0.15551653170603" midi5="nil" lemur5="nil" controls4="0" manta0="nil" lemur6="nil" manta3="nil" midi6="nil" manta5="nil" manta6="nil" midi2="nil"/>
+                </ModularObjectLayer3>
+            </MainModularObject3>
+            <MainModularObject4>
+                <ModularObjectLayer0 inBus4="48" inBus1="45" setup0="setup0" inBus3="47" inBus2="46" inBus0="44">
+                    <SwoopDown lemur1="['/Button10/x', 0]" controls1="0" midi0="nil" manta1="nil" lemur0="['/Fader5/x', 1]" manta0="nil" controls0="0" bounds="Rect(809, 237, 176, 255)" controls2="0" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3 inBus4="47" inBus1="45" setup2="setup2" setup3="setup3" inBus3="48" inBus2="46" inBus0="44">
+                    <FilterGrainsB lemur2="nil" lemur1="nil" controls1="3" manta2="nil" manta1="nil" lemur0="['/Fader22/x', 1]" midi0="nil" manta0="nil" controls0="0" bounds="Rect(1204, 586, 150, 270)" controls2="0" midi2="nil" midi1="nil"/>
+                </ModularObjectLayer3>
+            </MainModularObject4>
+        </ModularSynthBar0>
+        <ModularSynthBar1>
+            <MainModularObject0>
+                <ModularObjectLayer0 inBus1="68" setup0="setup0" inBus0="60">
+                    <Mute lemur1="nil" controls1="0.01" midi0="nil" manta1="nil" lemur0="['/Button3/x', 0]" manta0="nil" controls0="0" bounds="Rect(995, 554, 290, 75)" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject0>
+            <MainModularObject1>
+                <ModularObjectLayer0 setup0="setup0">
+                    <GingerMan mantaIsSet="false" bounds="Rect(806, 361, 100, 60)" controls0="0"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2">
+                    <RingModStereo manta0="nil" controls1="20000" controls0="0.5345389669601" bounds="Rect(956, 305, 220, 150)" midi0="nil" lemur0="['/Fader21/x', 1]">
+                        <Mixer0 inBus1="45" inBus3="47" inBus2="46" inBus0="44" outBus="nil" numBusses="8"/>
+                        <Mixer1 inBus1="476" outBus="nil" inBus0="484" numBusses="8"/>
+                    </RingModStereo>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3/>
+            </MainModularObject1>
+            <MainModularObject2>
+                <ModularObjectLayer0 inBus4="48" inBus1="45" setup0="setup0" inBus3="47" inBus2="46" inBus0="44">
+                    <Combulation lemur2="nil" lemur1="nil" controls1="0" manta2="nil" manta1="nil" lemur0="['/Fader8/x', 1]" midi0="nil" manta0="nil" controls0="0" bounds="Rect(814, 530, 147, 278)" midi2="nil" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2" inBus0="508">
+                    <Filters controls6="0" manta2="nil" manta1="nil" lemur0="nil" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="[ 20, 10000 ]" controls5="0" bounds="Rect(881, 29, 203, 225)" controls2="1" midi1="nil" manta4="nil" controls3="0" lemur2="nil" lemur1="nil" midi4="nil" controls1="[ 0.1, 0.63178294573643 ]" midi5="nil" lemur5="nil" controls4="0" manta0="nil" lemur6="nil" manta3="nil" midi6="nil" manta5="nil" manta6="nil" midi2="nil"/>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3/>
+            </MainModularObject2>
+            <MainModularObject3>
+                <ModularObjectLayer0 setup0="setup0">
+                    <RingModStereo manta0="nil" controls1="20000" controls0="0" bounds="Rect(1220, 42, 220, 150)" midi0="nil" lemur0="['/Fader9/x', 1]">
+                        <Mixer0 inBus4="48" inBus1="45" inBus3="47" inBus2="46" inBus0="44" outBus="nil" numBusses="8"/>
+                        <Mixer1 outBus="nil" inBus0="60" numBusses="8"/>
+                    </RingModStereo>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 inBus4="48" inBus1="45" setup2="setup2" inBus3="47" inBus2="46" inBus0="44">
+                    <ScaleShifterB manta2="nil" manta1="nil" lemur0="['/Fader23/x', 1]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="0" bounds="Rect(1243, 594, 197, 262)" controls2="5.4331562528382" midi1="nil" manta4="nil" controls3="11" lemur2="nil" lemur1="nil" midi4="nil" controls1="1.4513031550069" controls4="0" manta0="nil" manta3="nil" midi2="nil"/>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3/>
+            </MainModularObject3>
+            <MainModularObject4>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject4>
+        </ModularSynthBar1>
+        <ModularSynthBar2>
+            <MainModularObject0>
+                <ModularObjectLayer0 setup0="setup0">
+                    <SignalSwitcher manta2="nil" manta1="nil" lemur0="['[ /Switches1/x, 1, 0 ]', 0]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="1" bounds="Rect(713, 389, 171, 326)" controls2="0" midi1="nil" manta4="nil" controls3="0" lemur2="nil" lemur1="['[ /Switches1/x, 0, 1 ]', 0]" midi4="nil" controls1="0" controls4="[ 4.625, 21.25 ]" manta0="nil" manta3="nil" midi2="nil">
+                        <Mixer0 volSlider="1" lemur="nil" inBus0="100" midi="nil" outBus="0" manta="nil" label=""/>
+                        <Mixer1 inBus1="92" outBus="0" midi="nil" manta="nil" inBus4="124" inBus3="76" volSlider="1" lemur="nil" inBus0="116" inBus2="84" label=""/>
+                    </SignalSwitcher>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2">
+                    <Mixer bounds="Rect(1155, 499, 285, 280)">
+                        <Mixer0 volSlider="0" lemur="['/Fader24/x', 1]" inBus0="476" midi="nil" outBus="0" manta="nil" label=""/>
+                        <Mixer1 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+                        <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+                        <Mixer3 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+                    </Mixer>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3 setup3="setup3">
+                    <SignalSwitcher manta2="nil" manta1="nil" lemur0="['[ /Switches30/x, 1, 0, 0 ]', 0]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="0" bounds="Rect(321, 490, 169, 366)" controls2="0" midi1="nil" manta4="nil" controls3="0" lemur2="['[ /Switches30/x, 0, 0, 1 ]', 0]" lemur1="['[ /Switches30/x, 0, 1, 0 ]', 0]" midi4="nil" controls1="1" controls4="[ 17.020833333333, 23 ]" manta0="nil" manta3="nil" midi2="nil">
+                        <Mixer0 inBus1="676" volSlider="1" lemur="nil" inBus0="668" midi="nil" outBus="0" manta="nil" label=""/>
+                        <Mixer1 inBus1="692" volSlider="1" lemur="nil" inBus0="684" midi="nil" outBus="0" manta="nil" label=""/>
+                    </SignalSwitcher>
+                </ModularObjectLayer3>
+            </MainModularObject0>
+            <MainModularObject1>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3 setup3="setup3" inBus0="740">
+                    <TFreeze manta2="nil" manta1="nil" lemur0="['[ /Switches32/x, 1, 0, 0 ]', 0]" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="1" bounds="Rect(1177, 276, 130, 330)" controls2="0" midi1="nil" manta4="nil" controls3="0.84363928491869" lemur2="['[ /Switches32/x, 0, 0, 1 ]', 0]" lemur1="['[ /Switches32/x, 0, 1, 0 ]', 0]" midi4="nil" controls1="0" midi5="nil" lemur5="nil" controls4="1" manta0="nil" manta3="nil" manta5="nil" midi2="nil"/>
+                </ModularObjectLayer3>
+            </MainModularObject1>
+            <MainModularObject2>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2 setup2="setup2">
+                    <SignalSwitcher manta2="[ 7, 0 ]" manta1="[ 6, 0 ]" lemur0="nil" lemur4="nil" midi0="nil" lemur3="nil" midi3="nil" controls0="1" bounds="Rect(705, 5, 167, 366)" controls2="0" midi1="nil" manta4="nil" controls3="0" lemur2="nil" lemur1="nil" midi4="nil" controls1="0" controls4="[ 9.4375, 27.083333333333 ]" manta0="[ 5, 0 ]" manta3="[ 8, 0 ]" midi2="nil">
+                        <Mixer0 volSlider="1" lemur="nil" inBus0="516" midi="nil" outBus="0" manta="nil" label=""/>
+                        <Mixer1 inBus1="532" outBus="0" midi="nil" manta="nil" volSlider="0.9811320754717" lemur="nil" inBus0="524" inBus2="692" label=""/>
+                    </SignalSwitcher>
+                </ModularObjectLayer2>
+                <ModularObjectLayer3/>
+            </MainModularObject2>
+            <MainModularObject3>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject3>
+            <MainModularObject4>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject4>
+        </ModularSynthBar2>
+        <ModularSynthBar3>
+            <MainModularObject0>
+                <ModularObjectLayer0 setup2="setup2" inBus1="556" setup0="setup0" setup3="setup3" inBus3="748" inBus2="540" inBus0="140" setup1="setup1">
+                    <CycleGripper manta7="nil" manta2="nil" manta1="nil" lemur4="['[ /Switches2/x, 0, 0, 0, 0, 1, 0, 0, 0 ]', 0]" midi0="nil" lemur3="['[ /Switches2/x, 0, 0, 0, 1, 0, 0, 0, 0 ]', 0]" midi3="nil" lemur2="['[ /Switches2/x, 0, 0, 1, 0, 0, 0, 0, 0 ]', 0]" lemur7="['[ /Switches2/x, 0, 0, 0, 0, 0, 0, 0, 1 ]', 0]" manta3="nil" controls7="0" controls8="0" midi7="nil" controls6="0" lemur0="['[ /Switches2/x, 1, 0, 0, 0, 0, 0, 0, 0 ]', 0]" controls0="1" controls5="0" bounds="Rect(874, 519, 540, 40)" controls2="0" midi1="nil" manta4="nil" controls3="0" lemur1="['[ /Switches2/x, 0, 1, 0, 0, 0, 0, 0, 0 ]', 0]" midi4="nil" controls1="0" midi5="nil" lemur5="['[ /Switches2/x, 0, 0, 0, 0, 0, 1, 0, 0 ]', 0]" controls4="0" manta0="nil" lemur6="['[ /Switches2/x, 0, 0, 0, 0, 0, 0, 1, 0 ]', 0]" midi6="nil" manta5="nil" manta6="nil" midi2="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject0>
+            <MainModularObject1>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject1>
+            <MainModularObject2>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject2>
+            <MainModularObject3>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject3>
+            <MainModularObject4>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject4>
+        </ModularSynthBar3>
+        <ModularSynthBar4>
+            <MainModularObject0>
+                <ModularObjectLayer0 setup2="setup2" inBus1="780" setup0="setup0" setup3="setup3" inBus0="180" setup1="setup1">
+                    <LoopMachine manta2="nil" manta1="nil" lemur0="nil" lemur4="['[ /Switches3/x, 1, 0 ]', 0]" midi0="nil" lemur3="nil" midi3="nil" controls0="1" controls5="1" bounds="Rect(613, 117, 270, 235)" controls2="-0.38910508155823" midi1="nil" manta4="nil" controls3="[ 4, 6 ]" lemur2="['/Fader10/x', 1]" lemur1="nil" midi4="nil" controls1="1" midi5="nil" lemur5="['[ /Switches3/x, 0, 1 ]', 0]" controls4="0" manta0="nil" manta3="nil" manta5="nil" midi2="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject0>
+            <MainModularObject1>
+                <ModularObjectLayer0 setup2="setup2" setup0="setup0" setup3="setup3" inBus0="220" setup1="setup1">
+                    <InterruptLoop lemur2="nil" lemur1="['/Button1/x', 0]" controls1="0" manta2="nil" manta1="nil" lemur0="['/Button0/x', 0]" midi0="nil" manta0="nil" controls0="0" bounds="Rect(735, 66, 290, 75)" controls2="[ 0.01, 0.1 ]" midi2="nil" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject1>
+            <MainModularObject2>
+                <ModularObjectLayer0 setup2="setup2" setup0="setup0" setup3="setup3" inBus0="228" setup1="setup1">
+                    <InterruptDistortion lemur1="['/Button2/x', 0]" controls1="0" midi0="nil" manta1="nil" lemur0="nil" manta0="nil" controls0="0.43205713152152" bounds="Rect(1110, 0, 214, 280)" controls2="0" midi1="nil"/>
+                </ModularObjectLayer0>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject2>
+            <MainModularObject3>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject3>
+            <MainModularObject4>
+                <ModularObjectLayer0/>
+                <ModularObjectLayer1/>
+                <ModularObjectLayer2/>
+                <ModularObjectLayer3/>
+            </MainModularObject4>
+        </ModularSynthBar4>
+    </MainProcessingWindow>
+    <ModularMainMixer bounds="Rect(42, 0, 505, 278)">
+        <MixerLayer0>
+            <Mixer0 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer1 volSlider="0" lemur="nil" inBus0="44" midi="nil" outBus="0" manta="nil" label=""/>
+            <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer3 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer4 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+        </MixerLayer0>
+        <MixerLayer1>
+            <Mixer0 volSlider="1" lemur="nil" inBus0="268" midi="nil" outBus="0" manta="nil" label=""/>
+            <Mixer1 volSlider="1" lemur="nil" inBus0="268" midi="nil" outBus="1" manta="nil" label=""/>
+            <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer3 volSlider="0" lemur="nil" outBus="2" midi="nil" label="" manta="nil"/>
+            <Mixer4 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+        </MixerLayer1>
+        <MixerLayer2>
+            <Mixer0 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer1 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer3 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer4 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+        </MixerLayer2>
+        <MixerLayer3>
+            <Mixer0 volSlider="0.95283018867925" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer1 volSlider="1" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer3 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer4 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+        </MixerLayer3>
+        <MixerLayer4>
+            <Mixer0 volSlider="0" lemur="['/Fader15/x', 1]" inBus0="180" midi="nil" outBus="0" manta="nil" label=""/>
+            <Mixer1 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer2 volSlider="0" lemur="nil" outBus="0" midi="nil" label="" manta="nil"/>
+            <Mixer3 volSlider="0.52482265233994" lemur="['/Fader14/x', 1]" inBus0="236" midi="nil" outBus="0" manta="nil" label=""/>
+        </MixerLayer4>
+    </ModularMainMixer>
+    <ModularVolumeRack lemur17="nil" manta7="nil" manta2="nil" manta12="nil" lemur3="nil" midi3="nil" midi20="nil" lemur21="nil" lemur9="nil" lemur15="nil" midi13="nil" lemur7="nil" lemur19="nil" controls12="1" controls22="0" controls7="0" midi15="nil" manta20="nil" lemur11="['/Fader43/x', 1]" controls9="1" midi7="nil" midi19="nil" controls20="0.001" manta16="nil" controls6="1" lemur0="nil" controls21="1" lemur14="['/Fader44/x', 1]" lemur23="nil" controls0="1" bounds="Rect(593, 573, 513, 283)" midi14="nil" lemur8="['/Fader42/x', 1]" manta21="nil" midi1="nil" midi11="nil" controls1="0" controls11="0.001" midi5="nil" midi9="nil" midi22="nil" controls4="0" midi16="nil" controls19="0" manta13="nil" manta5="nil" manta19="nil" midi23="nil" lemur22="nil" controls17="0.001" midi0="nil" manta1="nil" lemur4="nil" controls13="0" manta18="nil" lemur20="nil" lemur2="['/Fader40/x', 1]" manta9="nil" lemur13="nil" manta3="nil" controls15="1" manta8="nil" lemur18="nil" controls23="0.016221403921107" controls8="0.001" midi12="nil" manta11="nil" manta22="nil" manta15="nil" manta10="nil" manta23="nil" controls10="0" midi10="nil" controls5="0.63857940683285" controls18="1" lemur10="nil" controls2="0.68245379964059" midi17="nil" manta4="nil" controls3="1" controls14="0.001" lemur1="nil" lemur12="nil" midi4="nil" midi21="nil" midi18="nil" lemur5="['/Fader41/x', 1]" manta0="nil" manta14="nil" lemur6="nil" controls16="0" midi6="nil" manta17="nil" midi8="nil" manta6="nil" lemur16="nil" midi2="nil"/>
+</ModularLiveInterface>
