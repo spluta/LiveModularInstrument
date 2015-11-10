@@ -33,7 +33,10 @@ Convolution_Mod : SignalSwitcher_Mod {
 
 
 		mixerStrips = List.new;
-		2.do{arg i; mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], win, Point(5+(i*55), 0), nil))};
+		2.do{arg i;
+			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));
+			mixerStrips[i].init2(win, Point(5+(i*55), 0))
+		};
 
 		synths = List.newClear(3);
 		synths.put(0, Synth("convolution_mod", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus.index, \vol, 1], synthGroup));
@@ -43,5 +46,22 @@ Convolution_Mod : SignalSwitcher_Mod {
 				synths[0].set(\vol, v.value);
 			}, 1.0, true, layout:\horz));
 		this.addAssignButton(0,\continuous,Rect(10, 90, 200, 20));
+	}
+
+	saveExtra {arg saveArray;
+		var temp;
+
+		temp = List.newClear(0);
+		//save the regular mixers
+		mixerStrips.do{arg item;  //save the all setup mixer items
+			temp.add(item.save);
+		};
+		saveArray.add(temp);
+	}
+
+	loadExtra {arg loadArray;
+		loadArray[4].do{arg item, i;
+			mixerStrips[i].load(item);
+		};
 	}
 }

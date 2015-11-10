@@ -106,13 +106,19 @@ OverLapSamples_Mod : Module_Mod {
 		loadFileButton = Button()
 		.states_([ [ "Load File", Color.red, Color.black ] ])
 		.action_{|v|
-			Window.allWindows.do{arg item; item.visible = false};
+			visibleArray = List.newClear;
+			Window.allWindows.do{arg item;
+
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
+
 			Dialog.openPanel({ arg path;
-				Window.allWindows.do{arg item; item.visible = true};
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				savePath = path;
 				this.loadFile;
-				},{
-					Window.allWindows.do{arg item; item.visible = true};
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 			});
 		};
 		fileText = StaticText();
@@ -124,10 +130,10 @@ OverLapSamples_Mod : Module_Mod {
 					controls[4].zAction = {|val|
 						synths[0].set(\onOff, val.value)
 				}},{
-						"clear zActions".postln;
-						synths[0].set(\onOff, 1);
-						controls[4].zAction = {};
-					}
+					"clear zActions".postln;
+					synths[0].set(\onOff, 1);
+					controls[4].zAction = {};
+				}
 				);
 			};
 		);
@@ -179,42 +185,47 @@ OverLapSamples_Mod : Module_Mod {
 }
 
 LoopBuf_Mod : Module_Mod {
-	var buffer0, buffer1, startPos, volBus, duration, overlaps, loadFileButton, fileText, canPlayBuf, savePath, fromStopBeginning;
+	var buffer0, buffer1, startPos, volBus, duration, overlaps, loadFileButton, fileText, canPlayBuf, savePath, fromStopBeginning, startMoved;
 
 	*initClass {
 
 		StartUp.add {
-			SynthDef("loopPlayer_mod", {arg bufnum0, bufnum1, whichOut=0, outBus, vol, gate = 1, pausePlayGate = 0, pauseGate = 1, t_trig = 0, loop = 0;
-				var in0, in1, env, out, pauseEnv, playBuf0, playBuf1, pan;
+			SynthDef("loopPlayer_mod", {arg bufnum0, bufnum1, whichOut=0, outBus, vol, startPos=0, gate = 1, pausePlayGate = 0, pauseGate = 1, t_trig = 0, loop = 0;
+				var in0, in1, env, out, pauseEnv, pausePlayEnv, playBuf0, playBuf1, pan;
 
 				env = EnvGen.kr(Env.asr(0.01, 1, 0.01), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0.05,1,0.1), pauseGate, doneAction:1);
+				pausePlayEnv = EnvGen.kr(Env.asr(0.05,1,0), pausePlayGate, doneAction:0);
 
 				pan = Select.kr(whichOut, [0, -1]);
 
-				playBuf0 = Pan2.ar(PlayBuf.ar(1, bufnum0, BufRateScale.kr(bufnum0)*pausePlayGate, Decay2.kr(t_trig, 0.1)-0.2, 0, loop), pan);
+				playBuf0 = Pan2.ar(PlayBuf.ar(1, bufnum0, BufRateScale.kr(bufnum0)*pausePlayGate, Decay2.kr(t_trig, 0.1)-0.2, startPos, loop), pan);
 
-				playBuf1 = Pan2.ar(PlayBuf.ar(1, bufnum1, BufRateScale.kr(bufnum1)*pausePlayGate, Decay2.kr(t_trig, 0.1)-0.2, 0, loop), 1);
+				playBuf1 = Pan2.ar(PlayBuf.ar(1, bufnum1, BufRateScale.kr(bufnum1)*pausePlayGate, Decay2.kr(t_trig, 0.1)-0.2, startPos, loop), 1);
 
 				out = Select.ar(whichOut, [playBuf0, playBuf0+playBuf1]);
 
-				Out.ar(outBus, out*env*vol*pauseEnv);
+				out = LeakDC.ar(out);
+
+				Out.ar(outBus, out*env*vol*pauseEnv*pausePlayEnv);
 			}).writeDefFile;
 		}
 	}
 
 	init {
 		this.makeWindow("LoopBuf", Rect(318, 645, 360, 80));
-		this.initControlsAndSynths(5);
+		this.initControlsAndSynths(6);
 
 		savePath = "";
 
 		fromStopBeginning = 0;
 
-		dontLoadControls.add(1);
+		dontLoadControls.add(2);
 
 		buffer0 = Buffer.alloc(group.server, group.server.sampleRate);
 		buffer1 = Buffer.alloc(group.server, group.server.sampleRate);
+
+		startMoved = false;
 
 		synths.add(Synth("loopPlayer_mod", [\bufnum, buffer0.bufnum,  \bufnum1, buffer1.bufnum, \whichOut, 0, \outBus, outBus, \playPauseGate, 0, \vol, 0], group));
 
@@ -224,23 +235,37 @@ LoopBuf_Mod : Module_Mod {
 		}, 0, false, \horz));
 		this.addAssignButton(0,\continuous);
 
+		controls.add(QtEZSlider("startPos", ControlSpec(0,1),
+			{|v|
+				var time;
+
+				synths[0].set(\startPos, (v.value*buffer0.numFrames));
+				startMoved = true;
+				time = SMPTE(v.value*buffer0.duration).asMinSec;
+				controls[1].numBox.string = time[0].asString++":"++time[1].round.asString;
+
+		}, 0, false, \horz));
+
 		controls.add(Button()
 			.states_([ [ "paused", Color.green, Color.black ], [ "playing", Color.red, Color.black ]])
 			.action_{|v|
 				if(fromStopBeginning==0,{
+					if(startMoved, {synths[0].set(\t_trig, 1)});
 					synths[0].set(\pausePlayGate, v.value);
-					},{
-						synths[0].set(\pausePlayGate, v.value, \t_trig, 1);
-				})
+				},{
+					synths[0].set(\pausePlayGate, v.value, \t_trig, 1);
+				});
+				startMoved = false;
 		});
-		this.addAssignButton(1,\onOff);
+		this.addAssignButton(2,\onOff);
 
 		controls.add(Button()
 			.states_([ [ "reset", Color.blue, Color.black ]])
 			.action_{|v|
-				controls[1].value_(0);
+				controls[2].value_(0);
 				synths[0].set(\pausePlayGate, 0, \t_trig, 1);
 		});
+		this.addAssignButton(3,\onOff);
 
 		controls.add(Button()
 			.states_([ [ "no loop", Color.green, Color.black ], [ "loop", Color.red, Color.black ]])
@@ -258,16 +283,21 @@ LoopBuf_Mod : Module_Mod {
 		loadFileButton = Button.new()
 		.states_([ [ "Load File", Color.red, Color.black ] ])
 		.action_{|v|
-			Window.allWindows.do{arg item; item.visible = false};
+			visibleArray = List.newClear;
+			Window.allWindows.do{arg item;
+
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
 			Dialog.openPanel({ arg path;
 				var shortPath;
 
-				Window.allWindows.do{arg item; item.visible = true};
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 
 				savePath = path;
 				this.loadFile;
-				},{
-					Window.allWindows.do{arg item; item.visible = true};
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 			});
 		};
 		fileText = StaticText.new();
@@ -275,8 +305,9 @@ LoopBuf_Mod : Module_Mod {
 		win.layout_(
 			VLayout(
 				HLayout(controls[0].layout,assignButtons[0].layout),
-				HLayout(controls[1],assignButtons[1].layout, controls[2], controls[3]),
-				HLayout(controls[4], loadFileButton, fileText, nil)
+				HLayout(controls[1].layout),
+				HLayout(controls[2],assignButtons[2].layout, controls[3],assignButtons[3].layout),
+				HLayout(loadFileButton, fileText, controls[4], controls[5])
 			)
 		);
 		win.bounds = win.bounds.size_(win.minSizeHint);
@@ -285,7 +316,7 @@ LoopBuf_Mod : Module_Mod {
 
 	loadFile {
 		if(savePath.size>0,{
-			controls[1].value_(0);
+			controls[2].value_(0);
 			fileText.string_(savePath.split.pop);
 			synths[0].set(\whichOut, 0, \pausePlayGate, 0);
 			buffer0 = Buffer.readChannel(group.server, savePath, 0, -1, [0],
@@ -354,7 +385,7 @@ SampleMashup_Mod : Module_Mod {
 	}
 
 	init {
-		this.makeWindow("SampleMashup", Rect(318, 645, 140, 140));
+		this.makeWindow("SampleMashup", Rect(834, 445, 393, 122));
 		this.initControlsAndSynths(4);
 
 		dontLoadControls.add(0);
@@ -374,10 +405,10 @@ SampleMashup_Mod : Module_Mod {
 					if(v.value == 1,{
 						play = true;
 						playTask.start;
-						},{
-							play = false;
-							playTask.pause;
-							synths[0].set(\gate, 0);
+					},{
+						play = false;
+						playTask.pause;
+						synths[0].set(\gate, 0);
 					});
 				});
 
@@ -399,12 +430,17 @@ SampleMashup_Mod : Module_Mod {
 		loadFilesButton = Button.new()
 		.states_([ [ "Load File", Color.red, Color.black ] ])
 		.action_{|v|
-			Window.allWindows.do{arg item; item.visible = false};
+			visibleArray = List.newClear;
+			Window.allWindows.do{arg item;
+
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
 			Dialog.openPanel({ arg path;
-				Window.allWindows.do{arg item; item.visible = true};
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				this.loadBuffers(path)
-				},{
-					Window.allWindows.do{arg item; item.visible = true};
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 			});
 		};
 
@@ -463,8 +499,8 @@ SampleMashup_Mod : Module_Mod {
 
 			if(buffer.numChannels == 1, {
 				synths.put(0, Synth("sampleMashupPlayerMono_mod",[\bufnum, buffer.bufnum, \outBus, outBus, \startPos, startPos, \dur, dur, \volBus, volBus], group));
-				},{
-					synths.put(0, Synth("sampleMashupPlayerStereo_mod",[\bufnum, buffer.bufnum, \outBus, outBus, \startPos, startPos, \dur, dur, \volBus, volBus], group));
+			},{
+				synths.put(0, Synth("sampleMashupPlayerStereo_mod",[\bufnum, buffer.bufnum, \outBus, outBus, \startPos, startPos, \dur, dur, \volBus, volBus], group));
 			});
 			dur.wait;
 		}.loop});

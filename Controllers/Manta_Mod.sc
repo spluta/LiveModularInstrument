@@ -1,17 +1,18 @@
 Manta_Mod {
 
 	classvar responders;
-	classvar <>sendRequest = false;
+	classvar <>sendRequest;
 	classvar addr;
 
-	*initClass {}
-
-	// addr can be used for identifying multiple Mantas
-	*new {
-		^super.new.init();
+	*initClass {
+		sendRequest = false
 	}
 
-	init {
+	*new {
+		^super.new.init;
+	}
+
+	*start {
 
 		responders = List.newClear[0];
 
@@ -43,7 +44,7 @@ Manta_Mod {
 	*resetOSCAddr {}
 	*setWCurrentSetup {}
 
-	*getFunctionFromKey {arg controllerKey, object;
+	*getFunctionFromKey {arg module, controllerKey, object;
 		var nothing, nothing1, nothing2, keyShort, localControlObject, function;
 
 		localControlObject = object;

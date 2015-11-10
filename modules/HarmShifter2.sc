@@ -1,13 +1,13 @@
 HarmonicShifter2_Mod {
-	var <>inBus, <>shiftBus, <>audioGateBus, <>shiftByArray, <>shiftWeightArray, loopLength, <>group, <>delayTime, randomPitch;
+	var <>inBus, <>shiftBus, <>shiftByArray, loopLength, <>group, <>delayTime, randomPitch;
 	var playID, shiftRout, length, delayTime, windowSize, pitchRatio, pitchDisp, volume;
 	var largeEnv, largeEnvBus, largeEnvBusNum, transBus, transBusNum, playRout, resp, bussesOut1, bussesOut2;
 	var outBus1, outBus2, outBus3, outBus4;
 	var volGroup, recordGroup, playGroup, synthGroup;
 	var playBufSynth, writeBufSynth, delaySynth;
 
-	*new {arg inBus, shiftBus, audioGateBus, shiftByArray, shiftWeightArray, group, delayTime;
-		^super.new.group_(group).inBus_(inBus).shiftBus_(shiftBus).audioGateBus_(audioGateBus).shiftByArray_(shiftByArray).shiftWeightArray_(shiftWeightArray).delayTime_(delayTime).init;
+	*new {arg inBus, shiftBus, shiftByArray, group, delayTime;
+		^super.new.group_(group).inBus_(inBus).shiftBus_(shiftBus).shiftByArray_(shiftByArray).delayTime_(delayTime).init;
 	}
 
 	*initClass {
@@ -18,10 +18,10 @@ HarmonicShifter2_Mod {
 				env = Env.asr(attack,1,decay);
 				Out.kr(outBusNum, EnvGen.kr(env, gate, doneAction: 2));
 			}).writeDefFile;
-			SynthDef(\audioDelay_mod, {arg inBus, outBus, delayTime, audioGateBus;
+			SynthDef(\audioDelay_mod, {arg inBus, outBus, delayTime;
 				var in;
-					//
-				in = DelayC.ar(In.ar(inBus)*Lag.kr(In.kr(audioGateBus), 0.01), delayTime, delayTime);
+
+				in = DelayC.ar(In.ar(inBus), delayTime, delayTime);
 
 				Out.ar(outBus, in);
 			}).writeDefFile;
@@ -40,7 +40,7 @@ HarmonicShifter2_Mod {
 				in2 =  in*EnvGen.kr(bigEnv, doneAction: 2)*EnvGen.kr(env, doneAction: 0)*largeEnv;
 
 				# out1, out2, out3, out4 = Pan4.ar(
-						PitchShift.ar(DelayL.ar(in2, 0.5, delayTime), windowSize, pitchRatio, pitchDisp),					Line.kr(xStart, xEnd, length+2.1+delayTime),					Line.kr(yStart, yEnd, length+2.1+delayTime)
+					PitchShift.ar(DelayL.ar(in2, 0.5, delayTime), windowSize, pitchRatio, pitchDisp),					Line.kr(xStart, xEnd, length+2.1+delayTime),					Line.kr(yStart, yEnd, length+2.1+delayTime)
 				);
 
 				Out.ar(outBus1, out1);
@@ -60,7 +60,7 @@ HarmonicShifter2_Mod {
 		largeEnvBus = Bus.control(group.server, 1);
 		largeEnv = Synth("largeEnvShifter_mod", [\outBusNum, largeEnvBus.index, \attack, 10, \decay, 10, \gate, 1.0], volGroup);
 
-		delaySynth = Synth(\audioDelay_mod, [\inBus, inBus, \outBus, transBus, \delayTime, delayTime, \audioGateBus, audioGateBus], volGroup);
+		delaySynth = Synth(\audioDelay_mod, [\inBus, inBus, \outBus, transBus, \delayTime, delayTime], volGroup);
 
 		bussesOut1 = Pxrand(#[0,2,4,6], inf).asStream;
 		bussesOut2 = Pxrand(#[1,3,5,7], inf).asStream;
@@ -71,9 +71,10 @@ HarmonicShifter2_Mod {
 			length = 5.0.rand + 5;
 			delayTime = 0.05+0.25.rand;
 			windowSize = 0.5+2.0.rand;
-			pitchRatio = shiftByArray.wchoose(shiftWeightArray.normalizeSum);
+			pitchRatio = shiftByArray.choose;
+			/*
 			if(pitchRatio == 2, {pitchRatio = shiftByArray.choose*[2,4].choose});
-			if(randomPitch, {pitchRatio = pitchRatio*(rrand(0.75,1.25))});
+			if(randomPitch, {pitchRatio = pitchRatio*(rrand(0.75,1.25))});*/
 			pitchDisp = 0.025.rand;
 			volume = 0.5.rand+0.5;
 
@@ -96,17 +97,14 @@ HarmonicShifter2_Mod {
 }
 
 ShifterX2_Mod : Module_Mod {
-	var shiftBus, shiftGroup, tapeGroup, mixGroup, topButtons, sideButtons, randomPitch, shiftSlide, shiftWeightArray, shiftByArray, harmonicShifters, bombVol;
-	var distortBus, feedBackLooper, shiftButtons, bufferArray, bombVol, mainVol, rout, audioGateBus;
+	var shiftBus, shiftGroup, tapeGroup, mixGroup, topButtons, sideButtons, randomPitch, shiftSlide, shiftByArray, harmonicShifters, bombVol;
+	var distortBus, feedBackLooper, shiftButtons, bufferArray, bombVol, mainVol, rout;
 
 	init {
-		this.initControlsAndSynths(5);
-		this.makeWindow("ShifterX2",Rect(490, 510, 170, 490));
+		this.initControlsAndSynths(3);
+		this.makeWindow("ShifterX2",Rect(490, 510, 300, 100));
 
 		this.makeMixerToSynthBus;
-
-		audioGateBus = Bus.control(group.server);
-		audioGateBus.set(0);
 
 		shiftGroup = Group.tail(group);
 		tapeGroup = Group.tail(group);
@@ -124,102 +122,25 @@ ShifterX2_Mod : Module_Mod {
 
 		feedBackLooper = FeedBackLooper_Mod(shiftBus, distortBus, tapeGroup);
 
-		topButtons.add(Button.new(win,Rect(10, 10, 70, 20))
-			.states_([ [ "randOff", Color.red, Color.black ], [ "randOn", Color.black, Color.green ] ])
-			.action_{|v|
-				if(v.value==1,{randomPitch = true},{randomPitch = false});
-				harmonicShifters.do{arg item; item.randomPitch = randomPitch};
-			});
-		topButtons.add(Button.new(win,Rect(80, 10, 70, 20))
-			.states_([ [ "slideOff", Color.red, Color.black ], [ "slideOn", Color.black, Color.green ] ])
-			.action_{|v| if(v.value==1,{shiftSlide = true},{shiftSlide = false})});
-		topButtons.add(Button.new(win,Rect(10, 30, 70, 20))
-			.states_([ [ "noiseOff", Color.red, Color.black ], [ "noiseOn", Color.black, Color.green ] ])
-			.action_{|v|
+		shiftByArray = [0.25, 0.5, 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4];
 
-				v.enabled_(false);
-				topButtons[3].enabled_(true);
-			});
-		topButtons.add(Button.new(win,Rect(80, 30, 70, 20))
-			.states_([ [ "slideOff", Color.red, Color.black ], [ "slideOn", Color.black, Color.green ] ])
-			.action_{|v|
-				if(v.value==1,{feedBackLooper.setDeviation(true)},{feedBackLooper.setDeviation(false)});
-			});
-		topButtons[3].enabled_(true);
-		topButtons[2].enabled_(false);
-
-		shiftButtons = List.new;
-
-		shiftButtons.add(Button.new(win,Rect(10, 60, 50, 20))
-			.states_([ [ "1-4", Color.red, Color.black ], [ "1-4", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(0, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 90, 50, 20))
-			.states_([ [ "1-2", Color.red, Color.black ], [ "1-2", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(1, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 120, 50, 20))
-			.states_([ [ "1-1", Color.red, Color.black ], [ "1-1", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(2, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 150, 50, 20))
-			.states_([ [ "5-4", Color.red, Color.black ], [ "5-4", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(3, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 180, 50, 20))
-			.states_([ [ "3-2", Color.red, Color.black ], [ "3-2", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(4, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 210, 50, 20))
-			.states_([ [ "7-4", Color.red, Color.black ], [ "7-4", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(5, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-		shiftButtons.add(Button.new(win,Rect(10, 240, 50, 20))
-			.states_([ [ "2to4", Color.red, Color.black ], [ "2to4", Color.black, Color.green ] ])
-			.action_{|v|
-				shiftWeightArray.put(6, v.value);
-				harmonicShifters.do{arg item; item.shiftWeightArray = shiftWeightArray};
-			});
-
-		shiftWeightArray = [0,0,0,0,0,0,0];
-		shiftByArray = [0.25, 0.5, 1.0, 1.25, 1.5, 1.75, 2];
-
-		controls.add(EZKnob.new(win,Rect(90, 70, 60, 100), "fade", ControlSpec(-1,1,'linear'),
+		controls.add(QtEZSlider.new("fade", ControlSpec(-1,1,'linear'),
 			{|v|
 				synths[0].set(\fade, v.value)
-			},-1, true));
-		this.addAssignButton(0,\continuous, Rect(90, 170, 60, 20));
+		},-1, true, \horz));
+		this.addAssignButton(0,\continuous);
 
-		controls.add(EZSlider.new(win,Rect(90, 190, 60, 160), "vol", ControlSpec(0,1,'amp'),
+		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
 				mainVol.set(v.value)
-			}, 0, layout:\vert));
-		this.addAssignButton(1,\continuous, Rect(90, 350, 60, 20));
+		}, 0, true, \horz));
+		this.addAssignButton(1,\continuous);
 
 		harmonicShifters = List.new;
-		3.do{|i|harmonicShifters.add(HarmonicShifter2_Mod(mixerToSynthBus, shiftBus, audioGateBus, shiftByArray, shiftWeightArray, shiftGroup, i*1.5))};
-
-		controls.add(Button(win, Rect(10, 370, 160, 20))
-			.states_([ [ "Off", Color.green, Color.black ], [ "On", Color.black, Color.green ]])
-			.action_({arg but;
-				audioGateBus.set(but.value);
-			}));
-		this.addAssignButton(2,\onOff,Rect(10, 390, 160, 20));
+		3.do{|i|harmonicShifters.add(HarmonicShifter2_Mod(mixerToSynthBus, shiftBus, shiftByArray, shiftGroup, i*1.5))};
 
 		//multichannel button
-		controls.add(Button(win,Rect(10, 315, 60, 20))
+		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
 				synths[0].set(\gate, 0);
@@ -240,7 +161,17 @@ ShifterX2_Mod : Module_Mod {
 			};
 		);
 
-		synths.add(Synth("busToOuts2_mod", [\outBus, outBus.postln, \bus1, shiftBus.index, \bus2, shiftBus.index+1, \bus3, shiftBus.index+2, \bus4, shiftBus.index+3, \bus5, shiftBus.index+4, \bus6, shiftBus.index+5, \bus7, shiftBus.index+6, \bus8, shiftBus.index+7, \bus1a, distortBus.index, \bus2a, distortBus.index+1, \bus3a, distortBus.index+2, \bus4a, distortBus.index+3, \bus5a, distortBus.index+4, \bus6a, distortBus.index+5, \bus7a, distortBus.index+6, \bus8a, distortBus.index+7, \vol, 0, \fade, -1, \volBus, mainVol.index], mixGroup));
+		synths.add(Synth("busToOuts2_mod", [\outBus, outBus, \bus1, shiftBus.index, \bus2, shiftBus.index+1, \bus3, shiftBus.index+2, \bus4, shiftBus.index+3, \bus5, shiftBus.index+4, \bus6, shiftBus.index+5, \bus7, shiftBus.index+6, \bus8, shiftBus.index+7, \bus1a, distortBus.index, \bus2a, distortBus.index+1, \bus3a, distortBus.index+2, \bus4a, distortBus.index+3, \bus5a, distortBus.index+4, \bus6a, distortBus.index+5, \bus7a, distortBus.index+6, \bus8a, distortBus.index+7, \vol, 0, \fade, -1, \volBus, mainVol.index], mixGroup));
+
+		win.layout_(
+			VLayout(
+				HLayout(controls[0].layout, assignButtons[0].layout),
+				HLayout(controls[1].layout, assignButtons[1].layout),
+				controls[2]
+			)
+		);
+		win.layout.spacing = 0;
+
 	}
 
 	killMeSpecial {

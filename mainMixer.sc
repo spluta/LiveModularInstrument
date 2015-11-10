@@ -1,8 +1,6 @@
-
-
 ModularMixerStrip : Module_Mod {
 	var window, win, point, color;
-	var assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, panel, waitForSet, waitForType, soundInBusses, stereoSoundInBusses, controls, assignButtons, mixerGroup, reducerGroup, reducer;
+	var assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, panel, waitForSet, waitForType, soundInBusses, stereoSoundInBusses, controls, assignButtons, mixerGroup, reducerGroup, reducer, transferBus;
 
 	*initClass {
 		StartUp.add {
@@ -35,9 +33,12 @@ ModularMixerStrip : Module_Mod {
 		mixerGroup = Group.tail(group);
 		reducerGroup = Group.tail(group);
 
+		//transferBus = Bus.audio(group.server, 8);
+
 		inputBusses = List.new;
 
 		mixer = ModularMixer(mixerGroup);
+		//mixer.outBus = transferBus;
 		mixer.outBus = outBus;
 
 		//reducer both moves a signal to the correct channel and reduces a signal down to the correct number of channels
@@ -78,7 +79,6 @@ ModularMixerStrip : Module_Mod {
 			Array.fill(8,{arg i; i.asSymbol}),
 			{arg pop;
 				var rotate;
-					pop.value.postln;
 					rotate = [0,7,6,5,4,3,2,1].at(pop.value);
 
 					reducer.set(\rotate, rotate);
@@ -134,25 +134,26 @@ ModularMixerStrip : Module_Mod {
 	}
 
 	saveExtra {arg saveArray;
+		inputBusses.postln;
 		saveArray.add(inputBusses);
 	}
 
-	loadExtra2 {arg loadArray, server;
-		loadArray.do{arg item, i;
+	loadExtra {arg loadArray;
+		loadArray[4].do{arg item, i;
 			var bus, label, index, temp;
 
-			temp = ModularServers.servers[server.asSymbol].busMap[0][item.asSymbol];
+			temp = ModularServers.servers[group.server.asSymbol].busMap[0][item.asSymbol];
 
 			if(temp!=nil,{
 				#bus, index=temp;
-				busAssignSink.assignBus(bus, "S"++(index+1).asString);
+				busAssignSink.assignBus(bus, "S"++index.asString);
 				},{
-					temp = ModularServers.servers[server.asSymbol].busMap[1][item.asSymbol];
+					temp = ModularServers.servers[group.server.asSymbol].busMap[1][item.asSymbol];
 					if(temp!=nil,{
 						#bus, index=temp;
-						busAssignSink.assignBus(bus, "S"++((index*2+1)).asString++((index*2+2)).asString);
+						busAssignSink.assignBus(bus, "S"++((index*2)).asString++((index*2+1)).asString);
 						},{
-							bus = ModularServers.servers[server.asSymbol].busMap[2][item.asSymbol];
+							bus = ModularServers.servers[group.server.asSymbol].busMap[2][item.asSymbol];
 							if(bus!=nil,{busAssignSink.assignBus(bus, bus)});
 					})
 			});
@@ -180,8 +181,6 @@ MainMixer {
 	init {
 		numMixers = 8;
 
-		numMixers.postln;
-
 		window = Window(group.server.name, Rect(0, 0, 10+(numMixers+1*55), 278));
 		window.userCanClose_(false);
 
@@ -207,7 +206,6 @@ MainMixer {
 			};
 			setupMixerDict.add(setup.asSymbol->mixerTemp);
 		};
-		setupMixerDict.postln;
 
 		mixerStrips = List.new;
 		(numMixers/2).do{arg i2;
@@ -241,6 +239,7 @@ MainMixer {
 		var saveArray, temp;
 
 		saveArray = List.newClear(0);
+
 		saveArray.add(window.bounds); //save bounds
 		temp = List.newClear(0);
 		//save the regular mixers
@@ -265,20 +264,43 @@ MainMixer {
 		window.bounds_(loadArray[0]);
 		loadArray[1].do{arg item, i;
 			mixerStrips[i].load(item);
-			mixerStrips[i].loadExtra2(item[4], group.server); //load the input busses onto the mixer
+
 		};
 
 		counter = 0;
 		ModularServers.setups.do{arg setup;
 			setupMixerDict[setup.asSymbol].do{arg item;
 				item.load(loadArray[2][counter].postln);
-				item.loadExtra2(loadArray[2][counter][4], group.server); //load the input busses onto the mixer
 				counter = counter+1;
+			};
+		};
+		mixerStrips.do{arg item; item.unmute;item.unhide};
+		setupMixerDict[currentSetup.asSymbol].do{|item|item.unmute;item.unhide};
+	}
+
+	mute {
+		mixerStrips.do{arg item;  //save the all setup mixer items
+			item.mute;
+		};
+		ModularServers.setups.do{arg setup;
+			setupMixerDict[setup.asSymbol].do{arg item;
+				item.mute;
 			};
 		};
 	}
 
-	show {
+	unmute {
+		mixerStrips.do{arg item;  //save the all setup mixer items
+			item.unmute;
+		};
+		ModularServers.setups.do{arg setup;
+			setupMixerDict[setup.asSymbol].do{arg item;
+				item.unmute;
+			};
+		};
+	}
+
+	unhide {
 		window.visible = true;
 	}
 
@@ -305,6 +327,7 @@ ModularMainMixer : MainMixer {
 
 			strip = ModularMixerStrip(group, outBus, ModularServers.setups);
 			strip.init2(window, Point(5+(i*55), 0), nil);
+			mixerStrips.add(strip);
 		};
 
 		window.front;
@@ -321,6 +344,9 @@ ModularMainMixer : MainMixer {
 		var saveArray, temp;
 
 		saveArray = List.newClear(0);
+
+		saveArray.add("Mixer");
+
 		saveArray.add(window.bounds); //save bounds
 		temp = List.newClear(0);
 		//save the regular mixers
@@ -334,11 +360,11 @@ ModularMainMixer : MainMixer {
 
 	load {arg loadArray;
 
-		window.bounds_(loadArray[0]);
-		loadArray[1].do{arg item, i;
+		window.bounds_(loadArray[1]);
+		loadArray[2].do{arg item, i;
 			mixerStrips[i].load(item);
-			mixerStrips[i].loadExtra2(item[4], group.server); //load the input busses onto the mixer
 		};
+		mixerStrips.do{arg item; item.unmute;item.unhide};
 	}
 
 	addSetup {|setup|
@@ -366,225 +392,3 @@ ModularMainMixer : MainMixer {
 	}
 }
 
-SignalSwitcher_Mod : Module_Mod {
-	var localBusses, synths, controls, soundInBusses, stereoSoundInBusses, location, mainProcessingWindow, mixerGroup, synthGroup, mixerStrips, pulseRate, impulseOn, dustOn, currentOnChan;
-
-	*initClass {
-		{
-			SynthDef("signalSwither_mod", {arg inBus0, inBus1, outBus, whichModulator = 0, pulseRate0=0, pulseRate1=0, onBypass=0, gate = 1, pauseGate = 1;
-				var in0, in1, env, out, impulse, dust, whichSignal, pauseEnv;
-
-				impulse = Impulse.kr(pulseRate0);
-				dust = Dust.kr(pulseRate1);
-
-				whichSignal = Lag.kr(Select.kr(whichModulator, [0, 1, Stepper.kr(impulse+dust, 0, 0, 1, 1, 0)]), 0.001);
-
-				out = (In.ar(inBus0, 8)*(1-whichSignal))+(In.ar(inBus1, 8)*whichSignal);
-
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				Out.ar(outBus, out*env*pauseEnv);
-			}).writeDefFile;
-		}.defer(1);
-	}
-
-	init {}
-
-	makeWindow2 {arg name, rect;
-		win = Window.new(name, rect);
-		win.userCanClose_(false);
-		win.front;
-		modName = name;
-	}
-
-	init2 {|soundInBusses, stereoSoundInBusses, location, mainProcessingWindow|
-
-		this.makeWindow("SignalSwitcher",Rect(0, 0, 10+(3*55), 294));
-		this.initControlsAndSynths(5);
-
-		synths = List.new;
-
-		controls = List.new;
-		assignButtons = List.new;
-
-		mixerGroup = Group.tail(group);
-		synthGroup = Group.tail(group);
-
-		localBusses = List.new;
-		2.do{localBusses.add(Bus.audio(group.server, 8))};
-
-		mixerStrips = List.new;
-		2.do{arg i; mixerStrips.add(ModularMixerStrip(mixerGroup, localBusses[i].index, win, Point(5+(i*55), 0), nil))};
-
-		synths.add(Synth("signalSwither_mod", [\inBus0, localBusses[0].index, \inBus1, localBusses[1], \outBus, outBus], synthGroup));
-		currentOnChan = 0;
-
-		dustOn = false;
-		impulseOn = false;
-
-		controls.add(Button(win, Rect(5, 280, 75, 16))
-			.states_([["left", Color.blue, Color.black],["left", Color.black, Color.blue]])
-			.action_({arg butt;
-				impulseOn = false;
-				dustOn = false;
-				currentOnChan = 0;
-				synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \whichModulator, 0);
-				butt.value_(1);
-				controls[1].value_(0);
-				controls[2].value_(0);
-				controls[3].value_(0);
-			})
-		);
-
-		controls.add(Button(win, Rect(85, 280, 75, 16))
-			.states_([["right", Color.blue, Color.black],["right", Color.black, Color.blue]])
-			.action_({arg butt;
-				impulseOn = false;
-				dustOn = false;
-				currentOnChan = 1;
-				synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \whichModulator, 1);
-				butt.value_(1);
-				controls[0].value_(0);
-				controls[2].value_(0);
-				controls[3].value_(0);
-			})
-		);
-
-		controls[0].value = 1;
-
-		this.addAssignButton(0, 0, Rect(5, 300, 75, 16));
-		this.addAssignButton(1, 0, Rect(5, 300, 75, 16));
-
-		controls.add(Button(win, Rect(5, 320, 75, 16))
-			.states_([["impulse", Color.blue, Color.black],["impulse", Color.black, Color.blue]])
-			.action_({arg butt;
-				if(impulseOn,{
-					impulseOn = false;
-					if(dustOn,{
-						synths[0].set(\pulseRate0, 0, \pulseRate1, rrand(pulseRate[0], pulseRate[1])*2, \whichModulator, 2);
-						},{
-							synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \whichModulator, currentOnChan);
-							if(currentOnChan==0,{controls[0].value_(1)},{controls[1].value_(1)});
-					});
-					butt.value_(0);
-					},{
-						impulseOn = true;
-						if(dustOn,{
-							synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1]), \pulseRate1, rrand(pulseRate[0], pulseRate[1]), \whichModulator, 2);
-							},{
-								synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1])*2, \pulseRate1, 0, \whichModulator, 2);
-						});
-						butt.value_(1);
-						controls[0].value_(0);
-						controls[1].value_(0);
-				})
-			})
-		);
-
-		controls.add(Button(win, Rect(85, 320, 75, 16))
-			.states_([["dust", Color.blue, Color.black],["dust", Color.black, Color.blue]])
-			.action_({arg butt;
-				if(dustOn,{
-					dustOn = false;
-					if(impulseOn,{
-						synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1])*2, \pulseRate1, 0, \whichModulator, 2);
-						},{
-							synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \whichModulator, currentOnChan);
-							if(currentOnChan==0,{controls[0].value_(1)},{controls[1].value_(1)});
-					});
-					butt.value_(0);
-					},{
-						dustOn = true;
-						if(impulseOn,{
-							synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1]), \pulseRate1, rrand(pulseRate[0], pulseRate[1]), \whichModulator, 2);
-							},{
-								synths[0].set(\pulseRate0, 0, \pulseRate1, rrand(pulseRate[0], pulseRate[1])*2, \whichModulator, 2);
-						});
-						butt.value_(1);
-						controls[0].value_(0);
-						controls[1].value_(0);
-				})
-			})
-		);
-
-
-		this.addAssignButton(2, 0, Rect(5, 340, 75, 16));
-		this.addAssignButton(3, 0, Rect(85, 340, 75, 16));
-
-		controls.add(EZRanger(win, Rect(115, 5, 50, 275), "speed", ControlSpec(0.25, 30, 'linear'),
-			{arg val;
-				pulseRate = val.value;
-				if(impulseOn&&dustOn,{
-					synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1]), \pulseRate1, rrand(pulseRate[0], pulseRate[1]));
-					},{
-						if(impulseOn,{
-							synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1])*2);
-							},{
-								if(dustOn,{
-									synths[0].set(\pulseRate1, rrand(pulseRate[0], pulseRate[1])*2);
-								})
-						})
-				})
-		}, [4, 7], true, layout:\vert));
-
-		win.front;
-	}
-
-	addSetup {|setup|
-
-	}
-
-	saveExtra {arg xmlDoc, xmlSynth;
-		mixerStrips.do{arg item, i; item.save(xmlDoc, xmlSynth, i)};
-	}
-
-	load {arg xmlSynth, busMap;
-		this.loadControllers(xmlSynth);
-
-		this.loadSettings(xmlSynth);
-
-		mixerStrips.do{arg item, i; item.load(xmlSynth, busMap, i)};
-		win.bounds_(xmlSynth.getAttribute("bounds").interpret);
-		win.front;
-	}
-
-	killMeSpecial {
-		"kill the mixer";
-		localBusses.do{arg item; item.free};
-		synthGroup.free;
-		mixerGroup.free;
-	}
-
-}
-
-DiscreteInput_Mod : ModularMixerStrip {
-
-	init2 {arg winIn, pointIn;
-		win=winIn;
-		point = pointIn;
-
-		inputBusses = List.new;
-
-		panel = CompositeView.new(win, Rect(point.x, point.y, 50, 300));
-
-		mixer = ModularMixer(group);
-		mixer.outBus = outBus;
-		mixer.setVol(1);
-
-		busAssignSink=MixerBusAssignSink(this, panel, Point(0,0));
-
-		numBusses = outBus.numChannels;
-
-	}
-
-	setInputBusses {arg inputBussesIn;
-		inputBusses = mixer.setInputBusses(inputBussesIn, numBusses);
-	}
-
-	save {
-	}
-
-	load {
-	}
-}

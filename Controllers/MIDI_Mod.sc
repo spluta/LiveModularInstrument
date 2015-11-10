@@ -10,7 +10,7 @@ MIDI_Mod {
 		^super.new.init();
 	}
 
-	init {
+	*start {
 		MIDIIn.connectAll;
 		responders = List.newClear[0];
 
@@ -36,7 +36,7 @@ MIDI_Mod {
 	*resetOSCAddr {}
 	*setWCurrentSetup {}
 
-	*getFunctionFromKey {arg controllerKey, object;
+	*getFunctionFromKey {arg module, controllerKey, object;
 		var function, localControlObject, nothing, keyShort;
 		//here you are. hope this works!
 		localControlObject = object;

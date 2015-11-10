@@ -213,15 +213,13 @@ GingerMan_Mod : Module_Mod {
 			temp.add(item.value);
 		};
 
-		saveArray.add(temp);  //controller messages
+		saveArray.add(temp);
 
 		//this does not save or load the oscMsgs
 		//it takes advantage that the setManta button is a control button
 		//and it just saves the state of that button
 
 		saveArray.add(win.bounds);
-
-		this.saveExtra(saveArray);
 		^saveArray
 	}
 
@@ -231,13 +229,11 @@ GingerMan_Mod : Module_Mod {
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};
 		win.bounds_(loadArray[3]);
-		this.loadExtra(loadArray);
 	}
 
 	killMeSpecial {
 		buchlaFilters.do{arg item; if(item!=nil,{item.killMe})};
 		transferBus.free;
 		group.freeAllMsg;
-		this.clearMidiHidSpecial;
 	}
 }

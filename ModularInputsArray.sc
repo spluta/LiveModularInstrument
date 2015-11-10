@@ -120,7 +120,7 @@ ModularInputsArray : Module_Mod {
 
 		win = Window("Inputs").layout_(GridLayout.rows(layouts));
 
-		win.bounds_(Rect(686, 610, 412, 246));
+		win.bounds_(Rect(786, 610, 412, 246));
 		win.userCanClose_(false);
 		win.front;
 	}
@@ -159,6 +159,7 @@ ModularInputsArray : Module_Mod {
 				ModularServers.servers.do{arg server;
 					MidiOscControl.getFunctionNSetController(this, controls[i], msg, server.name, setups);
 				};
+				assignButtons[i].instantButton.value_(1);
 			});
 		};
 		win.bounds_(loadArray[3]);

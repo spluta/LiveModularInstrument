@@ -1,65 +1,3 @@
-/*ModularSetInputWindow {
-	var <>availableBusIns, <>requestingObject, inputBusses, window, applyButton, soundInButtons, busInButtons, returnList, index;
-
-	*new {arg availableBusIns, requestingObject, inputBusses;
-		^super.newCopyArgs(availableBusIns, requestingObject, inputBusses).init;
-	}
-
-	init {
-		returnList = List.new;
-		2.do{
-			returnList.add(List.new);
-		};
-		window = Window.new("Assign Inputs",Rect(654, 690, 5+(35*8), 60+((availableBusIns[1].size/5).ceil*35)));
-		window.alwaysOnTop_(true);
-
-		soundInButtons = List.new;
-		busInButtons = List.new;
-
-		availableBusIns[0].do{arg item, i;
-			soundInButtons.add(Button.new(window,Rect(5+(35*i), 5, 30, 20))
-				.states_([ [ "S"++i, Color.blue, Color.black ], [ "S"++i, Color.black, Color.blue ] ])
-				.action_{|v|
-					if(v.value==1,{
-						returnList[0].add(i);
-					},{
-						returnList[0].remove(i);
-					});
-				});
-		};
-
-		availableBusIns[1].do{arg item, i;
-			busInButtons.add(Button.new(window,Rect(5+((i%5)*35), 30+((i/5).floor*25), 30, 20))
-				.states_([ [ item.asString, Color.blue, Color.black ], [ item.asString, Color.black, Color.blue ] ])
-				.action_{|v|
-					if(v.value==1,{
-						returnList[1].add(item);
-					},{
-						returnList[1].remove(item);
-					});
-				});
-		};
-
-		applyButton = Button.new(window, Rect(5, (availableBusIns[1].size/5).ceil*25+30, 50, 30))
-			.states_([ [ "Apply", Color.blue, Color.black ]])
-				.action_{|v|
-					requestingObject.setInputBusses(returnList);
-					window.close;
-				};
-
-
-		inputBusses[0].do{arg i; soundInButtons[i].valueAction = 1};
-		inputBusses[1].do{arg i;
-			index = availableBusIns[1].indexOfEqual(i);
-			if(index!=nil,{
-				busInButtons[index].valueAction = 1;
-			})
-		};
-
-		window.front;
-	}
-}*/
-
 ModularMixer {
 	var <>group, <>mixers, index, <>volBus, <>muteBus, <>panBus, singleMixer, <>inputBusses, <>outBus, outBussesMonoStereo, soundInBusses, stereoSoundInBusses;
 
@@ -81,7 +19,7 @@ ModularMixer {
 			SynthDef("modularMixer1-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -91,7 +29,7 @@ ModularMixer {
 			SynthDef("modularMixer1-2", {arg inBus, outBus, volBus, muteBus, panBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -102,7 +40,7 @@ ModularMixer {
 			SynthDef("modularMixer1-3", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -113,7 +51,7 @@ ModularMixer {
 			SynthDef("modularMixer1-4", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -124,7 +62,7 @@ ModularMixer {
 			SynthDef("modularMixer1-5", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -135,7 +73,7 @@ ModularMixer {
 			SynthDef("modularMixer1-6", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -146,7 +84,7 @@ ModularMixer {
 			SynthDef("modularMixer1-7", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -157,7 +95,7 @@ ModularMixer {
 			SynthDef("modularMixer1-8", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -170,7 +108,7 @@ ModularMixer {
 			SynthDef("modularMixer2-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -180,7 +118,7 @@ ModularMixer {
 			SynthDef("modularMixer2-2", {arg inBus, outBus, volBus, muteBus, panBus, gate=1;
 				var env, vol, muteVol, in;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -192,7 +130,7 @@ ModularMixer {
 			SynthDef("modularMixer3-3", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -202,7 +140,7 @@ ModularMixer {
 			SynthDef("modularMixer4-4", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -212,7 +150,7 @@ ModularMixer {
 			SynthDef("modularMixer5-5", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -222,7 +160,7 @@ ModularMixer {
 			SynthDef("modularMixer6-6", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -232,7 +170,7 @@ ModularMixer {
 			SynthDef("modularMixer7-7", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -242,7 +180,7 @@ ModularMixer {
 			SynthDef("modularMixer8-8", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -255,7 +193,7 @@ ModularMixer {
 			SynthDef("modularMixer3-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -265,7 +203,7 @@ ModularMixer {
 			SynthDef("modularMixer4-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -275,7 +213,7 @@ ModularMixer {
 			SynthDef("modularMixer5-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -285,7 +223,7 @@ ModularMixer {
 			SynthDef("modularMixer6-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -295,7 +233,7 @@ ModularMixer {
 			SynthDef("modularMixer7-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -305,7 +243,7 @@ ModularMixer {
 			SynthDef("modularMixer8-1", {arg inBus, outBus, volBus, muteBus, gate=1;
 				var env, vol, muteVol;
 
-				vol = In.kr(volBus);
+				vol = Lag.kr(In.kr(volBus), 0.01);
 				muteVol = Lag.kr(In.kr(muteBus), 0.01);
 
 				env = EnvGen.kr(Env.asr(0.01,1,0.01), gate, doneAction:2);
@@ -332,7 +270,6 @@ ModularMixer {
 	}
 
 	add11InputMixer {arg inputBusIndex, outBusIndex;
-		"add11".postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer1-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group));
@@ -340,7 +277,6 @@ ModularMixer {
 	}
 
 	add12InputMixer {arg inputBusIndex, outBusIndex;
-		"add12".postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer1-2", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index, \panBus, panBus.index], group));
@@ -348,7 +284,6 @@ ModularMixer {
 	}
 
 	add21InputMixer {arg inputBusIndex, outBusIndex;
-		"add21".postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer2-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group));
@@ -356,7 +291,6 @@ ModularMixer {
 	}
 
 	add22InputMixer {arg inputBusIndex, outBusIndex;
-		"add22".postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer2-2", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index, \panBus, panBus.index], group));
@@ -364,7 +298,6 @@ ModularMixer {
 	}
 
 	addNNInputMixer {arg inputBusIndex, numBusses;
-		"addNN".postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			switch(numBusses,
@@ -380,8 +313,6 @@ ModularMixer {
 	}
 
 	add1NInputMixer {arg inputBusIndex, numBusses;
-		"add1N".postln;
-		[inputBusIndex, numBusses].postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			switch(numBusses,
@@ -397,7 +328,7 @@ ModularMixer {
 	}
 
 	addN1InputMixer {arg inputBusIndex, numBusses;
-		"addN1".postln;
+		"addN1 ".post; numBusses.postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			switch(numBusses,
@@ -407,7 +338,9 @@ ModularMixer {
 				5, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer5-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))},
 				6, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer6-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))},
 				7, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer7-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))},
-				8, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer8-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))}
+				8, {
+					"8-1".postln;
+					mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer8-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))}
 			);
 		});
 	}
@@ -442,7 +375,6 @@ ModularMixer {
 						this.add1NInputMixer(item, numBusses);
 						})
 				},{
-					"stereo input bus".postln;
 					if(outBus.numChannels == 1,{
 						this.add21InputMixer(item);
 						},{

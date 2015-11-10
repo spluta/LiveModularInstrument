@@ -2,35 +2,30 @@ Lemur_Mod {
 
 	classvar responders;
 	classvar <>sendRequest = false;
-	classvar netAddr;
+	classvar netAddr, ip;
 
-	// addr can be used for identifying multiple Mantas
+	*initClass {}
+
 	*new {
 		^super.new.init();
 	}
 
-	init {
+	*start {arg ipIn;
+		ip = ipIn;
 
-		try {netAddr = NetAddr("Bernard.local", 8000)}{netAddr = nil};
-
+		try {netAddr = NetAddr(ip, 8000)}{netAddr = nil};
 
 		//the responder to switch out the servers
 		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/ServerSwitch/x").asSymbol);
 
-		//these are hardcoded right now, but maybe they shouldn't be
-		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/MainSwitch/lmi0/x").asSymbol);
-		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/MainSwitch/lmi1/x").asSymbol);
-		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/MainSwitch/lmi2/x").asSymbol);
-		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/MainSwitch/lmi3/x").asSymbol);
-
 		responders = List.newClear[0];
 
-		50.do{arg i;
+		100.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/z").asSymbol));
 		};
 
-		40.do{arg i;
+		100.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Button"++i.asString++"/x").asSymbol, \onOff)}); }, ("/Button"++i.asString++"/x").asSymbol));
 
 
@@ -39,27 +34,30 @@ Lemur_Mod {
 		};
 
 
-		40.do{arg i;
+		100.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/y").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/z").asSymbol));
 		};
 
-		40.do{arg i;
+		100.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1],msg[2]]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/z").asSymbol));
 		};
 	}
 
-	*resetOSCAddr {try {netAddr = NetAddr("Bernard.local", 8000)}{netAddr = nil};}
+	*resetOSCAddr {arg ip;
+		try {netAddr = NetAddr(ip.asString, 8000)}{netAddr = nil};
+	}
 
-	*setWCurrentSetup {arg serverName, setupNum;
-		var temp;
+	*setWCurrentSetup {arg serverName, oscMsg;
+		var object, setting;
 
-		temp = [0,0,0,0,0];
-		temp.put(setupNum, 1);
 		if (netAddr!=nil, {
-			netAddr.sendBundle(0.0, temp.reverse.add("/MainSwitch/"++serverName++"/x").reverse)
+			oscMsg = oscMsg.asString.replace("[", "").replace("]", "").replace(" ", "").split($,);
+			oscMsg = oscMsg.copyRange(1, oscMsg.size-1).asInteger.reverse.add(oscMsg[0]).reverse;
+			oscMsg.postln;
+			netAddr.sendBundle(0.0, oscMsg);
 		});
 	}
 

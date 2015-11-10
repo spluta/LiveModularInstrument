@@ -108,7 +108,7 @@ SwoopDown_Mod : Module_Mod {
 	}
 
 	init {
-		this.makeWindow("SwoopDown", Rect(600, 600, 70, 255));
+		this.makeWindow("SwoopDown", Rect(717, 512, 265, 55));
 		this.initControlsAndSynths(2);
 
 		this.makeMixerToSynthBus(2);
@@ -121,12 +121,12 @@ SwoopDown_Mod : Module_Mod {
 		5.do{buffers.add(Buffer.alloc(group.server, group.server.sampleRate * 2.0, 2))};
 		bufferStream = Pseq([0,1,2,3,4], inf).asStream;
 
-		controls.add(EZSlider(win, Rect(5, 0, 60, 200), "Vol", ControlSpec(0.0, 4.0, \amp), {arg slider;
+		controls.add(QtEZSlider("Vol", ControlSpec(0.0, 4.0, \amp), {arg slider;
 				volBus.set(slider.value);
-			}, layout:\vert));
-		this.addAssignButton(0, \continuous, Rect(5, 200, 60, 20));
+			}, 0, false, \horz));
+		this.addAssignButton(0, \continuous);
 
-		controls.add(Button(win, Rect(5, 230, 40, 20))
+		controls.add(Button()
 			.states_([
 				["Go", Color.green, Color.black],
 				["Go", Color.black, Color.green]
@@ -144,7 +144,7 @@ SwoopDown_Mod : Module_Mod {
 					}
 				)
 			});
-		this.addAssignButton(1, \onOff, Rect(45, 230, 20, 20));
+		this.addAssignButton(1, \onOff);
 
 		//multichannel button
 		numChannels = 2;
@@ -164,6 +164,18 @@ SwoopDown_Mod : Module_Mod {
 				)
 			};
 		);
+
+		win.layout_(
+			VLayout(
+				HLayout(controls[0].layout, assignButtons[0].layout),
+				HLayout(controls[1], assignButtons[1].layout, nil)
+			)
+		);
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
+		win.drawFunc = {win.bounds.postln};
+		win.front;
+
 	}
 
 	pause {

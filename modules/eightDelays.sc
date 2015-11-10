@@ -418,14 +418,15 @@ Melter_Mod : Module_Mod {
 
 
 LongDelay_Mod : Module_Mod {
-	var delayGroup, synthGroup, maxDelay, goButton, volBus, delBus, panBus;
+	var delayGroup, synthGroup, maxDelay, goButton, volBus, delBus, decBus, panBus;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("longDelay2_mod", {arg inBus, outBus, volBus, delBus, panBus, gate = 1, pauseGate = 1;
-				var in, out, env, phasor, out0, pauseEnv, delayTime=4, vol=0, pan = 0;
+			SynthDef("longDelay2_mod", {arg inBus, outBus, volBus, delBus, decBus, panBus, gate = 1, pauseGate = 1;
+				var in, out, env, phasor, out0, pauseEnv, delayTime=4, decayTime=20, vol=0, pan = 0;
 
 				delayTime = In.kr(delBus);
+				decayTime = In.kr(decBus);
 				vol = In.kr(volBus);
 				pan = In.kr(panBus);
 
@@ -433,15 +434,16 @@ LongDelay_Mod : Module_Mod {
 				env = EnvGen.ar(Env.asr(0.1, 1, 0.1), gate, doneAction: 2);
 
 				in = In.ar(inBus)*vol;
-				out0 = Pan2.ar(AllpassC.ar(in, 17, delayTime, delayTime*6), pan);
+				out0 = Pan2.ar(AllpassC.ar(in, 17, delayTime, decayTime), pan);
 
 				Out.ar(outBus, (out0)*env*pauseEnv);
 			}).writeDefFile;
 
-			SynthDef("longDelay4_mod", {arg inBus, outBus, volBus, delBus, panBus, gate = 1, pauseGate = 1;
-				var in, out, env, phasor, out0, pauseEnv, delayTime=4, vol=0, pan = 0;
+			SynthDef("longDelay4_mod", {arg inBus, outBus, volBus, delBus, decBus, panBus, gate = 1, pauseGate = 1;
+				var in, out, env, phasor, out0, pauseEnv, delayTime=4, decayTime=20, vol=0, pan = 0;
 
 				delayTime = In.kr(delBus);
+				decayTime = In.kr(decBus);
 				vol = In.kr(volBus);
 				pan = In.kr(panBus);
 
@@ -449,15 +451,16 @@ LongDelay_Mod : Module_Mod {
 				env = EnvGen.ar(Env.asr(0.1, 1, 0.1), gate, doneAction: 2);
 
 				in = In.ar(inBus)*vol;
-				out0 = PanAz.ar(4, AllpassC.ar(in, 17, delayTime, delayTime*6), pan);
+				out0 = PanAz.ar(4, AllpassC.ar(in, 17, delayTime, decayTime), pan);
 
 				Out.ar(outBus, [out0[0], out0[1], out0[3], out0[2]]*env*pauseEnv);
 			}).writeDefFile;
 
-			SynthDef("longDelay8_mod", {arg inBus, outBus, volBus, delBus, panBus, gate = 1, pauseGate = 1;
-				var in, out, env, phasor, out0, pauseEnv, delayTime=4, vol=0, pan = 0;
+			SynthDef("longDelay8_mod", {arg inBus, outBus, volBus, delBus, decBus, panBus, gate = 1, pauseGate = 1;
+				var in, out, env, phasor, out0, pauseEnv, delayTime=4, decayTime=20, vol=0, pan = 0;
 
 				delayTime = In.kr(delBus);
+				decayTime = In.kr(decBus);
 				vol = In.kr(volBus);
 				pan = In.kr(panBus);
 
@@ -465,7 +468,7 @@ LongDelay_Mod : Module_Mod {
 				env = EnvGen.ar(Env.asr(0.1, 1, 0.1), gate, doneAction: 2);
 
 				in = In.ar(inBus)*vol;
-				out0 = PanAz.ar(8, AllpassC.ar(in, 17, delayTime, delayTime*6), pan);
+				out0 = PanAz.ar(8, AllpassC.ar(in, 17, delayTime, decayTime), pan);
 
 				Out.ar(outBus, [out0[0], out0[1], out0[7], out0[2], out0[6], out0[3], out0[5], out0[4]]*env*pauseEnv);
 			}).writeDefFile;
@@ -475,15 +478,16 @@ LongDelay_Mod : Module_Mod {
 	init {
 		this.makeWindow("LongDelay", Rect(843, 708, 311, 97));
 
-		this.initControlsAndSynths(4);
+		this.initControlsAndSynths(5);
 
 		this.makeMixerToSynthBus;
 
 		volBus = Bus.control(group.server);
 		delBus = Bus.control(group.server);
+		decBus = Bus.control(group.server);
 		panBus = Bus.control(group.server);
 
-		synths.add(Synth("longDelay2_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \panBus, panBus], group));
+		synths.add(Synth("longDelay2_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \decBus, decBus, \panBus, panBus], group));
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
@@ -497,11 +501,17 @@ LongDelay_Mod : Module_Mod {
 			}, 4, true, \horz));
 		this.addAssignButton(1,\continuous);
 
+		controls.add(QtEZSlider.new("decay", ControlSpec(0,100),
+			{|v|
+				decBus.set(v.value);
+			}, 20, true, \horz));
+		this.addAssignButton(2,\continuous);
+
 		controls.add(QtEZSlider.new("pan", ControlSpec(-1,1),
 			{|v|
 				panBus.set(v.value)
 			}, 0, true, \horz));
-		this.addAssignButton(2, \continuous);
+		this.addAssignButton(3, \continuous);
 
 		//multichannel button
 		numChannels = 2;
@@ -512,17 +522,17 @@ LongDelay_Mod : Module_Mod {
 					0, {
 						numChannels = 2;
 						synths[0].set(\gate, 0);
-						synths.put(0, Synth("longDelay2_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \panBus, panBus], group));
+						synths.put(0, Synth("longDelay2_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \decBus, decBus, \panBus, panBus], group));
 					},
 					1, {
 						numChannels = 4;
 						synths[0].set(\gate, 0);
-						synths.put(0, Synth("longDelay4_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \panBus, panBus], group));
+						synths.put(0, Synth("longDelay4_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \decBus, decBus, \panBus, panBus], group));
 					},
 					2, {
 						numChannels = 8;
 						synths[0].set(\gate, 0);
-						synths.put(0, Synth("longDelay8_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \panBus, panBus], group));
+						synths.put(0, Synth("longDelay8_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \vol, 0, \volBus, volBus, \delBus, delBus, \decBus, decBus, \panBus, panBus], group));
 					}
 				)
 			};
@@ -533,13 +543,13 @@ LongDelay_Mod : Module_Mod {
 				HLayout(controls[0].layout, assignButtons[0].layout),
 				HLayout(controls[1].layout, assignButtons[1].layout),
 				HLayout(controls[2].layout, assignButtons[2].layout),
-				HLayout(controls[3], nil),
+				HLayout(controls[3].layout, assignButtons[3].layout),
+				HLayout(controls[4], nil),
 			)
 		);
 
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		//win.bounds = win.bounds.size_(win.minSizeHint);
 		win.drawFunc = {win.bounds.postln;};
 		win.front;
 	}

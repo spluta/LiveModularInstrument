@@ -24,11 +24,11 @@ AtdV_Mod : Module_Mod {
 
 				vol = In.kr(volBus);
 
-				out = PlayBuf.ar(2, bufnum, startPos: Rand(44100, 44100*20), loop: 1)*0;
+				//out = PlayBuf.ar(2, bufnum, startPos: Rand(44100, 44100*20), loop: 1)*0;
 
 				out2 = PlayBuf.ar(2, bufnum, startPos: Rand(44100, 44100*20), loop: 1);
 
-				ReplaceOut.ar(outBus, out*env*vol*pauseEnv*muteEnv);
+				ReplaceOut.ar(outBus, [0,0]);
 				ReplaceOut.ar(outBus+2, out2*env*vol*pauseEnv*muteEnv);
 
 				//Out.ar(0, out*env*vol*pauseEnv*muteEnv);
@@ -73,12 +73,11 @@ AtdV_Mod : Module_Mod {
 		synths.put(5, Synth("AtdVMuter_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus], throughGroup));
 
 //		4.do{|i|
-			noteOn = NoteOnResponder2({ |src,chan,num,value|
-					"noteOn".postln;[src,chan,num,value].postln;
+			noteOn = MIDIFunc.noteOn({ |value, num|
+					//"noteOn".postln;[num,value].postln;
 					switch(num,
 						62, {
 							synths.put(0, Synth("AtdVPlayer_mod", [\bufnum, buffers[0].bufnum, \outBus, outBus, \volBus, volBusses[0]], synthGroup));
-					group.server.queryAllNodes;
 						},
 						64, {
 							synths.put(1, Synth("AtdVPlayer_mod", [\bufnum, buffers[1].bufnum, \outBus, outBus, \volBus, volBusses[1]], synthGroup));
@@ -97,15 +96,11 @@ AtdV_Mod : Module_Mod {
 						}
 					)
 				},
-				nil, // any source
-				nil, // any channel
-				(62..72), // within this note range
-				nil, // any vel
-				("setup0").asSymbol
+				(62..72)
 			);
 
-			noteOff = NoteOffResponder2({ |src,chan,num,value|
-					"noteOff".postln;[src,chan,num,value].postln;
+			noteOff = MIDIFunc.noteOff({ |value, num|
+					//"noteOff".postln;[num,value].postln;
 					switch(num,
 						62, {
 							synths[0].set(\gate, 0)
@@ -127,12 +122,7 @@ AtdV_Mod : Module_Mod {
 						}
 					)
 				},
-				nil, // any source
-				nil, // any channel
-				(62..72), // within this note range
-				nil, // any vel
-				("setup0").asSymbol
+				(62..72)
 			);
-//		}
 	}
 }

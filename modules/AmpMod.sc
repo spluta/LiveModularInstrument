@@ -9,7 +9,7 @@ AmpMod_Mod : Module_Mod {
 				impulse = Impulse.kr(pulseRate0);
 				dust = Dust.kr(pulseRate1);
 
-				mod = Lag.kr(Select.kr(onBypass, [1, Stepper.kr(impulse+dust, 0, 0, 1, 1, 0)]), 0.01);
+				mod = Lag.kr(Select.kr(onBypass, [1, Stepper.kr(impulse+dust, 0, 0, 1, 1, 0)]), 0.02);
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 

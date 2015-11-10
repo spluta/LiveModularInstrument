@@ -211,6 +211,8 @@ WubbelsSine2_Mod : Module_Mod {
 		modName = "WubbelsSine2";
 		this.initControlsAndSynths(1);
 
+		dontLoadControls = [0];
+
 		synths = List.newClear(1);
 
 		startNote = 60;
@@ -238,16 +240,9 @@ WubbelsSine2_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addButton(0,\onOff, Rect(5, 25, 205, 20));
+		this.addAssignButton(0,\onOff, Rect(5, 25, 205, 20));
 	}
 
- 	load {arg xmlSynth;
-		this.loadControllers(xmlSynth);
-
-		win.bounds_(xmlSynth.getAttribute("bounds").interpret);
-		win.front;
-
-	}
 
 }
 

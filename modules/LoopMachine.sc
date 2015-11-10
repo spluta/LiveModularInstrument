@@ -281,14 +281,11 @@ LoopMachineOverLap_Mod : Module_Mod {
 		this.addAssignButton(5, \onOff);
 		this.addAssignButton(6, \onOff);
 
-		RadioButtons([[controls[5],controls[6]]],
+		RadioButtons([controls[5],controls[6]],
 			[
-				[
-					[[ "loop", Color.red, Color.black ], [ "loop", Color.black, Color.red ]], [[ "through", Color.red, Color.black ], [ "through", Color.black, Color.red ]]
-				]
+				[[ "loop", Color.red, Color.black ], [ "loop", Color.black, Color.red ]], [[ "through", Color.red, Color.black ], [ "through", Color.black, Color.red ]]
 			],
 			[
-				[
 					{
 						synths[1].set(\onOff, 1, \t_trig, 1);
 						synths[0].set(\smallGate, 1);
@@ -297,9 +294,8 @@ LoopMachineOverLap_Mod : Module_Mod {
 						synths[1].set(\onOff, 0);
 						synths[0].set(\smallGate, 0);
 					}
-				]
 			],
-			[0,1]);
+			1);
 
 		controls.add(QtEZSlider2D.new(ControlSpec(0,1), ControlSpec(0.001,1,\exp),
 			{arg vals;

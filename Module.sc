@@ -1,10 +1,5 @@
-Module_Mod {
-	var <>group, <>outBus, <>setups, <>mixerToSynthBus, synths, xmlSynth, numChannels = 2, rout;
-	var waitForSetNum, assignButtons, win, modName, <>controls, <>oscMsgs, zActions, dontLoadControls;
-
-	*new {arg group, outBus, setups;
-		^super.new.group_(group).outBus_(outBus).setups_(setups).init;
-	}
+MidiOscObject {var <>group, <>win, <>oscMsgs, <>controls, <>oscMsgs, assignButtons, <>setups;
+	var waitForSetNum, modName, dontLoadControls, synths, visibleArray;
 
 	initControlsAndSynths {arg num;
 		//oscMsgs holds the
@@ -19,11 +14,100 @@ Module_Mod {
 		synths = List.newClear(0);
 	}
 
+	setOscMsg {arg msg;
+		oscMsgs.put(waitForSetNum, msg);
+	}
+
+	clearMidiOsc {
+		//should just have to send all osc message to MidiOscControl for deletion
+		setups.do{arg item; this.removeSetup(item)};
+		oscMsgs = List.newClear(oscMsgs.size);
+	}
+
+	addAssignButton {|num, type, rect|
+		var temp;
+
+		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
+
+		assignButtons.put(num, temp
+			.instantAction_{|butt|
+				if(butt.value==1,{
+
+					waitForSetNum = num;
+					MidiOscControl.requestInstantAssign(this, controls[num], type, group.server, setups);
+				},{
+						MidiOscControl.clearInstantAssign;
+						MidiOscControl.clearController(group.server, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
+						oscMsgs.put(num, nil);
+				})
+			});
+	}
+
+	saveExtra{}//does nothing unless the module overrides this method
+
+	save {
+		var saveArray, temp;
+
+		saveArray = List.newClear(0);
+
+		saveArray.add(modName); //name first
+
+		temp = List.newClear(0); //controller settings
+		controls.do{arg item;
+			temp.add(item.value);
+		};
+
+		saveArray.add(temp);  //controller messages
+		saveArray.add(oscMsgs);
+
+		if(win!=nil,{
+			saveArray.add(win.bounds);
+		},{
+			saveArray.add(nil);
+		});
+
+		this.saveExtra(saveArray);
+		^saveArray
+	}
+
+	loadExtra{}//does nothing unless the module overrides this method
+
+	load {arg loadArray;
+
+		loadArray[1].do{arg controlLevel, i;
+			//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
+				controls[i].valueAction_(controlLevel);
+			});
+		};
+
+		loadArray[2].do{arg msg, i;
+			waitForSetNum = i;
+			if(msg!=nil,{
+				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
+				assignButtons[i].instantButton.value_(1);
+			})
+		};
+
+		if(win!=nil,{
+			win.bounds_(loadArray[3]);
+			win.visible_(false);
+		});
+
+		this.loadExtra(loadArray);
+	}
+}
+
+Module_Mod : MidiOscObject {
+	var <>outBus, <>mixerToSynthBus, xmlSynth, numChannels = 2, rout;
+
+
+	*new {arg group, outBus, setups;
+		^super.new.group_(group).outBus_(outBus).setups_(setups).init;
+	}
 
 	addSetup {arg setup;
 		//happens when the user hits the addSetup button on the MainWindow
-		setups.postln;
-		oscMsgs.postln;
 
 		//setups.add(setup);
 		oscMsgs.do{arg item, i;
@@ -32,7 +116,6 @@ Module_Mod {
 			})
 		}
 	}
-
 
 	removeSetup {arg setup;
 		//setups.remove(setup);
@@ -44,43 +127,7 @@ Module_Mod {
 		}
 	}
 
-	clearMidiOsc {
-		//should just have to send all osc message to MidiOscControl for deletion
-		setups.do{arg item; this.removeSetup(item)};
-		oscMsgs = List.newClear(oscMsgs.size);
-	}
-
-	setOscMsg {arg msg;
-		oscMsgs.put(waitForSetNum, msg);
-		oscMsgs.postln;
-	}
-
-	addAssignButton {|num, type, rect|
-		var temp;
-		//for RadioButtons, the "num" is an array
-		//the first value is the control index, the second value is an array corresponding to the place in the RadioButtonArray
-
-		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
-
-		assignButtons.put(num, temp
-			.instantAction_{|butt|
-				if(butt.value==1,{
-
-					//module, controlObject, typeOfController, server, setupsIn
-					waitForSetNum = num;
-					MidiOscControl.requestInstantAssign(this, controls[num], type, group.server, setups);
-
-
-				},{
-						MidiOscControl.clearInstantAssign;
-						MidiOscControl.clearController(group.server, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
-						oscMsgs.put(num, nil);
-				})
-			});
-	}
-
 	makeWindow {arg name, rect;
-		name.postln;
 		win = Window.new(name, rect);
 		win.userCanClose_(false);
 		win.front;
@@ -115,49 +162,6 @@ Module_Mod {
 
 	numBusses {
 		^mixerToSynthBus.numChannels;
-	}
-
-	saveExtra{}//does nothing unless the module overrides this method
-
-	save {
-		var saveArray, temp;
-
-		saveArray = List.newClear(0);
-
-		saveArray.add(modName); //name first
-
-		temp = List.newClear(0); //controller settings
-		controls.do{arg item;
-			temp.add(item.value);
-		};
-
-		saveArray.add(temp);  //controller messages
-		saveArray.add(oscMsgs);
-
-		saveArray.add(win.bounds);
-
-		this.saveExtra(saveArray);
-		^saveArray
-	}
-
-	loadExtra{}//does nothing unless the module overrides this method
-
-	load {arg loadArray;
-		loadArray.do{arg item; item.postln};
-		loadArray[1].do{arg controlLevel, i;
-			//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
-				controls[i].valueAction_(controlLevel);
-			});
-		};
-		loadArray[2].do{arg msg, i;
-			waitForSetNum = i;
-			if(msg!=nil,{
-				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
-			})
-		};
-		win.bounds_(loadArray[3]);
-		this.loadExtra(loadArray);
 	}
 
 	killMe {

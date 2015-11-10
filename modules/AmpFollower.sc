@@ -37,7 +37,7 @@ AmpFollower_Mod : SignalSwitcher_Mod {
 		mixerStrips = List.new;
 		2.do{arg i;
 			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));
-			mixerStrips[i].init2(win, Point(5+(i*55), 0))
+			mixerStrips[i].init2(win, Point(5+(i*55), 0));
 		};
 
 		synths.add(Synth("ampFollower_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \outBus, outBus], synthGroup));

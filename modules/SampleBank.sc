@@ -101,12 +101,17 @@ SampleBank_Mod : Module_Mod {
 		loadFilesButton = Button.new(win,Rect(5, 180, 60, 20))
 		.states_([ [ "Load File", Color.red, Color.black ] ])
 		.action_{|v|
-			Window.allWindows.do{arg item; item.visible = false};
+			visibleArray = List.newClear;
+			Window.allWindows.do{arg item;
+
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
 			Dialog.openPanel({ arg path;
-				Window.allWindows.do{arg item; item.visible = true};
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				this.loadBuffers(path)
 				},{
-					Window.allWindows.do{arg item; item.visible = true};
+					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 			});
 		};
 		ezList = EZListView.new(win,Rect(70, 0, 240, 200));

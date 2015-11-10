@@ -35,9 +35,9 @@ Freeze_Mod : Module_Mod {
 
 				amp = Amplitude.kr(audioIn)*EnvGen.kr(Env.asr(0.001, 1, 0.001), onOff);
 
-				trig1 = Trig1.kr(Coyote.kr(audioIn, thresh: thresh, minDur: 0.1),0.01);
+				trig1 = Trig1.kr(Coyote.kr(audioIn, thresh: thresh, minDur: 0.1),0.1)*1.1;
 
-				trig2 = Trig1.kr(t_keyTrig, 0.01);
+				trig2 = Trig1.kr(t_keyTrig, 0.1)*1.1;
 
 				trig = (trig1+trig2);
 
@@ -84,13 +84,13 @@ Freeze_Mod : Module_Mod {
 		synths = List.newClear(8);
 
 		buffers = List.new;
-		8.do{buffers.add(Buffer.alloc(group.server, 2048, 1))};
+		2.do{buffers.add(Buffer.alloc(group.server, 2048, 1))};
 
 		levelBus = Bus.control(group.server, 1);
 
 		onOff = 0;
 
-		controls.add(Button(win, Rect(0, 0, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Locked", Color.red, Color.black],
 				["Locked", Color.black, Color.green]
@@ -101,9 +101,9 @@ Freeze_Mod : Module_Mod {
 				butt.value_(1);
 				controls[1].value = 0;
 		});
-		this.addAssignButton(0, \onOff, Rect(65, 0, 65, 20));
+		this.addAssignButton(0, \onOff);
 
-		controls.add(Button(win, Rect(0, 20, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Free", Color.red, Color.black],
 				["Free", Color.black, Color.green]
@@ -114,24 +114,23 @@ Freeze_Mod : Module_Mod {
 				butt.value_(1);
 				controls[0].value = 0;
 		});
-		this.addAssignButton(1, \onOff, Rect(65, 20, 65, 20));
+		this.addAssignButton(1, \onOff);
 		controls[0].valueAction_(1);
 
-		controls.add(EZSlider(win, Rect(0, 40, 40, 200), "Amp", ControlSpec(0.001, 2, \amp),
+		controls.add(QtEZSlider("Amp", ControlSpec(0.001, 2, \amp),
 			{arg slider;
 				volBus.set(slider.value);
-		}, 1, true, layout:\vert));
-		this.addAssignButton(2, \continuous, Rect(0, 240, 40, 20));
+		}, 1, true, \vert));
+		this.addAssignButton(2, \continuous);
 
-		controls.add(EZSlider(win, Rect(45, 40, 40, 200), "Thresh", ControlSpec(0.0, 0.05, \cos), {arg slider;
+		controls.add(QtEZSlider("Thresh", ControlSpec(0.0, 0.05, \cos), {arg slider;
 			threshBus.set(slider.value);
-		}, 0.01, true, layout:\vert));
-		this.addAssignButton(3, \continuous, Rect(45, 240, 40, 20));
+		}, 0.01, true, \vert));
+		this.addAssignButton(3, \continuous);
 
 		controls[2].value = 1;
-		volDisplay = RDVolumeDisplay_Mod(win, Rect(90, 40, 40, 200));
 
-		controls.add(Button(win, Rect(0, 260, 65, 20))
+		controls.add(Button()
 			.states_([
 				["trig", Color.black, Color.red],
 				["trig", Color.black, Color.blue]
@@ -140,9 +139,9 @@ Freeze_Mod : Module_Mod {
 				synths.do{arg item; item.set(\t_keyTrig, 1)};
 		});
 
-		this.addAssignButton(4, \onOff, Rect(65, 260, 65, 20));
+		this.addAssignButton(4, \onOff);
 
-		controls.add(Button(win, Rect(0, 280, 65, 20))
+		controls.add(Button()
 			.states_([
 				["On", Color.red, Color.black],
 				["On", Color.black, Color.green]
@@ -152,9 +151,9 @@ Freeze_Mod : Module_Mod {
 				butt.value = 1;
 				controls[6].value = 0;
 		});
-		this.addAssignButton(5,\onOff, Rect(65, 280, 65, 20));
+		this.addAssignButton(5,\onOff);
 
-		controls.add(Button(win, Rect(0, 300, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Off", Color.red, Color.black],
 				["Off", Color.black, Color.green]
@@ -164,17 +163,18 @@ Freeze_Mod : Module_Mod {
 				butt.value = 1;
 				controls[5].value = 0;
 		});
-		this.addAssignButton(6,\onOff, Rect(65, 300, 65, 20));
+		this.addAssignButton(6,\onOff);
 
 		controls[1].valueAction_(1);
 		controls[5].valueAction_(1);
 
 		//multichannel button
 		numChannels = 2;
-		controls.add(Button(win,Rect(0, 325, 60, 20))
+		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
-				switch(butt.value,
+				"multichannel currently broken".postln;
+/*				switch(butt.value,
 					0, {
 						numChannels = 2;
 						6.do{|i| synths[i+2].set(\gate, 0)};
@@ -190,20 +190,40 @@ Freeze_Mod : Module_Mod {
 						4.do{|i| synths.put(i+4, Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index+i+4, \audioOutBus, outBus.index+i+4, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[i+4]], group))};
 						numChannels = 8;
 					}
-				)
+				)*/
 			};
 		);
 
 		rout = Routine({
 			group.server.sync;
 			1.8.wait;
-			buffers.do{arg item; item.zero};
+			//buffers.do{arg item; item.zero};
 			group.server.sync;
-			0.5.wait;
+			1.0.wait;
 			synths.add(Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index, \audioOutBus, outBus, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[0]], group));
 			synths.add(Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index+1, \audioOutBus, outBus.index+1, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[1]], group));
 		});
 		AppClock.play(rout);
+
+		win.layout_(
+			VLayout(
+				HLayout(
+					VLayout(controls[0], controls[1]),
+					VLayout(assignButtons[0].layout, assignButtons[1].layout)
+				),
+				HLayout(
+					VLayout(controls[2].layout, assignButtons[2].layout),
+					VLayout(controls[3].layout, assignButtons[3].layout)
+				),
+				HLayout(
+					VLayout(controls[4], controls[5], controls[6], controls[7]),
+				VLayout(assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout, nil)
+					)
+			)
+		);
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
+		win.front;
 
 		win.front;
 	}
@@ -221,6 +241,7 @@ Freeze_Mod : Module_Mod {
 				waitForSetNum = i;
 				if(msg!=nil,{
 					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
+					assignButtons[i].instantButton.value_(1);
 				})
 			};
 			win.bounds_(loadArray[3]);
@@ -256,7 +277,7 @@ TFreeze_Mod : Module_Mod {
 				trigRate = In.kr(trigRateBus);
 				mode = In.kr(modeBus);
 
-				chain = FFT([LocalBuf(2048),LocalBuf(2048)], audioIn);
+				chain = FFT([buffer0,buffer1], audioIn);
 
 				trig1 = 1-Trig1.kr(Dust.kr(trigRate, 0.1), 0.02);
 
@@ -348,7 +369,7 @@ TFreeze_Mod : Module_Mod {
 
 	init {
 		this.makeWindow("TFreeze",Rect(946, 618, 130, 330));
-		this.initControlsAndSynths(6);
+		this.initControlsAndSynths(7);
 
 		this.makeMixerToSynthBus(8);
 
@@ -369,7 +390,7 @@ TFreeze_Mod : Module_Mod {
 		2.do{buffers.add(Buffer.alloc(group.server, 2048, 1))};
 		levelBus = Bus.control(group.server, 1);
 
-		controls.add(Button(win, Rect(0, 0, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Pass", Color.red, Color.black],
 				["Pass", Color.black, Color.green]
@@ -381,9 +402,9 @@ TFreeze_Mod : Module_Mod {
 				controls[2].value = 0;
 				synths[0].set(\triggerOnce, -0.5);
 		});
-		this.addAssignButton(0,\onOff, Rect(65, 0, 65, 20));
+		this.addAssignButton(0,\onOff);
 
-		controls.add(Button(win, Rect(0, 20, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Trig", Color.red, Color.black],
 				["Trig", Color.black, Color.green]
@@ -396,9 +417,9 @@ TFreeze_Mod : Module_Mod {
 				controls[0].value = 0;
 				controls[2].value = 0;
 		});
-		this.addAssignButton(1,\onOff, Rect(65, 20, 65, 20));
+		this.addAssignButton(1,\onOff);
 
-		controls.add(Button(win, Rect(0, 40, 65, 20))
+		controls.add(Button()
 			.states_([
 				["Dust", Color.red, Color.black],
 				["Dust", Color.black, Color.green]
@@ -411,24 +432,24 @@ TFreeze_Mod : Module_Mod {
 				controls[1].value = 0;
 				synths[0].set(\triggerOnce, -0.5);
 		});
-		this.addAssignButton(2,\onOff, Rect(65, 40, 65, 20));
+		this.addAssignButton(2,\onOff);
 
-		controls.add(EZSlider(win, Rect(0, 60, 40, 200), "Amp", ControlSpec(0.001, 2, \amp),
+		controls.add(QtEZSlider("Amp", ControlSpec(0.001, 2, \amp),
 			{arg slider;
 				volBus.set(slider.value);
-		}, 0, true, layout:\vert));
+		}, 0, true, \vert));
 		this.addAssignButton(3, \continuous, Rect(0, 260, 40, 20));
 
-		controls.add(EZSlider(win, Rect(45, 60, 40, 200), "TrigRate", ControlSpec(0.5, 2.0), {arg slider;
+		controls.add(QtEZSlider("TrigRate", ControlSpec(0.5, 2.0), {arg slider;
 			trigRateBus.set(slider.value);
-		}, 1, true, layout:\vert));
-		this.addAssignButton(4, \continuous, Rect(45, 260, 40, 20));
+		}, 1, true, \vert));
+		this.addAssignButton(4, \continuous);
 
-		Button(win,Rect(0, 285, 100, 20))
+		controls.add(Button()
 		.states_([["reset bufs", Color.black, Color.white]])
 		.action_({|butt|
 			buffers.do{arg item; item.zero};
-		});
+		}));
 
 		//multichannel button
 		numChannels = 2;
@@ -474,23 +495,6 @@ TFreeze_Mod : Module_Mod {
 		};
 		);*/
 
-		controls[2].value = 1;
-		volDisplay = RDVolumeDisplay_Mod(win, Rect(90, 60, 40, 200));
-
-		displayVol = 0;
-
-		//		updateDisplayRout = Routine.new({{
-		//			levelBus.get({arg val;
-		//				displayVol = val;
-		//			});
-		//			win.refresh;
-		//			0.1.wait;
-		//		}.loop}).play(AppClock);
-		//
-		//		win.drawHook = {
-		//			volDisplay.update(displayVol);
-		//		};
-
 		rout = Routine( {
 			group.server.sync;
 			2.0.wait;
@@ -498,11 +502,25 @@ TFreeze_Mod : Module_Mod {
 			0.5.wait;
 			synths.put(0, Synth("tFreeze2_mod", [\inBus, mixerToSynthBus, \outBus, outBus,  \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[0].bufnum, \buffer1, buffers[1].bufnum], group));
 			controls[0].valueAction_(1);
-			"updateVis".postln;
 		});
 
 		AppClock.play(rout);
 
+		win.layout_(
+			VLayout(
+				HLayout(
+					VLayout(controls[0], controls[1], controls[2]),
+					VLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout)
+				),
+				HLayout(
+					VLayout(controls[3].layout, assignButtons[3].layout),
+					VLayout(controls[4].layout, assignButtons[4].layout)
+				),
+				HLayout(controls[5].layout, nil)
+			)
+		);
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 		win.front;
 	}
 

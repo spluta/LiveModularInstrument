@@ -70,7 +70,7 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 				phaseOffset = (LagUD.kr(1-trig, TRand.kr(2, 4, trig), 0)*TExpRand.kr(0.001, 0.025, trig));
 
-				out = TGrains.ar(2, impulse, bufnum, (1+shiftEnv+shiftStay), ((latchPhase-512)/44100)/*+phaseOffset*/, TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
+				out = TGrains.ar(2, impulse, bufnum,1 /*(1+shiftEnv+shiftStay)*/, ((latchPhase-512)/44100)/*+phaseOffset*/, TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
 
 				vol = In.kr(volBus);
 
@@ -220,19 +220,19 @@ GrainFreezeDrums_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("vol", ControlSpec(0.0,2.0,\amp),
 			{|v|
 				volBus.set(v.value);
-		}, 1.0, true, \vert));
+		}, 1.0, true, \horz));
 		this.addAssignButton(0,\continuous);
 
 		controls.add(QtEZSlider.new("thresh", ControlSpec(0.2,0.9),
 			{|v|
 				synths[1].set(\thresh, v.value);
-		}, 0.1, true, \vert));
+		}, 0.1, true, \horz));
 		this.addAssignButton(1,\continuous);
 
 		controls.add(QtEZSlider.new("offDens", ControlSpec(0.0,0.1),
 			{|v|
 				synths[1].set(\offDensity, v.value);
-		}, 0.1, true, \vert));
+		}, 0.1, true, \horz));
 		this.addAssignButton(2,\continuous);
 
 		controls.add(Button.new()
@@ -289,7 +289,7 @@ GrainFreezeDrums_Mod : Module_Mod {
 		controls.add(Button.new()
 			.states_([["noShift", Color.red, Color.black],["shStay", Color.blue, Color.black]])
 			.action_{arg butt;
-				synths[1].set(\t_trigShiftStay, 1);
+				synths[1].set(\t_trigShiftStay, butt.value);
 		});
 		this.addAssignButton(8,\onOff);
 
@@ -330,15 +330,15 @@ GrainFreezeDrums_Mod : Module_Mod {
 			};
 		);
 
-		win.layout_(HLayout(
-			VLayout(controls[0].layout,assignButtons[0].layout),
-			VLayout(controls[1].layout,assignButtons[1].layout),
-			VLayout(controls[2].layout, assignButtons[2].layout),
-			VLayout(controls[3], assignButtons[3].layout,
+		win.layout_(VLayout(
+			HLayout(controls[0].layout,assignButtons[0].layout),
+			HLayout(controls[1].layout,assignButtons[1].layout),
+			HLayout(controls[2].layout, assignButtons[2].layout),
+			HLayout(controls[3], assignButtons[3].layout,
 				controls[4], assignButtons[4].layout,
 				controls[5], assignButtons[5].layout,
 				controls[6], assignButtons[6].layout),
-			VLayout(controls[7], assignButtons[7].layout,
+			HLayout(controls[7], assignButtons[7].layout,
 				controls[8], assignButtons[8].layout,
 				trigButton, controls[9])
 			)

@@ -53,6 +53,8 @@ UpDownSines_Mod : Module_Mod {
 		this.initControlsAndSynths(6);
 		this.makeMixerToSynthBus;
 
+		dontLoadControls = ([1]);
+
 		volBus = Bus.control(group.server);
 
 		volBus.set(0);
@@ -64,36 +66,35 @@ UpDownSines_Mod : Module_Mod {
 		upDown = 0;
 		lowHi = [100, 12500];
 
-		controls.add(EZSlider.new(win,Rect(5, 5, 60, 220), "vol", ControlSpec(0,2,'amp'),
+		controls.add(QtEZSlider.new("vol", ControlSpec(0,2,'amp'),
 			{|v|
 				volBus.set(v.value);
-			}, 0, layout:\vert));
-		this.addAssignButton(0,\continuous, Rect(5, 230, 60, 20));
+		}, 0, orientation:\vert));
+		this.addAssignButton(0,\continuous);
 
-		controls.add(Button(win, Rect(70, 5, 60, 60))
+		controls.add(Button()
 			.states_([["Go", Color.black, Color.green],["Go", Color.green, Color.black]])
 			.action_({this.sinesOn}));
-		this.addAssignButton(1,\onOff, Rect(70, 65, 60, 20));
+		this.addAssignButton(1,\onOff);
 
-		controls.add(Button(win, Rect(70, 85, 60, 60))
+		controls.add(Button()
 			.states_([["Off", Color.black, Color.red],["Off", Color.red, Color.black]])
 			.action_({this.sinesOff}));
-		this.addAssignButton(2,\onOff, Rect(70, 145, 60, 20));
+		this.addAssignButton(2,\onOff);
 
-		controls.add(Button(win, Rect(70, 165, 60, 60))
+		controls.add(Button()
 			.states_([["Up", Color.black, Color.green],["Down", Color.black, Color.red],["Both", Color.black, Color.blue]])
 			.action_({|butt| upDown = butt.value}));
-		this.addAssignButton(3,\onOff, Rect(70, 215, 60, 20));
+		this.addAssignButton(3,\onOff);
 
-		controls.add(EZRanger(win, Rect(130, 5, 60, 220), "range", ControlSpec(100, 12500, 'exponential'),
+		controls.add(QtEZRanger("range", ControlSpec(100, 12500, 'exponential'),
 			{|val|
 				lowHi = val.value;
-		}, [100,12500], true, layout:\vert));
-		//this.addAssignButton(3,\onOff, Rect(70, 215, 60, 20));
+		}, [100,12500], true, orientation:\vert));
 
 		//multichannel button
 		numChannels = 2;
-		controls.add(Button(win,Rect(5, 230, 60, 20))
+		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
 				switch(butt.value,
@@ -109,6 +110,25 @@ UpDownSines_Mod : Module_Mod {
 				)
 			};
 		);
+		win.layout_(
+			VLayout(
+				HLayout(
+					VLayout(
+						controls[0].layout, assignButtons[0].layout
+					),
+					VLayout(
+						controls[1], assignButtons[1].layout, controls[2], assignButtons[2].layout, controls[3], assignButtons[3].layout
+					),
+					VLayout(
+						controls[4].layout
+					)
+				),
+				controls[5]
+			)
+		);
+		win.layout.spacing = 0;
+		//win.drawFunc_{arg win; win.bounds.postln;};
+		win.bounds_(Rect(613, 441, 222, 251));
 	}
 
 	sinesOn {
@@ -129,24 +149,6 @@ UpDownSines_Mod : Module_Mod {
 
 		synths.put(currentSine, sines);
 	}
-
-/*	load {arg xmlSynth;
-		this.loadControllers(xmlSynth);
-
-		rout = Routine({
-			group.server.sync;
-			[0,3,4,5].do{arg i;
-				midiHidTemp = xmlSynth.getAttribute("controls"++i.asString);
-				if(midiHidTemp!=nil,{
-					controls[i].valueAction_(midiHidTemp.interpret);
-				});
-			};
-		});
-
-		AppClock.play(rout);
-		win.bounds_(xmlSynth.getAttribute("bounds").interpret);
-		win.front;
-	}*/
 
 	sinesOff {
 		synths[currentSine].do{arg item; item.set(\gate, rrand(-9.5, -5.5))};

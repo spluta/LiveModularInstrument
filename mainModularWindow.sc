@@ -1,19 +1,25 @@
+MainProcessingWindow : MidiOscObject {
+	var synthList, availableModules, synthLocation, availableBusses, paths, file, text, num;
+	var saveButtons, loadButtons, soundInBussesTemp, stereoSoundInBussesTemp, availableBussesTemp, soundInBoxes, stereoSoundInBoxes, classBoxes, classBoxItems, classScroller, modularClassList, xmlBounds;
+	var setupButtons, currentSetup, objectBusses, <>assignMantaButton, <>mainSwitchSet;
+	var resetOscButton, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout;
 
-MainProcessingWindow {
-	var serverName, <>win, synthList, availableModules, synthLocation, availableBusses, paths, file, text, num, visibleArray;
-	var saveButton, loadButton, xmlSynthBars, xmlBusses, xmlSoundInBusses, xmlInternalBusses, soundInBussesTemp, stereoSoundInBussesTemp, availableBussesTemp, soundInBoxes, stereoSoundInBoxes, classBoxes, classBoxItems, classScroller, modularClassList, xmlBounds;
-	var setupButtons, objectBusses, <>assignMantaButton, <>mainSwitchSet, smallWin;
-	var xmlLocalBusses, xmlLocalBussesSize, extraLocalBusses, temp, resetLemurButton, listeningPort, controls, assignButtons;
-
-	*new {arg serverName;
-		^super.newCopyArgs(serverName).init;
+	*new {arg group;
+		^super.new.group_(group).init;
 	}
 
 	init {
-		win = Window("Live Modular Instrument"+serverName, Rect(0, Window.screenBounds.height*2, 675, 90*5+90));
+
+		setups = ModularServers.setups;
+
+		win = Window("Live Modular Instrument"+group.server, Rect(0, Window.screenBounds.height*2, 675, 90*5+110));
+
+		this.initControlsAndSynths(8);
+
+		dontLoadControls = [0,1,2,3];
 
 		soundInBoxes = List.new;
-		ModularServers.getSoundInBusses(serverName).do{arg item, i;
+		ModularServers.getSoundInBusses(group.server).do{arg item, i;
 			soundInBoxes.add(DragSource(win,Rect(5+(45*i), 0, 45, 16)));
 			soundInBoxes[i].setProperty(\align,\center);
 			soundInBoxes[i].object = [item, "S"+i.asString];
@@ -22,7 +28,7 @@ MainProcessingWindow {
 		};
 
 		stereoSoundInBoxes = List.new;
-		ModularServers.getStereoSoundInBusses(serverName).do{arg item, i;
+		ModularServers.getStereoSoundInBusses(group.server).do{arg item, i;
 			stereoSoundInBoxes.add(DragSource(win,Rect(5+(90*i), 20, 90, 16)));
 			stereoSoundInBoxes[i].setProperty(\align,\center);
 			stereoSoundInBoxes[i].object = [item, "S"++(i*2).asString++((i*2)+1).asString];
@@ -33,7 +39,6 @@ MainProcessingWindow {
 		classBoxes = List.new;
 		classBoxItems = List.new;
 		classBoxItems = ModularClassList.classArray.deepCopy;
-		"classBoxItems".post;classBoxItems.postln;
 
 		min(20, classBoxItems.size).do{arg i;
 			classBoxes.add(DragSource(win,Rect(500, i*25, 150, 20)));
@@ -49,106 +54,215 @@ MainProcessingWindow {
 
 		synthList = List.new;
 
-		saveButton = Button(win, Rect(5, 90*5+50, 120, 16))
-		.states_([["Save", Color.black, Color.green]])
-		.action_{
-			visibleArray = List.newClear(0);
-			Window.allWindows.do{arg item;
+		saveButtons = List.newClear(0);
+		loadButtons = List.newClear(0);
 
-				visibleArray.add(item.visible);
-				item.visible = false
-			};
+		saveButtons.add(Button(win, Rect(5, 90*5+50, 100, 16))
+			.states_([["Save", Color.black, Color.green]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
 
-			Dialog.savePanel({ arg path;
-				ModularServers.save(path);
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
 
-				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-				},{
-					"cancelled".postln;
+				Dialog.savePanel({ arg path;
+					ModularServers.save(path);
+
 					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-			});
-		};
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+				});
+		});
 
-		loadButton = Button(win, Rect(110, 90*5+50, 120, 16))
-		.states_([["Load", Color.green, Color.black]])
-		.action_{
-			visibleArray = List.newClear(0);
-			Window.allWindows.do{arg item;
+		saveButtons.add(Button(win, Rect(5, 90*5+70, 100, 16))
+			.states_([["SaveServer", Color.black, Color.green]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
 
-				visibleArray.add(item.visible);
-				item.visible = false
-			};
-			Dialog.openPanel({ arg path;
-				ModularServers.load(path);
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
 
-				//i need to completely redo how things are saved and loaded
-				Window.allWindows.do{arg item, i; item.visible = true};
-				},{
-					"cancelled".postln;
-					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
-					};
-			});
-		};
+				Dialog.savePanel({ arg path;
+					ModularServers.save(path, group.server);
 
-		//setups = ModularServers.getSetups(serverName);
+					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+				});
+		});
 
-		//this.initControlLists(4);
-		controls = List.new;
-		//assignButtons = List.new;
+		saveButtons.add(Button(win, Rect(5, 90*5+90, 100, 16))
+			.states_([["SaveSetup", Color.black, Color.green]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
+
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
+
+				Dialog.savePanel({ arg path;
+					ModularServers.servers[group.server.asSymbol].saveSetup(path, currentSetup);
+
+					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+				});
+		});
+
+		loadButtons.add(Button(win, Rect(110, 90*5+50, 100, 16))
+			.states_([["Load", Color.green, Color.black]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
+
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
+				Dialog.openPanel({ arg path;
+					ModularServers.load(path);
+
+					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
+					//Window.allWindows.do{arg item, i; item.visible = true};
+
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
+						};
+				});
+		});
+
+		loadButtons.add(Button(win, Rect(110, 90*5+70, 100, 16))
+			.states_([["LoadServer", Color.green, Color.black]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
+
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
+				Dialog.openPanel({ arg path;
+					ModularServers.load(path, group.server.postln);
+
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
+						};
+				});
+		});
+
+		loadButtons.add(Button(win, Rect(110, 90*5+90, 100, 16))
+			.states_([["LoadSetup", Color.green, Color.black]])
+			.action_{
+				visibleArray = List.newClear(0);
+				Window.allWindows.do{arg item;
+
+					visibleArray.add(item.visible);
+					item.visible = false
+				};
+				Dialog.openPanel({ arg path;
+					ModularServers.servers[group.server.asSymbol].loadSetup(path, currentSetup);
+
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
+					},{
+						"cancelled".postln;
+						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+				});
+		});
+
+		currentSetup = 0;
 
 		4.do{arg i;
 			controls.add(Button(win, Rect(220+(60*i), 90*5+50, 60, 16))
 				.states_([["setup"++i, Color.green, Color.black],["setup"++i, Color.black, Color.green]])
 				.action_{arg butt;
 					var temp;
-					controls.do{arg item; item.value = 0;};
+					(0..3).do{arg i2; controls[i2].value = 0};
 					butt.value = 1;
-					ModularServers.changeSetup(serverName, i);
-
-					MidiOscControl.setControllersWCurrentSetup(serverName, i);
+					currentSetup = i;
+					ModularServers.changeSetup(group.server, currentSetup);
+					MidiOscControl.setControllersWCurrentSetup(group.server, oscMsgs[i]);
 				};
 			);
-			//i need to see why I inherited from Module here. I just want to be able to assign this switch
-			//this.addDoubleAssignButton(Rect(220+(60*i), 90*5+70, 60, 16),i,0);
 		};
 
-		assignMantaButton = Button(win, Rect(465, 90*5+50, 16, 16))
-		.states_([["A", Color.black, Color.red],["C", Color.red, Color.black]])
-		.action_{arg butt;
-			if(butt.value==1,{
-				mainSwitchSet = true;
-				MidiOscControl.addMainSwitch(serverName, controls);
-				},{
-					mainSwitchSet = false;
-					4.do{|i| Manta.removeGlobal(\noteOn, 49+i)};
-					MidiOscControl.removeMainSwitch(serverName);
-			})
+		4.do{arg i;
+			this.addAssignButton(i, \onOff, Rect(220+(60*i), 90*5+70, 60, 16))
 		};
+
+		4.do{arg i;
+			controls.add(Button()
+				.states_([["setup"++i, Color.green, Color.black],["setup"++i, Color.black, Color.green]])
+				.action_{arg butt;
+					var temp;
+					controls[i].valueAction_(1);
+				};
+			);
+		};
+
+		(4..7).do{arg i;
+			this.addAssignButton(i, \onOff, Rect(220+(60*(i-4)), 90*5+90, 60, 16))
+		};
+
 
 		mainSwitchSet = false;
 
-		resetLemurButton = Button(win, Rect(485, 90*5+50, 16, 16))
-		.states_([["R"]])
+		//think about how to do this that is good for all OSC controllers
+		resetOscButton = Button(win, Rect(460, 90*5+50, 90, 16))
+		.states_([["ResetOSC"]])
 		.action_{
 			LiveModularInstrument.controllers.do{arg item;
 				item.resetOSCAddr;
 			}
 		};
 
-		listeningPort = StaticText(win, Rect(505, 90*5+50, 90, 16));
+		listeningPort = StaticText(win, Rect(550, 90*5+50, 90, 16));
 		listeningPort.string = NetAddr.langPort.asString;
+
+		cpuUsage0 = StaticText(win, Rect(460, 90*5+70, 90, 16));
+
+		cpuUsage1 = StaticText(win, Rect(550, 90*5+70, 90, 16));
+
+		cpuUsageRout = Routine({inf.do{
+			cpuUsage0.string = group.server.avgCPU.round(0.01).asString;
+			cpuUsage1.string = group.server.peakCPU.round(0.01).asString;
+			1.wait;
+		}});
+
+		AppClock.play(cpuUsageRout);
 
 		win.front;
 
 		win.onClose = {
 			//kill all the stuff
 			synthList.do{arg item; item.killMe};
+			cpuUsageRout.stop;
 			thisProcess.recompile;
 		}
 	}
 
+	hide {
+		win.visible = false;
+	}
+
+	show {
+		win.visible = true;
+	}
+
 	changeSetup {arg num;
 		synthList.do{arg item; item.changeSetup(num)};
+	}
+
+	hitButton {arg num;
+		controls[num].valueAction_(1);
 	}
 
 	setName {arg name;
@@ -164,8 +278,8 @@ LiveModularInstrument {
 	classvar numServers, setups, windows;
 	classvar readyToRollCounter, addingServer=false;
 
-	*new {arg numServers=1, inBus=0, outBus=0, hardwareBufferSize=64, whichClassList;
-		^super.newCopyArgs(numServers, inBus, outBus, hardwareBufferSize, whichClassList).init;
+	*new {
+		^super.new.init;
 	}
 
 	*boot {arg numServersIn=1, inBusIn=0, outBusIn=0, hardwareBufferSizeIn=64, whichClassListIn, controllersIn;
@@ -179,12 +293,8 @@ LiveModularInstrument {
 
 		//set up the control devices and control GUI
 		if(controllers == nil, {
-			controllers = [Manta_Mod, Lemur_Mod, MIDI_Mod];
+			controllers = [Manta_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start];
 		});
-
-		controllers.do{arg item;
-			item.new;
-		};
 
 		if(whichClassList == nil, {whichClassList = 'normal'});
 		ModularClassList.new(whichClassList);
@@ -212,7 +322,7 @@ LiveModularInstrument {
 		if(addingServer,{
 			"adding new server".postln;
 
-			ModularServers.modularInputArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]); //this is stupid
+			ModularServers.modularInputsArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]); //this is stupid
 
 			numServers = numServers+1;
 			addingServer = false;
@@ -223,6 +333,7 @@ LiveModularInstrument {
 					Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
 
 					ModularServers.addInputsArray(inBus);
+					ModularServers.updateServerSwitcher;
 
 					MidiOscControl.createActionDictionary;
 				});
@@ -232,10 +343,7 @@ LiveModularInstrument {
 
 	*killMe {
 		MainMixer.killMe;
-		Manta.clearDicts;
-		MIDIResponder.removeAll;
 		OSCFunc.allFuncProxies.do{arg item; item.remove};
-		Lemur.killMe;
 	}
 }
 

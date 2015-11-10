@@ -11,9 +11,9 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 				in0 = In.ar(inBus0, 8);
 				in1 = In.ar(inBus1, 8);
 
-				out = in0*in1;
+				out = in0*in1*vol;
 
-				out = LPF.ar(out, lpFreq)*20*env*vol*pauseEnv;
+				out = LPF.ar(out, lpFreq)*20*env*pauseEnv;
 				Out.ar(outBus, out, 0);
 			}).writeDefFile;
 		}
@@ -27,18 +27,16 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 		mixerGroup = Group.tail(group);
 		synthGroup = Group.tail(group);
 
-		synths = List.new;
-
 		localBusses = List.new;
 		2.do{localBusses.add(Bus.audio(group.server, 8))};
 		localBusses.postln;
-
-
 		mixerStrips = List.new;
-		2.do{arg i; mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], win, Point(5+(i*55), 0)))};
+		2.do{arg i;
+			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));
+			mixerStrips[i].init2(win, Point(5+(i*55), 0));
+		};
 
-		synths = List.newClear(3);
-		synths.put(0, Synth("ringModStereo", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus.index, \vol, 1], synthGroup));
+		synths.add(Synth("ringModStereo", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus.index, \vol, 1], synthGroup));
 
 		controls.add(EZSlider.new(win,Rect(10, 70, 200, 20), "vol", ControlSpec(0,2,'amp'),
 			{|v|
@@ -51,5 +49,11 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 				synths[0].set(\lpFreq, v.value);
 			}, 2000, true, layout:\horz));
 		this.addAssignButton(1,\continuous, Rect(10, 130, 200, 20));
+	}
+
+	killMeSpecial {
+		localBusses.do{arg item; item.free};
+		mixerGroup.free;
+		synthGroup.free;
 	}
 }

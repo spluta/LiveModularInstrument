@@ -13,7 +13,7 @@ MincekSine_Mod : Module_Mod {
 				pauseEnv = EnvGen.kr(Env.asr(0,1,6), pauseGate, doneAction:1);
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 
-				sine = SinOsc.ar(VarLag.kr(freq, lagTime), 0, vol*Lag.kr(lilVol, 0.1)*0.1);
+				sine = SinOsc.ar(VarLag.kr(freq, lagTime), 0, Lag.kr(vol, 0.01)*Lag.kr(lilVol, 0.1)*0.1);
 
 				Out.ar(outBus, Pan2.ar(sine*AmpComp.kr(freq)*env*pauseEnv, Rand(-1, 1)));
 			}).writeDefFile;
@@ -26,6 +26,8 @@ MincekSine_Mod : Module_Mod {
 		this.makeMixerToSynthBus;
 
 		this.initControlsAndSynths(23);
+
+		dontLoadControls = (1..22);
 
 		freqList = [[71,69,60,60], [75.7,64,52.3,60], [87.3,50.7,60,60], [76.3,61.7,60,60], [83,52,60,60], [93.3,45,60,60], [70.7,69.3,60,60], [86,75,49,38], [79,68,54,43], [84,71,49,36], [62,61,59,58]];
 
@@ -94,30 +96,7 @@ HLayout(assignButtons[1].layout,assignButtons[2].layout,assignButtons[3].layout,
 
 	}
 
-	load {arg xmlSynth;
-		var xmlBounds;
-
-		this.loadControllers(xmlSynth);
-
-		//this.loadSettings(xmlSynth);
-
-		this.loadExtra(xmlSynth);
-
-
-		xmlBounds = xmlSynth.getAttribute("bounds");
-		{if(xmlBounds!=nil,{
-			xmlBounds = xmlBounds.interpret;
-			xmlBounds.postln;
-			xmlBounds.isString.postln;
-			win.bounds_(xmlBounds);
-			win.front;
-			});
-		}.defer;
-
-	}
-
-
-	killMe {
+	killMeSpecial {
 		sineWaves.do{arg item; item.set(\gate, 0)};
 	}
 

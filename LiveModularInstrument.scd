@@ -1,8 +1,106 @@
+LiveModularInstrument.boot(2, 0, 0, 64, 'normal', [Manta_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start]);
+
+
+
+
+LiveModularInstrument.boot(1, 0, 0, 64, 'normal', [Manta_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start]);
+
+
+
+gf drums thres slider
+
+
+Alice Suite
+
+fanfares - duo with ron
+   duo with peter on overtones
+
+A Drone
+
+bass solo to duo
+
+elemental
+    do what I want
+    process jim
+
+12 earthly branches
+    free agent - process jim in the middle?
+    scary e minor
+    process peter at the end in the swirlies
+
+space piece
+
+schizmogenesis
+
+
+
+Space Piece
+
+great expectations
+    process peter for tune
+    bowed cymbols for seconds half
+tresilo
+    process jim
+    melody with peter
+    duo with ron
+
+
+MixerSolo_Mod
+
+ringmod leaking to televisions - why is it 8 chan?
+
+playbuf timer
+fix setup with cutter/ring mod
+volume on cutter not working on frozen sample
+eric's playback through both setups
+
+
 LiveModularInstrument.boot(1, 0, 0, 64);
+
+
+LiveModularInstrument.boot(1, 0, 0, 64, 'atdV');
+LiveModularInstrument.boot(1, 0, 0, 64, 'wubbels');
+
+marty eurlick
+jason robinson
+
+
+LiveModularInstrument.boot(2, 0, 0, 64, 'normal', [Manta_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start]);
+
+
+SignalMixer
+
+
+LiveModularInstrument.boot(1, 0, 0, 64, 'feedback');
+
+
+Lemur_Mod.resetOSCAddr("10.0.0.3")
+
+Manta_Mod.sendRequest
+
+OSCFunc
+m
+
+TFreeze rate
+something is wrong with the hiding and viewing mechanism on save/load
+
+
+try to make something that works!
+
+Hide all current synths on server
+Stop all midiOsc from getting to the objects
+CPU usage meter
+
+
+Convolution
+FeedbackControl
+
+MidiOscControl.actions
 
 
 EnvTrigger
 ShiftLayer
+
 
 
 Done with EQ
@@ -20,12 +118,18 @@ Compander - broken?
 
 
 LiveModularInstrument.addServer;
+//something is broken here
+
 
 writeArchive
 
 MidiOscControl.actions[\lmi0].keys.do{arg item; item.postln}
 
+MidiOscControl.actions[\lmi1]['/manta/value/1']
+
 ModularServers.servers[\lmi0].server.queryAllNodes
+
+ModularServers.servers[\lmi0].server.stereoInBusIndexes
 
 ModularServers.servers[\lmi1].server.queryAllNodes
 
@@ -65,11 +169,16 @@ LiveModularInstrument(s, 0, 0, 128, 'lucerneVideo');
 
 LiveModularInstrument(s, 0, 0, 64, 'feedback');
 
+ModularServers.servers[\lmi0].server.recSampleFormat_("int24");
+ModularServers.servers[\lmi0].server.prepareForRecord;
+ModularServers.servers[\lmi0].server.record;
+ModularServers.servers[\lmi0].server.stopRecording;
+ModularServers.servers[\lmi0].server.recSampleFormat
+
 s.recSampleFormat_("int24");
 s.prepareForRecord;
 s.record;
 s.stopRecording;
-s.recSampleFormat
 
 s.makeGui
 

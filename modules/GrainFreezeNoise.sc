@@ -256,6 +256,8 @@ GrainFreezeNoise_Mod : Module_Mod {
 		this.makeWindow("GrainFreezeNoise", Rect(500, 400, 60*8, 55));
 		this.initControlsAndSynths(8);
 
+		dontLoadControls = Array.series(7);
+
 		this.makeMixerToSynthBus;
 
 		volBus = Bus.control(group.server);
@@ -391,6 +393,8 @@ GFNoiseMini_Mod : Module_Mod {
 	init {
 		this.makeWindow("GFNoiseMini", Rect(500, 400, 300, 100));
 		this.initControlsAndSynths(4);
+
+		dontLoadControls = Array.series(3);
 
 		this.makeMixerToSynthBus;
 

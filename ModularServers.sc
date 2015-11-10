@@ -1,90 +1,5 @@
-SetupSwitcherObject {var modularObjects;
-	var currentSetup, setupMap, setupsTemp, objectsDict;
-
-	*new {arg modularObjects;
-		^super.newCopyArgs(modularObjects).init;
-	}
-
-	init {
-		setupsTemp = ModularServers.setups.deepCopy;
-
-		//at the beginning the setupMap points to the correct object
-		setupMap = Dictionary.new();
-
-		//(setup0->setup0, setup1->setup1...etc)
-		setupsTemp.do{arg item, i; setupMap.add(item.asSymbol->item.asSymbol)};
-
-
-		//start on setup0
-		currentSetup = 'setup0';
-
-
-		objectsDict = Dictionary.new;
-		modularObjects.do{arg item, i;
-			//(setup0->ModularObjectPanel0, setup1->ModularObjectPanel1...etc)
-			objectsDict.add(setupsTemp[i].asSymbol->item);
-		};
-		objectsDict.postln;
-	}
-
-	changeSetupMap {arg setupPointsTo, setupIs;
-		[setupIs, setupPointsTo].postln;
-		setupMap.put(setupIs.asSymbol, setupPointsTo.asSymbol);
-		setupMap.postln;
-	}
-
-	changeSetup {arg changeToSetup;
-		//changeToSetup.postln;
-		//objectsDict.postln;
-		if(currentSetup!=setupMap[changeToSetup.asSymbol], {
-			//pause the current setup and resume the next
-			objectsDict[currentSetup.asSymbol].pause;
-			currentSetup = setupMap[changeToSetup.asSymbol].asSymbol;
-			currentSetup.postln;
-			objectsDict[currentSetup.asSymbol].resume;
-		});
-	}
-
-}
-
-SetupSwitchers {
-	var <>modularObjects, currentLayer, nextLayer, xmlModules, color, setupTemp, setupsList, <>currentSetup;
-
-	*new {arg modularObjects;
-		^super.newCopyArgs(modularObjects).init;
-	}
-
-	init {
-
-		//creates a nXn of SetupSwitcherObjects that control which object brought to the front when the setup is changed
-		setupsList = List.fill(modularObjects.size*modularObjects[0].size, {arg i;
-			i.postln;
-			SetupSwitcherObject.new(modularObjects[i%5][(i/5).floor]);
-		});
-
-		setupsList = setupsList.clump(modularObjects.size);
-		currentSetup = 'setup0';
-	}
-
-	changeSetupMap {arg location, setup;
-		[location, setup].postln;
-		setupsList[location[0]][location[1]].changeSetupMap('setup'++location[2].asSymbol, setup);
-	}
-
-	changeSetup {arg changeToSetup;
-
-		currentSetup = changeToSetup.asSymbol;
-
-		setupsList.flatten.do{arg item, i;
-			item.postln;
-			item.changeSetup(changeToSetup);
-		};
-	}
-
-}
-
 ModularServerObject {
-	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, synthGroup, <>synthGroups, <>inBusses, <>inBusIndexes, <>stereoInBusses, <>stereoInBusIndexes, volumeInRack, setupSwitchers, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap;
+	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, synthGroup, <>synthGroups, <>inBusses, <>inBusIndexes, <>stereoInBusses, <>stereoInBusIndexes, volumeInRack, setupSwitcher, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap;
 
 	*new {arg server;
 		^super.new.server_(server).init;
@@ -105,6 +20,7 @@ ModularServerObject {
 				inBusses.add(Bus.audio(server,1));
 				inBusIndexes.add(inBusses[i].index);
 			};
+
 			stereoInBusses = List.new;
 			stereoInBusIndexes = List.new;
 			4.do{arg i;  //half of the number of input channels
@@ -112,22 +28,12 @@ ModularServerObject {
 				stereoInBusIndexes.add(stereoInBusses[i].index);
 			};
 
-
 			//create objectBusses and groups in the shape of the dimensions array
 
 			objectBusses = List.new;
 
 			dimensions = [5,5,4]; //for now this is hard-coded
 
-/*			dimensions[0].do{arg i;
-				objectBusses.add(List.new);
-				dimensions[1].do{arg i2;
-					objectBusses[i].add(List.new);
-					dimensions[2].do{arg i3;
-						objectBusses[i][i2].add(Bus.audio(server,8));
-					}
-				}
-			};*/
 
 			objectBusses = List.fill((dimensions[0]*dimensions[1]*dimensions[2]), {Bus.audio(server,8)});
 
@@ -155,10 +61,9 @@ ModularServerObject {
 				}
 			};
 
-			setupSwitchers = SetupSwitchers(modularObjects);
+			setupSwitcher = SetupSwitcher(modularObjects);
 
-
-			mainWindow = MainProcessingWindow.new(server.name);
+			mainWindow = MainProcessingWindow.new(mainGroup);
 
 			this.addPanelsToWindow;
 
@@ -168,6 +73,70 @@ ModularServerObject {
 		})
 	}
 
+	saveSetup {arg path, setupNum;
+		var saveSetup, temp;
+
+		saveSetup = List.newClear(0);
+
+		saveSetup.add(inBusIndexes);
+		saveSetup.add(stereoInBusIndexes);
+
+		temp = List.newClear(0);
+
+		//saves
+
+		objectBusses.flatten.flatten.do{arg item, i;
+			if(i%setupNum==0, {
+				temp.add(item.index); //add busses
+			})
+		};
+		saveSetup.add(temp);
+
+		temp = List.newClear(0);
+
+		modularObjects.flatten.flatten.do{arg mop, i;
+			if(i%setupNum==0, {
+				temp.add(mop.save);
+			})
+		};
+
+		saveSetup.add(temp);
+
+		saveSetup = saveSetup.asCompileString;
+		saveSetup.writeArchive(path);
+	}
+
+	loadSetup {arg path, setupNum;
+		var loadArray, flatMOPs, mopData;
+
+		loadArray = Object.readArchive(path);
+		loadArray = loadArray.interpret;
+
+		this.makeBusMap([loadArray[0], loadArray[1], loadArray[2]]);
+
+		flatMOPs = modularObjects.flatten.flatten;
+		mopData = loadArray[3];
+		mopData.do{arg item, i; if((item.size>0)&&((i%setupNum)==0),
+			{flatMOPs[i].load(item)})
+		};
+	}
+
+	makeBusMap {arg loadArray;
+		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus;
+
+		inBusTemp = loadArray[0];
+		stereoInBusTemp = loadArray[1];
+		internalBusTemp = loadArray[2];
+
+		busMap = List.fill(3, {arg i; Dictionary.new});
+
+		inBusTemp.do{arg item, i; busMap[0].add(item.asSymbol -> [inBusIndexes[i], i])};
+		stereoInBusTemp.do{arg item, i; busMap[1].add(item.asSymbol -> [stereoInBusIndexes[i], i])};
+		flatObjectBus = objectBusses.flatten.flatten;
+		internalBusTemp.do{arg item, i; busMap[2].add(item.asSymbol -> flatObjectBus[i].index)};
+	}
+
+
 	save {
 		var saveServer, temp;
 
@@ -175,9 +144,7 @@ ModularServerObject {
 
 		saveServer = List.newClear(0);
 
-		saveServer.add(mainWindow.mainSwitchSet);
-
-		saveServer.add(mainWindow.win.bounds);
+		saveServer.add(mainWindow.save);
 
 		saveServer.add(inBusIndexes);
 		saveServer.add(stereoInBusIndexes);
@@ -195,36 +162,29 @@ ModularServerObject {
 
 		saveServer.add(temp);
 		saveServer.add(mainMixer.save);
-		"server ".post; saveServer.postln;
 		^saveServer;
 	}
 
-	load {arg loadArray, inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
 
-		loadArray.postln;
+	load {arg loadArray;
+		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
 
-		if(loadArray[0], {mainWindow.assignMantaButton.valueAction_(1)});
-		mainWindow.win.bounds_(loadArray[1]);
+		mainWindow.load(loadArray[0]);
 
-		inBusTemp = loadArray[2];
-		stereoInBusTemp = loadArray[3];
-		internalBusTemp = loadArray[4];
-
-		busMap = List.fill(3, {arg i; Dictionary.new});
-
-		inBusTemp.do{arg item, i; busMap[0].add(item.asSymbol -> [inBusIndexes[i], i])};
-		stereoInBusTemp.do{arg item, i; busMap[1].add(item.asSymbol -> [stereoInBusIndexes[i], i])};
-		flatObjectBus = objectBusses.flatten.flatten;
-		internalBusTemp.do{arg item, i; busMap[2].add(item.asSymbol -> flatObjectBus[i].index)};
-
-		busMap.postln;
+		this.makeBusMap([loadArray[1], loadArray[2], loadArray[3]]);
 
 		flatMOPs = modularObjects.flatten.flatten;
-		mopData = loadArray[5];
+		mopData = loadArray[4];
 		mopData.do{arg item, i; if(item.size>0, {flatMOPs[i].load(item)})};
 
-		mainMixer.load(loadArray[6]);
+		mainMixer.load(loadArray[5]);
+
+		setupSwitcher.hideAll;
+		//setupSwitcher.changeSetup(\setup0);
+		mainWindow.hitButton(0);
+		setupSwitcher.showCurrentSetup;
 	}
+
 
 	confirmValidBus {arg bus;
 		var valid = false;
@@ -236,12 +196,11 @@ ModularServerObject {
 	}
 
 	getCurrentSetup {
-		^setupSwitchers.currentSetup;
+		^setupSwitcher.currentSetup;
 	}
 
 	changeSetup {|setup|
-		"changeSetup: ".post; [server, setup].postln;
-		setupSwitchers.changeSetup(setup);
+		setupSwitcher.changeSetup(setup);
 		mainMixer.changeSetup(setup);
 	}
 
@@ -252,7 +211,22 @@ ModularServerObject {
 	}
 
 	setModularPanelToSetup{arg location, setupName;
-		setupSwitchers.changeSetupMap(location, setupName);
+		setupSwitcher.changeSetupMap(location, setupName);
+	}
+
+	showAndPlay {arg bool;
+		if(bool,{
+			mainWindow.show;
+			mainMixer.unmute;
+			mainMixer.unhide;
+			setupSwitcher.showCurrentSetup;
+
+			},{
+				mainWindow.hide;
+				mainMixer.hide;
+				mainMixer.mute;
+				setupSwitcher.hideCurrentSetup;
+		});
 	}
 
 	name {
@@ -267,11 +241,10 @@ ModularServerObject {
 
 ModularServers {
 	classvar <>numServers, <>inBus, <>outBus, <>setupColors;
-	classvar <>servers, <>setups, <>modularInputsArray;
+	classvar <>servers, <>setups, <>modularInputsArray, <>serverSwitcher;
 
 	*boot {arg numServersIn, inBusIn, outBusIn;
 		numServers = numServersIn; inBus = inBusIn; outBus = outBusIn;
-		//[numServers, inBus, outBus].postln;
 		servers = Dictionary.new(0);
 		setups = List.fill(4, {arg i; ('setup'++i.asSymbol)});
 		setupColors = [Color.blue.multiply(0.5).alpha_(0.25), Color.green.multiply(0.5).alpha_(0.25), Color.red.multiply(0.5).alpha_(0.25), Color.magenta.multiply(0.5).alpha_(0.25)];
@@ -279,40 +252,60 @@ ModularServers {
 			("adding a server: "++i.asString).postln;
 			servers.add(("lmi"++i).asSymbol-> ModularServerObject.new(Server.new("lmi"++i.asString, NetAddr("localhost", 57111+i), Server.local.options)));
 		};
+
 	}
 
-	*save {arg path;
+	*save {arg path, serverName;
 		var saveServers, temp;
 
 		saveServers = List.newClear(0);
 
 		saveServers.add(modularInputsArray.save); //save the inputs array
 
+		if(numServers>1,{
+			"saveSwitcher".postln;
+			saveServers.add(serverSwitcher.save);
+			},{
+				saveServers.add(nil)
+		});
+
 		temp = List.newClear(0);
-		numServers.do{arg i; temp.add(servers[("lmi"++i).asSymbol].save)}; //save the servers
+
+		if(serverName==nil,{
+			numServers.do{arg i;
+				temp.add(servers[("lmi"++i).asSymbol].save)
+			}; //save the servers
+			},{
+				temp.add(servers[serverName.asSymbol].save)
+		});
+
 		saveServers.add(temp);
 
-		saveServers = saveServers.asCompileString;
+		//saveServers = saveServers.asCompileString;
 		saveServers.writeArchive(path); //write the archive
 	}
 
-	*load {arg path;
-		var loadArray, numServersInFile;
+	*load {arg path, serverName;
+		var loadArray, numServersInFile, file;
 
 		loadArray = Object.readArchive(path);
 
-		loadArray = loadArray.interpret;
-
-		loadArray.postln;
-
 		modularInputsArray.load(loadArray[0]);
+		numServersInFile = loadArray[2].size;
 
-		numServersInFile = loadArray[0].size-1;
+		if(serverName==nil,{
+			min(numServersInFile, numServers).do{arg i;
+				servers[("lmi"++i).asSymbol].load(loadArray[2][i])
+			}
+			}, {
+				servers[serverName.asSymbol].load(loadArray[2][0])
+		});
 
-		//right now it is limited to the number of servers open or the number in the file. basically, for this to work, they have to be the same. i can change this.
-		min(numServersInFile, numServers).do{arg i;
-			servers[("lmi"++i).asSymbol].load(loadArray[1][i])
-		}
+		//load the serverSwitcher last so that it can update the server windows
+		if(loadArray[1]!=nil,{
+			serverSwitcher.load(loadArray[1]);
+		});
+
 	}
 
 	*addInputsArray {arg inBus;
@@ -320,14 +313,22 @@ ModularServers {
 		modularInputsArray.init2(inBus);
 	}
 
+	*updateServerSwitcher {
+		if(serverSwitcher!=nil,{
+			serverSwitcher.reset;
+			},{
+				serverSwitcher = ServerSwitcher.new();
+		});
+	}
+
 	*addServer{
 		("adding a server: "++numServers.asString).postln;
 		servers.add(("lmi"++numServers.asString).asSymbol-> ModularServerObject.new(Server.new(("lmi"++numServers.asString).asSymbol, NetAddr("localhost", 57111+numServers), Server.local.options)));
 		numServers = numServers+1;
+		this.updateServerSwitcher;
 	}
 
 	*changeSetup {|serverName, setupNum|
-		[serverName, setupNum].postln;
 		servers[serverName.asSymbol].changeSetup(setups[setupNum])
 	}
 
