@@ -1,7 +1,5 @@
 # Live Modular Instrument
 
----
-
 Table Of Contents
 ==================
 
