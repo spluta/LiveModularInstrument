@@ -31,7 +31,7 @@ Table Of Contents
 
 ---
 
-**Made With Love**
+**Made With Love** <br/>
 *Sam Pluta*
 
 *Ever tried, every failed, no matter. Try Again, fail again, fail better.* - **Samuel Beckett**
