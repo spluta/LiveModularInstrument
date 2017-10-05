@@ -1,5 +1,15 @@
 # Live Modular Instrument
 
+---
+
+Table Of Contents
+==================
+
+* [Live Modular Instrument Path](*live-modular-instrument-path)
+* [Starting the Program](*starting-the-program)
+
+---
+
 **To run the software, you will need SuperCollider version 3.6.6 or later. The entire program is a library, so it requires the following steps to install:**<br />
 
 ---
