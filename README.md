@@ -16,7 +16,7 @@ Table Of Contents
 
 **To Install Live Modular Instrument you need to:**
 
-- *place the entire "LiveModularInstrument" directory in "/Users/user/Library/Application Support/SuperCollider/Extensions/"*
+- *place the entire "Live Modular Instrument" directory in "/Users/user/Library/Application Support/SuperCollider/Extensions/"*
 - *re-compile the SC Library or restart SuperCollider*
 
 ---
