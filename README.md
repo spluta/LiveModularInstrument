@@ -34,6 +34,8 @@ Table Of Contents
 **Made With Love** <br/>
 *Sam Pluta*
 
+---
+
 *Ever tried, every failed, no matter. Try Again, fail again, fail better.* - **Samuel Beckett** <br/>
 *An equation for me has no meaning unless it expresses a thought of God* - **Srivinasa Ramanujan**
 
