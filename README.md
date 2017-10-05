@@ -12,7 +12,7 @@ Table Of Contents
 
 ---
 
-## "LiveModularInstrument" path:
+## "Live Modular Instrument" path:
 
 **To Install Live Modular Instrument you need to:**
 
