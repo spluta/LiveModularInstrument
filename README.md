@@ -38,6 +38,6 @@ Table Of Contents
 
 ---
 
-<img src="https://img.discogs.com/BTiw8LyIiUmJ6j_r1qQgeyyjico=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/A-1607393-1352382399-7637.jpeg.jpg" width="300"></img>
-<img src="https://i.github-camo.com/59d8cdc53f9c0ed943b81eae7b715c9651fd8326/68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f6372756369616c66656c69782f61746f6d2d7375706572636f6c6c696465722f6d61737465722f646f63732f696d616765732f73632d61746f6d2d666f6c642d6f75742e676966" width="300"></img>
-<img src="https://i.pinimg.com/736x/23/9d/07/239d07d2c363df177c8f28c5eb3017b6--mathematics-births.jpg" width="350"></img>
+<img src="https://img.discogs.com/BTiw8LyIiUmJ6j_r1qQgeyyjico=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/A-1607393-1352382399-7637.jpeg.jpg" width="150"></img>
+<img src="https://i.github-camo.com/59d8cdc53f9c0ed943b81eae7b715c9651fd8326/68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f6372756369616c66656c69782f61746f6d2d7375706572636f6c6c696465722f6d61737465722f646f63732f696d616765732f73632d61746f6d2d666f6c642d6f75742e676966" width="150"></img>
+<img src="https://i.pinimg.com/736x/23/9d/07/239d07d2c363df177c8f28c5eb3017b6--mathematics-births.jpg" width="200"></img>
