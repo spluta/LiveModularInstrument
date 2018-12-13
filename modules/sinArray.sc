@@ -33,7 +33,6 @@ SinArray {
 	}
 
 	turnOn {
-		"turn it on!".postln;
 		5.do{|i|
 			synths[i].set(\freq, sinFreqs[i], \vol, sinVols[i], \pan, pans[i], \localGate, 1);
 			synths[i].run(true);
@@ -77,7 +76,6 @@ SinArray_Mod : Module_Mod {
 		controls.add(Button.new(win,Rect(0, 0, 60, 20))
 			.states_([["allOff", Color.red, Color.black ]])
 			.action_{|v|
-				"allOff".postln;
 					sinArray[currentOn].turnOff;
 					controls[currentOn+1].value_(0);
 			});

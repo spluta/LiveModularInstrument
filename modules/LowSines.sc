@@ -20,7 +20,6 @@ LowSines_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine init".postln;
 		this.makeWindow("LowSines", Rect(500,100,210,250));
 
 		synths = List.newClear(3);
@@ -30,8 +29,6 @@ LowSines_Mod : Module_Mod {
 		localRout = Routine.new({{
 			freqs = [rrand(30,50),rrand(120,150)];
 			if(0.5.coin,{freqs = freqs.rotate(1)});
-
-			freqs.postln;
 
 			dur = rrand(5.0, 8.0);
 

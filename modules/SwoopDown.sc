@@ -16,8 +16,8 @@ SwoopDown_Mod : Module_Mod {
 				out0 = Latch.ar(out0[0], Impulse.ar(XLine.kr(44100, bottom2, time)));
 				out1 = Latch.ar(out1[1], Impulse.ar(XLine.kr(44100, bottom3,time)));
 
-				ampMod0 = 1-Trig1.ar(Dust.kr(XLine.kr(5,25,time)), 0.1);
-				ampMod1 = 1-Trig1.ar(Dust.kr(XLine.kr(5,30,time)), 0.1);
+				ampMod0 = 1-Lag.ar(Trig1.ar(Dust.kr(XLine.kr(5,25,time)), 0.1), 0.01);
+				ampMod1 = 1-Lag.ar(Trig1.ar(Dust.kr(XLine.kr(5,30,time)), 0.1), 0.01);
 
 				env = EnvGen.kr(Env([1,1,0,0],[2*time/3, time/3, time/2], 'sine'), doneAction:2);
 
@@ -173,7 +173,6 @@ SwoopDown_Mod : Module_Mod {
 		);
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		win.drawFunc = {win.bounds.postln};
 		win.front;
 
 	}

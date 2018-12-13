@@ -32,7 +32,6 @@ AmpFollower_Mod : SignalSwitcher_Mod {
 		localBusses = List.new;
 		localBusses.add(Bus.audio(group.server, 8));
 		localBusses.add(Bus.audio(group.server, 1));
-		localBusses.postln;
 
 		mixerStrips = List.new;
 		2.do{arg i;
@@ -95,7 +94,6 @@ AmpInterrupter_Mod : SignalSwitcher_Mod {
 		localBusses = List.new;
 		localBusses.add(Bus.audio(group.server, 8));
 		localBusses.add(Bus.audio(group.server, 1));
-		localBusses.postln;
 
 		mixerStrips = List.new;
 		2.do{arg i; mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], win, Point(5+(i*55), 0), nil))};

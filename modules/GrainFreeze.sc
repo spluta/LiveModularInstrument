@@ -217,7 +217,7 @@ GrainFreezeDrums_Mod : Module_Mod {
 		synths.put(0, Synth("gfdRecord_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \bufnum, buffer.bufnum], recordGroup));
 		synths.put(1, Synth("gfdPlay2_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer, \volBus, volBus.index], playGroup));
 
-		controls.add(QtEZSlider.new("vol", ControlSpec(0.0,2.0,\amp),
+		controls.add(QtEZSlider.new("vol", ControlSpec(0.0,4.0,\amp),
 			{|v|
 				volBus.set(v.value);
 		}, 1.0, true, \horz));
@@ -343,7 +343,6 @@ GrainFreezeDrums_Mod : Module_Mod {
 				trigButton, controls[9])
 			)
 		);
-		win.drawFunc_{arg win; win.bounds.postln;};
 }
 
 killMeSpecial {

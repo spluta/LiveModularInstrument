@@ -74,7 +74,6 @@ AtdV_Mod : Module_Mod {
 
 //		4.do{|i|
 			noteOn = MIDIFunc.noteOn({ |value, num|
-					//"noteOn".postln;[num,value].postln;
 					switch(num,
 						62, {
 							synths.put(0, Synth("AtdVPlayer_mod", [\bufnum, buffers[0].bufnum, \outBus, outBus, \volBus, volBusses[0]], synthGroup));
@@ -100,7 +99,6 @@ AtdV_Mod : Module_Mod {
 			);
 
 			noteOff = MIDIFunc.noteOff({ |value, num|
-					//"noteOff".postln;[num,value].postln;
 					switch(num,
 						62, {
 							synths[0].set(\gate, 0)

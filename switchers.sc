@@ -105,7 +105,7 @@ SetupSwitcher {
 }
 
 ServerSwitcher : MidiOscObject {
-	var numServers, numButtons, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers;
+	var numServers, numButtons, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, hideServerButtons;
 
 	*new {
 		^super.new.init;
@@ -151,7 +151,23 @@ ServerSwitcher : MidiOscObject {
 				grid.add(assignGrid[i]);
 			};
 
-			win.layout = VLayout(*grid.collect { |row| HLayout(*row) });
+			hideServerButtons = List.newClear(0);
+			numServers.do{arg i;
+				hideServerButtons.add(Button()
+					.states_([["Show",Color.black, Color.blue], ["Hide", Color.black, Color.red]])
+					.action_({arg butt;
+						if(butt.value==1,{
+							ModularServers.servers[("lmi"++i.asString).asSymbol].makeVisible(false);
+						},{
+							ModularServers.servers[("lmi"++i.asString).asSymbol].makeVisible(true);
+						})
+				}))
+			};
+
+			win.layout = VLayout(
+				VLayout(*grid.collect { |row| HLayout(*row) }),
+				HLayout(*hideServerButtons)
+			);
 
 			win.front;
 		});

@@ -129,59 +129,57 @@ OverLapSamples_Mod : Module_Mod {
 				if(v.value ==1,{
 					controls[4].zAction = {|val|
 						synths[0].set(\onOff, val.value)
-				}},{
-					"clear zActions".postln;
+					};
+					synths[0].set(\onOff, 0)
+				},{
 					synths[0].set(\onOff, 1);
 					controls[4].zAction = {};
 				}
-				);
-			};
-		);
+			);
+		};
+	);
 
-		win.layout_(
-			HLayout(
-				VLayout(
-					HLayout(controls[0].layout,assignButtons[0].layout),
-					HLayout(controls[1].layout,assignButtons[1].layout),
-					HLayout(controls[2].layout,assignButtons[2].layout),
-					HLayout(controls[3].layout,assignButtons[3].layout),
-					HLayout(loadFileButton, fileText, controls[5])
-				),
-				VLayout(controls[4].layout, assignButtons[4].layout, controls[6]), controls[5].layout
-			)
-		);
-	}
+	win.layout_(
+		HLayout(
+			VLayout(
+				HLayout(controls[0].layout,assignButtons[0].layout),
+				HLayout(controls[1].layout,assignButtons[1].layout),
+				HLayout(controls[2].layout,assignButtons[2].layout),
+				HLayout(controls[3].layout,assignButtons[3].layout),
+				HLayout(loadFileButton, fileText, controls[6])
+			),
+			VLayout(controls[4].layout, assignButtons[4].layout), controls[5].layout
+		)
+	);
+}
 
-	loadFile {
-		if(savePath.size>0,{
-			fileText.string_(savePath.split.pop);
-			synths[0].set(\whichOut, 0);
-			buffer0 = Buffer.readChannel(group.server, savePath, 0, -1, [0],
+loadFile {
+	if(savePath.size>0,{
+		fileText.string_(savePath.split.pop);
+		synths[0].set(\whichOut, 0);
+		buffer0 = Buffer.readChannel(group.server, savePath, 0, -1, [0],
+			{arg buf;
+				synths[0].set(\bufnum0, buf.bufnum);
+				synths[0].set(\whichOut, 0);
+				SystemClock.sched(1.0, {synths[0].set(\trigOnOff, 1)});
+		});
+		SystemClock.sched(0.5, {
+			buffer1 = Buffer.readChannel(group.server, savePath, 0, -1, [1],
 				{arg buf;
-					"channel 0".postln;
-					synths[0].set(\bufnum0, buf.bufnum);
-					synths[0].set(\whichOut, 0);
-					SystemClock.sched(1.0, {synths[0].set(\trigOnOff, 1)});
+					synths[0].set(\bufnum1, buf.bufnum, \whichOut, 1);
 			});
-			SystemClock.sched(0.5, {
-				buffer1 = Buffer.readChannel(group.server, savePath, 0, -1, [1],
-					{arg buf;
-						"channel 1".postln;
-						synths[0].set(\bufnum1, buf.bufnum, \whichOut, 1);
-				});
-			});
-		})
-	}
+		});
+	})
+}
 
-	saveExtra {arg saveArray;
-		saveArray.add(savePath.asString);
-	}
+saveExtra {arg saveArray;
+	saveArray.add(savePath.asString);
+}
 
-	loadExtra {arg loadArray;
-		savePath = loadArray[4];
-		savePath.postln;
-		this.loadFile;
-	}
+loadExtra {arg loadArray;
+	savePath = loadArray[4];
+	this.loadFile;
+}
 }
 
 LoopBuf_Mod : Module_Mod {
@@ -321,13 +319,11 @@ LoopBuf_Mod : Module_Mod {
 			synths[0].set(\whichOut, 0, \pausePlayGate, 0);
 			buffer0 = Buffer.readChannel(group.server, savePath, 0, -1, [0],
 				{arg buf;
-					"channel 0".postln;
 					synths[0].set(\bufnum0, buf.bufnum);
 			});
 			SystemClock.sched(0.5, {
 				buffer1 = Buffer.readChannel(group.server, savePath, 0, -1, [1],
 					{arg buf2;
-						"channel 1".postln;
 						synths[0].set(\bufnum1, buf2.bufnum, \whichOut, 1);
 				});
 			});
@@ -345,7 +341,6 @@ LoopBuf_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 		savePath = loadArray[4];
-		savePath.postln;
 		this.loadFile;
 	}
 }
@@ -465,7 +460,6 @@ SampleMashup_Mod : Module_Mod {
 	loadBuffers {arg path;
 		savePath = path;
 		dirName = path.dirname++"/*";
-		dirName.postln;
 		paths2 = dirName.pathMatch.select({|file| file.contains(".aiff") });
 		paths2.addAll(dirName.pathMatch.select({|file| file.contains(".aif") }));
 		paths2.addAll(dirName.pathMatch.select({|file| file.contains(".wav") }));
@@ -477,8 +471,6 @@ SampleMashup_Mod : Module_Mod {
 		};
 		buffers = List.newClear(paths2.size);
 
-		paths2.postln;
-
 		if(paths2.size>0,{savePath = paths2[0]});
 		paths2.do({ arg path, i;
 			var shortPath;
@@ -487,11 +479,10 @@ SampleMashup_Mod : Module_Mod {
 
 			buffers.put(i, Buffer.read(group.server, path));
 		});
-		buffers.postln;
 
 		bufStream = Pxrand(buffers, inf).asStream;
 		playTask = Task({{
-			buffer = bufStream.next.postln;
+			buffer = bufStream.next;
 
 			dur = (rrand(durLow, durHi));
 
@@ -529,7 +520,6 @@ SampleMashup_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 		savePath = loadArray[4];
-		savePath.postln;
 		if(savePath.size>0,{
 			this.loadBuffers(savePath);
 		});

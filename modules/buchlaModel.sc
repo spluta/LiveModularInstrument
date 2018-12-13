@@ -565,10 +565,6 @@ BuchlaSetting_Mod {
 			};
 			filterSettings.add(settingsTempList);
 		};
-/*		filterSettings.postln;
-		filterSettings.do{arg item;
-			item.postln;
-		};*/
 		currentFilterSetting0 = filterSettings[0][0];
 		currentFilterSetting1 = filterSettings[0][1];
 	}
@@ -1002,7 +998,6 @@ BuchlaSettingBank_Mod {
 // 					settingBank.load(path);
 // 				})
 // 				},{
-// 					"cancelled".postln;
 // 			});
 // 		};
 // 		saveButton = Button(win, Rect(330, 170, 50, 30))
@@ -1011,7 +1006,6 @@ BuchlaSettingBank_Mod {
 // 			CocoaDialog.savePanel({arg path;
 // 				settingBank.save(path);
 // 				},{
-// 					"cancelled".postln;
 // 			});
 // 		};
 //

@@ -173,7 +173,6 @@ Freeze_Mod : Module_Mod {
 		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
-				"multichannel currently broken".postln;
 /*				switch(butt.value,
 					0, {
 						numChannels = 2;
@@ -456,14 +455,7 @@ TFreeze_Mod : Module_Mod {
 		/*controls.add(Button(win,Rect(0, 285, 40, 20))
 		.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 		.action_{|butt|
-		"buffer".postln;
-		buffers.do{|item| item.bufnum.postln};
-
-		"dustOnBus".post;dustOnBus.postln;
-		"volBus".post;volBus.postln;
-		"modeBus".post;modeBus.postln;
-		"trigRateBus".post;trigRateBus.postln;
-
+		buffers.do{|item| item.bufnum};
 
 		switch(butt.value,
 		0, {

@@ -32,8 +32,7 @@ LucerneVideo_Mod : SignalSwitcher_Mod {
 	}
 
 	init2 {
-		"LucerneVideo_Mod".postln;
-		[soundInBusses, stereoSoundInBusses, location, mainProcessingWindow].postln;
+		[soundInBusses, stereoSoundInBusses, location, mainProcessingWindow];
 		this.makeWindow("LucerneVideo", Rect(860, 200, 220, 150));
 		this.initControlsAndSynths(4);
 
@@ -42,7 +41,6 @@ LucerneVideo_Mod : SignalSwitcher_Mod {
 
 		localBusses = List.new;
 		4.do{localBusses.add(Bus.audio(group.server, 8))};
-		localBusses.postln;
 
 		mixerStrips = List.new;
 		4.do{arg i; mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], win, Point(5+(i*55), 0), nil))};
@@ -98,7 +96,6 @@ LucerneVideo_Mod : SignalSwitcher_Mod {
 
 			trigOSC = OSCFunc({ |msg|
 				{
-					"trig".postln;
 					this.changeDaPlace(msg[2]);
 				}.defer;
 			}, '/tr');
@@ -128,7 +125,6 @@ LucerneVideo_Mod : SignalSwitcher_Mod {
 		var array;
 
 		if(lastPlayerNumber != playerNumber,{
-			//"new one!".postln;
 
 			lastPlayerNumber = playerNumber;
 

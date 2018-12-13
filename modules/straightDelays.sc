@@ -156,7 +156,7 @@ StraightDelays_Mod : Module_Mod {
 
 	unpause {
 		localRout.resume;
-		SystemClock.sched(1.0, {"reset env".postln; largeEnv.set(\pauseGate, 1)});
+		SystemClock.sched(1.0, {largeEnv.set(\pauseGate, 1)});
 		//synthGroup.run(true);
 	}
 

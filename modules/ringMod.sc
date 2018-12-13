@@ -20,7 +20,6 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 	}
 
 	init2 {
-		"RingModStereo".postln;
 		this.makeWindow("RingModStereo", Rect(860, 200, 220, 150));
 		this.initControlsAndSynths(2);
 
@@ -29,7 +28,6 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 
 		localBusses = List.new;
 		2.do{localBusses.add(Bus.audio(group.server, 8))};
-		localBusses.postln;
 		mixerStrips = List.new;
 		2.do{arg i;
 			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));

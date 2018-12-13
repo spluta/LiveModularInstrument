@@ -11,20 +11,24 @@ MIDI_Mod {
 	}
 
 	*start {
+		responders.do{arg item; item.free};
+
 		MIDIIn.connectAll;
+
 		responders = List.newClear[0];
 
-		//slider
 		responders.add(MIDIFunc.cc({|val, num, chan, src|
 			MidiOscControl.respond("/cc/"++num.asString++"/"++chan.asString++"/", val/127);
 			if(sendRequest, {
-				MidiOscControl.setController("/cc/"++num.asString++"/"++chan.asString++"/", \continuous)
+				MidiOscControl.setController("/cc/"++num.asString++"/"++chan.asString++"/", \continuous);
+				MidiOscControl.setController("/cc/"++num.asString++"/"++chan.asString++"/", \onOff)
 		})}, nil));
 
 		responders.add(MIDIFunc.noteOn({|val, num, chan, src|
 			MidiOscControl.respond("/noteOn/"++num.asString++"/"++chan.asString++"/", 1);
 			if(sendRequest, {
-				MidiOscControl.setController("/noteOn/"++num.asString++"/"++chan.asString++"/", \onOff)
+				MidiOscControl.setController("/noteOn/"++num.asString++"/"++chan.asString++"/", \onOff);
+				MidiOscControl.setController("/noteOff/"++num.asString++"/"++chan.asString++"/", \onOff)
 		})}, nil));
 
 		responders.add(MIDIFunc.noteOff({ |val, num, chan, src|
@@ -42,13 +46,18 @@ MIDI_Mod {
 		localControlObject = object;
 
 		#nothing, keyShort = controllerKey.asString.split;
-		[nothing, keyShort].postln;
 		switch(keyShort.asSymbol,
 			'cc', {
-				function = {|val| {localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer};
+				//button does not have a controlSpec
+				if(localControlObject.respondsTo('controlSpec'),{
+					function = {|val| {localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer};
+				},{
+					function = {|val| {localControlObject.valueAction_(val.round)}.defer};
+				});
 			},
 			'noteOn', {
-				function = {|val| {localControlObject.valueAction_(val)}.defer};
+				function = {|val|
+					{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
 			}
 		);
 

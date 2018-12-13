@@ -4,7 +4,7 @@ GingerMan_Mod : Module_Mod {
 	*initClass {
 		StartUp.add {
 
-			SynthDef("gman",{arg sinFreq0, sinFreq1, gmanFreq0, gmanFreq1, dustFreq0, dustFreq1, dustFreq2, dustFreq3, dustFreq4, dustFreq5, selectFAM2=0, outBus, onOff = 1, vol = 0, gate=1, pauseGate = 1;
+			SynthDef("gman",{arg sinFreq0, sinFreq1, gmanFreq0, gmanFreq1, dustFreq0, dustFreq1, dustFreq2, dustFreq3, dustFreq4, dustFreq5, selectFAM2=0, outBus, onOff = 0, vol = 0, gate=1, pauseGate = 1;
 				var trig0, trig1, trig2, sinFreq, gmanFreq, out, fastAmpMod, slowAmpMod, fastAmpMod2, ampMod, pauseEnv, env;
 
 
@@ -42,8 +42,8 @@ GingerMan_Mod : Module_Mod {
 	}
 
 	init {
-		this.makeWindow("GingerMan", Rect(600, 300, 100, 60));
-		this.initControlsAndSynths(39);
+		this.makeWindow("GingerMan", Rect(600, 300, 200, 60));
+		this.initControlsAndSynths(40);
 
 		synthGroup = Group.tail(group);
 		filterGroup = Group.tail(group);
@@ -55,92 +55,69 @@ GingerMan_Mod : Module_Mod {
 		buchlaFilters = List.newClear(4);
 		buchlaFilters.put(0,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index, outBus.index));
 
-		controls.add(Button(win, Rect(5, 0, 90, 16))
+		controls.add(Button()
 			.states_([["Assign", Color.red, Color.black], ["Clear", Color.black, Color.red]])
 			.action_{arg val;
 				if(val.value==1,{
 					this.setManta;
 				},{
-					"clearManta".postln;
 					this.clearMidiOsc;
 				})
 			}
 		);
 
+		controls.add(QtEZSlider("vol", ControlSpec(0,2,'amp'),
+			{|slider| synths[0].set(\vol, slider.value)}, 1, true, \horz)
+		);
+		this.addAssignButton(1,\continuous);
+
+		win.layout_(VLayout(controls[0], HLayout(controls[1].layout), assignButtons[1].layout));
+		win.layout.spacing = 0;
 
 		noteOnFunctions = IdentityDictionary.new;
 		sliderFunctions = IdentityDictionary.new;
 		this.addFunctions;
-
-		controls.add(Button(win,Rect(10, 65, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| buchlaFilters[i+1].killMe};
-					},
-					1, {
-						numChannels = 4;
-						buchlaFilters.put(1,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index+2, outBus.index+2));
-					},
-					2, {
-						if(numChannels==2,{
-							3.do{|i| buchlaFilters.put(i+1,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index+4, outBus.index+(2*(i+1))))};
-						},{
-							2.do{|i| buchlaFilters.put(i+2,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index+6, outBus.index+(2*(i+2))))};
-						});
-						numChannels = 8;
-
-					}
-				)
-			};
-		);
 	}
 
 	setManta {
 		var counter=0;
 
-		sliderFunctions.keys.do{arg key;
-			oscMsgs.put(counter, "/manta/slider/"++key.asString);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], sliderFunctions[key], setups);
-			counter=counter+1;
-		};
 		noteOnFunctions.keys.do{arg key;
-			oscMsgs.put(counter, "/manta/noteOn/"++key.asString);
+			var key2;
+
+			key2 = "/SeaboardNote/"++(key).asString;
+			oscMsgs.put(counter, key2);
 			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key], setups);
 			counter=counter+1;
 		};
+
+		oscMsgs.put(counter, "/SeaboardNote/31");
+		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
+			{|val| if(val==1, {synths[0].set(\onOff, 0)})}, setups);
+		counter=counter+1;
+
+		oscMsgs.put(counter, "/SeaboardNote/30");
+		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
+			{|val| if(val==1, {synths[0].set(\onOff, 1)})}, setups);
 
 	}
 
 
 	addFunctions {
-		6.do{arg gmanCount;
+		4.do{arg gmanCount;
 			6.do{arg sinCount;
-				noteOnFunctions.put(((gmanCount*8)+(sinCount+1)),
-					{
+				noteOnFunctions.put(((gmanCount*8)+(sinCount)), {|val|
+					if(val==1,{
 						this.getSin(sinCount);
 						this.getGman(gmanCount);
 						synths[0].set(\sinFreq0, sinTemp0, \sinFreq1, sinTemp1, \gmanFreq0, gmanTemp0, \gmanFreq1, gmanTemp1);
 						buchlaFilters.do{arg item; if(item!=nil,{item.trigger})};
-						});
-
+					})
+				})
 			}
 		};
 
-
-		noteOnFunctions.put(47, {
-			synths[0].set(\onOff, 1);
-		});
-		noteOnFunctions.put(48, {
-			synths[0].set(\onOff, 0);
-		});
-
-		//noteOnFunctions.put(39, {buchlaFilters.do{arg item; if(item!=nil,{item.trigger})};});
-
 		spec = ControlSpec(0,1,\amp);
-		sliderFunctions.put(2, {arg val; synths[0].set(\vol, spec.map(val/8192))});
 	}
 
 	getSin  {arg num;
@@ -179,16 +156,16 @@ GingerMan_Mod : Module_Mod {
 				gmanTemp1 = gmanTemp0+40.linrand;
 			},
 			1,{
-				gmanTemp0 = exprand(80, 320);
+				gmanTemp0 = exprand(80, 2000);
 				gmanTemp1 = gmanTemp0+180.linrand;
 			},
 			2,{
-				gmanTemp0 = exprand(320, 1100);
-				gmanTemp1 = gmanTemp0+579.linrand;
+				gmanTemp0 = exprand(2000, 11000);
+				gmanTemp1 = gmanTemp0+2700.linrand;
 			},
 			3,{
-				gmanTemp0 = exprand(1100, 4000);
-				gmanTemp1 = gmanTemp0+2700.linrand;
+				gmanTemp0 = exprand(11000, 20000);
+				gmanTemp1 = gmanTemp0+5000.linrand;
 			},
 			4,{
 				gmanTemp0 = exprand(4000, 10000);
@@ -215,6 +192,9 @@ GingerMan_Mod : Module_Mod {
 
 		saveArray.add(temp);
 
+		temp = List.newClear(0);
+			temp.add(oscMsgs[1]);
+		saveArray.add(temp);
 		//this does not save or load the oscMsgs
 		//it takes advantage that the setManta button is a control button
 		//and it just saves the state of that button
@@ -224,11 +204,17 @@ GingerMan_Mod : Module_Mod {
 	}
 
 	load {arg loadArray;
-		loadArray.do{arg item; item.postln};
 		loadArray[1].do{arg controlLevel, i;
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};
-		win.bounds_(loadArray[3]);
+/*		loadArray[2].do{arg msg, i;
+			waitForSetNum = i;
+			if(msg!=nil,{
+				MidiOscControl.getFunctionNSetController(this, controls[i+1], msg, group.server, setups);
+				assignButtons[i+1].instantButton.value_(1);
+			})
+		};
+		win.bounds_(loadArray[3]);*/
 	}
 
 	killMeSpecial {

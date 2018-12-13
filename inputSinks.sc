@@ -82,7 +82,6 @@ BusAssignSink {
 MixerBusAssignSink : BusAssignSink {
 
 	makeSink {
-		[parent, panel, point].postln;
 		sink = DragSink(panel, Rect(point.x, point.y, 25, 16));
 	}
 

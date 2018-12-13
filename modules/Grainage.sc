@@ -87,6 +87,8 @@ GrainAge_Mod : Module_Mod {
 		}
 	}
 
+/*	load {}*/
+
 	init {
 		this.makeWindow("GrainAge", Rect(500, 500, 250, 250));
 		this.initControlsAndSynths(5);
@@ -142,7 +144,6 @@ GrainAge_Mod : Module_Mod {
 
 		controls.add(QtEZSlider2D.new(ControlSpec(0,1), ControlSpec(200,2,\exp),
 			{arg vals;
-				vals.value.postln;
 
 				synths[1].set(\trate, vals.value[1]);
 				synths[1].set(\xPlace, vals.value[0]);
@@ -152,7 +153,7 @@ GrainAge_Mod : Module_Mod {
 
 		//multichannel button
 
-		numChannels = 2;
+/*		numChannels = 2;
 		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
@@ -174,7 +175,7 @@ GrainAge_Mod : Module_Mod {
 					}
 				)
 			};
-		);
+		);*/
 
 
 		win.layout_(
@@ -182,7 +183,7 @@ GrainAge_Mod : Module_Mod {
 				VLayout(
 					HLayout(controls[0], controls[1], controls[2]),
 					HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout),
-					controls[4].layout, assignButtons[2].layout
+					controls[4].layout, assignButtons[4].layout
 				),
 				VLayout(controls[3].layout, assignButtons[3].layout)
 			)

@@ -106,11 +106,9 @@ DrumBombs_Mod : Module_Mod {
 		oscNode.value;
 	}
 	makeNote {
-		"hit!".postln;
 		{controls[6].value_(controls[6].value+1)}.defer;
 		counter = counter+1;
 		if((counter>=trigDiv)&&(muteGate == 1),{
-			"bomb".postln;
 			Synth("drumBombsPlay_mod", [\buffer, bufSeq.next.bufnum, \outBus, outBus, \outVol, outVol], group);
 			counter = 0;
 			trigDiv = rrand(divRange[0], divRange[1]);
@@ -126,11 +124,7 @@ DrumBombs_Mod : Module_Mod {
 		paths2.addAll(path.pathMatch.select({|file| file.contains(".aif") }));
 		paths2.addAll(path.pathMatch.select({|file| file.contains(".wav") }));
 
-		paths2.postln;
-
 		buffers = List.newClear(paths2.size);
-
-		paths2.postln;
 
 		paths2.do({ arg path, i;
 			var shortPath;

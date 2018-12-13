@@ -149,7 +149,6 @@ Distortion2D_Mod : Module_Mod {
 	}
 
 	killMeSpecial {
-		"kill me ahh".postln;
 		mouseBus.free;
 		volBus.free;
 		recAudio.set(\gate, 0);

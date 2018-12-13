@@ -107,7 +107,6 @@ Filters_Mod : Module_Mod {
 	//i have to override this function because i have to deal with the 1 slider for the EZRanger issue
 	//this won't work anymore
 /*	setMantaForSetup {arg setup, item, i;
-		[setup, item, i].postln;
 		if(item!=nil,{
 			switch(item[1],
 				0,{

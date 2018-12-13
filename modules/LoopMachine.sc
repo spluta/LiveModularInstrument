@@ -313,15 +313,12 @@ LoopMachineOverLap_Mod : Module_Mod {
 		controls.add(Button()
 			.states_([ [ "NoZActions", Color.red, Color.black ],  [ "ZActions!", Color.blue, Color.black ]])
 			.action_{|v|
-				if(v.value.postln==1,{
+				if(v.value==1,{
 					controls[7].zAction = {|val|
-						"z7".postln;
-						val.value.postln;
 						synths[1].set(\z2OnOff, val.value);
 						synths[0].set(\smallGate0, val.value);
 					};
 					},{
-						"clear zActions".postln;
 						controls[7].zAction = {};
 					}
 				);
@@ -342,7 +339,6 @@ LoopMachineOverLap_Mod : Module_Mod {
 				VLayout(controls[7].layout, assignButtons[7].layout, controls[9]), controls[8].layout
 			)
 		);
-		//win.drawFunc_{arg win; win.bounds.postln;};
 	}
 
 }
@@ -441,7 +437,6 @@ StraightLoop_Mod : Module_Mod {
 			.action_{arg butt;
 
 				if(controlIndex==2,{
-					"putOldLoop".postln;
 					synths.put(1, Synth("straightLoopPlay_mod", [\outBus, outBus, \phaseBus, phaseBus.index, \bufnum, buffer.bufnum, \loopDur, length], playGroup));
 				});
 				this.setButtons(1);
@@ -553,9 +548,7 @@ StraightLoop2_Mod : Module_Mod {
 		controls.add(Button(win, Rect(80, 5, 70, 20))
 			.states_([["last", Color.red, Color.black],["last", Color.black, Color.green]])
 			.action_{arg butt;
-				"putOldLoop".postln;
 				if(recording==true,{
-					"recording is true".postln;
 					length = Main.elapsedTime-currentTime;
 					recording = false;
 					controls[0].value=0;
@@ -668,12 +661,11 @@ GrabNLoop_Mod : Module_Mod {
 				length = rrand(lengthRange[0],lengthRange[1]);
 				synths[nextBuffer*2].set(\t_trig, 1);
 				synths[nextBuffer*2].set(\gate, 0);
-				"kill".postln; synths[(nextBuffer+1).wrap(0,1)*2+1].set(\gate, 0);
+				synths[(nextBuffer+1).wrap(0,1)*2+1].set(\gate, 0);
 				SystemClock.sched(0.1, {
 					synths.put(nextBuffer*2+1, Synth("grabNLoopPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum, \loopDur, length, \volBus, volBus.index], playGroup));
 
 					nextBuffer = bufferSeq.next;
-					nextBuffer.postln;
 					synths.put(nextBuffer*2, Synth("grabNLoopRec_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum], recordGroup));
 					nil
 				});

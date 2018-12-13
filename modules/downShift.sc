@@ -52,9 +52,8 @@ DownShift_Mod : Module_Mod {
 			}).writeDefFile;
 
 
-
 			SynthDef("downShift2_mod", {|inBus, outBus, volBus, verbBus, length=1, delayTime, gate = 1, pauseGate = 1|
-				var in, out, amp, decayTime, vol, env, pauseEnv, verbEnv;
+				var in, out, amp, decayTime, vol, env, pauseEnv, verbEnv, shift, start0, start1;
 
 				vol = In.kr(volBus);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
@@ -65,7 +64,17 @@ DownShift_Mod : Module_Mod {
 
 				in = DelayC.ar(In.ar(inBus,1), delayTime, delayTime*[1,0.95]);
 
-				out = PitchShift.ar(in, Rand(0.5, 1), [XLine.kr(Rand(1.95,2.05), Rand(0.25, 0.125), length),Line.kr(Rand(4,8), Rand(0.25, 0.125), length)].choose, 0, 0.1);
+				start0 = Rand(1.95,2.05);
+				start1 = Rand(4,8);
+
+				shift = Select.kr(IRand(0,1), [
+					EnvGen.kr(Env.new([start0, start0, Rand(0.25, 0.125)], [delayTime+(length/4), 3*length/4], \lin), 1),
+					EnvGen.kr(Env.new([start1, start1, Rand(0.25, 0.125)], [delayTime+(length/4), 3*length/4], \lin), 1)
+				]);
+
+				//shift = [XLine.kr(Rand(1.95,2.05), Rand(0.25, 0.125), length),Line.kr(Rand(4,8), Rand(0.25, 0.125), length)].choose;
+
+				out = PitchShift.ar(in, Rand(0.5, 1), shift, 0, 0.1);
 
 				out = out*pauseEnv*vol;
 
@@ -73,6 +82,8 @@ DownShift_Mod : Module_Mod {
 				Out.ar(verbBus, Mix.new(out)*verbEnv);
 
 			}).writeDefFile;
+
+
 			SynthDef("downShift4_mod", {|inBus, outBus, volBus, verbBus, length=1, delayTime, start, gate = 1, pauseGate = 1|
 				var in, out, amp, decayTime, vol, env, pauseEnv, verbEnv, out1, out2, out3, out4;
 
@@ -150,7 +161,7 @@ DownShift_Mod : Module_Mod {
 			}, 1, true, layout:\vert));
 		this.addAssignButton(1,\continuous, Rect(80, 230, 60, 20));
 
-		controls.add(EZRanger.new(win,Rect(140, 10, 60, 220), "length", ControlSpec(3.0,10.0,'linear'),
+		controls.add(EZRanger.new(win,Rect(140, 10, 60, 220), "length", ControlSpec(3.0,20.0,'linear'),
 			{|v|
 				length = v.value;
 			}, [4,5], true, layout:\vert));
@@ -164,7 +175,6 @@ DownShift_Mod : Module_Mod {
 					4, {Synth("downShift4_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus.index, \verbBus, verbBus.index, \verbVolBus, verbVolBus, \length, rrand(length[0], length[1]), \start, [1,-1].choose, \delayTime, 0], synthGroup)},
 					8, {
 						[{start=0; end=1.5;},{start=1.5; end=0;}].choose.value;
-						[start,end].postln;
 						Synth("downShift8_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus.index, \verbBus, verbBus.index, \verbVolBus, verbVolBus, \length, rrand(length[0], length[1]), \start, start, \end, end, \delayTime, 0], synthGroup)
 					}
 				)

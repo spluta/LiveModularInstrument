@@ -127,7 +127,6 @@ UpDownSines_Mod : Module_Mod {
 			)
 		);
 		win.layout.spacing = 0;
-		//win.drawFunc_{arg win; win.bounds.postln;};
 		win.bounds_(Rect(613, 441, 222, 251));
 	}
 
@@ -142,7 +141,7 @@ UpDownSines_Mod : Module_Mod {
 		time = rrand(25, 45);
 		sines = List.new;
 		switch(numChannels,
-			2, { "2".postln;	rrand(4, 6).do{sines.add(Synth("sineUpDown2_mod", [\outBus, outBus, \volBus, volBus.index, \startFreq, startEnd[0], \endFreq, startEnd[1]+(startEnd[1]/2).rand2, \time, time, \gate, 1], group))}},
+			2, { rrand(4, 6).do{sines.add(Synth("sineUpDown2_mod", [\outBus, outBus, \volBus, volBus.index, \startFreq, startEnd[0], \endFreq, startEnd[1]+(startEnd[1]/2).rand2, \time, time, \gate, 1], group))}},
 			4, {	rrand(4, 6).do{sines.add(Synth("sineUpDown4_mod", [\outBus, outBus, \volBus, volBus.index, \startFreq, startEnd[0], \endFreq, startEnd[1]+(startEnd[1]/2).rand2, \time, time, \gate, 1], group))}},
 			8, {	rrand(4, 6).do{sines.add(Synth("sineUpDown8_mod", [\outBus, outBus, \volBus, volBus.index, \startFreq, startEnd[0], \endFreq, startEnd[1]+(startEnd[1]/2).rand2, \time, time, \gate, 1], group))}}
 		);

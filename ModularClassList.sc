@@ -7,20 +7,19 @@ ModularClassList {
 	}
 
 	*init2 {
-		("whichArray"+whichArray).postln;
 
 		//to do: group these classes into groups and make separate menus for each classification of effect - Sythesis, Reverb, BufPlayers...
 
 		switch(whichArray,
 			'normal', {
-				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop", "CutterThrough", "EQmini", "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "SampleLoops", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MincekSine", "MantaBuffers", "GreatExpectations"].sort;
+				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop", "CutterThrough", "EQmini", "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "SampleLoops", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "MincekSine", "MantaBuffers", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "AnalogSynth", "VDelayInline", "MantaToMidi", "RageTrombones", "SynthStack", "Sampler", "TVFeedback", "FeedbackSynth"].sort;
 			},
-			'feedback', {classArray = ["Convolution", "CombFilter", "KlankFilter", "KlankFilter2","OscilMidBump", "Compander", "DistortMono", "PinkNoise", "LoopBuf", "AnalysisFilters", "SignalSwitcher", "TVFeedback", "Mixer", "RingModStereo", "LongDelay"].sort},
+			'feedback', {classArray = ["Convolution", "CombFilter", "KlankFilter", "KlankFilter2","OscilMidBump", "Compander", "DistortMono", "PinkNoise", "LoopBuf", "AnalysisFilters", "SignalSwitcher", "TVFeedback", "Mixer", "RingModStereo", "LongDelay", "FeedbackControl"].sort},
 
 			'installation', {classArray = ["EQ"]},
-			'Matrices', {classArray = ["LoopVidBuf2", "SnareSwitch", "AmpMod", "Compander", "BuchlaFilters", "BitCrusher", "Freeze"].sort},
+			'Matrices', {classArray = ["LoopVidBuf2", "SnareSwitch", "AmpMod", "Compander", "BuchlaFilters", "BitCrusher", "Freeze", "Mixer"].sort},
 			'wubbels', {
-				classArray = ["WubbelsSine", "WubbelsSine2", "WubbelsSine3", "FilterDelays", "AutoTune", "RhythmicDelays", "Mixer", "EQ", "Compander", "LoopBuf", "MincekSine", "Mute", "AutoTuneFake"].sort;
+				classArray = ["WubbelsSine", "WubbelsSine2", "WubbelsSine3", "FilterDelays", "AutoTune", "RhythmicDelays", "Mixer", "EQ", "Compander", "LoopBuf", "MincekSine", "Mute", "AutoTuneFake", "OverlapWubbels"].sort;
 			},'neuwirth', {
 				classArray = ["NeuwirthSine", "RingModStereo", "Mixer", "EQ", "Compander"].sort;
 			},'stocky', {
@@ -180,22 +179,61 @@ classDictionary.add('LoopMachineOverLap'->{arg synthGroup, outBus, setups; LoopM
 
 		classDictionary.add('DistGrains'->{arg synthGroup, outBus, setups; DistGrains_Mod(synthGroup, outBus, setups)});
 		classDictionary.add('MixerSolo'->{arg synthGroup, outBus, setups; MixerSolo_Mod(synthGroup, outBus, setups)});
+		classDictionary.add('MixerSoloMono'->{arg synthGroup, outBus, setups; MixerSoloMono_Mod(synthGroup, outBus, setups)});
 
 		classDictionary.add('MantaBuffers'->{arg synthGroup, outBus, setups; MantaBuffers_Mod(synthGroup, outBus, setups)});
 
 		classDictionary.add('GreatExpectations'->{arg synthGroup, outBus, setups; GreatExpectations_Mod(synthGroup, outBus, setups)});
 
+		classDictionary.add('OverlapWubbels'->{arg synthGroup, outBus, setups; OverlapWubbels_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('GFNoiseMiniSky'->{arg synthGroup, outBus, setups; GFNoiseMiniSky_Mod(synthGroup, outBus, setups)});
+		classDictionary.add('MuteSky'->{arg synthGroup, outBus, setups; MuteSky_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('LowPass'->{arg synthGroup, outBus, setups; LowPass_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('VDelayInline'->{arg synthGroup, outBus, setups; VDelayInline_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('AnalogSynth'->{arg synthGroup, outBus, setups; AnalogSynth_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('MantaToMidi'->{arg synthGroup, outBus, setups; MantaToMidi_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('RageTrombones'->{arg synthGroup, outBus, setups; RageTrombones_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('SynthStack'->{arg synthGroup, outBus, setups; SynthStack_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('Sampler'->{arg synthGroup, outBus, setups; Sampler_Mod(synthGroup, outBus, setups)});
+
+		classDictionary.add('FeedbackSynth'->{arg synthGroup, outBus, setups; FeedbackSynth_Mod(synthGroup, outBus, setups)});
+
+
+		//Analog Synth Modules
+		classDictionary.add('Maths'->{arg synthGroup, localBusses, setups;
+			Maths_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('RandoCalrissian'->{arg synthGroup, localBusses, setups;
+			RandoCalrissian_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('ComplexOscillator'->{arg synthGroup, localBusses, setups;
+			ComplexOscillator_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('DualADSR'->{arg synthGroup, localBusses, setups;
+			DualADSR_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('VCA'->{arg synthGroup, localBusses, setups;
+			VCA_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('VCF'->{arg synthGroup, localBusses, setups;
+			VCF_AnalogMod(synthGroup, localBusses, setups)});
+		classDictionary.add('Sequencer'->{arg synthGroup, localBusses, setups;
+			Sequencer_AnalogMod(synthGroup, localBusses, setups)});
 	}
 
 	*initModule {arg className, synthGroup, bus, setups;
-		"initModule".postln;
 		^classDictionary[className.asSymbol].value(synthGroup, bus, setups);
+	}
+
+	*initAnalogSynthModule {arg className, synthGroup, localBusses, setups;
+		^classDictionary[className.asSymbol].value(synthGroup, localBusses, setups);
 	}
 
 	*initMixer {arg group, outBus, name, numMixers;
 		var temp;
-		"initMixer".postln;
-		//location.postln;
 		temp = ModularMainMixer(group);
 		temp.init2(outBus, name, numMixers);
 		^temp;

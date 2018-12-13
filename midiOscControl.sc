@@ -44,6 +44,7 @@ MidiOscControl {
 	*getFunctionNSetController {arg module, controlObject, controllerKey, server, setups;
 		var function, tempDict, controlObjectLocal, counter;
 
+
 		controlObjectLocal = controlObject;
 		//get the function
 		counter=0;
@@ -59,15 +60,15 @@ MidiOscControl {
 			if(server=='global',{
 				actions['global'].add(controllerKey.asSymbol->function);
 				module.setOscMsg(controllerKey.asSymbol);
-				},{
-					if(actions[server.asSymbol][controllerKey.asSymbol].postln==nil,{
-						tempDict = Dictionary.new;
+			},{
+				if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
+					tempDict = Dictionary.new;
 
-						actions[server.asSymbol].add(controllerKey.asSymbol->tempDict);
-					});
+					actions[server.asSymbol].add(controllerKey.asSymbol->tempDict);
+				});
 
-					setups.do{arg setup; actions[server.asSymbol][controllerKey.asSymbol].add(setup.asSymbol->function)};
-					module.setOscMsg(controllerKey.asSymbol);
+				setups.do{arg setup; actions[server.asSymbol][controllerKey.asSymbol].add(setup.asSymbol->function)};
+				module.setOscMsg(controllerKey.asSymbol);
 			});
 		});
 	}
@@ -75,17 +76,13 @@ MidiOscControl {
 	*setControllerNoGui {arg server, key, function, setups;
 		var tempDict;
 
-		setups.postln;
-		actions[server.asSymbol].postln;
-
-		if(actions[server.asSymbol][key.asSymbol].postln==nil,{
+		if(actions[server.asSymbol][key.asSymbol]==nil,{
 			tempDict = Dictionary.new;
 			actions[server.asSymbol].add(key.asSymbol->tempDict);
 		});
 
-		actions[server.asSymbol].postln;
-
 		setups.do{arg setup; actions[server.asSymbol][key.asSymbol].add(setup.asSymbol->function)};
+		actions.postln;
 	}
 
 
@@ -130,13 +127,25 @@ MidiOscControl {
 		};
 	}
 
+	executeFunction {|serverKey, key, val|
+
+	}
+
 
 	*respond { |key, val|
-		var nothing, xyz, tempNode;
+		var nothing, key2, xyz, tempNode;
 
-		tempNode = actions[\global][key.asSymbol];
-		if(tempNode!=nil, {
-			tempNode.value(val);
+		if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
+			#nothing, key2, xyz = key.asString.split;
+			tempNode = actions[\global][("/"++key2.asString).asSymbol];
+			if(tempNode!=nil, {
+				tempNode.value(xyz, val);
+			});
+		},{
+			tempNode = actions[\global][key.asSymbol];
+			if(tempNode!=nil, {
+				tempNode.value(val);
+			});
 		});
 
 		//only execute the function if the server is currently active
@@ -146,16 +155,16 @@ MidiOscControl {
 			setup = ModularServers.servers[serverKey].getCurrentSetup.asSymbol;
 
 			if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
-				#nothing, key, xyz = key.asString.split;
-				tempNode = actions[serverKey][("/"++key.asString).asSymbol];
+				#nothing, key2, xyz = key.asString.split;
+				tempNode = actions[serverKey][("/"++key2.asString).asSymbol];
 				if(tempNode!=nil, {
 					tempNode[setup].value(xyz, val);
 				});
-				},{
-					tempNode = actions[serverKey][key.asSymbol];
-					if(tempNode!=nil, {
-						tempNode[setup].value(val);
-					});
+			},{
+				tempNode = actions[serverKey][key.asSymbol];
+				if(tempNode!=nil, {
+					tempNode[setup].value(val);
+				});
 			});
 		}
 	}

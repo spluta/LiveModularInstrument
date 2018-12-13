@@ -31,7 +31,7 @@ NeuwirthSine_Mod : Module_Mod {
 
 		synths.add(Synth("neuwirthSine_mod", [\outBus, outBus], group));
 
-		controls.add(Button(win, Rect(5, 5, 60, 20))
+		controls.add(Button()
 			.states_([["33", Color.red, Color.black],["33", Color.black, Color.green]])
 			.action_{|butt|
 				switch(butt.value,
@@ -44,9 +44,10 @@ NeuwirthSine_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addButton(0,\onOff, Rect(5, 25, 60, 20));
+		this.addAssignButton(0,\onOff);
+		//this.addButton(0,\onOff, Rect(5, 25, 60, 20));
 
-		controls.add(Button(win, Rect(70, 5, 60, 20))
+		controls.add(Button()
 			.states_([["70", Color.red, Color.black],["70", Color.black, Color.green]])
 			.action_{|butt|
 				switch(butt.value,
@@ -59,9 +60,10 @@ NeuwirthSine_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addButton(1,\onOff, Rect(70, 25, 60, 20));
+		this.addAssignButton(1,\onOff);
+		//this.addButton(1,\onOff, Rect(70, 25, 60, 20));
 
-		controls.add(Button(win, Rect(135, 5, 60, 20))
+		controls.add(Button()
 			.states_([["99", Color.red, Color.black],["99", Color.black, Color.green]])
 			.action_{|butt|
 				switch(butt.value,
@@ -74,9 +76,10 @@ NeuwirthSine_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addButton(2,\onOff, Rect(135, 25, 60, 20), );
+		this.addAssignButton(2,\onOff);
+		//this.addButton(2,\onOff, Rect(135, 25, 60, 20), );
 
-		controls.add(Button(win, Rect(200, 5, 60, 20))
+		controls.add(Button()
 			.states_([["55", Color.red, Color.black],["55", Color.black, Color.green]])
 			.action_{|butt|
 				switch(butt.value,
@@ -89,8 +92,17 @@ NeuwirthSine_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addButton(3,\onOff, Rect(200, 25, 60, 20));
+		this.addAssignButton(3,\onOff);
+		//this.addButton(3,\onOff, Rect(200, 25, 60, 20));
+
+
+		win.layout_(VLayout(
+			HLayout(controls[0], controls[1], controls[2], controls[3]),
+			HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout)
+		));
+
 	}
+
 }
 
 WubbelsSine_Mod : Module_Mod {
@@ -112,7 +124,6 @@ WubbelsSine_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine init".postln;
 		this.makeWindow("WubbelsSine", Rect(500,100,210,20));
 
 		modName = "WubbelsSine";
@@ -128,53 +139,53 @@ WubbelsSine_Mod : Module_Mod {
 		synths.add(Synth("wubSine_mod", [\freq, 75.midicps, \outBus, outBus], group));
 		synths.add(Synth("wubSine_mod", [\freq, 80.midicps, \outBus, outBus], group));
 
-//		controls.add(EZSlider(win, // window
-//			Rect(5, 5, 60, 200), // dimensions
-//			"note", // label
-//			ControlSpec(20, 100, \linear, 0.5), // control spec
-//			{|ez|
-//				midiNoteNum=ez.value;
-//				synths[0].set(\freq, (midiNoteNum+(detune/100)).midicps);
-//			},// action
-//			midiNoteNum, layout:\vert
-//		));
-//
-//		controls.add(EZSlider(win, // window
-//			Rect(70, 5, 60, 200), // dimensions
-//			"detune", // label
-//			ControlSpec(-50, 50, \linear, 1), // control spec
-//			{|ez|
-//				detune=ez.value;
-//				synths[0].set(\freq, (midiNoteNum+(detune/100)).midicps);
-//			},// action
-//			0, true, layout:\vert
-//		));
-//
-//		controls.add(EZSlider(win, // window
-//			Rect(135, 5, 60, 200), // dimensions
-//			"vol", // label
-//			ControlSpec(0, 1), // control spec
-//			{|ez|
-//				synths[0].set(\vol, ez.value);
-//			},// action
-//			midiNoteNum, layout:\vert
-//		));
-//		this.addButton(2,/onOff, Rect(135, 205, 60, 20));
-//
-//		controls.add(Button(win, Rect(5, 230, 205, 20))
-//			.states_([["off", Color.red, Color.black],["on", Color.black, Color.green]])
-//			.action_{|butt|
-//				switch(butt.value,
-//					0, {
-//						synths[0].set(\localGate, 0);
-//					},
-//					1, {
-//						synths[0].set(\localGate, 1);
-//					}
-//				)
-//			};
-//		);
-//		this.addButton(3,3, Rect(5, 250, 205, 20));
+		//		controls.add(EZSlider(win, // window
+		//			Rect(5, 5, 60, 200), // dimensions
+		//			"note", // label
+		//			ControlSpec(20, 100, \linear, 0.5), // control spec
+		//			{|ez|
+		//				midiNoteNum=ez.value;
+		//				synths[0].set(\freq, (midiNoteNum+(detune/100)).midicps);
+		//			},// action
+		//			midiNoteNum, layout:\vert
+		//		));
+		//
+		//		controls.add(EZSlider(win, // window
+		//			Rect(70, 5, 60, 200), // dimensions
+		//			"detune", // label
+		//			ControlSpec(-50, 50, \linear, 1), // control spec
+		//			{|ez|
+		//				detune=ez.value;
+		//				synths[0].set(\freq, (midiNoteNum+(detune/100)).midicps);
+		//			},// action
+		//			0, true, layout:\vert
+		//		));
+		//
+		//		controls.add(EZSlider(win, // window
+		//			Rect(135, 5, 60, 200), // dimensions
+		//			"vol", // label
+		//			ControlSpec(0, 1), // control spec
+		//			{|ez|
+		//				synths[0].set(\vol, ez.value);
+		//			},// action
+		//			midiNoteNum, layout:\vert
+		//		));
+		//		this.addButton(2,/onOff, Rect(135, 205, 60, 20));
+		//
+		//		controls.add(Button(win, Rect(5, 230, 205, 20))
+		//			.states_([["off", Color.red, Color.black],["on", Color.black, Color.green]])
+		//			.action_{|butt|
+		//				switch(butt.value,
+		//					0, {
+		//						synths[0].set(\localGate, 0);
+		//					},
+		//					1, {
+		//						synths[0].set(\localGate, 1);
+		//					}
+		//				)
+		//			};
+		//		);
+		//		this.addButton(3,3, Rect(5, 250, 205, 20));
 	}
 }
 
@@ -205,7 +216,6 @@ WubbelsSine2_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine2 init".postln;
 		this.makeWindow("WubbelsSine2", Rect(500,100,210,50));
 
 		modName = "WubbelsSine2";
@@ -227,7 +237,7 @@ WubbelsSine2_Mod : Module_Mod {
 		controls.add(Button(win, Rect(5, 5, 205, 20))
 			.states_([["go", Color.red, Color.black],["kill", Color.black, Color.green],["reset", Color.red, Color.green]])
 			.action_{|butt|
-				switch(butt.value,
+				switch(butt.value.postln,
 					0, {
 						synths.put(0, Synth("wubSine2_mod", [\outBus, outBus], group));
 					},
@@ -240,7 +250,7 @@ WubbelsSine2_Mod : Module_Mod {
 				)
 			};
 		);
-		this.addAssignButton(0,\onOff, Rect(5, 25, 205, 20));
+		this.addAssignButton(0,\increment, Rect(5, 25, 205, 20));
 	}
 
 
@@ -272,7 +282,6 @@ AblingerSine_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine2 init".postln;
 		this.makeWindow("AblingerSine", Rect(500,100,210,50));
 
 		modName = "AblingerSine";
@@ -306,7 +315,7 @@ AblingerSine_Mod : Module_Mod {
 		this.addButton(0,\onOff, Rect(5, 25, 205, 20));
 	}
 
- 	load {arg xmlSynth;
+	load {arg xmlSynth;
 		this.loadControllers(xmlSynth);
 
 		win.bounds_(xmlSynth.getAttribute("bounds").interpret);
@@ -339,7 +348,6 @@ PlutaSine_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine2 init".postln;
 		this.makeWindow("PlutaSine", Rect(500,100,210,50));
 
 		modName = "PlutaSine";
@@ -353,27 +361,27 @@ PlutaSine_Mod : Module_Mod {
 
 
 		synths.put(0, Synth("plutaSine2_mod", [\outBus, outBus], group));
-/*
+		/*
 		controls.add(Button(win, Rect(5, 5, 205, 20))
-			.states_([["go", Color.red, Color.black],["kill", Color.black, Color.green],["reset", Color.red, Color.green]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						synths.put(0, Synth("plutaSine2_mod", [\outBus, outBus], group));
-					},
-					1, {
-						synths[0].set(\envGate0, 1, \gate, 1);
-					},
-					2, {
-						synths[0].set(\gate, 0);
-					}
-				)
-			};
+		.states_([["go", Color.red, Color.black],["kill", Color.black, Color.green],["reset", Color.red, Color.green]])
+		.action_{|butt|
+		switch(butt.value,
+		0, {
+		synths.put(0, Synth("plutaSine2_mod", [\outBus, outBus], group));
+		},
+		1, {
+		synths[0].set(\envGate0, 1, \gate, 1);
+		},
+		2, {
+		synths[0].set(\gate, 0);
+		}
+		)
+		};
 		);
 		this.addButton(0,\onOff, Rect(5, 25, 205, 20));*/
 	}
 
- 	load {arg xmlSynth;
+	load {arg xmlSynth;
 		this.loadControllers(xmlSynth);
 
 		win.bounds_(xmlSynth.getAttribute("bounds").interpret);
@@ -442,7 +450,6 @@ WubbelsSine3_Mod : Module_Mod {
 	}
 
 	init {
-		"running wub sine init".postln;
 		this.makeWindow("WubbelsSine", Rect(500,100,210,250));
 
 		modName = "WubbelsSine3";
@@ -507,7 +514,7 @@ WubbelsSine3_Mod : Module_Mod {
 }
 
 AutoTuneFake_Mod : Module_Mod {
-	var freq, vol, onOff, freqSpecs, whichScale;
+	var freq, vol, onOff, freqSpecs, whichScale, cMajor;
 
 	*initClass {
 		StartUp.add {
@@ -528,7 +535,7 @@ AutoTuneFake_Mod : Module_Mod {
 	init {
 		this.makeWindow("AutoTuneFake", Rect(500, 500, 350, 260));
 
-		this.initControlsAndSynths(2);
+		this.initControlsAndSynths(4);
 
 		this.makeMixerToSynthBus;
 
@@ -537,18 +544,30 @@ AutoTuneFake_Mod : Module_Mod {
 		synths.add(Synth("fakeAutoTune_mod", [\outBus, outBus, \vol, 0, \freq, 440], group));
 
 
-		freqSpecs = [ControlSpec(63, 95, 'lin', 1), ControlSpec(77, 91, 'lin', 1)/*[77, 79, 81, 83, 84, 86, 88, 89, 91]*/];
+		cMajor = [62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84, 86, 88, 89, 91, 93, 95];
+
+		freqSpecs = [ControlSpec(77, 91, 'lin', 1), ControlSpec(89, 103, 'lin', 1)/*[77, 79, 81, 83, 84, 86, 88, 89, 91]*/];
 
 		controls.add(QtEZSlider2D(ControlSpec.new, ControlSpec.new,
 			{|vals|
 				freq = vals[0];
 				vol = vals[1];
-			synths[0].set(\freq, freqSpecs[whichScale].map(freq), \vol, vol);
+
+				switch(whichScale,
+					0, {
+						freq = cMajor[freq*cMajor.size];
+						if(freq == nil, {freq = 95});
+					},
+					{
+						freq = freqSpecs[whichScale-1].map(freq);
+					}
+				);
+
+				synths[0].set(\freq, freq, \vol, vol);
 		}, [0,0], false));
 
 		controls[0].zAction = {|val|
-			"zAction!!!".postln;
-			onOff = val.value.postln;
+			onOff = val.value;
 			synths[0].set(\onOff, onOff);
 		};
 
@@ -556,24 +575,203 @@ AutoTuneFake_Mod : Module_Mod {
 
 		controls.add(Button()
 			.states_([
-				["chrom", Color.black, Color.red],
-				["c major", Color.red, Color.black]
+				["c major", Color.red, Color.black],
+				["c major", Color.black, Color.red]
 			])
 			.action_({arg butt;
-				whichScale = butt.value;
-				synths[0].set(\whichScale, butt.value);
+				whichScale = 0;
+				synths[0].set(\whichScale, 0);
+				controls[2].value = 0;
+				controls[3].value = 0;
 			})
 		);
 		this.addAssignButton(1,\onOff);
+
+		controls.add(Button()
+			.states_([
+				["chrom0", Color.red, Color.black],
+				["chrom0", Color.black, Color.red]
+			])
+			.action_({arg butt;
+				whichScale = 1;
+				synths[0].set(\whichScale, 1);
+
+				controls[1].value = 0;
+				controls[3].value = 0;
+			})
+		);
+		this.addAssignButton(2,\onOff);
+
+		controls.add(Button()
+			.states_([
+				["chrom1", Color.red, Color.black],
+				["chrom1", Color.black, Color.red]
+			])
+			.action_({arg butt;
+				whichScale = 2;
+				synths[0].set(\whichScale, 2);
+
+				controls[1].value = 0;
+				controls[2].value = 0;
+			})
+		);
+		this.addAssignButton(3,\onOff);
 
 		numChannels = 2;
 
 		win.layout_(HLayout(
 			VLayout(controls[0].layout,assignButtons[0].layout),
-			VLayout(controls[1],assignButtons[1].layout)
-			)
+			VLayout(controls[1], controls[2], controls[3]),
+			VLayout(assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout)
+		)
 		);
-		win.drawFunc_{arg win; win.bounds.postln;};
 
 	}
+
+	// load {}
 }
+
+
+OverlapWubbels_Mod : Module_Mod {
+	var startPos, startPos0, duration, loadFileButton, fileText, savePath, shortPath, vol, playRate, synthOutBus, buffer0, buffer1, monoStereo, dur, fade, trigRate, centerPos, center, width, yRange;
+
+
+	init {
+
+		this.makeWindow("OverlapWubbels", Rect(707, 393, 709, 217));
+		this.initControlsAndSynths(7);
+
+		savePath = "";
+
+		synths = List.newClear(1);
+
+		playRate = 1; vol = 0; fade = 0.1; trigRate = 1; startPos = 0; dur = 4;
+
+		buffer0 = Buffer.alloc(group.server, group.server.sampleRate);
+		buffer1 = Buffer.alloc(group.server, group.server.sampleRate);
+
+		yRange = 1;
+
+		synths.put(0, Synth("overLapSamplePlayer_mod", [\bufnum0, buffer0.bufnum,  \bufnum1, buffer1.bufnum, \whichOut, 0, \playRate, playRate, \numGrains, 1, \startPos, startPos, \dur, dur, \outBus, outBus, \vol, 0], group));
+
+		controls.add(QtEZSlider.new("vol", ControlSpec(0,2,'amp'),
+			{|v|
+				vol = v.value;
+				synths[0].set(\vol, v.value);
+
+		}, 0, true, \horz));
+		this.addAssignButton(0,\continuous);
+
+		controls.add(QtEZRanger.new("playRange", ControlSpec(0,1,'linear',0.001),
+			{|v|
+				startPos = v.value[0];
+				startPos0 = v.value[1];
+				dur = (v.value[1]-v.value[0]);
+				synths[0].set(\startPos, startPos, \startPos0, startPos0, \dur, dur);
+		}, [0,1], true, \horz));
+		this.addAssignButton(1,\range);
+
+		controls.add(QtEZSlider.new("overlaps", ControlSpec(1,3,'linear'),
+			{|v|
+				synths[0].set(\numGrains, v.value);
+		}, 1, true, \horz));
+		this.addAssignButton(2,\continuous);
+
+		controls.add(QtEZSlider.new("playRate", ControlSpec(0.96,1,'linear'),
+			{|v|
+				synths[0].set(\playRate, v.value);
+		}, 1, true, \horz));
+		this.addAssignButton(3,\continuous);
+
+		controls.add(QtEZSlider2D.new(ControlSpec(0,1), ControlSpec(0.001,1,\exp),
+			{arg vals;
+				controls[1].valueAction_([(vals.value[0]-(0.65*vals.value[1]*yRange)).clip(0,1), (vals.value[0]+(0.65*vals.value[1]*yRange)).clip(0,1)]);}
+		));
+		this.addAssignButton(4,\slider2D);
+
+		controls.add(QtEZSlider.new("yRange", ControlSpec(0.01,1,'linear'),
+			{|v|
+				yRange = v.value;
+		}, 1, true, \vert));
+		this.addAssignButton(5,\continuous);
+
+		loadFileButton = Button()
+		.states_([ [ "Load File", Color.red, Color.black ] ])
+		.action_{|v|
+			visibleArray = List.newClear;
+			Window.allWindows.do{arg item;
+
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
+
+			Dialog.openPanel({ arg path;
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+				savePath = path;
+				this.loadFile;
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+			});
+		};
+		fileText = StaticText();
+
+		controls.add(Button()
+			.states_([ [ "NoZActions", Color.red, Color.black ],  [ "ZActions!", Color.blue, Color.black ]])
+			.action_{|v|
+				if(v.value ==1,{
+					controls[4].zAction = {|val|
+						synths[0].set(\onOff, val.value)
+					};
+					synths[0].set(\onOff, 0)
+				},{
+					synths[0].set(\onOff, 1);
+					controls[4].zAction = {};
+				}
+				);
+			};
+		);
+
+		win.layout_(
+			HLayout(
+				VLayout(
+					HLayout(controls[0].layout,assignButtons[0].layout),
+					HLayout(controls[1].layout,assignButtons[1].layout),
+					HLayout(controls[2].layout,assignButtons[2].layout),
+					HLayout(controls[3].layout,assignButtons[3].layout),
+					HLayout(loadFileButton, fileText, controls[6])
+				),
+				VLayout(controls[4].layout, assignButtons[4].layout), controls[5].layout
+			)
+		);
+	}
+
+	loadFile {
+		if(savePath.size>0,{
+			if(File.exists(savePath),{
+				fileText.string_(savePath.split.pop);
+				synths[0].set(\whichOut, 0);
+				buffer0 = Buffer.readChannel(group.server, savePath, 0, -1, [0],
+					{arg buf;
+						synths[0].set(\bufnum0, buf.bufnum);
+						synths[0].set(\whichOut, 0);
+						SystemClock.sched(1.0, {synths[0].set(\trigOnOff, 1)});
+				});
+				SystemClock.sched(0.5, {
+					buffer1 = Buffer.readChannel(group.server, savePath, 0, -1, [1],
+						{arg buf;
+							synths[0].set(\bufnum1, buf.bufnum, \whichOut, 1);
+					});
+				});
+			})
+		})
+		}
+
+		saveExtra {arg saveArray;
+			saveArray.add(savePath.asString);
+		}
+
+		loadExtra {arg loadArray;
+			savePath = loadArray[4];
+			this.loadFile;
+		}
+	}

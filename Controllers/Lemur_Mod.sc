@@ -2,7 +2,7 @@ Lemur_Mod {
 
 	classvar responders;
 	classvar <>sendRequest = false;
-	classvar netAddr, ip;
+	classvar <>netAddr, ip;
 
 	*initClass {}
 
@@ -11,7 +11,9 @@ Lemur_Mod {
 	}
 
 	*start {arg ipIn;
-		ip = ipIn;
+		if(responders.size!=0,{responders.do{arg item; item.free}});
+
+		if(ipIn==nil, {ip = "127.0.0.1"},{ip = ipIn});
 
 		try {netAddr = NetAddr(ip, 8000)}{netAddr = nil};
 
@@ -20,30 +22,33 @@ Lemur_Mod {
 
 		responders = List.newClear[0];
 
-		100.do{arg i;
+		200.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/z").asSymbol));
 		};
 
-		100.do{arg i;
+		200.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Button"++i.asString++"/x").asSymbol, \onOff)}); }, ("/Button"++i.asString++"/x").asSymbol));
 
 
+			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/PadButton"++i.asString++"/x").asSymbol, \increment)}); }, ("/PadButton"++i.asString++"/x").asSymbol));
+
 			//The Switches uses the array of values as part of the path to identify where the message is coming from
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg.asSymbol, 1); if(sendRequest,{MidiOscControl.setController(msg.asSymbol, \onOff)}); }, ("/Switches"++i.asString++"/x").asSymbol));
+
 		};
 
 
-		100.do{arg i;
+		200.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/y").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/z").asSymbol));
 		};
 
-		100.do{arg i;
+/*		100.do{arg i;
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1],msg[2]]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/x").asSymbol));
 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/z").asSymbol));
-		};
+		};*/
 	}
 
 	*resetOSCAddr {arg ip;
@@ -53,12 +58,15 @@ Lemur_Mod {
 	*setWCurrentSetup {arg serverName, oscMsg;
 		var object, setting;
 
+		try {
 		if (netAddr!=nil, {
 			oscMsg = oscMsg.asString.replace("[", "").replace("]", "").replace(" ", "").split($,);
 			oscMsg = oscMsg.copyRange(1, oscMsg.size-1).asInteger.reverse.add(oscMsg[0]).reverse;
-			oscMsg.postln;
+				//netAddr.postln;
+				//oscMsg.postln;
 			netAddr.sendBundle(0.0, oscMsg);
 		});
+		}{"don't send that shit, bitch!"}
 	}
 
 	*getFunctionFromKey {arg module, controllerKey, object;
@@ -67,14 +75,21 @@ Lemur_Mod {
 		localControlObject = object;
 
 		#nothing, keyShort = controllerKey.asString.split;
-		[nothing, keyShort].postln;
 		if(keyShort.beginsWith("Button"),{
-			function = {|val| {val.postln; localControlObject.valueAction_(val)}.defer};
+			function = {|val| {localControlObject.valueAction_(val)}.defer};
 		});
-		if(keyShort.beginsWith("Switches"),{
-			"adding Switches function".postln;
+
+		if(keyShort.beginsWith("PadButton"),{
 			function = {|val|
-				{localControlObject.valueAction_(((localControlObject.value.postln+1).wrap(0, localControlObject.states.size-1)))}.defer};
+				if(val == 1,{
+				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer
+				})
+			};
+		});
+
+		if(keyShort.beginsWith("Switches"),{
+			function = {|val|
+				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
 		});
 		if(keyShort.beginsWith("Fader"),{
 			function =  {|xyz, val|

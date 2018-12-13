@@ -52,7 +52,7 @@ CycleGripper_Mod : Module_Mod {
 			seqs.put(num, Pseq.new(tempList, inf).asStream);
 		});
 		lastValue.put(num, seqs[num].next);
-		^lastValue[num].postln;
+		^lastValue[num];
 	}
 
 	init {

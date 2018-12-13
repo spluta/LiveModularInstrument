@@ -166,119 +166,135 @@ BandPassFreeze_Mod : Module_Mod {
 
 		rout = Routine({
 			group.server.sync;
-			1.0.wait;
+			1.5.wait;
 			buffers.do{arg item; item.zero};
 			group.server.sync;
 			1.0.wait;
 			synths.put(0, Synth("bandPassFreeze2_mod", [\audioInBus, mixerToSynthBus.index, \transferBus, transferBus, \buffer, buffers[0].bufnum, \buf0, buffers[1].bufnum, \buf1, buffers[2].bufnum, \buf2, buffers[3].bufnum, \thresh, 1], soundGroup));
 
 			synths.put(1, Synth("bpfPan2_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-		});
 
-		AppClock.play(rout);
 
-		controls.add(EZSlider(win, Rect(0, 40, 40, 200), "Amp", ControlSpec(0.001, 2, \amp),
-			{arg slider;
-				synths[1].set(\vol, slider.value);
+			controls.add(EZSlider(win, Rect(0, 40, 40, 200), "Amp", ControlSpec(0.001, 2, \amp),
+				{arg slider;
+					synths[1].set(\vol, slider.value);
 			}, 0, true, layout:\vert));
-		this.addAssignButton(0, \continuous, Rect(0, 240, 40, 20));
+			this.addAssignButton(0, \continuous, Rect(0, 240, 40, 20));
 
-		controls.add(EZSlider(win, Rect(45, 40, 40, 200), "Thresh", ControlSpec(0.0, 1.0, \cos), {arg slider;
+			controls.add(EZSlider(win, Rect(45, 40, 40, 200), "Thresh", ControlSpec(0.0, 1.0, \cos), {arg slider;
 				synths[0].set(\thresh, slider.value);
 			}, 0.1, true, layout:\vert));
-		this.addAssignButton(1, \continuous, Rect(45, 240, 40, 20));
+			this.addAssignButton(1, \continuous, Rect(45, 240, 40, 20));
 
-		controls.add(EZSlider(win, Rect(90, 40, 40, 200), "Speed", ControlSpec(0.025, 12.0, \linear), {arg slider;
+			controls.add(EZSlider(win, Rect(90, 40, 40, 200), "Speed", ControlSpec(0.025, 12.0, \linear), {arg slider;
 				synths[0].set(\low, slider.value, \hi, slider.value+(2*(slider.value.sqrt)));
 			}, 0.1, true, layout:\vert));
-		this.addAssignButton(2, \continuous, Rect(90, 240, 40, 20));
+			this.addAssignButton(2, \continuous, Rect(90, 240, 40, 20));
 
-		controls.add(Button(win, Rect(0, 280, 65, 20))
-			.states_([
-				["On", Color.green, Color.black],
-				["Off", Color.black, Color.red]
-			])
-			.action_{arg butt;
-				synths[1].set(\onOff, (butt.value+1).wrap(0,1))
+			controls.add(Button(win, Rect(0, 280, 65, 20))
+				.states_([
+					["On", Color.green, Color.black],
+					["Off", Color.black, Color.red]
+				])
+				.action_{arg butt;
+					synths[1].set(\onOff, (butt.value+1).wrap(0,1))
 			});
-		this.addAssignButton(3,\onOff, Rect(65, 280, 65, 20));
+			this.addAssignButton(3,\onOff, Rect(65, 280, 65, 20));
 
-		controls.add(Button(win, Rect(0, 305, 65, 20))
-			.states_([
-				["manTrig", Color.red, Color.blue],
-				["manTrig", Color.blue, Color.red]
-			])
-			.action_{arg butt;
-				synths[0].set(\t_trig, 1)
+			controls.add(Button(win, Rect(0, 305, 65, 20))
+				.states_([
+					["manTrig", Color.red, Color.blue],
+					["manTrig", Color.blue, Color.red]
+				])
+				.action_{arg butt;
+					synths[0].set(\t_trig, 1)
 			});
-		this.addAssignButton(4,\onOff, Rect(65, 305, 65, 20));
+			this.addAssignButton(4,\onOff, Rect(65, 305, 65, 20));
 
-		Button(win, Rect(5, 330, 60, 20))
+			Button(win, Rect(5, 330, 60, 20))
 			.states_([["0 Bufs", Color.black, Color.white]])
 			.action_{
 				buffers.do{arg item; item.zero};
 			};
 
-		trigButton = Button(win, Rect(70, 330, 60, 20))
-		.states_([["trig", Color.red, Color.blue],["trig", Color.blue, Color.red]]);
+			trigButton = Button(win, Rect(70, 330, 60, 20))
+			.states_([["trig", Color.red, Color.blue],["trig", Color.blue, Color.red]]);
 
-		getTrig = OSCFunc({|msg, time|
-			if(msg[2]==10, {
-				{trigButton.value = (trigButton.value+1).wrap(0,1)}.defer
-	})}, '/tr');
+			getTrig = OSCFunc({|msg, time|
+				if(msg[2]==10, {
+					{trigButton.value = (trigButton.value+1).wrap(0,1)}.defer
+			})}, '/tr');
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button(win,Rect(5, 355, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				AppClock.sched(1.0, {
-					"change channels".postln;
-					switch(butt.value,
-						0, {
-							synths[1].set(\gate, 0);
-							numChannels = 2;
-							synths.put(1, Synth("bpfPan2_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-						},
-						1, {
-							synths[1].set(\gate, 0);
-							numChannels = 4;
-							synths.put(1, Synth("bpfPan4_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-						},
-						2, {
-							synths[1].set(\gate, 0);
-							numChannels = 8;
-							synths.put(1, Synth("bpfPan8_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-						}
-					);
-					nil
-				});
-			};
-		);
+			//multichannel button
+			numChannels = 2;
+			controls.add(Button(win,Rect(5, 355, 60, 20))
+				.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
+				.action_{|butt|
+					AppClock.sched(1.0, {
+						switch(butt.value,
+							0, {
+								synths[1].set(\gate, 0);
+								numChannels = 2;
+								synths.put(1, Synth("bpfPan2_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
+							},
+							1, {
+								synths[1].set(\gate, 0);
+								numChannels = 4;
+								synths.put(1, Synth("bpfPan4_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
+							},
+							2, {
+								synths[1].set(\gate, 0);
+								numChannels = 8;
+								synths.put(1, Synth("bpfPan8_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
+							}
+						);
+						nil
+					});
+				};
+			);
 
 
-		win.front;
+			win.front;
+
+		});
+
+		AppClock.play(rout);
 	}
 
-
-/*	loadSettings {arg xmlSynth;
+	//overriding the load method to accomodate the late buffer allocation
+	load {arg loadArray;
 		var routB;
 
 		routB = Routine({
 			group.server.sync;
-			2.0.wait;
-			controls.do{arg item, i;
-				midiHidTemp = xmlSynth.getAttribute("controls"++i.asString);
-				if(midiHidTemp!=nil,{
-					("controls"++i.asString+" ").post;
-					if(controls[i].value!=midiHidTemp.interpret,{
-						controls[i].valueAction_(midiHidTemp.interpret.postln);
-					});
+			3.2.wait;
+			group.server.sync;
+			1.wait;
+			loadArray[1].do{arg controlLevel, i;
+				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
+					controls[i].valueAction_(controlLevel);
 				});
 			};
+
+			loadArray[2].do{arg msg, i;
+				waitForSetNum = i;
+				if(msg!=nil,{
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
+					assignButtons[i].instantButton.value_(1);
+				})
+			};
+
+			if(win!=nil,{
+				win.bounds_(loadArray[3]);
+				win.visible_(false);
+			});
+
+			this.loadExtra(loadArray);
 		});
+
 		AppClock.play(routB);
-	}*/
+	}
 
 	killMeSpecial {
 		getTrig.stop;

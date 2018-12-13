@@ -1,5 +1,5 @@
 MantaBuffers_Mod : Module_Mod {
-	var buffer, localRout, startPos, duration, vol, playRate, synthOutBus, buffer, dur, fade, trigRate, centerPos, center, width, yRange, recordGroup, playGroup, volBus, trigSpec, temp;
+	var buffer, localRout, startPos, duration, vol, playRate, synthOutBus, buffer, dur, fade, trigRate, centerPos, center, width, yRange, recordGroup, playGroup, volBus, trigSpec, temp, zTrigs;
 
 	var trigRates, durations;
 
@@ -19,14 +19,14 @@ MantaBuffers_Mod : Module_Mod {
 				BufWr.ar(in, bufnum, phasor, loop:1);
 			}).writeDefFile;
 
-			SynthDef("mantaBuffersPlay_mod", {arg bufnum, outBus, trigRates = #[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], durations = #[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], centerPos = #[ 0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.7, 3.9, 4.1, 4.3, 4.5, 4.7, 4.9, 5.1, 5.3, 5.5, 5.7, 5.9, 6.1, 6.3, 6.5, 6.7, 6.9, 7.1, 7.3, 7.5, 7.7, 7.9, 8.1, 8.3, 8.5, 8.7, 8.9, 9.1, 9.3, 9.5 ], vol=0, pauseGate = 1, gate = 1;
+			SynthDef("mantaBuffersPlay_mod", {arg bufnum, outBus, trigRates = #[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], durations = #[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], zTrigs = #[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], centerPos = #[ 0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.7, 3.9, 4.1, 4.3, 4.5, 4.7, 4.9, 5.1, 5.3, 5.5, 5.7, 5.9, 6.1, 6.3, 6.5, 6.7, 6.9, 7.1, 7.3, 7.5, 7.7, 7.9, 8.1, 8.3, 8.5, 8.7, 8.9, 9.1, 9.3, 9.5 ], vol=0, pauseGate = 1, gate = 1;
 
 				var env, pauseEnv, impulse, out, pan, fade, envs, tGrains;
 
 				env = EnvGen.kr(Env.asr(0.01, 1, 0.01), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0.05,1,0.01), pauseGate, doneAction:1);
 
-				impulse = Impulse.kr(trigRates);
+				impulse = Impulse.kr(trigRates*zTrigs);
 
 				pan = TRand.kr(0.7, 1.0, impulse)*TChoose.kr(impulse, [-1,1]);
 
@@ -52,8 +52,6 @@ MantaBuffers_Mod : Module_Mod {
 
 		buffer = Buffer.alloc(group.server, group.server.sampleRate*10, 1);
 
-		"bufnum".post; buffer.bufnum.postln;
-
 		synths = List.newClear(2);
 
 		recordGroup = Group.head(group);
@@ -62,6 +60,7 @@ MantaBuffers_Mod : Module_Mod {
 		trigSpec = ControlSpec(15, 120, \exp);
 
 		trigRates = Array.fill(48,{0});
+		zTrigs = Array.fill(48,{0});
 		durations = Array.fill(48,{0});
 
 		synths.put(0, Synth("mantaBuffersRecord_mod", [\inBus, mixerToSynthBus.index, \bufnum, buffer.bufnum], recordGroup));
@@ -77,15 +76,6 @@ MantaBuffers_Mod : Module_Mod {
 
 		}, 0, true, \horz));
 		this.addAssignButton(0,\continuous);
-
-		/*		controls.add(QtEZSlider.new("playRate", ControlSpec(-4,4,'linear'),
-		{|v|
-		playRate = v.value;
-		if(playRate ==0, {playRate = 0.05});
-		if(playRate.abs<0.05, {playRate = 0.05*(playRate.sign)});
-		synths[1].set(\playRate, playRate);
-		}, 1, true, \horz));
-		this.addAssignButton(4,\continuous);*/
 
 		controls.add(Button()
 			.states_([["rec", Color.red, Color.black],["lock", Color.red, Color.black]])
@@ -117,20 +107,31 @@ MantaBuffers_Mod : Module_Mod {
 	}
 
 	setManta {
-		var counter=0;
+		var counter=0, key2;
 
-		(1..48).do{arg key, i;
-			oscMsgs.put(i+1, "/manta/value/"++key.asString);
-			//oscMsgs.put(i+48+1, "/manta/noteOff/"++key.asString);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i+1],
-				{arg val;
-					temp = trigSpec.map(val/180);
-					if(temp<16, {temp = 0});
-					trigRates.put(i, temp);
-					durations.put(i, 1/max(5, trigRates[i]/4));
-					trigRates.postln;
-					durations.postln;
-					synths[1].set(\trigRates, trigRates, \durations, durations)
+		48.do{arg key;
+			//oscMsgs.put(key+2, "/manta/pad/"++key.asString);
+
+			key2 = "/MultiBall"++(100+key).asString;
+			oscMsgs.put(key+2, key2);
+
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[key+2],
+				{arg xyz, val;
+					switch(xyz.asSymbol,
+						'y', {
+							temp = trigSpec.map(val);
+							if(temp<16, {temp = 0});
+							trigRates.put(key, temp);
+							durations.put(key, 1/max(5, trigRates[key]/4));
+							trigRates;
+							durations;
+							synths[1].set(\trigRates, trigRates, \durations, durations)
+						},
+						'z', {
+							zTrigs.put(key, val);
+							synths[1].set(\zTrigs, zTrigs);
+						}
+					)
 				},
 				setups);
 			/*MidiOscControl.setControllerNoGui(group.server, oscMsgs[i+48+1],
@@ -164,21 +165,13 @@ MantaBuffers_Mod : Module_Mod {
 		};
 
 		saveArray.add(temp);  //controller messages
-		saveArray.add(oscMsgs.copyRange(0,1));
+
+		saveArray.add(oscMsgs.copyRange(0,0));
 
 		saveArray.add(win.bounds);
 
 		this.saveExtra(saveArray);
 		^saveArray
 	}
-
-/*	load {arg loadArray;
-		loadArray.do{arg item; item.postln};
-		loadArray[1].do{arg controlLevel, i;
-			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
-		};
-
-		win.bounds_(loadArray[3]);
-	}*/
 
 }

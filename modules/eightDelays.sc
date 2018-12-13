@@ -550,7 +550,6 @@ LongDelay_Mod : Module_Mod {
 
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		win.drawFunc = {win.bounds.postln;};
 		win.front;
 	}
 }

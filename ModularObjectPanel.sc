@@ -120,7 +120,7 @@ ModularObjectPanel {
 		view.visible = true;
 	}
 
-	invisisible {
+	invisible {
 		view.visible = false;
 	}
 
@@ -240,6 +240,7 @@ ModularObjectPanel {
 			};
 			saveList.add(temp);
 			saveList.add(synth.save);
+			saveList.add(hidden);
 		});
 		^saveList
 	}
@@ -278,6 +279,9 @@ ModularObjectPanel {
 
 
 		synth.load(loadArray[2]);
+		if(loadArray[3]!=nil,{
+			if(loadArray[3]==true,{showButton.valueAction_(1)});
+		});
 	}
 
 }

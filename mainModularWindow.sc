@@ -2,7 +2,7 @@ MainProcessingWindow : MidiOscObject {
 	var synthList, availableModules, synthLocation, availableBusses, paths, file, text, num;
 	var saveButtons, loadButtons, soundInBussesTemp, stereoSoundInBussesTemp, availableBussesTemp, soundInBoxes, stereoSoundInBoxes, classBoxes, classBoxItems, classScroller, modularClassList, xmlBounds;
 	var setupButtons, currentSetup, objectBusses, <>assignMantaButton, <>mainSwitchSet;
-	var resetOscButton, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout;
+	var resetOscButton, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
 
 	*new {arg group;
 		^super.new.group_(group).init;
@@ -27,14 +27,14 @@ MainProcessingWindow : MidiOscObject {
 			soundInBoxes[i].dragLabel="S"+i.asString;
 		};
 
-		stereoSoundInBoxes = List.new;
+	/*	stereoSoundInBoxes = List.new;
 		ModularServers.getStereoSoundInBusses(group.server).do{arg item, i;
 			stereoSoundInBoxes.add(DragSource(win,Rect(5+(90*i), 20, 90, 16)));
 			stereoSoundInBoxes[i].setProperty(\align,\center);
 			stereoSoundInBoxes[i].object = [item, "S"++(i*2).asString++((i*2)+1).asString];
 			stereoSoundInBoxes[i].string="S"++(i*2).asString++((i*2)+1).asString;
 			stereoSoundInBoxes[i].dragLabel="S"++(i*2).asString++((i*2)+1).asString;
-		};
+		};*/
 
 		classBoxes = List.new;
 		classBoxItems = List.new;
@@ -72,7 +72,6 @@ MainProcessingWindow : MidiOscObject {
 
 					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
 		});
@@ -92,7 +91,6 @@ MainProcessingWindow : MidiOscObject {
 
 					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
 		});
@@ -112,7 +110,6 @@ MainProcessingWindow : MidiOscObject {
 
 					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
 		});
@@ -133,7 +130,6 @@ MainProcessingWindow : MidiOscObject {
 					//Window.allWindows.do{arg item, i; item.visible = true};
 
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 						};
 				});
@@ -149,11 +145,10 @@ MainProcessingWindow : MidiOscObject {
 					item.visible = false
 				};
 				Dialog.openPanel({ arg path;
-					ModularServers.load(path, group.server.postln);
+					ModularServers.load(path, group.server);
 
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 						};
 				});
@@ -173,7 +168,6 @@ MainProcessingWindow : MidiOscObject {
 
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
 					},{
-						"cancelled".postln;
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
 		});
@@ -231,13 +225,20 @@ MainProcessingWindow : MidiOscObject {
 
 		cpuUsage1 = StaticText(win, Rect(550, 90*5+70, 90, 16));
 
+		waitRand = rrand(1.9,2.1);
 		cpuUsageRout = Routine({inf.do{
 			cpuUsage0.string = group.server.avgCPU.round(0.01).asString;
+			waitRand.wait;
+		}});
+
+		waitRandA = rrand(1.9,2.1);
+		cpuUsageRoutA = Routine({inf.do{
 			cpuUsage1.string = group.server.peakCPU.round(0.01).asString;
-			1.wait;
+			waitRandA.wait;
 		}});
 
 		AppClock.play(cpuUsageRout);
+		AppClock.play(cpuUsageRoutA);
 
 		win.front;
 
@@ -245,6 +246,7 @@ MainProcessingWindow : MidiOscObject {
 			//kill all the stuff
 			synthList.do{arg item; item.killMe};
 			cpuUsageRout.stop;
+			cpuUsageRoutA.stop;
 			thisProcess.recompile;
 		}
 	}
@@ -268,12 +270,13 @@ MainProcessingWindow : MidiOscObject {
 	setName {arg name;
 		win.name_(name);
 	}
+
 }
 
 
 
 LiveModularInstrument {
-	classvar <>numServers, <>inBus, <>outBus, hardwareBufferSize, whichClassList, servers, modularInputArray, <>controllers;
+	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, modularInputArray, <>controllers;
 	classvar xmlDoc, xmlRoot, xmlMainProc, xmlMainMixer, xmlInputArray, file;
 	classvar numServers, setups, windows;
 	classvar readyToRollCounter, addingServer=false;
@@ -282,32 +285,40 @@ LiveModularInstrument {
 		^super.new.init;
 	}
 
-	*boot {arg numServersIn=1, inBusIn=0, outBusIn=0, hardwareBufferSizeIn=64, whichClassListIn, controllersIn;
+	*boot {arg numServersIn=1, inBussesIn, outBussesIn, hardwareBufferSizeIn=64, sampleRate=44100, whichClassListIn, controllersIn;
 
-		numServers=numServersIn; inBus=inBusIn; outBus=outBusIn; controllers = controllersIn; hardwareBufferSize=hardwareBufferSizeIn; whichClassList=whichClassListIn;
+		numServers=numServersIn;
+		inBusses = List.newClear(8);
+
+		inBusses=List[0,1,2,3,4,5,6,7];
+		inBussesIn.do{arg item, i;
+			if(i<8,{
+				inBusses.put(i, item);
+		})};
+
+		outBusses=List[0,1,2,3,4,5,6,7];
+		outBussesIn.do{arg item, i;
+			if(i<8,{
+				outBusses.put(i, item);
+		})};
+
+		controllers = controllersIn; hardwareBufferSize=hardwareBufferSizeIn; whichClassList=whichClassListIn;
 
 		Server.local.options.hardwareBufferSize_(hardwareBufferSize);
+
+		Server.local.options.sampleRate_(sampleRate);
 
 		setups = List.newClear(0);
 		((numServers*4-1)..0).do{arg i; setups.add('setup'++i.asSymbol)};
 
 		//set up the control devices and control GUI
-		if(controllers == nil, {
-			controllers = [Manta_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start];
-		});
+
 
 		if(whichClassList == nil, {whichClassList = 'normal'});
 		ModularClassList.new(whichClassList);
 
-		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
-
-		MidiOscControl.new;
-
 		readyToRollCounter = 0;
-
-
-		numServers.postln;
-		ModularServers.boot(numServers, inBus, outBus); //sends readToRoll messages once the servers are loaded
+		ModularServers.boot(numServers, inBusses, outBusses); //sends readyToRoll messages once the servers are loaded
 	}
 
 	*addServer {
@@ -318,21 +329,28 @@ LiveModularInstrument {
 	*readyToRoll {
 		//receives this message from the ModularServers to know that they are ready to be populated
 
+		//set the controllers only on the first readyToRoll message
+		if(readyToRollCounter==0,{
+			if(controllers == nil, {
+				controllers = [MantaCocoa_Mod, Lemur_Mod, MIDI_Mod];
+			});
+			controllers.do{arg item; item.start};
+			//if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+			MidiOscControl.new;
+		});
+
 		readyToRollCounter = readyToRollCounter+1;
 		if(addingServer,{
-			"adding new server".postln;
 
 			ModularServers.modularInputsArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]); //this is stupid
 
 			numServers = numServers+1;
 			addingServer = false;
 			},{
-				if(readyToRollCounter.postln==numServers, {
-
-					"readyToRoll".postln;
+				if(readyToRollCounter==numServers, {
 					Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
 
-					ModularServers.addInputsArray(inBus);
+					ModularServers.addInputsArray(inBusses);
 					ModularServers.updateServerSwitcher;
 
 					MidiOscControl.createActionDictionary;

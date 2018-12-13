@@ -1,4 +1,132 @@
-MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMethod, temp, <>threshold=0.5, depth, previousVolArrays, avgVolArray, <>mulArray, counterArray, incrementArray, task, maxes, tripped, tripCount, tripMul, tripCountTo, tripCountToRange, <>numBinsLong = 10, clipArray, waiting, <>waitTime;
+FeedbackControl_Mod : Module_Mod {
+	var volBus;
+
+	*initClass {
+		StartUp.add {
+
+			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin, pauseGate = 1, gate = 1;
+				var in, fft, out, volume, env, pauseEnv, buf;
+
+				buf = LocalBuf(4096, 1);
+
+				volume = In.kr(volBus);
+
+				in  = In.ar(inBus);
+
+				in = Compander.ar(in, in,
+					thresh: 0.5,
+					slopeBelow: 1,
+					slopeAbove: 0.5,
+					clampTime: 0.01,
+					relaxTime: 0.01
+				);
+
+				fft = FFT(buf, in);
+
+				fft = PV_Control(fft, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin);
+
+				out = IFFT(fft);
+
+				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
+				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
+
+				Out.ar(outBus, out*volume);
+			}).writeDefFile;
+		}
+	}
+
+	init {
+		this.makeWindow("FeedbackControl", Rect(318, 645, 345, 250));
+		this.initControlsAndSynths(10);
+
+		this.makeMixerToSynthBus(1);
+
+		volBus = Bus.control(group.server);
+
+		synths.add(Synth("feedbackControl_mod",[\inBus, mixerToSynthBus, \outBus, outBus.index, \volBus, volBus.index, \thresh, 0.8, \mulFactor, 0.7, \limiter, 10, \attackReleaseFrames, 200, \sustainZeroFrames, 50, \waitGoFrames, 100, \tripCount, 5,  \tripBlockFrames, 300, \topBin, 400], group));
+
+		controls.add(QtEZSlider.new( "vol", ControlSpec(0,1,'amp'),
+			{|v|
+				volBus.set(v.value);
+		}, 0, true, \horz));
+		this.addAssignButton(0,\continuous);
+
+		controls.add(QtEZSlider.new("thresh", ControlSpec(0,1,'linear'),
+			{|v|
+				synths[0].set(\thresh, v.value);
+			}, 0.8, true, \horz ));
+		this.addAssignButton(1,\continuous, Rect(65, 230, 60, 20));
+
+		controls.add(QtEZSlider.new("mulFactor", ControlSpec(0.1,0.9,'linear'),
+			{|v|
+				synths[0].set(\mulFactor, v.value);
+			}, 0.7, true, \horz));
+		this.addAssignButton(2,\continuous);
+
+		controls.add(QtEZSlider.new("limiter", ControlSpec(1,100,'linear'),
+			{|v|
+				synths[0].set(\limiter, v.value);
+			}, 10, true, \horz));
+		this.addAssignButton(3,\range);
+
+		controls.add(QtEZSlider.new("attackReleaseFrames", ControlSpec(10,1000,'linear'),
+			{|v|
+				synths[0].set(\attackReleaseFrames, v.value);
+			}, 200, true, \horz));
+		this.addAssignButton(4,\continuous);
+
+		controls.add(QtEZSlider.new("sustainZeroFrames", ControlSpec(1,1000,'linear'),
+			{|v|
+				synths[0].set(\sustainZeroFrames, v.value);
+			}, 50, true, \horz));
+		this.addAssignButton(5,\continuous);
+
+		controls.add(QtEZSlider.new("waitGoFrames", ControlSpec(1,1000,'linear'),
+			{|v|
+				synths[0].set(\waitGoFrames, v.value);
+			}, 100, true, \horz));
+		this.addAssignButton(6,\continuous);
+
+		controls.add(QtEZSlider.new("tripCount", ControlSpec(1,20,'linear'),
+			{|v|
+				synths[0].set(\tripCount, v.value);
+			}, 100, true, \horz));
+		this.addAssignButton(7,\continuous);
+
+		controls.add(QtEZSlider.new("tripBlockFrames", ControlSpec(1,1000,'linear'),
+			{|v|
+				synths[0].set(\tripBlockFrames, v.value);
+			}, 100, true, \horz));
+		this.addAssignButton(8,\continuous);
+
+		controls.add(QtEZSlider.new("topBin", ControlSpec(10,1000,'linear'),
+			{|v|
+				synths[0].set(\topBin, v.value);
+			}, 400, true, \horz));
+		this.addAssignButton(9,\continuous);
+
+		win.layout_(
+			VLayout(
+				HLayout(controls[0].layout, assignButtons[0].layout),
+				HLayout(controls[1].layout, assignButtons[1].layout),
+				HLayout(controls[2].layout, assignButtons[2].layout),
+				HLayout(controls[3].layout, assignButtons[3].layout),
+				HLayout(controls[4].layout, assignButtons[4].layout),
+				HLayout(controls[5].layout, assignButtons[5].layout),
+				HLayout(controls[6].layout, assignButtons[6].layout),
+				HLayout(controls[7].layout, assignButtons[7].layout),
+				HLayout(controls[8].layout, assignButtons[8].layout),
+				HLayout(controls[9].layout, assignButtons[9].layout)
+			)
+		);
+
+	}
+
+}
+
+//everything below here is the old, original implementation in SC, before the UGen
+
+/*MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMethod, temp, <>threshold=0.5, depth, previousVolArrays, avgVolArray, <>mulArray, counterArray, incrementArray, task, maxes, tripped, tripCount, tripMul, tripCountTo, tripCountToRange, <>numBinsLong = 10, clipArray, waiting, <>waitTime;
 
 	*new {arg size, mulBus, tripBus, multis, multFactor, calculateMethod;
 		^super.new.size_(size).mulBus_(mulBus).tripBus_(tripBus).multis_(multis).multFactor_(multFactor).calculateMethod_(calculateMethod).init;
@@ -45,10 +173,9 @@ MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMe
 	calculateMulArray0 {
 		avgVolArray.do{|item, i|
 			if((item>(threshold))&&(tripped[i]==false),{
-				//"put in ".post;i.postln;
 				//if(waiting == false, {
 				tripped.put(i, true);
-					SystemClock.sched(rrand(waitTime[0], waitTime[1]).postln,{
+					SystemClock.sched(rrand(waitTime[0], waitTime[1]),{
 						counterArray.put(i, 100);
 /*						if(tripped[i].not, {
 							tripCount.put(i, tripCount[i]+1);
@@ -66,13 +193,10 @@ MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMe
 							});
 						});*/
 //						waiting = false;
-//						"not waiting".postln;
 						nil;
 					});//
 //					waiting = true;
-//					"waiting".postln;
 				//});
-				//"put Counter Array".postln;
 				//counterArray.put(i, 10);
 
 			});
@@ -80,14 +204,12 @@ MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMe
 
 
 		counterArray.do{|item,i|
-			//item.post;mulArray[i].postln;
 			if((item!=nil)&&(mulArray[i]!=nil),{
 				if((item>0)&&(mulArray[i]>0),{
 
 					mulArray.put(i, (mulArray[i]-incrementArray[i]).asFloat.abs);
-					//mulArray.postln;
 					counterArray.put(i, item-1);
-					if(counterArray[i]<=0, {tripped.put(i, false); "untripped ".post; i.postln; counterArray.put(i,0)});
+					if(counterArray[i]<=0, {tripped.put(i, false); counterArray.put(i,0)});
 					},{
 						if(mulArray[i]<1,{
 							mulArray.put(i, (mulArray[i]+incrementArray[i]).asFloat.abs);
@@ -97,7 +219,6 @@ MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMe
 				});
 				},
 				{
-					"we have a nil".postln;
 					counterArray.put(i, 0);
 					mulArray.put(i,1);
 
@@ -111,7 +232,6 @@ MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMe
 	turnDispOn {
 
 		task = Task({ {
-			//multis.postln;
 			//multis[0].value_(avgVolArray);
 			multis[0].value_(mulArray);
 			multis[1].value_(tripMul);
@@ -193,7 +313,6 @@ FeedbackDetection {
 				z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
 				x = Complex(z[0], z[1]);
 				getArray = (Array.newFrom(x.magnitude)* 0.05).squared;
-				//getArray.maxIndex.postln;
 				mulArray0.addVolArray(getArray);
 			}); 0.2.wait;}.loop });
 			task.start;
@@ -246,190 +365,190 @@ FeedbackDetection {
 		task.stop;
 		synth.set(\gate, 0);
 	}
-}
+}*/
 
-FeedbackControl_Mod : Module_Mod {
-	var volBus, feedbackDetection, synthGroup, limiterGroup, multis, tempArray, transferBus;
-
-	*initClass {
-		StartUp.add {
-
-			SynthDef("delayFeedback_mod", {arg inBus, outBus, volBus, delay = 0.02158, varAmount=0.5, varFreq=0.02, pauseGate = 1, gate = 1;
-				var in, convolveAudio, volume, env, pauseEnv;
-
-				volume = In.kr(volBus);
-
-				//in  = LPF.ar(In.ar(inBus, 2), 2800);
-
-				in  = In.ar(inBus, 2);
-
-				in = Compander.ar(in, in,
-					thresh: 0.5,
-					slopeBelow: 1,
-					slopeAbove: 0.5,
-					clampTime: 0.01,
-					relaxTime: 0.01
-				);
-
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				Out.ar(outBus, Mix.new(Limiter.ar(in, 0.1, 0.03)*volume));
-			}).writeDefFile;
-		}
-	}
-
-	init {
-		this.makeWindow("FeedbackControl", Rect(318, 645, 345, 250));
-		this.initControlsAndSynths(6);
-
-		this.createMultis;
-
-		this.makeMixerToSynthBus(2);
-
-		transferBus = Bus.audio(group.server,2);
-
-		volBus = Bus.control(group.server);
-
-		limiterGroup = Group.tail(group);
-		synthGroup = Group.tail(group);
-
-		feedbackDetection = FeedbackDetection(limiterGroup, mixerToSynthBus.index, transferBus, multis);
-
-		synths.add(Synth("delayFeedback_mod",[\inBus, transferBus.index, \outBus, outBus.index, \volBus, volBus.index], synthGroup));
-
-		controls.add(EZSlider.new(win,Rect(5, 5, 60, 220), "vol", ControlSpec(0,1,'amp'),
-			{|v|
-				volBus.set(v.value);
-			}, 0, layout:\vert));
-		this.addAssignButton(0,\continuous,Rect(5, 230, 60, 20));
-
-		controls.add(EZSlider.new(win,Rect(65, 5, 60, 220), "threshold", ControlSpec(0,1,'linear'),
-			{|v|
-				feedbackDetection.setThresholdShort(v.value);
-			}, 0.5, layout:\vert));
-		this.addAssignButton(1,\continuous, Rect(65, 230, 60, 20));
-
-		controls.add(EZSlider.new(win,Rect(125, 5, 60, 220), "MultFactor", ControlSpec(0.1,0.9,'linear'),
-			{|v|
-				feedbackDetection.setMultFactor0(v.value);
-			}, 0.5, layout:\vert));
-		this.addAssignButton(2,\continuous,Rect(125, 230, 60, 20));
-
-		controls.add(EZRanger.new(win,Rect(185, 5, 60, 220), "TripCountTo", ControlSpec(1,20,'linear'),
-			{|v|
-				feedbackDetection.setTripCountTo(v.value);
-			}, [1, 10], layout:\vert));
-		this.addAssignButton(3,\range,Rect(185, 230, 60, 20));
-
-		controls.add(EZRanger.new(win,Rect(245, 5, 60, 220), "WaitTime", ControlSpec(1,20,'linear'),
-			{|v|
-				feedbackDetection.setMulArrayWaitTime(v.value);
-			}, [1, 3], layout:\vert));
-		this.addAssignButton(4,\range,Rect(245, 230, 60, 20));
-
-		controls.add(Button(win, Rect(5, 260, 90, 20))
-			.states_([["dispOff", Color.blue, Color.black],["dispOn", Color.black, Color.blue]])
-			.action_({arg butt;
-				if(butt.value==0,{
-					feedbackDetection.turnDispOff
-				},{
-					feedbackDetection.turnDispOn
-				})
-			})
-		);
-
-		numChannels = 2;
-	}
-
-	createMultis {arg size = 320;
-
-		multis = List.newClear(0);
-
-		multis.add(MultiSliderView(win, Rect(size, 5, size, 350)));
-		tempArray = Array.new;
-		size.do({arg i;
-			tempArray = tempArray.add(i/size);
-		});
-
-		multis[0].value_(tempArray);
-		multis[0].readOnly = false;
-		multis[0].xOffset_(1);
-		multis[0].thumbSize_(1);
-		multis[0].strokeColor_(Color.black);
-		multis[0].drawLines_(true);
-		multis[0].drawRects_(false);
-		multis[0].indexThumbSize_(0.5);
-		multis[0].valueThumbSize_(0.1);
-		multis[0].isFilled_(false);
-		multis[0].gap_(1);
-
-		multis.add(MultiSliderView(win, Rect(size, 355, size, 350)));
-		multis[1].value_(tempArray);
-		multis[1].readOnly = false;
-		multis[1].xOffset_(1);
-		multis[1].thumbSize_(1);
-		multis[1].strokeColor_(Color.black);
-		multis[1].drawLines_(true);
-		multis[1].drawRects_(false);
-		multis[1].indexThumbSize_(0.5);
-		multis[1].valueThumbSize_(0.1);
-		multis[1].isFilled_(false);
-		multis[1].gap_(1);
-
-		multis.add(MultiSliderView(win, Rect(0, 355, size, 350)));
-		multis[2].value_(tempArray);
-		multis[2].readOnly = false;
-		multis[2].xOffset_(1);
-		multis[2].thumbSize_(1);
-		multis[2].strokeColor_(Color.black);
-		multis[2].drawLines_(true);
-		multis[2].drawRects_(false);
-		multis[2].indexThumbSize_(0.5);
-		multis[2].valueThumbSize_(0.1);
-		multis[2].isFilled_(false);
-		multis[2].gap_(1);
+// FeedbackControl_Mod : Module_Mod {
+// 	var volBus, feedbackDetection, synthGroup, limiterGroup, multis, tempArray, transferBus;
 //
-//		multis.add(MultiSliderView(win, Rect(515+size, 355, size, 350)));
-//		multis[3].value_(tempArray);
-//		multis[3].readOnly = false;
-//		multis[3].xOffset_(1);
-//		multis[3].thumbSize_(1);
-//		multis[3].strokeColor_(Color.black);
-//		multis[3].drawLines_(true);
-//		multis[3].drawRects_(false);
-//		multis[3].indexThumbSize_(0.5);
-//		multis[3].valueThumbSize_(0.1);
-//		multis[3].isFilled_(false);
-//		multis[3].gap_(1);
+// 	*initClass {
+// 		StartUp.add {
 //
-//		multis.add(MultiSliderView(win, Rect(5, 355, size, 350)));
-//		tempArray = Array.newClear(0);
-//		size.do{|i|tempArray = tempArray.add(1-(i/(size*2)))};
-//		multis[4].value_(tempArray);
-//		multis[4].readOnly = false;
-//		multis[4].xOffset_(1);
-//		multis[4].thumbSize_(1);
-//		multis[4].strokeColor_(Color.black);
-//		multis[4].drawLines_(true);
-//		multis[4].drawRects_(false);
-//		multis[4].indexThumbSize_(0.5);
-//		multis[4].valueThumbSize_(0.1);
-//		multis[4].isFilled_(false);
-//		multis[4].gap_(1);
-	}
-
-	pause {
-		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
-		feedbackDetection.pause;
-	}
-
-	unpause {
-		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
-		feedbackDetection.unpause;
-	}
-
-	killMeSpecial {
-		feedbackDetection.killMe;
-	}
-}
+// 			SynthDef("delayFeedback_mod", {arg inBus, outBus, volBus, delay = 0.02158, varAmount=0.5, varFreq=0.02, pauseGate = 1, gate = 1;
+// 				var in, convolveAudio, volume, env, pauseEnv;
+//
+// 				volume = In.kr(volBus);
+//
+// 				//in  = LPF.ar(In.ar(inBus, 2), 2800);
+//
+// 				in  = In.ar(inBus, 2);
+//
+// 				in = Compander.ar(in, in,
+// 					thresh: 0.5,
+// 					slopeBelow: 1,
+// 					slopeAbove: 0.5,
+// 					clampTime: 0.01,
+// 					relaxTime: 0.01
+// 				);
+//
+// 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
+// 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
+//
+// 				Out.ar(outBus, Mix.new(Limiter.ar(in, 0.1, 0.03)*volume));
+// 			}).writeDefFile;
+// 		}
+// 	}
+//
+// 	init {
+// 		this.makeWindow("FeedbackControl", Rect(318, 645, 345, 250));
+// 		this.initControlsAndSynths(6);
+//
+// 		this.createMultis;
+//
+// 		this.makeMixerToSynthBus(2);
+//
+// 		transferBus = Bus.audio(group.server,2);
+//
+// 		volBus = Bus.control(group.server);
+//
+// 		limiterGroup = Group.tail(group);
+// 		synthGroup = Group.tail(group);
+//
+// 		feedbackDetection = FeedbackDetection(limiterGroup, mixerToSynthBus.index, transferBus, multis);
+//
+// 		synths.add(Synth("delayFeedback_mod",[\inBus, transferBus.index, \outBus, outBus.index, \volBus, volBus.index], synthGroup));
+//
+// 		controls.add(EZSlider.new(win,Rect(5, 5, 60, 220), "vol", ControlSpec(0,1,'amp'),
+// 			{|v|
+// 				volBus.set(v.value);
+// 		}, 0, layout:\vert));
+// 		this.addAssignButton(0,\continuous,Rect(5, 230, 60, 20));
+//
+// 		controls.add(EZSlider.new(win,Rect(65, 5, 60, 220), "threshold", ControlSpec(0,1,'linear'),
+// 			{|v|
+// 				feedbackDetection.setThresholdShort(v.value);
+// 		}, 0.5, layout:\vert));
+// 		this.addAssignButton(1,\continuous, Rect(65, 230, 60, 20));
+//
+// 		controls.add(EZSlider.new(win,Rect(125, 5, 60, 220), "MultFactor", ControlSpec(0.1,0.9,'linear'),
+// 			{|v|
+// 				feedbackDetection.setMultFactor0(v.value);
+// 		}, 0.5, layout:\vert));
+// 		this.addAssignButton(2,\continuous,Rect(125, 230, 60, 20));
+//
+// 		controls.add(EZRanger.new(win,Rect(185, 5, 60, 220), "TripCountTo", ControlSpec(1,20,'linear'),
+// 			{|v|
+// 				feedbackDetection.setTripCountTo(v.value);
+// 		}, [1, 10], layout:\vert));
+// 		this.addAssignButton(3,\range,Rect(185, 230, 60, 20));
+//
+// 		controls.add(EZRanger.new(win,Rect(245, 5, 60, 220), "WaitTime", ControlSpec(1,20,'linear'),
+// 			{|v|
+// 				feedbackDetection.setMulArrayWaitTime(v.value);
+// 		}, [1, 3], layout:\vert));
+// 		this.addAssignButton(4,\range,Rect(245, 230, 60, 20));
+//
+// 		controls.add(Button(win, Rect(5, 260, 90, 20))
+// 			.states_([["dispOff", Color.blue, Color.black],["dispOn", Color.black, Color.blue]])
+// 			.action_({arg butt;
+// 				if(butt.value==0,{
+// 					feedbackDetection.turnDispOff
+// 					},{
+// 						feedbackDetection.turnDispOn
+// 				})
+// 			})
+// 		);
+//
+// 		numChannels = 2;
+// 	}
+//
+// 	createMultis {arg size = 320;
+//
+// 		multis = List.newClear(0);
+//
+// 		multis.add(MultiSliderView(win, Rect(size, 5, size, 350)));
+// 		tempArray = Array.new;
+// 		size.do({arg i;
+// 			tempArray = tempArray.add(i/size);
+// 		});
+//
+// 		multis[0].value_(tempArray);
+// 		multis[0].readOnly = false;
+// 		multis[0].xOffset_(1);
+// 		multis[0].thumbSize_(1);
+// 		multis[0].strokeColor_(Color.black);
+// 		multis[0].drawLines_(true);
+// 		multis[0].drawRects_(false);
+// 		multis[0].indexThumbSize_(0.5);
+// 		multis[0].valueThumbSize_(0.1);
+// 		multis[0].isFilled_(false);
+// 		multis[0].gap_(1);
+//
+// 		multis.add(MultiSliderView(win, Rect(size, 355, size, 350)));
+// 		multis[1].value_(tempArray);
+// 		multis[1].readOnly = false;
+// 		multis[1].xOffset_(1);
+// 		multis[1].thumbSize_(1);
+// 		multis[1].strokeColor_(Color.black);
+// 		multis[1].drawLines_(true);
+// 		multis[1].drawRects_(false);
+// 		multis[1].indexThumbSize_(0.5);
+// 		multis[1].valueThumbSize_(0.1);
+// 		multis[1].isFilled_(false);
+// 		multis[1].gap_(1);
+//
+// 		multis.add(MultiSliderView(win, Rect(0, 355, size, 350)));
+// 		multis[2].value_(tempArray);
+// 		multis[2].readOnly = false;
+// 		multis[2].xOffset_(1);
+// 		multis[2].thumbSize_(1);
+// 		multis[2].strokeColor_(Color.black);
+// 		multis[2].drawLines_(true);
+// 		multis[2].drawRects_(false);
+// 		multis[2].indexThumbSize_(0.5);
+// 		multis[2].valueThumbSize_(0.1);
+// 		multis[2].isFilled_(false);
+// 		multis[2].gap_(1);
+// 		//
+// 		//		multis.add(MultiSliderView(win, Rect(515+size, 355, size, 350)));
+// 		//		multis[3].value_(tempArray);
+// 		//		multis[3].readOnly = false;
+// 		//		multis[3].xOffset_(1);
+// 		//		multis[3].thumbSize_(1);
+// 		//		multis[3].strokeColor_(Color.black);
+// 		//		multis[3].drawLines_(true);
+// 		//		multis[3].drawRects_(false);
+// 		//		multis[3].indexThumbSize_(0.5);
+// 		//		multis[3].valueThumbSize_(0.1);
+// 		//		multis[3].isFilled_(false);
+// 		//		multis[3].gap_(1);
+// 		//
+// 		//		multis.add(MultiSliderView(win, Rect(5, 355, size, 350)));
+// 		//		tempArray = Array.newClear(0);
+// 		//		size.do{|i|tempArray = tempArray.add(1-(i/(size*2)))};
+// 		//		multis[4].value_(tempArray);
+// 		//		multis[4].readOnly = false;
+// 		//		multis[4].xOffset_(1);
+// 		//		multis[4].thumbSize_(1);
+// 		//		multis[4].strokeColor_(Color.black);
+// 		//		multis[4].drawLines_(true);
+// 		//		multis[4].drawRects_(false);
+// 		//		multis[4].indexThumbSize_(0.5);
+// 		//		multis[4].valueThumbSize_(0.1);
+// 		//		multis[4].isFilled_(false);
+// 		//		multis[4].gap_(1);
+// 	}
+//
+// 	pause {
+// 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
+// 		feedbackDetection.pause;
+// 	}
+//
+// 	unpause {
+// 		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
+// 		feedbackDetection.unpause;
+// 	}
+//
+// 	killMeSpecial {
+// 		feedbackDetection.killMe;
+// 	}
+// }
