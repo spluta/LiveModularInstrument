@@ -1,0 +1,6 @@
++ EZSlider {
+
+zAction {
+	}
+
+}

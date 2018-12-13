@@ -5,28 +5,39 @@ QtEZSlider {
 	var <>action, <value, <>zAction;
 
 	*new { arg label, controlSpec, action, initVal,
-			initAction=false, orientation=\vert;
+			initAction=false, orientation=\vert, viewNumberBox=true;
 
 		^super.new.init(label, controlSpec, action, initVal,
-			initAction, orientation);
+			initAction, orientation, viewNumberBox);
 	}
 
-	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation;
-		var numberStep;
+	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation, viewNumberBox;
+		var numberStep, viewArray;
+
+		viewArray = List.newClear;
+
+		if(argLabel!=nil,{
+			label = StaticText();
+			label.string = argLabel;
+			viewArray.add(label);
+		},{
+			label=nil
+		});
 
 		slider = Slider();
+		viewArray.add(slider);
+
 		numBox = NumberBox();
 		numBox.maxWidth_(60);
-		label = StaticText();
-		label.string = argLabel;
+		if(viewNumberBox, {viewArray.add(numBox)});
 
 		zAction = {}; //the default zAction is to do nothing
 
 		switch(orientation,
-			\vert, {slider.orientation=\vertical; layout = VLayout(label, slider, numBox)},
-			\vertical, {slider.orientation=\vertical; layout = VLayout(label, slider, numBox)},
-			\horz, {slider.orientation=\horizontal; layout = HLayout(label, slider, numBox)},
-			\horizontal, {slider.orientation=\horizontal; layout = HLayout(label, slider, numBox)});
+			\vert, {slider.orientation=\vertical; layout = VLayout(*viewArray)},
+			\vertical, {slider.orientation=\vertical; layout = VLayout(*viewArray)},
+			\horz, {slider.orientation=\horizontal; layout = HLayout(*viewArray)},
+			\horizontal, {slider.orientation=\horizontal; layout = HLayout(*viewArray)});
 
 		// set view parameters and actions
 
@@ -311,6 +322,143 @@ QtEZSlider2D {
 	//doAction { action.value(this) }
 }
 
+// QtEZLists : EZGui{  // an abstract class
+//
+// 	var <items, <>globalAction;
+//
+// 	*new { arg parentView, bounds, label,items, globalAction, initVal=0,
+// 		initAction=false, labelWidth,labelHeight=20, layout, gap, margin;
+//
+// 		^super.new.init(parentView, bounds, label, items, globalAction, initVal,
+// 		initAction, labelWidth,labelHeight,layout, gap, margin);
+// 	}
+//
+// 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal,
+// 		initAction, labelWidth, labelHeight, layout,  argGap, argMargin;
+//
+// 		// try to use the parent decorator gap
+// 		this.prMakeMarginGap(parentView, argMargin, argGap);
+//
+// 		// init the views (handled by subclasses)
+// 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
+//
+// 		this.items=argItems ? [];
+//
+// 		globalAction=argGlobalAction;
+//
+// 		widget.action={arg obj;
+// 			items.at(obj.value).value.value(this);
+// 			globalAction.value(this);
+// 		};
+//
+// 		this.value_(initVal);
+//
+// 		items.notNil.if{
+// 			if(initAction){
+// 				items.at(initVal).value.value(this); // You must do this like this
+// 				globalAction.value(this);	// since listView's array is not accessible yet
+// 			};
+// 			this.value_(initVal);
+// 		};
+//
+// 	}
+//
+// 	initViews{}  // override this for your subclass views
+//
+// 	value{ ^widget.value}
+// 	value_{|val| widget.value=val}
+//
+// 	valueAction_{|val| widget.value_(val); this.doAction}
+//
+// 	doAction {widget.doAction;}
+//
+// 	items_{ arg assocArray;
+// 		assocArray = assocArray.collect({ |it| if (it.isKindOf(Association), { it }, { it -> nil }) });
+// 		items=assocArray;
+// 		widget.items=assocArray.collect({|item| item.key});
+// 	}
+//
+// 	item {^items.at(this.value).key}
+// 	itemFunc {^items.at(this.value).value}
+//
+// 	addItem{arg name, action;
+// 		this.insertItem(nil, name, action);
+// 	}
+//
+// 	insertItem{ arg index, name, action;
+// 		var temp;
+// 		index = index ? items.size;
+// 		this.items=items.insert(index, name.asSymbol -> action);
+// 	}
+//
+// 	removeItemAt{ arg index;
+// 		var temp;
+// 		items.removeAt(index);
+// 		this.items_(items)
+//
+// 	}
+//
+// 	replaceItemAt{ arg index, name, action;
+// 		var temp;
+// 		name = name ? items.at(index).key;
+// 		action = action ? items.at(index).value;
+// 		this.removeItemAt(index);
+// 		this.insertItem(index, name, action);
+//
+// 	}
+//
+// }
+// QtEZPopUpMenu : EZLists{
+//
+// 	initViews{ arg parentView, bounds, label, labelWidth,labelHeight,arglayout;
+// 		var labelBounds, listBounds;
+//
+// 		labelWidth = labelWidth ? 80;
+// 		layout=arglayout ? \horz;
+// 		labelSize=labelWidth@labelHeight;
+//
+// 		bounds.isNil.if{bounds= 160@20};
+//
+// 		// if no parent, then pop up window
+// 		# view,bounds = this.prMakeView( parentView,bounds);
+//
+// 		// calcualate bounds
+// 		# labelBounds,listBounds = this.prSubViewBounds(innerBounds, label.notNil);
+//
+// 		// insert the views
+//
+// 		/*		label.notNil.if{ //only add a label if desired
+// 		if ((layout==\vert)(layout==\vertical)||{
+// 		labelView = StaticText.new(view, labelBounds).resize_(2);
+// 		labelView.align = \left;
+// 		}{
+// 		labelView = StaticText.new(view, labelBounds);
+// 		labelView.align = \right;
+// 		};
+// 		labelView.string = label;
+// 		};*/
+//
+// 		widget = PopUpMenu.new(view, listBounds).resize_(5);
+// 	}
+//
+// 	menu {^ widget}
+//
+// 	setColors{arg stringBackground, stringColor, menuBackground,  menuStringColor,background ;
+//
+// 		stringBackground.notNil.if{
+// 		labelView.notNil.if{labelView.background_(stringBackground)};};
+// 		stringColor.notNil.if{
+// 		labelView.notNil.if{labelView.stringColor_(stringColor)};};
+// 		menuBackground.notNil.if{
+// 		this.menu.background_(menuBackground);};
+// 		menuStringColor.notNil.if{
+// 		this.menu.stringColor_(menuStringColor);};
+// 		background.notNil.if{
+// 		view.background=background;};
+// 	}
+//
+// }
+
 
 GUIModule {
 	var knob, slider, <>layout;
@@ -323,8 +471,8 @@ GUIModule {
 	init {
 
 		knob = Knob();
-		slider = QtEZSlider("vol", ControlSpec(0,5), {arg slider; slider.value.postln}, 0);
+		slider = QtEZSlider("vol", ControlSpec(0,5), {arg slider; slider.value}, 0);
 
-		layout = VLayout(knob, slider.layout.postln);
+		layout = VLayout(knob, slider.layout);
 	}
 }

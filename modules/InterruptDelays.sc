@@ -87,7 +87,6 @@ InterruptDelays_Mod : Module_Mod {
 	calcDelGap {
 		delGap = rrand(delRange[0], delRange[1]);
 		8.do{arg i; delGaps.put(i, delGap*(rrand(i+1, i+2)*delGap))};
-		delGaps.postln;
 	}
 
 	killMeSpecial {

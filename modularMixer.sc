@@ -328,7 +328,6 @@ ModularMixer {
 	}
 
 	addN1InputMixer {arg inputBusIndex, numBusses;
-		"addN1 ".post; numBusses.postln;
 		singleMixer = mixers[inputBusIndex.asSymbol];
 		if(singleMixer==nil,{
 			switch(numBusses,
@@ -339,7 +338,6 @@ ModularMixer {
 				6, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer6-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))},
 				7, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer7-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))},
 				8, {
-					"8-1".postln;
 					mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer8-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index], group))}
 			);
 		});

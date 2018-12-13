@@ -29,11 +29,26 @@ MincekSine_Mod : Module_Mod {
 
 		dontLoadControls = (1..22);
 
-		freqList = [[71,69,60,60], [75.7,64,52.3,60], [87.3,50.7,60,60], [76.3,61.7,60,60], [83,52,60,60], [93.3,45,60,60], [70.7,69.3,60,60], [86,75,49,38], [79,68,54,43], [84,71,49,36], [62,61,59,58]];
+		/*freqList = [[71,69,60,60], [75.7,64,52.3,60], [87.3,50.7,60,60], [76.3,61.7,60,60], [83,52,60,60], [93.3,45,60,60], [70.7,69.3,60,60], [86,75,49,38], [79,68,54,43], [84,71,49,36], [62,61,59,58]];
 
 		lagList = [0, 0, 0, 60, 45, 0, 55, 0, 120, 120, 240];
 
-		volList = [[1,1,0,0], [1,1,1,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1]];
+		volList = [[1,1,0,0], [1,1,1,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,0,0], [1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1]];*/
+
+		freqList = [[71,69,60,60], [70,64,52.3,60], [87.3,50.7,60,60],
+			[75.7,64,52.3,60], [80,57,60,60], [70.7,69.3,60,60],
+			[86,75,49,38], [79,68,54,43], [84,71,49,36],
+			[62,61,59,58], [62,61,59,58]];
+
+		lagList = [0, 0, 0,
+			0, 0, 64,
+			0, 27, 36,
+			82, 240];
+
+		volList = [[1,0,0,0], [1,0,0,0], [1,1,0,0],
+			[1,1,1,0], [1,1,0,0], [1,1,0,0],
+			[1,1,1,1], [1,1,1,1], [1,1,1,1],
+			[1,1,1,1], [1,1,1,1]];
 
 		freqNum = 0;
 
@@ -55,10 +70,10 @@ MincekSine_Mod : Module_Mod {
 		freqList.size.do{arg i;
 
 			controls.add(Button()
-				.states_([ [ "chord"+i.asString, Color.green, Color.black ], [ "chord"+i.asString, Color.black, Color.green ] ])
+				.states_([ [ "chord"+(i+1).asString, Color.green, Color.black ], [ "chord"+(i+1).asString, Color.black, Color.green ] ])
 				.action_({arg but;
 
-					4.do{|i2| sineWaves[i2].set(\freq, freqList[i][i2].midicps.postln, \lagTime, lagList[i], \lilVol, volList[i][i2])};
+					4.do{|i2| sineWaves[i2].set(\freq, freqList[i][i2].midicps, \lagTime, lagList[i], \lilVol, volList[i][i2])};
 					//text.string = freqNum.asString;
 				})
 			);
@@ -70,7 +85,7 @@ MincekSine_Mod : Module_Mod {
 				.states_([ [ "chord"+i.asString, Color.green, Color.black ], [ "chord"+i.asString, Color.black, Color.green ] ])
 				.action_({arg but;
 
-					4.do{|i2| sineWaves[i2].set(\freq, freqList[i][i2].midicps.postln, \lagTime, 1, \lilVol, volList[i][i2])};
+					4.do{|i2| sineWaves[i2].set(\freq, freqList[i][i2].midicps, \lagTime, 1, \lilVol, volList[i][i2])};
 					//text.string = freqNum.asString;
 				})
 			);

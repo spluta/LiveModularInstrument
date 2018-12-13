@@ -77,7 +77,7 @@ GFNGrainPlayer {
 
 				impulse = DelayC.kr(Impulse.kr(playRate), 0.05, 0.05);
 
-				pos = EnvGen.kr(Env.new([0,dur/2, BufDur.kr(bufnum)-0.3], [0,1], 0.95), trig) + (SinOsc.kr(Rand(0.05, 0.1)).range((BufDur.kr(bufnum)-0.45).neg, 0)*EnvGen.kr(Env.new([0,0,0,1],[0,0.2, 2]), trig));
+				pos = EnvGen.kr(Env.new([0,dur/2, BufDur.kr(bufnum)-(dur+0.05)], [0,1], 0.95), trig) + (SinOsc.kr(Rand(0.05, 0.1)).range((BufDur.kr(bufnum)-0.45).neg, 0)*EnvGen.kr(Env.new([0,0,0,1],[0,0.2, 2]), trig));
 
 				out = TGrains.ar(8, impulse, bufnum, 1, pos, dur, LFNoise2.kr(Rand(2.0,4.0), 2), 2, 4);
 
@@ -119,8 +119,8 @@ GFNGrainPlayer {
 		synth = Synth.newPaused("gfn2_mod", [\inBus, inBus, \outBus, outBus, \volBus, volBus, \bufnum, buffer.bufnum, \dur, dur, \playRate, playRate], playGroup);
 	}
 
-	go {
-		dur = rrand(0.02, 0.2);
+	go {arg durLow, durHigh;
+		dur = rrand(durLow, durHigh);
 		playRate = 1/(dur);
 		recSynth.set(\dur, dur, \t_trig, 1);
 		SystemClock.sched(0.02, {synth.set(\attackTime, 0, \dur, dur, \playRate, playRate, \t_trig, 1, \gate, 1, \pauseGate, 1); nil});
@@ -158,10 +158,10 @@ GFNGrainPlayer {
 }
 
 GNFGrainObject {
-	var group, inBus, outBus, volBus, buffers, frozen, rout, routs, routStream, players, playerStream, playerCounter, counterTemp;
+	var group, inBus, outBus, volBus, <>durLow, <>durHigh, buffers, frozen, rout, routs, routStream, players, playerStream, playerCounter, counterTemp;
 
-	*new {arg group, inBus, outBus, volBus;
-		^super.newCopyArgs(group, inBus, outBus, volBus).init;
+	*new {arg group, inBus, outBus, volBus, durLow, durHigh;
+		^super.newCopyArgs(group, inBus, outBus, volBus, durLow, durHigh).init;
 	}
 
 	init {
@@ -186,7 +186,7 @@ GNFGrainObject {
 		4.do{routs.add(
 			Routine({{
 				playerCounter = playerStream.next;
-				players[playerCounter].go;
+				players[playerCounter].go(durLow, durHigh);
 				rrand(0.125, 0.35).wait;
 			}.loop})
 		)};
@@ -264,7 +264,7 @@ GrainFreezeNoise_Mod : Module_Mod {
 		muted = true;
 
 		grainObjects = List.new;
-		3.do{grainObjects.add(GNFGrainObject(group, mixerToSynthBus.index, outBus, volBus.index))};
+		3.do{grainObjects.add(GNFGrainObject(group, mixerToSynthBus.index, outBus, volBus.index, 0.02, 0.2))};
 
 		controls.add(Button.new()
 			.states_([["mute", Color.blue, Color.black ],["mute", Color.black, Color.red ]])
@@ -337,7 +337,7 @@ GrainFreezeNoise_Mod : Module_Mod {
 						numChannels = 2;
 						grainObjects.do{|item| item.assignNumChannels(numChannels)};
 					},
-					1, {"set4".postln;
+					1, {
 						numChannels = 4;
 						grainObjects.do{|item| item.assignNumChannels(numChannels)};
 					},
@@ -402,7 +402,7 @@ GFNoiseMini_Mod : Module_Mod {
 		muted = true;
 
 		grainObjects = List.new;
-		grainObjects.add(GNFGrainObject(group, mixerToSynthBus.index, outBus, volBus.index));
+		grainObjects.add(GNFGrainObject(group, mixerToSynthBus.index, outBus, volBus.index, 0.02, 0.2));
 
 		controls.add(Button.new()
 			.states_([["mute", Color.blue, Color.black ],["mute", Color.black, Color.red ]])

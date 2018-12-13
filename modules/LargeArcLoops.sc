@@ -123,8 +123,6 @@ LargeArcLoops_Mod : Module_Mod {
 		);
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		//win.bounds = win.bounds.size_(win.minSizeHint);
-		//win.drawFunc = {win.bounds.postln;};
 		win.front;
 	}
 

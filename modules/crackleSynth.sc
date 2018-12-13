@@ -55,7 +55,6 @@ CrackleSynth_Mod : Module_Mod {
 				synths[0].set(\whichOscil, v.value);
 
 				valsArray.put(0, v.value);
-				//valsArray.postln;
 
 		}, 0, true, \vert));
 		this.addAssignButton(1,\continuous);

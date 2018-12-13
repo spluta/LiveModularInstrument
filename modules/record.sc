@@ -54,7 +54,6 @@ Record_Mod : Module_Mod {
 							recordNode = nil;
 							buffer.close({ arg buf; buf.free; });
 							buffer = nil;
-							"Recording Stopped".postln
 						});
 					}
 				)

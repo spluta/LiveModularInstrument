@@ -106,10 +106,6 @@ ScaleShifter_Mod : Module_Mod {
 	makeANote {arg localLength2;
 		var synth, scale, step, changeNext;
 
-		"makeANote".postln;
-
-
-
 		Routine{
 			var changeNumStream, smallLength, copySize;
 
@@ -120,8 +116,6 @@ ScaleShifter_Mod : Module_Mod {
 //			});
 
 			scale = (bigScale/2).scramble.copyRange(0, rrand(numNotes-1, numNotes+3).floor.asInteger).sort.reverse;
-
-			scale.postln;
 
 			smallLength = localLength2/((scale.size+1)/2);
 

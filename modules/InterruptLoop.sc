@@ -80,7 +80,6 @@ InterruptLoop_Mod : Module_Mod {
 				},{
 					synths[currentSynth].set(\gate, 0);
 					phasorBus.get({arg val;
-						val.postln;
 						phaseLength = rrand(lengthRange[0], lengthRange[1])*(buffer.numFrames/8);
 						phaseStart = (val-phaseLength).wrap(0, buffer.numFrames);
 
@@ -104,7 +103,6 @@ InterruptLoop_Mod : Module_Mod {
 				},{
 					synths[currentSynth].set(\gate, 0);
 					phasorBus.get({arg val;
-						val.postln;
 						phaseLength = rrand(lengthRange[0], lengthRange[1])*(buffer.numFrames/8);
 						phaseStart = (val-phaseLength).wrap(0, buffer.numFrames);
 

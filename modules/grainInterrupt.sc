@@ -75,8 +75,6 @@ GrainInterrupt_Mod : Module_Mod {
 				mult = rrand(0.125, 2);
 				add = rrand(0.25, 0.75);
 				if((mult*2+add+0.25)>4,{add=4-(mult*2)-0.25});
-				mult.postln;
-				add.postln;
 				synths.do{arg item; item.set(\xFadeVal, butt.value, \lfoSwitch, butt.value, \negMult, [1,-1].choose, \lfoFreq, rrand(0.25, 0.75), \mult, mult, \add, add,\pDisp, rrand(0.01, 0.25), \tDisp, rrand(0.002, 0.1))};
 			})
 		);

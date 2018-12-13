@@ -1,0 +1,99 @@
+CLASS:: FirmataDevice
+SUMMARY:: interface for Firmata
+CATEGORIES:: External Control
+RELATED:: Classes/SerialPort
+
+DESCRIPTION::
+Class that communicates with a microcontroller running Firmata (http://www.firmata.org).
+
+CLASSMETHODS::
+
+METHOD::new
+
+ARGUMENT::portPath
+
+ARGUMENT::baudrate
+
+INSTANCEMETHODS::
+
+PRIVATE::prSendSysexData, prSetPinCapabilities
+
+METHOD::start
+
+METHOD::end
+
+METHOD::close
+
+METHOD::setPinMode
+
+ARGUMENT::pinNum
+
+ARGUMENT::direction
+
+METHOD::setDigitalPortMask
+
+ARGUMENT::portNum
+
+ARGUMENT::mask
+
+METHOD::reportAnalogPin
+
+ARGUMENT::pinNum
+
+ARGUMENT::bool
+
+METHOD::reportDigitalPort
+
+ARGUMENT::portNum
+
+ARGUMENT::bool
+
+METHOD::serialize14BitData
+
+ARGUMENT::data
+
+METHOD::sendRawString
+
+ARGUMENT::str
+
+METHOD::requestFirmware
+
+METHOD::requestProtocolVersion
+
+METHOD::doSystemReset
+
+METHOD::queryCapability
+
+METHOD::queryPinState
+
+ARGUMENT::pinNum
+
+ARGUMENT::responseFunc
+
+METHOD::queryAllPinStates
+
+ARGUMENT::responseFunc
+
+METHOD::numberOfPins
+
+METHOD::analogPinAction
+Get or set the link::Classes/Function:: to be evaluated.
+
+METHOD::digitalPortAction
+Get or set the link::Classes/Function:: to be evaluated.
+
+METHOD::pinStateResponseAction
+Get or set the link::Classes/Function:: to be evaluated.
+
+METHOD::pinCapabilities
+
+METHOD::port
+
+EXAMPLES::
+
+CODE::
+SerialPort.listDevices;
+a = FirmataDevice("/dev/tty.usbmodemfd111");	//edit portPath to match your device (Arduino)
+a.requestFirmware;
+a.close;
+::

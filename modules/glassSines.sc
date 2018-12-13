@@ -1,15 +1,15 @@
 GlassSineObject : Module_Mod {
-	var win, sineWaves, midiNoteNum, functions, interval, availableIntervals, win, availableIntervalsList, mantaRow, <>layout;
+	var win, sineWaves, midiNoteNum, volFunctions, interval, availableIntervals, win, availableIntervalsList, mantaRow, <>layout;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("glassSine2", {arg freq, volBus, outBus, vol=0, gate = 1, pauseGate = 1;
+			SynthDef("glassSine2", {arg freq, volBus, outBus, vol=0, zvol=1, gate = 1, pauseGate = 1;
 				var sine, env, pauseEnv, mainVol;
 
 				pauseEnv = EnvGen.kr(Env.asr(0,1,6), pauseGate, doneAction:1);
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 
-				sine = SinOsc.ar(freq+LFNoise2.kr(0.1, 5), 0, LagUD.kr(vol, LFNoise2.kr(0.1, 1.25, 1.5), LFNoise2.kr(0.1, 2.25, 3.5))*0.1);
+				sine = SinOsc.ar(freq+LFNoise2.kr(0.1, 5), 0, LagUD.kr(min(vol, zvol), LFNoise2.kr(0.1, 1.25, 1.5), LFNoise2.kr(0.1, 2.25, 3.5))*0.1);
 
 				mainVol = Lag.kr(In.kr(volBus), 0.1);
 
@@ -49,7 +49,7 @@ GlassSineObject : Module_Mod {
 	setWinPoint {arg rowNum, volBus;
 
 		this.initControlsAndSynths(4);
-		oscMsgs = List.newClear(8);
+		oscMsgs = List.newClear(16);
 
 		//if(win.isNil, {win = winIn});
 
@@ -68,7 +68,7 @@ GlassSineObject : Module_Mod {
 
 		controls.add(QtEZSlider(
 			"Cutoff", // label
-			ControlSpec(20, 100, \linear, 0.5), // control spec
+			ControlSpec(20, 124, \linear, 0.5), // control spec
 			{|ez|
 				midiNoteNum=ez.value;
 				this.setFreq;
@@ -108,7 +108,14 @@ GlassSineObject : Module_Mod {
 
 		layout = HLayout(controls[0].layout, controls[1], controls[2], controls[3]);
 
-		functions = List.fill(8, {|i| {|val| sineWaves[i].set(\vol, val/200)}});
+
+
+		/*volFunctions = List.fill(8, {|i| {|xyz, val|
+			switch(xyz.asSymbol,
+				'y', {sineWaves[i].set(\vol, val)},
+				'z', {sineWaves[i].set(\zvol, val)}
+			)
+		}});*/
 	}
 
 	setFreq {
@@ -125,15 +132,46 @@ GlassSineObject : Module_Mod {
 
 	}
 
+
+
 	setManta {
 		var key;
 
 		8.do{|i|
-			key = "/manta/value/"++(mantaRow*8+i+1).asString;
+			key = "/SeaboardPressure/"++((mantaRow*8)+i).asString;
+			oscMsgs.put(i, key);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)}, setups);
+
+			key = "/SeaboardNote/"++((mantaRow*8)+i).asString;
+			oscMsgs.put(i, key);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\zvol, val)}, setups);
+		};
+
+		/*8.do{|i|
+			key = "/SeaboardPressure/"++(Seaboard.lowNote+(mantaRow*8)+i).asString;
+			oscMsgs.put(i, key);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)}, setups);
+		};*/
+	}
+/*		setManta {
+		var key;
+
+		8.do{|i|
+			key = "/MultiBall"++(100+(mantaRow*8)+i).asString;
 			oscMsgs.put(i, key);
 			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], functions[i], setups);
 		};
-	}
+	}*/
+
+/*	setManta {
+		var key;
+
+		8.do{|i|
+			key = "/manta/pad/"++(mantaRow*8+i).asString;
+			oscMsgs.put(i, key);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], functions[i], setups);
+		};
+	}*/
 
 	clearManta {
 		8.do{|i|
@@ -159,23 +197,11 @@ GlassSineObject : Module_Mod {
 
 	load {arg loadArray;
 
-		"loading gsMod".postln;
-
-		loadArray.postln;
-
 		loadArray[0].do{arg controlLevel, i;
 			if((controls[i].value!= controlLevel) && (dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
 			});
 		};
-
-/*		loadArray[1].do{arg msg, i;
-			waitForSetNum = i;
-			if(msg!=nil,{
-				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
-				//assignButtons[i].instantButton.value_(1);
-			})
-		};*/
 	}
 
 	killMe {

@@ -1,5 +1,5 @@
 ModularServerObject {
-	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, synthGroup, <>synthGroups, <>inBusses, <>inBusIndexes, <>stereoInBusses, <>stereoInBusIndexes, volumeInRack, setupSwitcher, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap;
+	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, synthGroup, <>synthGroups, <>inBusses, <>inBusIndexes, <>stereoInBusses, <>stereoInBusIndexes, volumeInRack, setupSwitcher, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible;
 
 	*new {arg server;
 		^super.new.server_(server).init;
@@ -12,6 +12,9 @@ ModularServerObject {
 			inGroup = Group.tail(mainGroup);
 			synthGroup = Group.tail(mainGroup);
 			mixerGroup = Group.tail(mainGroup);
+			postMixerGroup = Group.tail(mainGroup);
+
+			mixerTransferBus = Bus.audio(server, 8);
 
 			//set up the inputs and outputs
 			inBusses = List.new;
@@ -47,7 +50,7 @@ ModularServerObject {
 
 			modularObjects = List.new;
 
-
+			isVisible = true;
 
 			dimensions[0].do{arg i;
 				modularObjects.add(List.new);
@@ -67,7 +70,7 @@ ModularServerObject {
 
 			this.addPanelsToWindow;
 
-			mainMixer = MainMixer.new(mixerGroup);
+			mainMixer = MainMixer.new(mixerGroup, mixerTransferBus);
 
 			LiveModularInstrument.readyToRoll();
 		})
@@ -210,15 +213,31 @@ ModularServerObject {
 		}
 	}
 
-	setModularPanelToSetup{arg location, setupName;
+	setModularPanelToSetup {arg location, setupName;
 		setupSwitcher.changeSetupMap(location, setupName);
+	}
+
+	makeVisible {arg val;
+		isVisible = val;
+
+		if(val==true,{
+			mainWindow.show;
+			mainMixer.unhide;
+		},{
+			mainWindow.hide;
+			mainMixer.hide;
+		});
 	}
 
 	showAndPlay {arg bool;
 		if(bool,{
-			mainWindow.show;
+
+			if(isVisible,{
+				mainWindow.show;
+				mainMixer.unhide;
+			});
+
 			mainMixer.unmute;
-			mainMixer.unhide;
 			setupSwitcher.showCurrentSetup;
 
 			},{
@@ -240,11 +259,11 @@ ModularServerObject {
 }
 
 ModularServers {
-	classvar <>numServers, <>inBus, <>outBus, <>setupColors;
+	classvar <>numServers, <>inBusses, <>outBusses, <>setupColors;
 	classvar <>servers, <>setups, <>modularInputsArray, <>serverSwitcher;
 
-	*boot {arg numServersIn, inBusIn, outBusIn;
-		numServers = numServersIn; inBus = inBusIn; outBus = outBusIn;
+	*boot {arg numServersIn, inBussesIn, outBussesIn;
+		numServers = numServersIn; inBusses = inBussesIn; outBusses = outBussesIn;
 		servers = Dictionary.new(0);
 		setups = List.fill(4, {arg i; ('setup'++i.asSymbol)});
 		setupColors = [Color.blue.multiply(0.5).alpha_(0.25), Color.green.multiply(0.5).alpha_(0.25), Color.red.multiply(0.5).alpha_(0.25), Color.magenta.multiply(0.5).alpha_(0.25)];
@@ -308,9 +327,9 @@ ModularServers {
 
 	}
 
-	*addInputsArray {arg inBus;
+	*addInputsArray {arg inBusses;
 		modularInputsArray = ModularInputsArray.new;
-		modularInputsArray.init2(inBus);
+		modularInputsArray.init2(inBusses);
 	}
 
 	*updateServerSwitcher {

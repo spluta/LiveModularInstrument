@@ -1,4 +1,4 @@
-MidiOscObject {var <>group, <>win, <>oscMsgs, <>controls, <>oscMsgs, assignButtons, <>setups;
+MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>oscMsgs, assignButtons, <>setups;
 	var waitForSetNum, modName, dontLoadControls, synths, visibleArray;
 
 	initControlsAndSynths {arg num;
@@ -12,6 +12,7 @@ MidiOscObject {var <>group, <>win, <>oscMsgs, <>controls, <>oscMsgs, assignButto
 		dontLoadControls = List.newClear(0);
 
 		synths = List.newClear(0);
+		bigSynthGroup = Group.new(group);
 	}
 
 	setOscMsg {arg msg;
@@ -145,10 +146,12 @@ Module_Mod : MidiOscObject {
 
 	pause {
 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
+		bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false);
 	}
 
 	unpause {
 		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
+		bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1);
 	}
 
 	show {
@@ -178,3 +181,4 @@ Module_Mod : MidiOscObject {
 
 	}
 }
+

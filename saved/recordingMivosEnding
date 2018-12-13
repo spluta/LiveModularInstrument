@@ -1,0 +1,4938 @@
+var o, p;
+o = [
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(4),  
+	"ModularVolumeRack",  List.prNew,  Array.prNew(8),  List.prNew,  
+	Array.prNew(8),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	"ServerSwitcher",  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(4),  Rect.prNew,  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(6),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(8),  List.prNew,  Array.prNew(8),  
+	Rect.prNew,  List.prNew,  Array.prNew(8),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(100),  List.prNew,  
+	Array.prNew(100),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  "setup0",  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  "CrackleSynth",  List.prNew,  
+	Array.prNew(6),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	Array.prNew(6),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  "setup1",  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(3),  "Mixer",  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  "setup2",  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(3),  
+	"BuchlaModelSolo",  List.prNew,  Array.prNew(4),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	"setup3",  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  "ResonDraw",  List.prNew,  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(4),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(6),  Array.prNew(2),  Array.prNew(2),  
+	List.prNew,  Array.prNew(6),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(3),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  "BitInterrupter",  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(4),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"DistGrains",  List.prNew,  Array.prNew(3),  Array.prNew(2),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(2),  List.prNew,  Array.prNew(4),  "Mute",  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(4),  "EightDelays2",  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(3),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  "Melter",  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	"RingModStereo",  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  "SwoopDown",  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	"UpDownSines",  List.prNew,  Array.prNew(6),  Array.prNew(2),  
+	List.prNew,  Array.prNew(6),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(3),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"DownShift",  List.prNew,  Array.prNew(5),  Array.prNew(2),  
+	List.prNew,  Array.prNew(4),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  "GlassSines",  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(1),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  "Cutter",  
+	List.prNew,  Array.prNew(8),  Array.prNew(2),  List.prNew,  
+	Array.prNew(8),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"LargeArcLoops",  List.prNew,  Array.prNew(4),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	"AmpMod",  List.prNew,  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  "GFNoiseMini",  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(4),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  "HarmonicDoubler2",  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(3),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(3),  "SpaceJunk",  List.prNew,  Array.prNew(1),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(2),  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(4),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	"ShifterX2",  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(4),  "MixerSolo",  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(2),  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  "FilterGrainsB",  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  "SweepingNoise",  
+	List.prNew,  Array.prNew(3),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  "ScaleShifterB",  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(5),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"BandPassFreeze",  List.prNew,  Array.prNew(6),  List.prNew,  
+	Array.prNew(9),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  "NoisePulse",  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  "GreatExpectations",  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  "SignalSwitcher",  List.prNew,  Array.prNew(5),  
+	Array.prNew(2),  List.prNew,  Array.prNew(5),  Rect.prNew,  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(5),  
+	Array.prNew(2),  List.prNew,  Array.prNew(5),  Rect.prNew,  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(5),  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  Rect.prNew,  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(4),  "TFreeze",  List.prNew,  Array.prNew(6),  
+	List.prNew,  Array.prNew(7),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  "LoopBuf",  
+	List.prNew,  Array.prNew(6),  List.prNew,  Array.prNew(6),  
+	Rect.prNew,  "/Users/sam/Documents/PE Quintet/synthLoop/Bounces/synthLoopFinal.aif",  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"CycleGripper",  List.prNew,  Array.prNew(9),  List.prNew,  
+	Array.prNew(9),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	"LoopMachineOverLap",  List.prNew,  Array.prNew(10),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(10),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  "InterruptDistortion",  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(20),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(6),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(8),  
+	List.prNew,  Array.prNew(8),  Rect.prNew,  List.prNew,  
+	Array.prNew(8),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(100),  List.prNew,  Array.prNew(100),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(6),  List.prNew,  Array.prNew(6),  Rect.prNew,  
+	"/Volumes/HCS/MivosChainReactions/chainReactionsFinalMix/processingStems/section5.wav",  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  "GrainFreezeNoise",  
+	List.prNew,  Array.prNew(9),  List.prNew,  Array.prNew(8),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(3),  "GingerMan",  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  "GrainFreezeDrums",  List.prNew,  
+	Array.prNew(10),  List.prNew,  Array.prNew(9),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  "InterruptDelays",  List.prNew,  
+	Array.prNew(3),  Array.prNew(2),  List.prNew,  Array.prNew(3),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(8),  List.prNew,  
+	Array.prNew(4),  "BitCrusher",  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(4),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  "GrainAge",  
+	List.prNew,  Array.prNew(6),  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  "Freeze",  List.prNew,  
+	Array.prNew(8),  List.prNew,  Array.prNew(8),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(5),  Array.prNew(2),  List.prNew,  Array.prNew(5),  
+	Rect.prNew,  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(2),  List.prNew,  Array.prNew(7),  List.prNew,  
+	Array.prNew(4),  "FilterDelays",  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(3),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(5),  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  Rect.prNew,  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(4),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(8),  List.prNew,  Array.prNew(8),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(5),  Array.prNew(2),  List.prNew,  Array.prNew(5),  
+	Rect.prNew,  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(7),  List.prNew,  Array.prNew(4),  "MantaBuffers",  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(1),  
+	Rect.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	"TriggerDelays",  List.prNew,  Array.prNew(5),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(5),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(7),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Rect.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(7),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(9),  List.prNew,  
+	Array.prNew(9),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(6),  List.prNew,  Array.prNew(7),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  "LoopMachine",  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(5),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  "InterruptLoop",  
+	List.prNew,  Array.prNew(3),  Array.prNew(2),  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(1),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(4),  "Record",  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(3),  Rect.prNew,  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew(1),  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew(1),  
+	List.prNew,  Array.prNew(20),  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew(1),  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew,  List.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(2),  
+	Rect.prNew,  List.prNew,  Array.prNew,  List.prNew,  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(2),  Rect.prNew,  List.prNew,  Array.prNew,  
+	List.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(2),  Rect.prNew,  List.prNew,  
+	Array.prNew,  List.prNew,  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(2),  Rect.prNew,  
+	List.prNew,  Array.prNew
+];
+p = [
+	// List
+	0, [ array: o[1] ],  
+	// Array
+	1, [ o[2],  o[10],  o[18] ],  
+	// List
+	2, [ array: o[3] ],  
+	// Array
+	3, [ o[4],  o[5],  o[7],  o[9] ],  
+	// List
+	5, [ array: o[6] ],  
+	// Array
+	6, [ 0.001,  0.001,  0.81198627107584,  1.5454423593671,  
+		0.001,  0.001,  0.001,  0.001 ],  
+	// List
+	7, [ array: o[8] ],  
+	// Array
+	8, [ '/Fader40',  '/Fader41',  '/Fader42',  '/Fader43',  
+		'/Fader44',  '/Fader45',  nil,  nil ],  
+	// Rect
+	9, [ left: 605.0,  top: 695.0,  
+		width: 412.0,  height: 246.0 ],  
+	// List
+	10, [ array: o[11] ],  
+	// Array
+	11, [ o[12],  o[13],  o[15],  o[17] ],  
+	// List
+	13, [ array: o[14] ],  
+	// Array
+	14, [ 0,  1,  0,  0 ],  
+	// List
+	15, [ array: o[16] ],  
+	// Array
+	16, [ nil,  '[ /Switches42/x, 0, 1, 0 ]',  '[ /Switches42/x, 1, 0, 0 ]',  nil ],  
+	// Rect
+	17, [ left: 960.0,  top: 929.0,  
+		width: 360.0,  height: 106.0 ],  
+	// List
+	18, [ array: o[19] ],  
+	// Array
+	19, [ o[20],  o[1302] ],  
+	// List
+	20, [ array: o[21] ],  
+	// Array
+	21, [ o[22],  o[29],  o[31],  o[33],  
+		o[35],  o[1079] ],  
+	// List
+	22, [ array: o[23] ],  
+	// Array
+	23, [ nil,  o[24],  o[26],  o[28] ],  
+	// List
+	24, [ array: o[25] ],  
+	// Array
+	25, [ 0,  0,  1,  0,  
+		0,  1,  1,  0 ],  
+	// List
+	26, [ array: o[27] ],  
+	// Array
+	27, [ '[ /Switches40/x, 1, 0, 0, 0 ]',  '[ /Switches40/x, 0, 1, 0, 0 ]',  '[ /Switches40/x, 0, 0, 1, 0 ]',  '[ /Switches40/x, 0, 0, 0, 1 ]',  
+		'/manta/noteOn/49',  '/manta/noteOn/50',  '/manta/noteOn/51',  '/manta/noteOn/52' ],  
+	// Rect
+	28, [ left: 39.0,  top: 362.0,  
+		width: 675.0,  height: 560.0 ],  
+	// List
+	29, [ array: o[30] ],  
+	// Array
+	30, [ 44,  45,  46,  47,  
+		48,  49,  50,  51 ],  
+	// List
+	31, [ array: o[32] ],  
+	// Array
+	32, [ 52,  54,  56,  58 ],  
+	// List
+	33, [ array: o[34] ],  
+	// Array
+	34, [ 60,  260,  460,  660,  
+		68,  268,  468,  668,  
+		76,  276,  476,  676,  
+		84,  284,  484,  684,  
+		92,  292,  492,  692,  
+		100,  300,  500,  700,  
+		108,  308,  508,  708,  
+		116,  316,  516,  716,  
+		124,  324,  524,  724,  
+		132,  332,  532,  732,  
+		140,  340,  540,  740,  
+		148,  348,  548,  748,  
+		156,  356,  556,  756,  
+		164,  364,  564,  764,  
+		172,  372,  572,  772,  
+		180,  380,  580,  780,  
+		188,  388,  588,  788,  
+		196,  396,  596,  796,  
+		204,  404,  604,  804,  
+		212,  412,  612,  812,  
+		220,  420,  620,  820,  
+		228,  428,  628,  828,  
+		236,  436,  636,  836,  
+		244,  444,  644,  844,  
+		252,  452,  652,  852 ],  
+	// List
+	35, [ array: o[36] ],  
+	// Array
+	36, [ o[37],  o[39],  o[41],  o[43],  
+		o[45],  o[62],  o[111],  o[124],  
+		o[140],  o[155],  o[202],  o[216],  
+		o[231],  o[245],  o[259],  o[306],  
+		o[308],  o[310],  o[324],  o[344],  
+		o[346],  o[360],  o[375],  o[422],  
+		o[424],  o[439],  o[471],  o[486],  
+		o[488],  o[504],  o[519],  o[533],  
+		o[535],  o[549],  o[561],  o[574],  
+		o[576],  o[590],  o[601],  o[615],  
+		o[617],  o[619],  o[634],  o[648],  
+		o[662],  o[664],  o[678],  o[691],  
+		o[693],  o[695],  o[709],  o[723],  
+		o[725],  o[727],  o[729],  o[731],  
+		o[733],  o[735],  o[745],  o[747],  
+		o[749],  o[784],  o[786],  o[820],  
+		o[854],  o[901],  o[903],  o[905],  
+		o[919],  o[921],  o[923],  o[925],  
+		o[927],  o[942],  o[944],  o[946],  
+		o[948],  o[950],  o[952],  o[954],  
+		o[956],  o[958],  o[960],  o[962],  
+		o[964],  o[978],  o[980],  o[982],  
+		o[984],  o[1000],  o[1002],  o[1004],  
+		o[1006],  o[1020],  o[1022],  o[1024],  
+		o[1026],  o[1073],  o[1075],  o[1077] ],  
+	// List
+	37, [ array: o[38] ],  
+	// List
+	39, [ array: o[40] ],  
+	// List
+	41, [ array: o[42] ],  
+	// List
+	43, [ array: o[44] ],  
+	// List
+	45, [ array: o[46] ],  
+	// Array
+	46, [ o[47],  o[50],  o[52],  false ],  
+	// List
+	47, [ array: o[48] ],  
+	// Array
+	48, [ o[49] ],  
+	// List
+	50, [ array: o[51] ],  
+	// List
+	52, [ array: o[53] ],  
+	// Array
+	53, [ o[54],  o[55],  o[59],  o[61] ],  
+	// List
+	55, [ array: o[56] ],  
+	// Array
+	56, [ 0.87111111852858,  3.0,  18.817204236984,  0,  
+		o[57],  o[58] ],  
+	// Array
+	57, [ nil,  nil ],  
+	// Array
+	58, [ nil,  nil ],  
+	// List
+	59, [ array: o[60] ],  
+	// Array
+	60, [ '/Fader0',  '/Fader1',  '/Fader2',  '/Button4/x',  
+		'/MultiBall0',  '/MultiBall1' ],  
+	// Rect
+	61, [ left: 1076.0,  top: 595.0,  
+		width: 360.0,  height: 260.0 ],  
+	// List
+	62, [ array: o[63] ],  
+	// Array
+	63, [ o[64],  o[67],  o[69],  true ],  
+	// List
+	64, [ array: o[65] ],  
+	// Array
+	65, [ o[66] ],  
+	// List
+	67, [ array: o[68] ],  
+	// List
+	69, [ array: o[70] ],  
+	// Array
+	70, [ o[71],  o[72],  o[73] ],  
+	// Rect
+	72, [ left: 764.0,  top: 478.0,  
+		width: 91.0,  height: 280.0 ],  
+	// List
+	73, [ array: o[74] ],  
+	// Array
+	74, [ o[75],  o[84],  o[93],  o[102] ],  
+	// List
+	75, [ array: o[76] ],  
+	// Array
+	76, [ nil,  o[77],  o[79],  o[81],  
+		o[82] ],  
+	// List
+	77, [ array: o[78] ],  
+	// Array
+	78, [ 0.0,  3,  0 ],  
+	// List
+	79, [ array: o[80] ],  
+	// Array
+	80, [ '/Fader16',  nil ],  
+	// Rect
+	81, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	82, [ array: o[83] ],  
+	// Array
+	83, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	84, [ array: o[85] ],  
+	// Array
+	85, [ nil,  o[86],  o[88],  o[90],  
+		o[91] ],  
+	// List
+	86, [ array: o[87] ],  
+	// Array
+	87, [ 0.0,  3,  0 ],  
+	// List
+	88, [ array: o[89] ],  
+	// Array
+	89, [ nil,  nil ],  
+	// Rect
+	90, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	91, [ array: o[92] ],  
+	// List
+	93, [ array: o[94] ],  
+	// Array
+	94, [ nil,  o[95],  o[97],  o[99],  
+		o[100] ],  
+	// List
+	95, [ array: o[96] ],  
+	// Array
+	96, [ 0.0,  3,  0 ],  
+	// List
+	97, [ array: o[98] ],  
+	// Array
+	98, [ nil,  nil ],  
+	// Rect
+	99, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	100, [ array: o[101] ],  
+	// List
+	102, [ array: o[103] ],  
+	// Array
+	103, [ nil,  o[104],  o[106],  o[108],  
+		o[109] ],  
+	// List
+	104, [ array: o[105] ],  
+	// Array
+	105, [ 0.0,  3,  0 ],  
+	// List
+	106, [ array: o[107] ],  
+	// Array
+	107, [ nil,  nil ],  
+	// Rect
+	108, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	109, [ array: o[110] ],  
+	// List
+	111, [ array: o[112] ],  
+	// Array
+	112, [ o[113],  o[116],  o[118],  true ],  
+	// List
+	113, [ array: o[114] ],  
+	// Array
+	114, [ o[115] ],  
+	// List
+	116, [ array: o[117] ],  
+	// List
+	118, [ array: o[119] ],  
+	// Array
+	119, [ o[120],  o[121],  o[123] ],  
+	// List
+	121, [ array: o[122] ],  
+	// Array
+	122, [ 0.0,  12.0,  1,  0 ],  
+	// Rect
+	123, [ left: 200.0,  top: 230.0,  
+		width: 188.0,  height: 280.0 ],  
+	// List
+	124, [ array: o[125] ],  
+	// Array
+	125, [ o[126],  o[129],  o[131],  true ],  
+	// List
+	126, [ array: o[127] ],  
+	// Array
+	127, [ o[128] ],  
+	// List
+	129, [ array: o[130] ],  
+	// Array
+	130, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	131, [ array: o[132] ],  
+	// Array
+	132, [ o[133],  o[134],  o[137],  o[139] ],  
+	// List
+	134, [ array: o[135] ],  
+	// Array
+	135, [ 0.0,  0.0,  o[136],  0 ],  
+	// Array
+	136, [ nil,  nil ],  
+	// List
+	137, [ array: o[138] ],  
+	// Array
+	138, [ '/Fader30',  '/Fader31',  '/MultiBall4',  nil ],  
+	// Rect
+	139, [ left: 702.0,  top: 595.0,  
+		width: 350.0,  height: 260.0 ],  
+	// List
+	140, [ array: o[141] ],  
+	// Array
+	141, [ o[142],  o[144],  o[146],  true ],  
+	// List
+	142, [ array: o[143] ],  
+	// Array
+	143, [ o[49] ],  
+	// List
+	144, [ array: o[145] ],  
+	// List
+	146, [ array: o[147] ],  
+	// Array
+	147, [ o[54],  o[148],  o[152],  o[154] ],  
+	// List
+	148, [ array: o[149] ],  
+	// Array
+	149, [ 0.0,  0.0,  0.0,  0,  
+		o[150],  o[151] ],  
+	// Array
+	150, [ nil,  nil ],  
+	// Array
+	151, [ nil,  nil ],  
+	// List
+	152, [ array: o[153] ],  
+	// Array
+	153, [ '/Fader11',  '/Fader12',  '/Fader13',  '/Button5/x',  
+		'/MultiBall2',  '/MultiBall3' ],  
+	// Rect
+	154, [ left: 1075.0,  top: 312.0,  
+		width: 360.0,  height: 260.0 ],  
+	// List
+	155, [ array: o[156] ],  
+	// Array
+	156, [ o[157],  o[159],  o[161],  true ],  
+	// List
+	157, [ array: o[158] ],  
+	// Array
+	158, [ o[66] ],  
+	// List
+	159, [ array: o[160] ],  
+	// List
+	161, [ array: o[162] ],  
+	// Array
+	162, [ o[71],  o[163],  o[164] ],  
+	// Rect
+	163, [ left: 860.0,  top: 486.0,  
+		width: 91.0,  height: 273.0 ],  
+	// List
+	164, [ array: o[165] ],  
+	// Array
+	165, [ o[166],  o[175],  o[184],  o[193] ],  
+	// List
+	166, [ array: o[167] ],  
+	// Array
+	167, [ nil,  o[168],  o[170],  o[172],  
+		o[173] ],  
+	// List
+	168, [ array: o[169] ],  
+	// Array
+	169, [ 0.012644956397275,  3,  0 ],  
+	// List
+	170, [ array: o[171] ],  
+	// Array
+	171, [ '/Fader17',  nil ],  
+	// Rect
+	172, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	173, [ array: o[174] ],  
+	// Array
+	174, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	175, [ array: o[176] ],  
+	// Array
+	176, [ nil,  o[177],  o[179],  o[181],  
+		o[182] ],  
+	// List
+	177, [ array: o[178] ],  
+	// Array
+	178, [ 0.0,  3,  0 ],  
+	// List
+	179, [ array: o[180] ],  
+	// Array
+	180, [ nil,  nil ],  
+	// Rect
+	181, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	182, [ array: o[183] ],  
+	// List
+	184, [ array: o[185] ],  
+	// Array
+	185, [ nil,  o[186],  o[188],  o[190],  
+		o[191] ],  
+	// List
+	186, [ array: o[187] ],  
+	// Array
+	187, [ 0.0,  3,  0 ],  
+	// List
+	188, [ array: o[189] ],  
+	// Array
+	189, [ nil,  nil ],  
+	// Rect
+	190, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	191, [ array: o[192] ],  
+	// List
+	193, [ array: o[194] ],  
+	// Array
+	194, [ nil,  o[195],  o[197],  o[199],  
+		o[200] ],  
+	// List
+	195, [ array: o[196] ],  
+	// Array
+	196, [ 0.0,  3,  0 ],  
+	// List
+	197, [ array: o[198] ],  
+	// Array
+	198, [ nil,  nil ],  
+	// Rect
+	199, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	200, [ array: o[201] ],  
+	// List
+	202, [ array: o[203] ],  
+	// Array
+	203, [ o[204],  o[206],  o[208],  true ],  
+	// List
+	204, [ array: o[205] ],  
+	// Array
+	205, [ o[115] ],  
+	// List
+	206, [ array: o[207] ],  
+	// Array
+	207, [ 468 ],  
+	// List
+	208, [ array: o[209] ],  
+	// Array
+	209, [ o[210],  o[211],  o[213],  o[215] ],  
+	// List
+	211, [ array: o[212] ],  
+	// Array
+	212, [ 0,  1.0,  0.0,  7.055556,  
+		0 ],  
+	// List
+	213, [ array: o[214] ],  
+	// Array
+	214, [ '/manta/noteOn/21',  nil,  '/manta/value/22',  nil ],  
+	// Rect
+	215, [ left: 810.0,  top: 585.0,  
+		width: 135.0,  height: 270.0 ],  
+	// List
+	216, [ array: o[217] ],  
+	// Array
+	217, [ o[218],  o[220],  o[222],  true ],  
+	// List
+	218, [ array: o[219] ],  
+	// Array
+	219, [ o[128] ],  
+	// List
+	220, [ array: o[221] ],  
+	// Array
+	221, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	222, [ array: o[223] ],  
+	// Array
+	223, [ o[224],  o[225],  o[228],  o[230] ],  
+	// List
+	225, [ array: o[226] ],  
+	// Array
+	226, [ 0.0,  o[227],  0 ],  
+	// Array
+	227, [ nil,  nil ],  
+	// List
+	228, [ array: o[229] ],  
+	// Array
+	229, [ '/Fader36',  '/MultiBall5',  nil ],  
+	// Rect
+	230, [ left: 718.0,  top: 147.0,  
+		width: 290.0,  height: 250.0 ],  
+	// List
+	231, [ array: o[232] ],  
+	// Array
+	232, [ o[233],  o[235],  o[237],  true ],  
+	// List
+	233, [ array: o[234] ],  
+	// Array
+	234, [ o[49] ],  
+	// List
+	235, [ array: o[236] ],  
+	// Array
+	236, [ 76,  68 ],  
+	// List
+	237, [ array: o[238] ],  
+	// Array
+	238, [ o[239],  o[240],  o[242],  o[244] ],  
+	// List
+	240, [ array: o[241] ],  
+	// Array
+	241, [ 0,  0.01 ],  
+	// List
+	242, [ array: o[243] ],  
+	// Array
+	243, [ '/Button3/x',  nil ],  
+	// Rect
+	244, [ left: 880.0,  top: 424.0,  
+		width: 290.0,  height: 75.0 ],  
+	// List
+	245, [ array: o[246] ],  
+	// Array
+	246, [ o[247],  o[249],  o[251],  true ],  
+	// List
+	247, [ array: o[248] ],  
+	// Array
+	248, [ o[66] ],  
+	// List
+	249, [ array: o[250] ],  
+	// Array
+	250, [ 268 ],  
+	// List
+	251, [ array: o[252] ],  
+	// Array
+	252, [ o[253],  o[254],  o[256],  o[258] ],  
+	// List
+	254, [ array: o[255] ],  
+	// Array
+	255, [ 1.0,  0 ],  
+	// List
+	256, [ array: o[257] ],  
+	// Array
+	257, [ nil,  nil ],  
+	// Rect
+	258, [ left: 661.0,  top: 389.0,  
+		width: 400.0,  height: 46.0 ],  
+	// List
+	259, [ array: o[260] ],  
+	// Array
+	260, [ o[261],  o[263],  o[265],  true ],  
+	// List
+	261, [ array: o[262] ],  
+	// Array
+	262, [ o[115] ],  
+	// List
+	263, [ array: o[264] ],  
+	// List
+	265, [ array: o[266] ],  
+	// Array
+	266, [ o[71],  o[267],  o[268] ],  
+	// Rect
+	267, [ left: 1087.0,  top: 571.0,  
+		width: 226.0,  height: 284.0 ],  
+	// List
+	268, [ array: o[269] ],  
+	// Array
+	269, [ o[270],  o[279],  o[288],  o[297] ],  
+	// List
+	270, [ array: o[271] ],  
+	// Array
+	271, [ nil,  o[272],  o[274],  o[276],  
+		o[277] ],  
+	// List
+	272, [ array: o[273] ],  
+	// Array
+	273, [ 0.000872,  3,  0 ],  
+	// List
+	274, [ array: o[275] ],  
+	// Array
+	275, [ '/Fader28',  nil ],  
+	// Rect
+	276, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	277, [ array: o[278] ],  
+	// Array
+	278, [ 476 ],  
+	// List
+	279, [ array: o[280] ],  
+	// Array
+	280, [ nil,  o[281],  o[283],  o[285],  
+		o[286] ],  
+	// List
+	281, [ array: o[282] ],  
+	// Array
+	282, [ 0.0,  3,  0 ],  
+	// List
+	283, [ array: o[284] ],  
+	// Array
+	284, [ nil,  nil ],  
+	// Rect
+	285, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	286, [ array: o[287] ],  
+	// List
+	288, [ array: o[289] ],  
+	// Array
+	289, [ nil,  o[290],  o[292],  o[294],  
+		o[295] ],  
+	// List
+	290, [ array: o[291] ],  
+	// Array
+	291, [ 0.0,  3,  0 ],  
+	// List
+	292, [ array: o[293] ],  
+	// Array
+	293, [ nil,  nil ],  
+	// Rect
+	294, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	295, [ array: o[296] ],  
+	// List
+	297, [ array: o[298] ],  
+	// Array
+	298, [ nil,  o[299],  o[301],  o[303],  
+		o[304] ],  
+	// List
+	299, [ array: o[300] ],  
+	// Array
+	300, [ 0.407424,  3,  0 ],  
+	// List
+	301, [ array: o[302] ],  
+	// Array
+	302, [ nil,  nil ],  
+	// Rect
+	303, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	304, [ array: o[305] ],  
+	// List
+	306, [ array: o[307] ],  
+	// List
+	308, [ array: o[309] ],  
+	// List
+	310, [ array: o[311] ],  
+	// Array
+	311, [ o[312],  o[314],  o[316],  true ],  
+	// List
+	312, [ array: o[313] ],  
+	// Array
+	313, [ o[66] ],  
+	// List
+	314, [ array: o[315] ],  
+	// Array
+	315, [ 276 ],  
+	// List
+	316, [ array: o[317] ],  
+	// Array
+	317, [ o[318],  o[319],  o[321],  o[323] ],  
+	// List
+	319, [ array: o[320] ],  
+	// Array
+	320, [ 1.0,  103.244604,  0 ],  
+	// List
+	321, [ array: o[322] ],  
+	// Array
+	322, [ nil,  nil ],  
+	// Rect
+	323, [ left: 698.0,  top: 258.0,  
+		width: 330.0,  height: 109.0 ],  
+	// List
+	324, [ array: o[325] ],  
+	// Array
+	325, [ o[326],  o[328],  o[330],  true ],  
+	// List
+	326, [ array: o[327] ],  
+	// Array
+	327, [ o[115] ],  
+	// List
+	328, [ array: o[329] ],  
+	// List
+	330, [ array: o[331] ],  
+	// Array
+	331, [ o[332],  o[333],  o[335],  o[337],  
+		o[338] ],  
+	// List
+	333, [ array: o[334] ],  
+	// Array
+	334, [ 0.205665,  5091.281348 ],  
+	// List
+	335, [ array: o[336] ],  
+	// Array
+	336, [ '/Fader21',  nil ],  
+	// Rect
+	337, [ left: 1132.0,  top: 623.0,  
+		width: 220.0,  height: 150.0 ],  
+	// List
+	338, [ array: o[339] ],  
+	// Array
+	339, [ o[340],  o[342] ],  
+	// List
+	340, [ array: o[341] ],  
+	// Array
+	341, [ 476 ],  
+	// List
+	342, [ array: o[343] ],  
+	// Array
+	343, [ 44,  45,  46,  47,  
+		48,  49,  60 ],  
+	// List
+	344, [ array: o[345] ],  
+	// List
+	346, [ array: o[347] ],  
+	// Array
+	347, [ o[348],  o[350],  o[352],  true ],  
+	// List
+	348, [ array: o[349] ],  
+	// Array
+	349, [ o[49] ],  
+	// List
+	350, [ array: o[351] ],  
+	// Array
+	351, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	352, [ array: o[353] ],  
+	// Array
+	353, [ o[354],  o[355],  o[357],  o[359] ],  
+	// List
+	355, [ array: o[356] ],  
+	// Array
+	356, [ 2.0101800213435,  1,  0 ],  
+	// List
+	357, [ array: o[358] ],  
+	// Array
+	358, [ '/Fader5',  '/Button10/x' ],  
+	// Rect
+	359, [ left: 709.0,  top: 497.0,  
+		width: 265.0,  height: 77.0 ],  
+	// List
+	360, [ array: o[361] ],  
+	// Array
+	361, [ o[362],  o[364],  o[366],  true ],  
+	// List
+	362, [ array: o[363] ],  
+	// Array
+	363, [ o[66] ],  
+	// List
+	364, [ array: o[365] ],  
+	// List
+	366, [ array: o[367] ],  
+	// Array
+	367, [ o[368],  o[369],  o[372],  o[374] ],  
+	// List
+	369, [ array: o[370] ],  
+	// Array
+	370, [ 0.0,  0,  0,  0,  
+		o[371],  0 ],  
+	// Array
+	371, [ 100.0,  12500.0 ],  
+	// List
+	372, [ array: o[373] ],  
+	// Array
+	373, [ '/Fader18',  '/Button10/x',  nil,  nil,  
+		nil,  nil ],  
+	// Rect
+	374, [ left: 1129.0,  top: 552.0,  
+		width: 229.0,  height: 270.0 ],  
+	// List
+	375, [ array: o[376] ],  
+	// Array
+	376, [ o[377],  o[379],  o[381],  true ],  
+	// List
+	377, [ array: o[378] ],  
+	// Array
+	378, [ o[115] ],  
+	// List
+	379, [ array: o[380] ],  
+	// List
+	381, [ array: o[382] ],  
+	// Array
+	382, [ o[71],  o[383],  o[384] ],  
+	// Rect
+	383, [ left: 724.0,  top: 198.0,  
+		width: 227.0,  height: 280.0 ],  
+	// List
+	384, [ array: o[385] ],  
+	// Array
+	385, [ o[386],  o[395],  o[404],  o[413] ],  
+	// List
+	386, [ array: o[387] ],  
+	// Array
+	387, [ nil,  o[388],  o[390],  o[392],  
+		o[393] ],  
+	// List
+	388, [ array: o[389] ],  
+	// Array
+	389, [ 0.0,  3,  0 ],  
+	// List
+	390, [ array: o[391] ],  
+	// Array
+	391, [ '/Fader25',  nil ],  
+	// Rect
+	392, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	393, [ array: o[394] ],  
+	// Array
+	394, [ 492 ],  
+	// List
+	395, [ array: o[396] ],  
+	// Array
+	396, [ nil,  o[397],  o[399],  o[401],  
+		o[402] ],  
+	// List
+	397, [ array: o[398] ],  
+	// Array
+	398, [ 0.0,  3,  0 ],  
+	// List
+	399, [ array: o[400] ],  
+	// Array
+	400, [ '/Fader24',  nil ],  
+	// Rect
+	401, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	402, [ array: o[403] ],  
+	// Array
+	403, [ 44,  45,  46,  47,  
+		48,  49,  60 ],  
+	// List
+	404, [ array: o[405] ],  
+	// Array
+	405, [ nil,  o[406],  o[408],  o[410],  
+		o[411] ],  
+	// List
+	406, [ array: o[407] ],  
+	// Array
+	407, [ 0.0,  3,  0 ],  
+	// List
+	408, [ array: o[409] ],  
+	// Array
+	409, [ nil,  nil ],  
+	// Rect
+	410, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	411, [ array: o[412] ],  
+	// List
+	413, [ array: o[414] ],  
+	// Array
+	414, [ nil,  o[415],  o[417],  o[419],  
+		o[420] ],  
+	// List
+	415, [ array: o[416] ],  
+	// Array
+	416, [ 0.0,  3,  0 ],  
+	// List
+	417, [ array: o[418] ],  
+	// Array
+	418, [ nil,  nil ],  
+	// Rect
+	419, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	420, [ array: o[421] ],  
+	// List
+	422, [ array: o[423] ],  
+	// List
+	424, [ array: o[425] ],  
+	// Array
+	425, [ o[426],  o[428],  o[430],  true ],  
+	// List
+	426, [ array: o[427] ],  
+	// Array
+	427, [ o[49] ],  
+	// List
+	428, [ array: o[429] ],  
+	// Array
+	429, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	430, [ array: o[431] ],  
+	// Array
+	431, [ o[432],  o[433],  o[436],  o[438] ],  
+	// List
+	433, [ array: o[434] ],  
+	// Array
+	434, [ 1.6973400352976,  1.0,  o[435],  0,  
+		0 ],  
+	// Array
+	435, [ 7.340909,  10.0 ],  
+	// List
+	436, [ array: o[437] ],  
+	// Array
+	437, [ '/Fader6',  nil,  nil,  '/Button11/x' ],  
+	// Rect
+	438, [ left: 719.0,  top: 180.0,  
+		width: 210.0,  height: 300.0 ],  
+	// List
+	439, [ array: o[440] ],  
+	// Array
+	440, [ o[441],  o[443],  o[445],  true ],  
+	// List
+	441, [ array: o[442] ],  
+	// Array
+	442, [ o[66] ],  
+	// List
+	443, [ array: o[444] ],  
+	// List
+	445, [ array: o[446] ],  
+	// Array
+	446, [ o[447],  o[448],  o[450],  o[452],  
+		o[453] ],  
+	// List
+	448, [ array: o[449] ],  
+	// Array
+	449, [ 1.304265 ],  
+	// List
+	450, [ array: o[451] ],  
+	// Array
+	451, [ '/Fader19' ],  
+	// Rect
+	452, [ left: 955.0,  top: 521.0,  
+		width: 485.0,  height: 173.0 ],  
+	// List
+	453, [ array: o[454] ],  
+	// Array
+	454, [ o[455],  o[459],  o[463],  o[467] ],  
+	// List
+	455, [ array: o[456] ],  
+	// Array
+	456, [ o[457] ],  
+	// List
+	457, [ array: o[458] ],  
+	// Array
+	458, [ 38.0,  0,  0,  1 ],  
+	// List
+	459, [ array: o[460] ],  
+	// Array
+	460, [ o[461] ],  
+	// List
+	461, [ array: o[462] ],  
+	// Array
+	462, [ 50.0,  1,  1,  1 ],  
+	// List
+	463, [ array: o[464] ],  
+	// Array
+	464, [ o[465] ],  
+	// List
+	465, [ array: o[466] ],  
+	// Array
+	466, [ 65.0,  0,  2,  1 ],  
+	// List
+	467, [ array: o[468] ],  
+	// Array
+	468, [ o[469] ],  
+	// List
+	469, [ array: o[470] ],  
+	// Array
+	470, [ 79.0,  0,  3,  1 ],  
+	// List
+	471, [ array: o[472] ],  
+	// Array
+	472, [ o[473],  o[475],  o[477],  true ],  
+	// List
+	473, [ array: o[474] ],  
+	// Array
+	474, [ o[115] ],  
+	// List
+	475, [ array: o[476] ],  
+	// Array
+	476, [ 500 ],  
+	// List
+	477, [ array: o[478] ],  
+	// Array
+	478, [ o[479],  o[480],  o[483],  o[485] ],  
+	// List
+	480, [ array: o[481] ],  
+	// Array
+	481, [ 1,  0,  0,  0,  
+		0.0,  o[482],  1.405797,  0 ],  
+	// Array
+	482, [ 3.0,  16.0 ],  
+	// List
+	483, [ array: o[484] ],  
+	// Array
+	484, [ '[ /Switches20/x, 1, 0, 0, 0 ]',  '[ /Switches20/x, 0, 1, 0, 0 ]',  '[ /Switches20/x, 0, 0, 1, 0 ]',  '[ /Switches20/x, 0, 0, 0, 1 ]',  
+		'/Fader26',  nil,  nil,  nil ],  
+	// Rect
+	485, [ left: 964.0,  top: 271.0,  
+		width: 360.0,  height: 170.0 ],  
+	// List
+	486, [ array: o[487] ],  
+	// List
+	488, [ array: o[489] ],  
+	// Array
+	489, [ o[490],  o[492],  o[494],  true ],  
+	// List
+	490, [ array: o[491] ],  
+	// Array
+	491, [ o[49] ],  
+	// List
+	492, [ array: o[493] ],  
+	// Array
+	493, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	494, [ array: o[495] ],  
+	// Array
+	495, [ o[496],  o[497],  o[501],  o[503] ],  
+	// List
+	497, [ array: o[498] ],  
+	// Array
+	498, [ 2.7435726352158,  1,  o[499],  o[500] ],  
+	// Array
+	499, [ 9.615385,  17.899408 ],  
+	// Array
+	500, [ 1.268293,  4.727642 ],  
+	// List
+	501, [ array: o[502] ],  
+	// Array
+	502, [ '/Fader7',  '/Button12/x' ],  
+	// Rect
+	503, [ left: 711.0,  top: 554.0,  
+		width: 330.0,  height: 136.0 ],  
+	// List
+	504, [ array: o[505] ],  
+	// Array
+	505, [ o[506],  o[508],  o[510],  true ],  
+	// List
+	506, [ array: o[507] ],  
+	// Array
+	507, [ o[66] ],  
+	// List
+	508, [ array: o[509] ],  
+	// Array
+	509, [ 308 ],  
+	// List
+	510, [ array: o[511] ],  
+	// Array
+	511, [ o[512],  o[513],  o[516],  o[518] ],  
+	// List
+	513, [ array: o[514] ],  
+	// Array
+	514, [ 0,  0,  1,  o[515] ],  
+	// Array
+	515, [ 3.482609,  7.258696 ],  
+	// List
+	516, [ array: o[517] ],  
+	// Array
+	517, [ '[ /Switches10/x, 1, 0 ]',  nil,  '[ /Switches10/x, 0, 1 ]' ],  
+	// Rect
+	518, [ left: 832.0,  top: 499.0,  
+		width: 274.0,  height: 106.0 ],  
+	// List
+	519, [ array: o[520] ],  
+	// Array
+	520, [ o[521],  o[523],  o[525],  true ],  
+	// List
+	521, [ array: o[522] ],  
+	// Array
+	522, [ o[115],  o[128] ],  
+	// List
+	523, [ array: o[524] ],  
+	// Array
+	524, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	525, [ array: o[526] ],  
+	// Array
+	526, [ o[527],  o[528],  o[530],  o[532] ],  
+	// List
+	528, [ array: o[529] ],  
+	// Array
+	529, [ 1,  0,  0,  0.0,  
+		0 ],  
+	// List
+	530, [ array: o[531] ],  
+	// Array
+	531, [ '[ /Switches31/x, 1, 0, 0 ]',  '[ /Switches31/x, 0, 1, 0 ]',  '[ /Switches31/x, 0, 0, 1 ]',  '/Fader32' ],  
+	// Rect
+	532, [ left: 788.0,  top: 104.0,  
+		width: 274.0,  height: 141.0 ],  
+	// List
+	533, [ array: o[534] ],  
+	// List
+	535, [ array: o[536] ],  
+	// Array
+	536, [ o[537],  o[539],  o[541],  true ],  
+	// List
+	537, [ array: o[538] ],  
+	// Array
+	538, [ o[49] ],  
+	// List
+	539, [ array: o[540] ],  
+	// Array
+	540, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	541, [ array: o[542] ],  
+	// Array
+	542, [ o[543],  o[544],  o[546],  o[548] ],  
+	// List
+	544, [ array: o[545] ],  
+	// Array
+	545, [ 1.0148246147369,  1.5,  0,  0 ],  
+	// List
+	546, [ array: o[547] ],  
+	// Array
+	547, [ '/Fader8',  nil,  nil ],  
+	// Rect
+	548, [ left: 821.0,  top: 495.0,  
+		width: 150.0,  height: 270.0 ],  
+	// List
+	549, [ array: o[550] ],  
+	// Array
+	550, [ o[551],  o[553],  o[555],  true ],  
+	// List
+	551, [ array: o[552] ],  
+	// Array
+	552, [ o[66] ],  
+	// List
+	553, [ array: o[554] ],  
+	// List
+	555, [ array: o[556] ],  
+	// Array
+	556, [ o[557],  o[558],  o[560] ],  
+	// List
+	558, [ array: o[559] ],  
+	// Array
+	559, [ 1 ],  
+	// Rect
+	560, [ left: 600.0,  top: 300.0,  
+		width: 100.0,  height: 60.0 ],  
+	// List
+	561, [ array: o[562] ],  
+	// Array
+	562, [ o[563],  o[565],  o[567],  true ],  
+	// List
+	563, [ array: o[564] ],  
+	// Array
+	564, [ o[115],  o[128] ],  
+	// List
+	565, [ array: o[566] ],  
+	// Array
+	566, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	567, [ array: o[568] ],  
+	// Array
+	568, [ o[527],  o[569],  o[571],  o[573] ],  
+	// List
+	569, [ array: o[570] ],  
+	// Array
+	570, [ 1,  0,  0,  0.0,  
+		0 ],  
+	// List
+	571, [ array: o[572] ],  
+	// Array
+	572, [ '[ /Switches33/x, 1, 0, 0 ]',  '[ /Switches33/x, 0, 1, 0 ]',  '[ /Switches33/x, 0, 0, 1 ]',  '/Fader37' ],  
+	// Rect
+	573, [ left: 788.0,  top: 80.0,  
+		width: 274.0,  height: 141.0 ],  
+	// List
+	574, [ array: o[575] ],  
+	// List
+	576, [ array: o[577] ],  
+	// Array
+	577, [ o[578],  o[580],  o[582],  false ],  
+	// List
+	578, [ array: o[579] ],  
+	// Array
+	579, [ o[49] ],  
+	// List
+	580, [ array: o[581] ],  
+	// Array
+	581, [ 44,  45,  46,  47 ],  
+	// List
+	582, [ array: o[583] ],  
+	// Array
+	583, [ o[584],  o[585],  o[587],  o[589] ],  
+	// List
+	585, [ array: o[586] ],  
+	// Array
+	586, [ -1.0,  0.012009757749357,  0 ],  
+	// List
+	587, [ array: o[588] ],  
+	// Array
+	588, [ nil,  '/Fader9',  nil ],  
+	// Rect
+	589, [ left: 764.0,  top: 396.0,  
+		width: 300.0,  height: 106.0 ],  
+	// List
+	590, [ array: o[591] ],  
+	// Array
+	591, [ o[592],  o[594],  o[596],  true ],  
+	// List
+	592, [ array: o[593] ],  
+	// Array
+	593, [ o[66] ],  
+	// List
+	594, [ array: o[595] ],  
+	// Array
+	595, [ 284,  292,  324,  316 ],  
+	// List
+	596, [ array: o[597] ],  
+	// Array
+	597, [ o[598],  o[599],  nil,  nil ],  
+	// List
+	599, [ array: o[600] ],  
+	// List
+	601, [ array: o[602] ],  
+	// Array
+	602, [ o[603],  o[605],  o[607],  true ],  
+	// List
+	603, [ array: o[604] ],  
+	// Array
+	604, [ o[115],  o[128] ],  
+	// List
+	605, [ array: o[606] ],  
+	// Array
+	606, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	607, [ array: o[608] ],  
+	// Array
+	608, [ o[609],  o[610],  o[612],  o[614] ],  
+	// List
+	610, [ array: o[611] ],  
+	// Array
+	611, [ 0.93751586612871,  1.0,  0 ],  
+	// List
+	612, [ array: o[613] ],  
+	// Array
+	613, [ '/Fader22',  nil,  nil ],  
+	// Rect
+	614, [ left: 1072.0,  top: 80.0,  
+		width: 150.0,  height: 270.0 ],  
+	// List
+	615, [ array: o[616] ],  
+	// List
+	617, [ array: o[618] ],  
+	// List
+	619, [ array: o[620] ],  
+	// Array
+	620, [ o[621],  o[623],  o[625],  true ],  
+	// List
+	621, [ array: o[622] ],  
+	// Array
+	622, [ o[66] ],  
+	// List
+	623, [ array: o[624] ],  
+	// List
+	625, [ array: o[626] ],  
+	// Array
+	626, [ o[627],  o[628],  o[631],  o[633] ],  
+	// List
+	628, [ array: o[629] ],  
+	// Array
+	629, [ 0.324169,  o[630],  0 ],  
+	// Array
+	630, [ 30.0,  3000.0 ],  
+	// List
+	631, [ array: o[632] ],  
+	// Array
+	632, [ '/Fader38',  nil,  '/Button11/x',  nil ],  
+	// Rect
+	633, [ left: 772.0,  top: 243.0,  
+		width: 140.0,  height: 280.0 ],  
+	// List
+	634, [ array: o[635] ],  
+	// Array
+	635, [ o[636],  o[638],  o[640],  true ],  
+	// List
+	636, [ array: o[637] ],  
+	// Array
+	637, [ o[115] ],  
+	// List
+	638, [ array: o[639] ],  
+	// Array
+	639, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	640, [ array: o[641] ],  
+	// Array
+	641, [ o[642],  o[643],  o[645],  o[647] ],  
+	// List
+	643, [ array: o[644] ],  
+	// Array
+	644, [ 0.0,  8.0,  5.180725,  11.0,  
+		0 ],  
+	// List
+	645, [ array: o[646] ],  
+	// Array
+	646, [ '/Fader23',  nil,  nil,  nil,  
+		nil ],  
+	// Rect
+	647, [ left: 845.0,  top: 257.0,  
+		width: 196.0,  height: 262.0 ],  
+	// List
+	648, [ array: o[649] ],  
+	// Array
+	649, [ o[650],  o[652],  o[654],  true ],  
+	// List
+	650, [ array: o[651] ],  
+	// Array
+	651, [ o[128] ],  
+	// List
+	652, [ array: o[653] ],  
+	// Array
+	653, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	654, [ array: o[655] ],  
+	// Array
+	655, [ o[656],  o[657],  o[659],  o[661] ],  
+	// List
+	657, [ array: o[658] ],  
+	// Array
+	658, [ 0.001,  0.0,  0.21814515553415,  0,  
+		1,  0 ],  
+	// List
+	659, [ array: o[660] ],  
+	// Array
+	660, [ '/Fader33',  '/Fader34',  '/Fader35',  nil,  
+		'/Button30/x',  nil,  nil,  nil,  
+		nil ],  
+	// Rect
+	661, [ left: 946.0,  top: 505.0,  
+		width: 130.0,  height: 350.0 ],  
+	// List
+	662, [ array: o[663] ],  
+	// List
+	664, [ array: o[665] ],  
+	// Array
+	665, [ o[666],  o[668],  o[670],  true ],  
+	// List
+	666, [ array: o[667] ],  
+	// Array
+	667, [ o[66] ],  
+	// List
+	668, [ array: o[669] ],  
+	// Array
+	669, [ 340 ],  
+	// List
+	670, [ array: o[671] ],  
+	// Array
+	671, [ o[512],  o[672],  o[675],  o[677] ],  
+	// List
+	672, [ array: o[673] ],  
+	// Array
+	673, [ 0,  0,  1,  o[674] ],  
+	// Array
+	674, [ 0.25,  7.0 ],  
+	// List
+	675, [ array: o[676] ],  
+	// Array
+	676, [ '[ /Switches11/x, 1, 0 ]',  nil,  '[ /Switches11/x, 0, 1 ]' ],  
+	// Rect
+	677, [ left: 1001.0,  top: 377.0,  
+		width: 274.0,  height: 106.0 ],  
+	// List
+	678, [ array: o[679] ],  
+	// Array
+	679, [ o[680],  o[682],  o[684],  true ],  
+	// List
+	680, [ array: o[681] ],  
+	// Array
+	681, [ o[115] ],  
+	// List
+	682, [ array: o[683] ],  
+	// Array
+	683, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	684, [ array: o[685] ],  
+	// Array
+	685, [ o[543],  o[686],  o[688],  o[690] ],  
+	// List
+	686, [ array: o[687] ],  
+	// Array
+	687, [ 0.0,  1.893697,  0,  0 ],  
+	// List
+	688, [ array: o[689] ],  
+	// Array
+	689, [ '/Fader29',  nil,  nil ],  
+	// Rect
+	690, [ left: 1074.0,  top: 411.0,  
+		width: 150.0,  height: 270.0 ],  
+	// List
+	691, [ array: o[692] ],  
+	// List
+	693, [ array: o[694] ],  
+	// List
+	695, [ array: o[696] ],  
+	// Array
+	696, [ o[697],  o[699],  o[701],  true ],  
+	// List
+	697, [ array: o[698] ],  
+	// Array
+	698, [ o[66] ],  
+	// List
+	699, [ array: o[700] ],  
+	// List
+	701, [ array: o[702] ],  
+	// Array
+	702, [ o[703],  o[704],  o[706],  o[708] ],  
+	// List
+	704, [ array: o[705] ],  
+	// Array
+	705, [ 0.0,  1 ],  
+	// List
+	706, [ array: o[707] ],  
+	// Array
+	707, [ '/Fader39',  '/Button12/x' ],  
+	// Rect
+	708, [ left: 897.0,  top: 461.0,  
+		width: 109.0,  height: 219.0 ],  
+	// List
+	709, [ array: o[710] ],  
+	// Array
+	710, [ o[711],  o[713],  o[715],  true ],  
+	// List
+	711, [ array: o[712] ],  
+	// Array
+	712, [ o[115] ],  
+	// List
+	713, [ array: o[714] ],  
+	// Array
+	714, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	715, [ array: o[716] ],  
+	// Array
+	716, [ o[717],  o[718],  o[720],  o[722] ],  
+	// List
+	718, [ array: o[719] ],  
+	// Array
+	719, [ 0.0,  0.0,  5.0 ],  
+	// List
+	720, [ array: o[721] ],  
+	// Array
+	721, [ '/Fader20',  '/Fader27',  nil ],  
+	// Rect
+	722, [ left: 781.0,  top: 303.0,  
+		width: 300.0,  height: 109.0 ],  
+	// List
+	723, [ array: o[724] ],  
+	// List
+	725, [ array: o[726] ],  
+	// List
+	727, [ array: o[728] ],  
+	// List
+	729, [ array: o[730] ],  
+	// List
+	731, [ array: o[732] ],  
+	// List
+	733, [ array: o[734] ],  
+	// List
+	735, [ array: o[736] ],  
+	// Array
+	736, [ o[737],  o[739],  o[741],  true ],  
+	// List
+	737, [ array: o[738] ],  
+	// Array
+	738, [ o[66] ],  
+	// List
+	739, [ array: o[740] ],  
+	// Array
+	740, [ 332,  348,  356 ],  
+	// List
+	741, [ array: o[742] ],  
+	// Array
+	742, [ o[598],  o[743],  nil,  nil ],  
+	// List
+	743, [ array: o[744] ],  
+	// List
+	745, [ array: o[746] ],  
+	// List
+	747, [ array: o[748] ],  
+	// List
+	749, [ array: o[750] ],  
+	// Array
+	750, [ o[751],  o[753],  o[755],  false ],  
+	// List
+	751, [ array: o[752] ],  
+	// Array
+	752, [ o[49] ],  
+	// List
+	753, [ array: o[754] ],  
+	// List
+	755, [ array: o[756] ],  
+	// Array
+	756, [ o[757],  o[758],  o[761],  o[763],  
+		o[764] ],  
+	// List
+	758, [ array: o[759] ],  
+	// Array
+	759, [ 0,  1,  0,  0,  
+		o[760] ],  
+	// Array
+	760, [ 4.0,  7.0 ],  
+	// List
+	761, [ array: o[762] ],  
+	// Array
+	762, [ '[ /Switches1/x, 1, 0 ]',  '[ /Switches1/x, 0, 1 ]',  nil,  nil,  
+		nil ],  
+	// Rect
+	763, [ left: 790.0,  top: 183.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	764, [ array: o[765] ],  
+	// Array
+	765, [ o[766],  o[775] ],  
+	// List
+	766, [ array: o[767] ],  
+	// Array
+	767, [ nil,  o[768],  o[770],  o[772],  
+		o[773] ],  
+	// List
+	768, [ array: o[769] ],  
+	// Array
+	769, [ 1.0,  3,  0 ],  
+	// List
+	770, [ array: o[771] ],  
+	// Array
+	771, [ nil,  nil ],  
+	// Rect
+	772, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	773, [ array: o[774] ],  
+	// Array
+	774, [ 84 ],  
+	// List
+	775, [ array: o[776] ],  
+	// Array
+	776, [ nil,  o[777],  o[779],  o[781],  
+		o[782] ],  
+	// List
+	777, [ array: o[778] ],  
+	// Array
+	778, [ 1.0,  3,  0 ],  
+	// List
+	779, [ array: o[780] ],  
+	// Array
+	780, [ nil,  nil ],  
+	// Rect
+	781, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	782, [ array: o[783] ],  
+	// Array
+	783, [ 100,  108,  116,  124,  
+		132 ],  
+	// List
+	784, [ array: o[785] ],  
+	// List
+	786, [ array: o[787] ],  
+	// Array
+	787, [ o[788],  o[790],  o[792],  true ],  
+	// List
+	788, [ array: o[789] ],  
+	// Array
+	789, [ o[115] ],  
+	// List
+	790, [ array: o[791] ],  
+	// List
+	792, [ array: o[793] ],  
+	// Array
+	793, [ o[757],  o[794],  o[797],  o[799],  
+		o[800] ],  
+	// List
+	794, [ array: o[795] ],  
+	// Array
+	795, [ 0,  0,  0,  1,  
+		o[796] ],  
+	// Array
+	796, [ 4.0,  7.0 ],  
+	// List
+	797, [ array: o[798] ],  
+	// Array
+	798, [ '/manta/noteOn/5',  '/manta/noteOn/6',  '/manta/noteOn/7',  '/manta/noteOn/8',  
+		nil ],  
+	// Rect
+	799, [ left: 959.0,  top: 208.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	800, [ array: o[801] ],  
+	// Array
+	801, [ o[802],  o[811] ],  
+	// List
+	802, [ array: o[803] ],  
+	// Array
+	803, [ nil,  o[804],  o[806],  o[808],  
+		o[809] ],  
+	// List
+	804, [ array: o[805] ],  
+	// Array
+	805, [ 1.0,  3,  0 ],  
+	// List
+	806, [ array: o[807] ],  
+	// Array
+	807, [ nil,  nil ],  
+	// Rect
+	808, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	809, [ array: o[810] ],  
+	// Array
+	810, [ 492 ],  
+	// List
+	811, [ array: o[812] ],  
+	// Array
+	812, [ nil,  o[813],  o[815],  o[817],  
+		o[818] ],  
+	// List
+	813, [ array: o[814] ],  
+	// Array
+	814, [ 1.0,  3,  0 ],  
+	// List
+	815, [ array: o[816] ],  
+	// Array
+	816, [ nil,  nil ],  
+	// Rect
+	817, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	818, [ array: o[819] ],  
+	// Array
+	819, [ 548,  540,  532,  524,  
+		516,  508,  556 ],  
+	// List
+	820, [ array: o[821] ],  
+	// Array
+	821, [ o[822],  o[824],  o[826],  true ],  
+	// List
+	822, [ array: o[823] ],  
+	// Array
+	823, [ o[128] ],  
+	// List
+	824, [ array: o[825] ],  
+	// List
+	826, [ array: o[827] ],  
+	// Array
+	827, [ o[757],  o[828],  o[831],  o[833],  
+		o[834] ],  
+	// List
+	828, [ array: o[829] ],  
+	// Array
+	829, [ 1,  0,  0,  0,  
+		o[830] ],  
+	// Array
+	830, [ 4.0,  7.0 ],  
+	// List
+	831, [ array: o[832] ],  
+	// Array
+	832, [ '[ /Switches30/x, 1, 0, 0 ]',  '[ /Switches30/x, 0, 1, 0 ]',  '[ /Switches30/x, 0, 0, 1 ]',  nil,  
+		nil ],  
+	// Rect
+	833, [ left: 725.0,  top: 198.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	834, [ array: o[835] ],  
+	// Array
+	835, [ o[836],  o[845] ],  
+	// List
+	836, [ array: o[837] ],  
+	// Array
+	837, [ nil,  o[838],  o[840],  o[842],  
+		o[843] ],  
+	// List
+	838, [ array: o[839] ],  
+	// Array
+	839, [ 1.0,  3,  0 ],  
+	// List
+	840, [ array: o[841] ],  
+	// Array
+	841, [ nil,  nil ],  
+	// Rect
+	842, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	843, [ array: o[844] ],  
+	// Array
+	844, [ 668,  516,  524 ],  
+	// List
+	845, [ array: o[846] ],  
+	// Array
+	846, [ nil,  o[847],  o[849],  o[851],  
+		o[852] ],  
+	// List
+	847, [ array: o[848] ],  
+	// Array
+	848, [ 1.0,  3,  0 ],  
+	// List
+	849, [ array: o[850] ],  
+	// Array
+	850, [ nil,  nil ],  
+	// Rect
+	851, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	852, [ array: o[853] ],  
+	// Array
+	853, [ 740,  532,  676 ],  
+	// List
+	854, [ array: o[855] ],  
+	// Array
+	855, [ o[856],  o[858],  o[860],  true ],  
+	// List
+	856, [ array: o[857] ],  
+	// Array
+	857, [ o[49] ],  
+	// List
+	858, [ array: o[859] ],  
+	// List
+	860, [ array: o[861] ],  
+	// Array
+	861, [ o[71],  o[862],  o[863] ],  
+	// Rect
+	862, [ left: 704.0,  top: 80.0,  
+		width: 285.0,  height: 280.0 ],  
+	// List
+	863, [ array: o[864] ],  
+	// Array
+	864, [ o[865],  o[874],  o[883],  o[892] ],  
+	// List
+	865, [ array: o[866] ],  
+	// Array
+	866, [ nil,  o[867],  o[869],  o[871],  
+		o[872] ],  
+	// List
+	867, [ array: o[868] ],  
+	// Array
+	868, [ 0.0,  3,  0 ],  
+	// List
+	869, [ array: o[870] ],  
+	// Array
+	870, [ '/Fader3',  nil ],  
+	// Rect
+	871, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	872, [ array: o[873] ],  
+	// Array
+	873, [ 68 ],  
+	// List
+	874, [ array: o[875] ],  
+	// Array
+	875, [ nil,  o[876],  o[878],  o[880],  
+		o[881] ],  
+	// List
+	876, [ array: o[877] ],  
+	// Array
+	877, [ 0.0,  3,  0 ],  
+	// List
+	878, [ array: o[879] ],  
+	// Array
+	879, [ '/Fader4',  nil ],  
+	// Rect
+	880, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	881, [ array: o[882] ],  
+	// Array
+	882, [ 76 ],  
+	// List
+	883, [ array: o[884] ],  
+	// Array
+	884, [ nil,  o[885],  o[887],  o[889],  
+		o[890] ],  
+	// List
+	885, [ array: o[886] ],  
+	// Array
+	886, [ 0.0,  3,  0 ],  
+	// List
+	887, [ array: o[888] ],  
+	// Array
+	888, [ nil,  nil ],  
+	// Rect
+	889, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	890, [ array: o[891] ],  
+	// List
+	892, [ array: o[893] ],  
+	// Array
+	893, [ nil,  o[894],  o[896],  o[898],  
+		o[899] ],  
+	// List
+	894, [ array: o[895] ],  
+	// Array
+	895, [ 0.0,  3,  0 ],  
+	// List
+	896, [ array: o[897] ],  
+	// Array
+	897, [ nil,  nil ],  
+	// Rect
+	898, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	899, [ array: o[900] ],  
+	// List
+	901, [ array: o[902] ],  
+	// List
+	903, [ array: o[904] ],  
+	// List
+	905, [ array: o[906] ],  
+	// Array
+	906, [ o[907],  o[909],  o[911],  true ],  
+	// List
+	907, [ array: o[908] ],  
+	// Array
+	908, [ o[128] ],  
+	// List
+	909, [ array: o[910] ],  
+	// Array
+	910, [ 780 ],  
+	// List
+	911, [ array: o[912] ],  
+	// Array
+	912, [ o[913],  o[914],  o[916],  o[918] ],  
+	// List
+	914, [ array: o[915] ],  
+	// Array
+	915, [ 1,  0,  0,  2.0,  
+		1.040698,  0 ],  
+	// List
+	916, [ array: o[917] ],  
+	// Array
+	917, [ '[ /Switches32/x, 1, 0, 0 ]',  '[ /Switches32/x, 0, 1, 0 ]',  '[ /Switches32/x, 0, 0, 1 ]',  nil,  
+		nil,  nil,  nil ],  
+	// Rect
+	918, [ left: 885.0,  top: 344.0,  
+		width: 188.0,  height: 330.0 ],  
+	// List
+	919, [ array: o[920] ],  
+	// List
+	921, [ array: o[922] ],  
+	// List
+	923, [ array: o[924] ],  
+	// List
+	925, [ array: o[926] ],  
+	// List
+	927, [ array: o[928] ],  
+	// Array
+	928, [ o[929],  o[931],  o[933],  true ],  
+	// List
+	929, [ array: o[930] ],  
+	// Array
+	930, [ o[49] ],  
+	// List
+	931, [ array: o[932] ],  
+	// List
+	933, [ array: o[934] ],  
+	// Array
+	934, [ o[935],  o[936],  o[938],  o[940],  
+		o[941] ],  
+	// List
+	936, [ array: o[937] ],  
+	// Array
+	937, [ 1.0,  0.0,  0,  0,  
+		0,  0 ],  
+	// List
+	938, [ array: o[939] ],  
+	// Array
+	939, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Rect
+	940, [ left: 761.0,  top: 570.0,  
+		width: 395.0,  height: 138.0 ],  
+	// List
+	942, [ array: o[943] ],  
+	// List
+	944, [ array: o[945] ],  
+	// List
+	946, [ array: o[947] ],  
+	// List
+	948, [ array: o[949] ],  
+	// List
+	950, [ array: o[951] ],  
+	// List
+	952, [ array: o[953] ],  
+	// List
+	954, [ array: o[955] ],  
+	// List
+	956, [ array: o[957] ],  
+	// List
+	958, [ array: o[959] ],  
+	// List
+	960, [ array: o[961] ],  
+	// List
+	962, [ array: o[963] ],  
+	// List
+	964, [ array: o[965] ],  
+	// Array
+	965, [ o[966],  o[968],  o[970],  true ],  
+	// List
+	966, [ array: o[967] ],  
+	// Array
+	967, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	968, [ array: o[969] ],  
+	// Array
+	969, [ 180,  788,  188,  484,  
+		300,  580,  372 ],  
+	// List
+	970, [ array: o[971] ],  
+	// Array
+	971, [ o[972],  o[973],  o[975],  o[977] ],  
+	// List
+	973, [ array: o[974] ],  
+	// Array
+	974, [ 1,  0,  0,  0,  
+		0,  0,  0,  0,  
+		0 ],  
+	// List
+	975, [ array: o[976] ],  
+	// Array
+	976, [ '[ /Switches2/x, 1, 0, 0, 0, 0, 0, 0, 0 ]',  '[ /Switches2/x, 0, 1, 0, 0, 0, 0, 0, 0 ]',  '[ /Switches2/x, 0, 0, 1, 0, 0, 0, 0, 0 ]',  '[ /Switches2/x, 0, 0, 0, 1, 0, 0, 0, 0 ]',  
+		'[ /Switches2/x, 0, 0, 0, 0, 1, 0, 0, 0 ]',  '[ /Switches2/x, 0, 0, 0, 0, 0, 1, 0, 0 ]',  '[ /Switches2/x, 0, 0, 0, 0, 0, 0, 1, 0 ]',  '[ /Switches2/x, 0, 0, 0, 0, 0, 0, 0, 1 ]',  
+		nil ],  
+	// Rect
+	977, [ left: 33.0,  top: 80.0,  
+		width: 790.0,  height: 77.0 ],  
+	// List
+	978, [ array: o[979] ],  
+	// List
+	980, [ array: o[981] ],  
+	// List
+	982, [ array: o[983] ],  
+	// List
+	984, [ array: o[985] ],  
+	// Array
+	985, [ o[986],  o[988],  o[990],  true ],  
+	// List
+	986, [ array: o[987] ],  
+	// Array
+	987, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	988, [ array: o[989] ],  
+	// Array
+	989, [ 228 ],  
+	// List
+	990, [ array: o[991] ],  
+	// Array
+	991, [ o[992],  o[993],  o[997],  o[999] ],  
+	// List
+	993, [ array: o[994] ],  
+	// Array
+	994, [ 1.0,  1.0,  o[995],  1.323529,  
+		0.72727298736572,  0,  1,  o[996],  
+		1.0,  1 ],  
+	// Array
+	995, [ 0.136,  0.138 ],  
+	// Array
+	996, [ nil,  nil ],  
+	// List
+	997, [ array: o[998] ],  
+	// Array
+	998, [ nil,  nil,  nil,  nil,  
+		'/Fader10',  '[ /Switches3/x, 1, 0 ]',  '[ /Switches3/x, 0, 1 ]',  '/MultiBall6',  
+		nil,  nil ],  
+	// Rect
+	999, [ left: 302.0,  top: 103.0,  
+		width: 678.0,  height: 226.0 ],  
+	// List
+	1000, [ array: o[1001] ],  
+	// List
+	1002, [ array: o[1003] ],  
+	// List
+	1004, [ array: o[1005] ],  
+	// List
+	1006, [ array: o[1007] ],  
+	// Array
+	1007, [ o[1008],  o[1010],  o[1012],  true ],  
+	// List
+	1008, [ array: o[1009] ],  
+	// Array
+	1009, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1010, [ array: o[1011] ],  
+	// Array
+	1011, [ 236 ],  
+	// List
+	1012, [ array: o[1013] ],  
+	// Array
+	1013, [ o[1014],  o[1015],  o[1017],  o[1019] ],  
+	// List
+	1015, [ array: o[1016] ],  
+	// Array
+	1016, [ 0.962422,  0,  0 ],  
+	// List
+	1017, [ array: o[1018] ],  
+	// Array
+	1018, [ nil,  '/Button2/x' ],  
+	// Rect
+	1019, [ left: 1125.0,  top: 80.0,  
+		width: 274.0,  height: 77.0 ],  
+	// List
+	1020, [ array: o[1021] ],  
+	// List
+	1022, [ array: o[1023] ],  
+	// List
+	1024, [ array: o[1025] ],  
+	// List
+	1026, [ array: o[1027] ],  
+	// Array
+	1027, [ o[1028],  o[1030],  o[1032],  true ],  
+	// List
+	1028, [ array: o[1029] ],  
+	// Array
+	1029, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1030, [ array: o[1031] ],  
+	// List
+	1032, [ array: o[1033] ],  
+	// Array
+	1033, [ o[71],  o[1034],  o[1035] ],  
+	// Rect
+	1034, [ left: 1066.0,  top: 240.0,  
+		width: 285.0,  height: 280.0 ],  
+	// List
+	1035, [ array: o[1036] ],  
+	// Array
+	1036, [ o[1037],  o[1046],  o[1055],  o[1064] ],  
+	// List
+	1037, [ array: o[1038] ],  
+	// Array
+	1038, [ nil,  o[1039],  o[1041],  o[1043],  
+		o[1044] ],  
+	// List
+	1039, [ array: o[1040] ],  
+	// Array
+	1040, [ 1.0,  3,  0 ],  
+	// List
+	1041, [ array: o[1042] ],  
+	// Array
+	1042, [ '/Fader14',  nil ],  
+	// Rect
+	1043, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1044, [ array: o[1045] ],  
+	// Array
+	1045, [ 244,  564 ],  
+	// List
+	1046, [ array: o[1047] ],  
+	// Array
+	1047, [ nil,  o[1048],  o[1050],  o[1052],  
+		o[1053] ],  
+	// List
+	1048, [ array: o[1049] ],  
+	// Array
+	1049, [ 0.0,  3,  0 ],  
+	// List
+	1050, [ array: o[1051] ],  
+	// Array
+	1051, [ '/Fader15',  nil ],  
+	// Rect
+	1052, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1053, [ array: o[1054] ],  
+	// Array
+	1054, [ 228,  564 ],  
+	// List
+	1055, [ array: o[1056] ],  
+	// Array
+	1056, [ nil,  o[1057],  o[1059],  o[1061],  
+		o[1062] ],  
+	// List
+	1057, [ array: o[1058] ],  
+	// Array
+	1058, [ 0.0,  3,  0 ],  
+	// List
+	1059, [ array: o[1060] ],  
+	// Array
+	1060, [ nil,  nil ],  
+	// Rect
+	1061, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1062, [ array: o[1063] ],  
+	// List
+	1064, [ array: o[1065] ],  
+	// Array
+	1065, [ nil,  o[1066],  o[1068],  o[1070],  
+		o[1071] ],  
+	// List
+	1066, [ array: o[1067] ],  
+	// Array
+	1067, [ 0.0,  3,  0 ],  
+	// List
+	1068, [ array: o[1069] ],  
+	// Array
+	1069, [ nil,  nil ],  
+	// Rect
+	1070, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1071, [ array: o[1072] ],  
+	// List
+	1073, [ array: o[1074] ],  
+	// List
+	1075, [ array: o[1076] ],  
+	// List
+	1077, [ array: o[1078] ],  
+	// List
+	1079, [ array: o[1080] ],  
+	// Array
+	1080, [ o[1081],  o[1082],  o[1120] ],  
+	// Rect
+	1081, [ left: 96.0,  top: 80.0,  
+		width: 505.0,  height: 278.0 ],  
+	// List
+	1082, [ array: o[1083] ],  
+	// Array
+	1083, [ o[1084],  o[1093],  o[1102],  o[1111] ],  
+	// List
+	1084, [ array: o[1085] ],  
+	// Array
+	1085, [ nil,  o[1086],  o[1088],  o[1090],  
+		o[1091] ],  
+	// List
+	1086, [ array: o[1087] ],  
+	// Array
+	1087, [ 0.0,  3,  0 ],  
+	// List
+	1088, [ array: o[1089] ],  
+	// Array
+	1089, [ nil,  nil ],  
+	// Rect
+	1090, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1091, [ array: o[1092] ],  
+	// List
+	1093, [ array: o[1094] ],  
+	// Array
+	1094, [ nil,  o[1095],  o[1097],  o[1099],  
+		o[1100] ],  
+	// List
+	1095, [ array: o[1096] ],  
+	// Array
+	1096, [ 0.0,  3,  0 ],  
+	// List
+	1097, [ array: o[1098] ],  
+	// Array
+	1098, [ nil,  nil ],  
+	// Rect
+	1099, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1100, [ array: o[1101] ],  
+	// List
+	1102, [ array: o[1103] ],  
+	// Array
+	1103, [ nil,  o[1104],  o[1106],  o[1108],  
+		o[1109] ],  
+	// List
+	1104, [ array: o[1105] ],  
+	// Array
+	1105, [ 1.0,  3,  2 ],  
+	// List
+	1106, [ array: o[1107] ],  
+	// Array
+	1107, [ nil,  nil ],  
+	// Rect
+	1108, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1109, [ array: o[1110] ],  
+	// Array
+	1110, [ 204,  212 ],  
+	// List
+	1111, [ array: o[1112] ],  
+	// Array
+	1112, [ nil,  o[1113],  o[1115],  o[1117],  
+		o[1118] ],  
+	// List
+	1113, [ array: o[1114] ],  
+	// Array
+	1114, [ 0.478158,  3,  0 ],  
+	// List
+	1115, [ array: o[1116] ],  
+	// Array
+	1116, [ nil,  nil ],  
+	// Rect
+	1117, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1118, [ array: o[1119] ],  
+	// Array
+	1119, [ 252 ],  
+	// List
+	1120, [ array: o[1121] ],  
+	// Array
+	1121, [ o[1122],  o[1131],  o[1140],  o[1149],  
+		o[1158],  o[1167],  o[1176],  o[1185],  
+		o[1194],  o[1203],  o[1212],  o[1221],  
+		o[1230],  o[1239],  o[1248],  o[1257],  
+		o[1266],  o[1275],  o[1284],  o[1293] ],  
+	// List
+	1122, [ array: o[1123] ],  
+	// Array
+	1123, [ nil,  o[1124],  o[1126],  o[1128],  
+		o[1129] ],  
+	// List
+	1124, [ array: o[1125] ],  
+	// Array
+	1125, [ 1.0,  3,  2 ],  
+	// List
+	1126, [ array: o[1127] ],  
+	// Array
+	1127, [ nil,  nil ],  
+	// Rect
+	1128, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1129, [ array: o[1130] ],  
+	// List
+	1131, [ array: o[1132] ],  
+	// Array
+	1132, [ nil,  o[1133],  o[1135],  o[1137],  
+		o[1138] ],  
+	// List
+	1133, [ array: o[1134] ],  
+	// Array
+	1134, [ 0.0,  3,  0 ],  
+	// List
+	1135, [ array: o[1136] ],  
+	// Array
+	1136, [ nil,  nil ],  
+	// Rect
+	1137, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1138, [ array: o[1139] ],  
+	// List
+	1140, [ array: o[1141] ],  
+	// Array
+	1141, [ nil,  o[1142],  o[1144],  o[1146],  
+		o[1147] ],  
+	// List
+	1142, [ array: o[1143] ],  
+	// Array
+	1143, [ 0.0,  3,  0 ],  
+	// List
+	1144, [ array: o[1145] ],  
+	// Array
+	1145, [ nil,  nil ],  
+	// Rect
+	1146, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1147, [ array: o[1148] ],  
+	// List
+	1149, [ array: o[1150] ],  
+	// Array
+	1150, [ nil,  o[1151],  o[1153],  o[1155],  
+		o[1156] ],  
+	// List
+	1151, [ array: o[1152] ],  
+	// Array
+	1152, [ 0.0,  3,  0 ],  
+	// List
+	1153, [ array: o[1154] ],  
+	// Array
+	1154, [ nil,  nil ],  
+	// Rect
+	1155, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1156, [ array: o[1157] ],  
+	// List
+	1158, [ array: o[1159] ],  
+	// Array
+	1159, [ nil,  o[1160],  o[1162],  o[1164],  
+		o[1165] ],  
+	// List
+	1160, [ array: o[1161] ],  
+	// Array
+	1161, [ 0.0,  3,  0 ],  
+	// List
+	1162, [ array: o[1163] ],  
+	// Array
+	1163, [ nil,  nil ],  
+	// Rect
+	1164, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1165, [ array: o[1166] ],  
+	// List
+	1167, [ array: o[1168] ],  
+	// Array
+	1168, [ nil,  o[1169],  o[1171],  o[1173],  
+		o[1174] ],  
+	// List
+	1169, [ array: o[1170] ],  
+	// Array
+	1170, [ 0.0,  3,  0 ],  
+	// List
+	1171, [ array: o[1172] ],  
+	// Array
+	1172, [ nil,  nil ],  
+	// Rect
+	1173, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1174, [ array: o[1175] ],  
+	// List
+	1176, [ array: o[1177] ],  
+	// Array
+	1177, [ nil,  o[1178],  o[1180],  o[1182],  
+		o[1183] ],  
+	// List
+	1178, [ array: o[1179] ],  
+	// Array
+	1179, [ 0.0,  3,  0 ],  
+	// List
+	1180, [ array: o[1181] ],  
+	// Array
+	1181, [ nil,  nil ],  
+	// Rect
+	1182, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1183, [ array: o[1184] ],  
+	// List
+	1185, [ array: o[1186] ],  
+	// Array
+	1186, [ nil,  o[1187],  o[1189],  o[1191],  
+		o[1192] ],  
+	// List
+	1187, [ array: o[1188] ],  
+	// Array
+	1188, [ 0.0,  3,  0 ],  
+	// List
+	1189, [ array: o[1190] ],  
+	// Array
+	1190, [ nil,  nil ],  
+	// Rect
+	1191, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1192, [ array: o[1193] ],  
+	// List
+	1194, [ array: o[1195] ],  
+	// Array
+	1195, [ nil,  o[1196],  o[1198],  o[1200],  
+		o[1201] ],  
+	// List
+	1196, [ array: o[1197] ],  
+	// Array
+	1197, [ 0.0,  3,  0 ],  
+	// List
+	1198, [ array: o[1199] ],  
+	// Array
+	1199, [ nil,  nil ],  
+	// Rect
+	1200, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1201, [ array: o[1202] ],  
+	// List
+	1203, [ array: o[1204] ],  
+	// Array
+	1204, [ nil,  o[1205],  o[1207],  o[1209],  
+		o[1210] ],  
+	// List
+	1205, [ array: o[1206] ],  
+	// Array
+	1206, [ 0.0,  3,  0 ],  
+	// List
+	1207, [ array: o[1208] ],  
+	// Array
+	1208, [ nil,  nil ],  
+	// Rect
+	1209, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1210, [ array: o[1211] ],  
+	// List
+	1212, [ array: o[1213] ],  
+	// Array
+	1213, [ nil,  o[1214],  o[1216],  o[1218],  
+		o[1219] ],  
+	// List
+	1214, [ array: o[1215] ],  
+	// Array
+	1215, [ 0.0,  3,  0 ],  
+	// List
+	1216, [ array: o[1217] ],  
+	// Array
+	1217, [ nil,  nil ],  
+	// Rect
+	1218, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1219, [ array: o[1220] ],  
+	// List
+	1221, [ array: o[1222] ],  
+	// Array
+	1222, [ nil,  o[1223],  o[1225],  o[1227],  
+		o[1228] ],  
+	// List
+	1223, [ array: o[1224] ],  
+	// Array
+	1224, [ 0.0,  3,  0 ],  
+	// List
+	1225, [ array: o[1226] ],  
+	// Array
+	1226, [ nil,  nil ],  
+	// Rect
+	1227, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1228, [ array: o[1229] ],  
+	// List
+	1230, [ array: o[1231] ],  
+	// Array
+	1231, [ nil,  o[1232],  o[1234],  o[1236],  
+		o[1237] ],  
+	// List
+	1232, [ array: o[1233] ],  
+	// Array
+	1233, [ 0.0,  3,  0 ],  
+	// List
+	1234, [ array: o[1235] ],  
+	// Array
+	1235, [ nil,  nil ],  
+	// Rect
+	1236, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1237, [ array: o[1238] ],  
+	// List
+	1239, [ array: o[1240] ],  
+	// Array
+	1240, [ nil,  o[1241],  o[1243],  o[1245],  
+		o[1246] ],  
+	// List
+	1241, [ array: o[1242] ],  
+	// Array
+	1242, [ 0.0,  3,  0 ],  
+	// List
+	1243, [ array: o[1244] ],  
+	// Array
+	1244, [ nil,  nil ],  
+	// Rect
+	1245, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1246, [ array: o[1247] ],  
+	// List
+	1248, [ array: o[1249] ],  
+	// Array
+	1249, [ nil,  o[1250],  o[1252],  o[1254],  
+		o[1255] ],  
+	// List
+	1250, [ array: o[1251] ],  
+	// Array
+	1251, [ 0.0,  3,  0 ],  
+	// List
+	1252, [ array: o[1253] ],  
+	// Array
+	1253, [ nil,  nil ],  
+	// Rect
+	1254, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1255, [ array: o[1256] ],  
+	// List
+	1257, [ array: o[1258] ],  
+	// Array
+	1258, [ nil,  o[1259],  o[1261],  o[1263],  
+		o[1264] ],  
+	// List
+	1259, [ array: o[1260] ],  
+	// Array
+	1260, [ 0.0,  3,  0 ],  
+	// List
+	1261, [ array: o[1262] ],  
+	// Array
+	1262, [ nil,  nil ],  
+	// Rect
+	1263, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1264, [ array: o[1265] ],  
+	// List
+	1266, [ array: o[1267] ],  
+	// Array
+	1267, [ nil,  o[1268],  o[1270],  o[1272],  
+		o[1273] ],  
+	// List
+	1268, [ array: o[1269] ],  
+	// Array
+	1269, [ 0.0,  3,  0 ],  
+	// List
+	1270, [ array: o[1271] ],  
+	// Array
+	1271, [ nil,  nil ],  
+	// Rect
+	1272, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1273, [ array: o[1274] ],  
+	// List
+	1275, [ array: o[1276] ],  
+	// Array
+	1276, [ nil,  o[1277],  o[1279],  o[1281],  
+		o[1282] ],  
+	// List
+	1277, [ array: o[1278] ],  
+	// Array
+	1278, [ 0.0,  3,  0 ],  
+	// List
+	1279, [ array: o[1280] ],  
+	// Array
+	1280, [ nil,  nil ],  
+	// Rect
+	1281, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1282, [ array: o[1283] ],  
+	// List
+	1284, [ array: o[1285] ],  
+	// Array
+	1285, [ nil,  o[1286],  o[1288],  o[1290],  
+		o[1291] ],  
+	// List
+	1286, [ array: o[1287] ],  
+	// Array
+	1287, [ 0.0,  3,  0 ],  
+	// List
+	1288, [ array: o[1289] ],  
+	// Array
+	1289, [ nil,  nil ],  
+	// Rect
+	1290, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1291, [ array: o[1292] ],  
+	// List
+	1293, [ array: o[1294] ],  
+	// Array
+	1294, [ nil,  o[1295],  o[1297],  o[1299],  
+		o[1300] ],  
+	// List
+	1295, [ array: o[1296] ],  
+	// Array
+	1296, [ 0.0,  3,  0 ],  
+	// List
+	1297, [ array: o[1298] ],  
+	// Array
+	1298, [ nil,  nil ],  
+	// Rect
+	1299, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1300, [ array: o[1301] ],  
+	// List
+	1302, [ array: o[1303] ],  
+	// Array
+	1303, [ o[1304],  o[1311],  o[1313],  o[1315],  
+		o[1317],  o[1991] ],  
+	// List
+	1304, [ array: o[1305] ],  
+	// Array
+	1305, [ nil,  o[1306],  o[1308],  o[1310] ],  
+	// List
+	1306, [ array: o[1307] ],  
+	// Array
+	1307, [ 0,  0,  1,  0,  
+		1,  1,  0,  1 ],  
+	// List
+	1308, [ array: o[1309] ],  
+	// Array
+	1309, [ '[ /Switches41/x, 1, 0, 0, 0 ]',  '[ /Switches41/x, 0, 1, 0, 0 ]',  '[ /Switches41/x, 0, 0, 1, 0 ]',  '[ /Switches41/x, 0, 0, 0, 1 ]',  
+		'/manta/noteOn/49',  '/manta/noteOn/50',  '/manta/noteOn/51',  '/manta/noteOn/52' ],  
+	// Rect
+	1310, [ left: 20.0,  top: 443.0,  
+		width: 675.0,  height: 560.0 ],  
+	// List
+	1311, [ array: o[1312] ],  
+	// Array
+	1312, [ 44,  45,  46,  47,  
+		48,  49,  50,  51 ],  
+	// List
+	1313, [ array: o[1314] ],  
+	// Array
+	1314, [ 52,  54,  56,  58 ],  
+	// List
+	1315, [ array: o[1316] ],  
+	// Array
+	1316, [ 60,  260,  460,  660,  
+		68,  268,  468,  668,  
+		76,  276,  476,  676,  
+		84,  284,  484,  684,  
+		92,  292,  492,  692,  
+		100,  300,  500,  700,  
+		108,  308,  508,  708,  
+		116,  316,  516,  716,  
+		124,  324,  524,  724,  
+		132,  332,  532,  732,  
+		140,  340,  540,  740,  
+		148,  348,  548,  748,  
+		156,  356,  556,  756,  
+		164,  364,  564,  764,  
+		172,  372,  572,  772,  
+		180,  380,  580,  780,  
+		188,  388,  588,  788,  
+		196,  396,  596,  796,  
+		204,  404,  604,  804,  
+		212,  412,  612,  812,  
+		220,  420,  620,  820,  
+		228,  428,  628,  828,  
+		236,  436,  636,  836,  
+		244,  444,  644,  844,  
+		252,  452,  652,  852 ],  
+	// List
+	1317, [ array: o[1318] ],  
+	// Array
+	1318, [ o[1319],  o[1321],  o[1323],  o[1337],  
+		o[1339],  o[1353],  o[1365],  o[1378],  
+		o[1392],  o[1394],  o[1409],  o[1423],  
+		o[1438],  o[1452],  o[1465],  o[1467],  
+		o[1501],  o[1515],  o[1528],  o[1530],  
+		o[1532],  o[1566],  o[1568],  o[1579],  
+		o[1592],  o[1594],  o[1596],  o[1615],  
+		o[1649],  o[1651],  o[1653],  o[1655],  
+		o[1669],  o[1716],  o[1732],  o[1734],  
+		o[1747],  o[1760],  o[1770],  o[1772],  
+		o[1785],  o[1787],  o[1789],  o[1799],  
+		o[1801],  o[1803],  o[1805],  o[1807],  
+		o[1809],  o[1811],  o[1813],  o[1815],  
+		o[1817],  o[1819],  o[1821],  o[1823],  
+		o[1825],  o[1827],  o[1829],  o[1831],  
+		o[1841],  o[1854],  o[1856],  o[1858],  
+		o[1860],  o[1873],  o[1875],  o[1877],  
+		o[1879],  o[1881],  o[1883],  o[1885],  
+		o[1887],  o[1889],  o[1891],  o[1893],  
+		o[1895],  o[1897],  o[1899],  o[1901],  
+		o[1903],  o[1905],  o[1907],  o[1909],  
+		o[1911],  o[1925],  o[1927],  o[1929],  
+		o[1931],  o[1946],  o[1948],  o[1950],  
+		o[1952],  o[1965],  o[1967],  o[1969],  
+		o[1971],  o[1985],  o[1987],  o[1989] ],  
+	// List
+	1319, [ array: o[1320] ],  
+	// List
+	1321, [ array: o[1322] ],  
+	// List
+	1323, [ array: o[1324] ],  
+	// Array
+	1324, [ o[1325],  o[1327],  o[1329],  false ],  
+	// List
+	1325, [ array: o[1326] ],  
+	// Array
+	1326, [ o[115] ],  
+	// List
+	1327, [ array: o[1328] ],  
+	// List
+	1329, [ array: o[1330] ],  
+	// Array
+	1330, [ o[935],  o[1331],  o[1333],  o[1335],  
+		o[1336] ],  
+	// List
+	1331, [ array: o[1332] ],  
+	// Array
+	1332, [ 1.0,  0.0,  1,  0,  
+		0,  0 ],  
+	// List
+	1333, [ array: o[1334] ],  
+	// Array
+	1334, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Rect
+	1335, [ left: 764.0,  top: 510.0,  
+		width: 360.0,  height: 136.0 ],  
+	// List
+	1337, [ array: o[1338] ],  
+	// List
+	1339, [ array: o[1340] ],  
+	// Array
+	1340, [ o[1341],  o[1343],  o[1345],  true ],  
+	// List
+	1341, [ array: o[1342] ],  
+	// Array
+	1342, [ o[49] ],  
+	// List
+	1343, [ array: o[1344] ],  
+	// Array
+	1344, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1345, [ array: o[1346] ],  
+	// Array
+	1346, [ o[1347],  o[1348],  o[1350],  o[1352] ],  
+	// List
+	1348, [ array: o[1349] ],  
+	// Array
+	1349, [ 1,  0,  0,  0,  
+		0,  0,  0,  2.0,  
+		0 ],  
+	// List
+	1350, [ array: o[1351] ],  
+	// Array
+	1351, [ '[ /Switches50/x, 1, 0, 0, 0, 0, 0, 0 ]',  '[ /Switches50/x, 0, 1, 0, 0, 0, 0, 0 ]',  '[ /Switches50/x, 0, 0, 1, 0, 0, 0, 0 ]',  '[ /Switches50/x, 0, 0, 0, 1, 0, 0, 0 ]',  
+		'[ /Switches50/x, 0, 0, 0, 0, 1, 0, 0 ]',  '[ /Switches50/x, 0, 0, 0, 0, 0, 1, 0 ]',  '[ /Switches50/x, 0, 0, 0, 0, 0, 0, 1 ]',  '/Fader54' ],  
+	// Rect
+	1352, [ left: 41.0,  top: 713.0,  
+		width: 618.0,  height: 141.0 ],  
+	// List
+	1353, [ array: o[1354] ],  
+	// Array
+	1354, [ o[1355],  o[1357],  o[1359],  true ],  
+	// List
+	1355, [ array: o[1356] ],  
+	// Array
+	1356, [ o[66] ],  
+	// List
+	1357, [ array: o[1358] ],  
+	// List
+	1359, [ array: o[1360] ],  
+	// Array
+	1360, [ o[1361],  o[1362],  o[1364] ],  
+	// List
+	1362, [ array: o[1363] ],  
+	// Array
+	1363, [ 1,  0 ],  
+	// Rect
+	1364, [ left: 600.0,  top: 300.0,  
+		width: 100.0,  height: 60.0 ],  
+	// List
+	1365, [ array: o[1366] ],  
+	// Array
+	1366, [ o[1367],  o[1369],  o[1371],  true ],  
+	// List
+	1367, [ array: o[1368] ],  
+	// Array
+	1368, [ o[115] ],  
+	// List
+	1369, [ array: o[1370] ],  
+	// Array
+	1370, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1371, [ array: o[1372] ],  
+	// Array
+	1372, [ o[584],  o[1373],  o[1375],  o[1377] ],  
+	// List
+	1373, [ array: o[1374] ],  
+	// Array
+	1374, [ -1.0,  0.0,  0 ],  
+	// List
+	1375, [ array: o[1376] ],  
+	// Array
+	1376, [ '/Fader75',  '/Fader70',  nil ],  
+	// Rect
+	1377, [ left: 848.0,  top: 388.0,  
+		width: 300.0,  height: 109.0 ],  
+	// List
+	1378, [ array: o[1379] ],  
+	// Array
+	1379, [ o[1380],  o[1382],  o[1384],  true ],  
+	// List
+	1380, [ array: o[1381] ],  
+	// Array
+	1381, [ o[128] ],  
+	// List
+	1382, [ array: o[1383] ],  
+	// Array
+	1383, [ 47,  44,  45,  46,  
+		48,  49,  50 ],  
+	// List
+	1384, [ array: o[1385] ],  
+	// Array
+	1385, [ o[1386],  o[1387],  o[1389],  o[1391] ],  
+	// List
+	1387, [ array: o[1388] ],  
+	// Array
+	1388, [ 2.0,  0.346476,  0.0,  0,  
+		0,  0,  0,  0,  
+		0,  0 ],  
+	// List
+	1389, [ array: o[1390] ],  
+	// Array
+	1390, [ '/Fader80',  nil,  nil,  '/Button80/x',  
+		'/Button81/x',  '/Button82/x',  nil,  '/Button84/x',  
+		'/Button83/x' ],  
+	// Rect
+	1391, [ left: 70.0,  top: 682.0,  
+		width: 704.0,  height: 173.0 ],  
+	// List
+	1392, [ array: o[1393] ],  
+	// List
+	1394, [ array: o[1395] ],  
+	// Array
+	1395, [ o[1396],  o[1398],  o[1400],  true ],  
+	// List
+	1396, [ array: o[1397] ],  
+	// Array
+	1397, [ o[66] ],  
+	// List
+	1398, [ array: o[1399] ],  
+	// Array
+	1399, [ 268 ],  
+	// List
+	1400, [ array: o[1401] ],  
+	// Array
+	1401, [ o[1402],  o[1403],  o[1406],  o[1408] ],  
+	// List
+	1403, [ array: o[1404] ],  
+	// Array
+	1404, [ 0.622493,  o[1405],  0 ],  
+	// Array
+	1405, [ 0.1,  0.218519 ],  
+	// List
+	1406, [ array: o[1407] ],  
+	// Array
+	1407, [ nil,  nil,  '/manta/noteOn/40' ],  
+	// Rect
+	1408, [ left: 500.0,  top: 80.0,  
+		width: 243.0,  height: 109.0 ],  
+	// List
+	1409, [ array: o[1410] ],  
+	// Array
+	1410, [ o[1411],  o[1413],  o[1415],  true ],  
+	// List
+	1411, [ array: o[1412] ],  
+	// Array
+	1412, [ o[115] ],  
+	// List
+	1413, [ array: o[1414] ],  
+	// Array
+	1414, [ 44,  45,  46,  47,  
+		48,  49,  50,  460 ],  
+	// List
+	1415, [ array: o[1416] ],  
+	// Array
+	1416, [ o[1417],  o[1418],  o[1420],  o[1422] ],  
+	// List
+	1418, [ array: o[1419] ],  
+	// Array
+	1419, [ 0.4350384538559,  0.29822438598837,  58.505619168282,  0.0,  
+		0 ],  
+	// List
+	1420, [ array: o[1421] ],  
+	// Array
+	1421, [ '/Fader71',  '/Fader72',  '/Fader73',  nil ],  
+	// Rect
+	1422, [ left: 910.0,  top: 80.0,  
+		width: 137.0,  height: 293.0 ],  
+	// List
+	1423, [ array: o[1424] ],  
+	// Array
+	1424, [ o[1425],  o[1427],  o[1429],  true ],  
+	// List
+	1425, [ array: o[1426] ],  
+	// Array
+	1426, [ o[128] ],  
+	// List
+	1427, [ array: o[1428] ],  
+	// Array
+	1428, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1429, [ array: o[1430] ],  
+	// Array
+	1430, [ o[1431],  o[1432],  o[1435],  o[1437] ],  
+	// List
+	1432, [ array: o[1433] ],  
+	// Array
+	1433, [ 0,  1,  1,  1.0,  
+		o[1434],  0 ],  
+	// Array
+	1434, [ nil,  nil ],  
+	// List
+	1435, [ array: o[1436] ],  
+	// Array
+	1436, [ nil,  '/Button85/x',  '/Button86/x',  '/Fader85',  
+		'/MultiBall80' ],  
+	// Rect
+	1437, [ left: 500.0,  top: 500.0,  
+		width: 360.0,  height: 250.0 ],  
+	// List
+	1438, [ array: o[1439] ],  
+	// Array
+	1439, [ o[1440],  o[1442],  o[1444],  true ],  
+	// List
+	1440, [ array: o[1441] ],  
+	// Array
+	1441, [ o[49] ],  
+	// List
+	1442, [ array: o[1443] ],  
+	// Array
+	1443, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1444, [ array: o[1445] ],  
+	// Array
+	1445, [ o[1446],  o[1447],  o[1449],  o[1451] ],  
+	// List
+	1447, [ array: o[1448] ],  
+	// Array
+	1448, [ 0,  1,  0.045341781913438,  0.0,  
+		0,  1,  0,  0 ],  
+	// List
+	1449, [ array: o[1450] ],  
+	// Array
+	1450, [ nil,  nil,  '/Fader52',  '/Fader53',  
+		'/Button53/x',  nil,  nil,  nil ],  
+	// Rect
+	1451, [ left: 499.0,  top: 541.0,  
+		width: 188.0,  height: 314.0 ],  
+	// List
+	1452, [ array: o[1453] ],  
+	// Array
+	1453, [ o[1454],  o[1456],  o[1458],  true ],  
+	// List
+	1454, [ array: o[1455] ],  
+	// Array
+	1455, [ o[66] ],  
+	// List
+	1456, [ array: o[1457] ],  
+	// Array
+	1457, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1458, [ array: o[1459] ],  
+	// Array
+	1459, [ o[253],  o[1460],  o[1462],  o[1464] ],  
+	// List
+	1460, [ array: o[1461] ],  
+	// Array
+	1461, [ 0.0,  0 ],  
+	// List
+	1462, [ array: o[1463] ],  
+	// Array
+	1463, [ '/Fader60',  nil ],  
+	// Rect
+	1464, [ left: 313.0,  top: 407.0,  
+		width: 400.0,  height: 46.0 ],  
+	// List
+	1465, [ array: o[1466] ],  
+	// List
+	1467, [ array: o[1468] ],  
+	// Array
+	1468, [ o[1469],  o[1471],  o[1473],  true ],  
+	// List
+	1469, [ array: o[1470] ],  
+	// Array
+	1470, [ o[128] ],  
+	// List
+	1471, [ array: o[1472] ],  
+	// List
+	1473, [ array: o[1474] ],  
+	// Array
+	1474, [ o[757],  o[1475],  o[1478],  o[1480],  
+		o[1481] ],  
+	// List
+	1475, [ array: o[1476] ],  
+	// Array
+	1476, [ 1,  0,  0,  0,  
+		o[1477] ],  
+	// Array
+	1477, [ 4.0,  17.818182 ],  
+	// List
+	1478, [ array: o[1479] ],  
+	// Array
+	1479, [ '[ /Switches80/x, 1, 0, 0, 0 ]',  '[ /Switches80/x, 0, 1, 0, 0 ]',  '[ /Switches80/x, 0, 0, 1, 0 ]',  '[ /Switches80/x, 0, 0, 0, 1 ]',  
+		nil ],  
+	// Rect
+	1480, [ left: 55.0,  top: 294.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	1481, [ array: o[1482] ],  
+	// Array
+	1482, [ o[1483],  o[1492] ],  
+	// List
+	1483, [ array: o[1484] ],  
+	// Array
+	1484, [ nil,  o[1485],  o[1487],  o[1489],  
+		o[1490] ],  
+	// List
+	1485, [ array: o[1486] ],  
+	// Array
+	1486, [ 1.0,  3,  0 ],  
+	// List
+	1487, [ array: o[1488] ],  
+	// Array
+	1488, [ nil,  nil ],  
+	// Rect
+	1489, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1490, [ array: o[1491] ],  
+	// Array
+	1491, [ 668 ],  
+	// List
+	1492, [ array: o[1493] ],  
+	// Array
+	1493, [ nil,  o[1494],  o[1496],  o[1498],  
+		o[1499] ],  
+	// List
+	1494, [ array: o[1495] ],  
+	// Array
+	1495, [ 1.0,  3,  0 ],  
+	// List
+	1496, [ array: o[1497] ],  
+	// Array
+	1497, [ nil,  nil ],  
+	// Rect
+	1498, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1499, [ array: o[1500] ],  
+	// Array
+	1500, [ 676 ],  
+	// List
+	1501, [ array: o[1502] ],  
+	// Array
+	1502, [ o[1503],  o[1505],  o[1507],  true ],  
+	// List
+	1503, [ array: o[1504] ],  
+	// Array
+	1504, [ o[49],  o[115] ],  
+	// List
+	1505, [ array: o[1506] ],  
+	// Array
+	1506, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1507, [ array: o[1508] ],  
+	// Array
+	1508, [ o[1509],  o[1510],  o[1512],  o[1514] ],  
+	// List
+	1510, [ array: o[1511] ],  
+	// Array
+	1511, [ 0.31547704502572,  3.000385,  0.55,  0 ],  
+	// List
+	1512, [ array: o[1513] ],  
+	// Array
+	1513, [ '/Fader51',  nil,  nil ],  
+	// Rect
+	1514, [ left: 495.0,  top: 569.0,  
+		width: 380.0,  height: 141.0 ],  
+	// List
+	1515, [ array: o[1516] ],  
+	// Array
+	1516, [ o[1517],  o[1519],  o[1521],  true ],  
+	// List
+	1517, [ array: o[1518] ],  
+	// Array
+	1518, [ o[66] ],  
+	// List
+	1519, [ array: o[1520] ],  
+	// Array
+	1520, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1521, [ array: o[1522] ],  
+	// Array
+	1522, [ o[318],  o[1523],  o[1525],  o[1527] ],  
+	// List
+	1523, [ array: o[1524] ],  
+	// Array
+	1524, [ 0.0,  1.968992,  0 ],  
+	// List
+	1525, [ array: o[1526] ],  
+	// Array
+	1526, [ '/Fader61',  nil ],  
+	// Rect
+	1527, [ left: 315.0,  top: 568.0,  
+		width: 326.0,  height: 109.0 ],  
+	// List
+	1528, [ array: o[1529] ],  
+	// List
+	1530, [ array: o[1531] ],  
+	// List
+	1532, [ array: o[1533] ],  
+	// Array
+	1533, [ o[1534],  o[1536],  o[1538],  true ],  
+	// List
+	1534, [ array: o[1535] ],  
+	// Array
+	1535, [ o[49] ],  
+	// List
+	1536, [ array: o[1537] ],  
+	// List
+	1538, [ array: o[1539] ],  
+	// Array
+	1539, [ o[757],  o[1540],  o[1543],  o[1545],  
+		o[1546] ],  
+	// List
+	1540, [ array: o[1541] ],  
+	// Array
+	1541, [ 1,  0,  0,  0,  
+		o[1542] ],  
+	// Array
+	1542, [ 4.0,  8.909091 ],  
+	// List
+	1543, [ array: o[1544] ],  
+	// Array
+	1544, [ '[ /Switches51/x, 1, 0, 0, 0 ]',  '[ /Switches51/x, 0, 1, 0, 0 ]',  '[ /Switches51/x, 0, 0, 1, 0 ]',  '[ /Switches51/x, 0, 0, 0, 1 ]',  
+		nil ],  
+	// Rect
+	1545, [ left: 82.0,  top: 238.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	1546, [ array: o[1547] ],  
+	// Array
+	1547, [ o[1548],  o[1557] ],  
+	// List
+	1548, [ array: o[1549] ],  
+	// Array
+	1549, [ nil,  o[1550],  o[1552],  o[1554],  
+		o[1555] ],  
+	// List
+	1550, [ array: o[1551] ],  
+	// Array
+	1551, [ 1.0,  3,  0 ],  
+	// List
+	1552, [ array: o[1553] ],  
+	// Array
+	1553, [ nil,  nil ],  
+	// Rect
+	1554, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1555, [ array: o[1556] ],  
+	// Array
+	1556, [ 68 ],  
+	// List
+	1557, [ array: o[1558] ],  
+	// Array
+	1558, [ nil,  o[1559],  o[1561],  o[1563],  
+		o[1564] ],  
+	// List
+	1559, [ array: o[1560] ],  
+	// Array
+	1560, [ 1.0,  3,  0 ],  
+	// List
+	1561, [ array: o[1562] ],  
+	// Array
+	1562, [ nil,  nil ],  
+	// Rect
+	1563, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1564, [ array: o[1565] ],  
+	// Array
+	1565, [ 84,  92 ],  
+	// List
+	1566, [ array: o[1567] ],  
+	// List
+	1568, [ array: o[1569] ],  
+	// Array
+	1569, [ o[1570],  o[1572],  o[1574],  true ],  
+	// List
+	1570, [ array: o[1571] ],  
+	// Array
+	1571, [ o[115] ],  
+	// List
+	1572, [ array: o[1573] ],  
+	// List
+	1574, [ array: o[1575] ],  
+	// Array
+	1575, [ o[120],  o[1576],  o[1578] ],  
+	// List
+	1576, [ array: o[1577] ],  
+	// Array
+	1577, [ 0.0,  6.0,  1,  0 ],  
+	// Rect
+	1578, [ left: 200.0,  top: 230.0,  
+		width: 188.0,  height: 280.0 ],  
+	// List
+	1579, [ array: o[1580] ],  
+	// Array
+	1580, [ o[1581],  o[1583],  o[1585],  true ],  
+	// List
+	1581, [ array: o[1582] ],  
+	// Array
+	1582, [ o[128] ],  
+	// List
+	1583, [ array: o[1584] ],  
+	// Array
+	1584, [ 47,  44,  45,  46,  
+		48,  49,  50 ],  
+	// List
+	1585, [ array: o[1586] ],  
+	// Array
+	1586, [ o[1446],  o[1587],  o[1589],  o[1591] ],  
+	// List
+	1587, [ array: o[1588] ],  
+	// Array
+	1588, [ 0,  1,  1.49199,  0.049094,  
+		0,  1,  0,  0 ],  
+	// List
+	1589, [ array: o[1590] ],  
+	// Array
+	1590, [ nil,  nil,  '/Fader82',  nil,  
+		nil,  nil,  nil,  nil ],  
+	// Rect
+	1591, [ left: 562.0,  top: 259.0,  
+		width: 188.0,  height: 344.0 ],  
+	// List
+	1592, [ array: o[1593] ],  
+	// List
+	1594, [ array: o[1595] ],  
+	// List
+	1596, [ array: o[1597] ],  
+	// Array
+	1597, [ o[1598],  o[1600],  o[1602],  false ],  
+	// List
+	1598, [ array: o[1599] ],  
+	// Array
+	1599, [ o[115] ],  
+	// List
+	1600, [ array: o[1601] ],  
+	// List
+	1602, [ array: o[1603] ],  
+	// Array
+	1603, [ o[332],  o[1604],  o[1606],  o[1608],  
+		o[1609] ],  
+	// List
+	1604, [ array: o[1605] ],  
+	// Array
+	1605, [ 0.37432722663755,  20000.0 ],  
+	// List
+	1606, [ array: o[1607] ],  
+	// Array
+	1607, [ '/Fader74',  nil ],  
+	// Rect
+	1608, [ left: 1132.0,  top: 321.0,  
+		width: 220.0,  height: 150.0 ],  
+	// List
+	1609, [ array: o[1610] ],  
+	// Array
+	1610, [ o[1611],  o[1613] ],  
+	// List
+	1611, [ array: o[1612] ],  
+	// Array
+	1612, [ 500 ],  
+	// List
+	1613, [ array: o[1614] ],  
+	// Array
+	1614, [ 460 ],  
+	// List
+	1615, [ array: o[1616] ],  
+	// Array
+	1616, [ o[1617],  o[1619],  o[1621],  true ],  
+	// List
+	1617, [ array: o[1618] ],  
+	// Array
+	1618, [ o[128] ],  
+	// List
+	1619, [ array: o[1620] ],  
+	// List
+	1621, [ array: o[1622] ],  
+	// Array
+	1622, [ o[757],  o[1623],  o[1626],  o[1628],  
+		o[1629] ],  
+	// List
+	1623, [ array: o[1624] ],  
+	// Array
+	1624, [ 1,  0,  0,  0,  
+		o[1625] ],  
+	// Array
+	1625, [ 4.0,  18.613636 ],  
+	// List
+	1626, [ array: o[1627] ],  
+	// Array
+	1627, [ '[ /Switches81/x, 1, 0, 0, 0 ]',  '[ /Switches81/x, 0, 1, 0, 0 ]',  '[ /Switches81/x, 0, 0, 1, 0 ]',  '[ /Switches81/x, 0, 0, 0, 1 ]',  
+		nil ],  
+	// Rect
+	1628, [ left: 248.0,  top: 290.0,  
+		width: 175.0,  height: 360.0 ],  
+	// List
+	1629, [ array: o[1630] ],  
+	// Array
+	1630, [ o[1631],  o[1640] ],  
+	// List
+	1631, [ array: o[1632] ],  
+	// Array
+	1632, [ nil,  o[1633],  o[1635],  o[1637],  
+		o[1638] ],  
+	// List
+	1633, [ array: o[1634] ],  
+	// Array
+	1634, [ 1.0,  3,  0 ],  
+	// List
+	1635, [ array: o[1636] ],  
+	// Array
+	1636, [ nil,  nil ],  
+	// Rect
+	1637, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1638, [ array: o[1639] ],  
+	// Array
+	1639, [ 684 ],  
+	// List
+	1640, [ array: o[1641] ],  
+	// Array
+	1641, [ nil,  o[1642],  o[1644],  o[1646],  
+		o[1647] ],  
+	// List
+	1642, [ array: o[1643] ],  
+	// Array
+	1643, [ 1.0,  3,  0 ],  
+	// List
+	1644, [ array: o[1645] ],  
+	// Array
+	1645, [ nil,  nil ],  
+	// Rect
+	1646, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1647, [ array: o[1648] ],  
+	// Array
+	1648, [ 700 ],  
+	// List
+	1649, [ array: o[1650] ],  
+	// List
+	1651, [ array: o[1652] ],  
+	// List
+	1653, [ array: o[1654] ],  
+	// List
+	1655, [ array: o[1656] ],  
+	// Array
+	1656, [ o[1657],  o[1659],  o[1661],  true ],  
+	// List
+	1657, [ array: o[1658] ],  
+	// Array
+	1658, [ o[128] ],  
+	// List
+	1659, [ array: o[1660] ],  
+	// Array
+	1660, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1661, [ array: o[1662] ],  
+	// Array
+	1662, [ o[1663],  o[1664],  o[1666],  o[1668] ],  
+	// List
+	1664, [ array: o[1665] ],  
+	// Array
+	1665, [ 0.73284,  0,  1 ],  
+	// List
+	1666, [ array: o[1667] ],  
+	// Array
+	1667, [ '/Fader81' ],  
+	// Rect
+	1668, [ left: 410.0,  top: 432.0,  
+		width: 274.0,  height: 77.0 ],  
+	// List
+	1669, [ array: o[1670] ],  
+	// Array
+	1670, [ o[1671],  o[1673],  o[1675],  false ],  
+	// List
+	1671, [ array: o[1672] ],  
+	// Array
+	1672, [ o[49] ],  
+	// List
+	1673, [ array: o[1674] ],  
+	// List
+	1675, [ array: o[1676] ],  
+	// Array
+	1676, [ o[71],  o[1677],  o[1678] ],  
+	// Rect
+	1677, [ left: 1367.0,  top: 463.0,  
+		width: 285.0,  height: 280.0 ],  
+	// List
+	1678, [ array: o[1679] ],  
+	// Array
+	1679, [ o[1680],  o[1689],  o[1698],  o[1707] ],  
+	// List
+	1680, [ array: o[1681] ],  
+	// Array
+	1681, [ nil,  o[1682],  o[1684],  o[1686],  
+		o[1687] ],  
+	// List
+	1682, [ array: o[1683] ],  
+	// Array
+	1683, [ 0.0,  3,  0 ],  
+	// List
+	1684, [ array: o[1685] ],  
+	// Array
+	1685, [ '/Fader67',  nil ],  
+	// Rect
+	1686, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1687, [ array: o[1688] ],  
+	// Array
+	1688, [ 44 ],  
+	// List
+	1689, [ array: o[1690] ],  
+	// Array
+	1690, [ nil,  o[1691],  o[1693],  o[1695],  
+		o[1696] ],  
+	// List
+	1691, [ array: o[1692] ],  
+	// Array
+	1692, [ 0.0,  3,  0 ],  
+	// List
+	1693, [ array: o[1694] ],  
+	// Array
+	1694, [ '/Fader58',  nil ],  
+	// Rect
+	1695, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1696, [ array: o[1697] ],  
+	// Array
+	1697, [ 45 ],  
+	// List
+	1698, [ array: o[1699] ],  
+	// Array
+	1699, [ nil,  o[1700],  o[1702],  o[1704],  
+		o[1705] ],  
+	// List
+	1700, [ array: o[1701] ],  
+	// Array
+	1701, [ 0.0,  3,  0 ],  
+	// List
+	1702, [ array: o[1703] ],  
+	// Array
+	1703, [ '/Fader59',  nil ],  
+	// Rect
+	1704, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1705, [ array: o[1706] ],  
+	// Array
+	1706, [ 46 ],  
+	// List
+	1707, [ array: o[1708] ],  
+	// Array
+	1708, [ nil,  o[1709],  o[1711],  o[1713],  
+		o[1714] ],  
+	// List
+	1709, [ array: o[1710] ],  
+	// Array
+	1710, [ 1.0,  3,  0 ],  
+	// List
+	1711, [ array: o[1712] ],  
+	// Array
+	1712, [ '/Fader65',  nil ],  
+	// Rect
+	1713, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	1714, [ array: o[1715] ],  
+	// Array
+	1715, [ 47 ],  
+	// List
+	1716, [ array: o[1717] ],  
+	// Array
+	1717, [ o[1718],  o[1720],  o[1722],  true ],  
+	// List
+	1718, [ array: o[1719] ],  
+	// Array
+	1719, [ o[66] ],  
+	// List
+	1720, [ array: o[1721] ],  
+	// Array
+	1721, [ 44,  45,  46,  47,  
+		48,  49,  50 ],  
+	// List
+	1722, [ array: o[1723] ],  
+	// Array
+	1723, [ o[1724],  o[1725],  o[1729],  o[1731] ],  
+	// List
+	1725, [ array: o[1726] ],  
+	// Array
+	1726, [ o[1727],  o[1728],  0.0,  0,  
+		0 ],  
+	// Array
+	1727, [ 0.1,  0.8 ],  
+	// Array
+	1728, [ 20.0,  30.0 ],  
+	// List
+	1729, [ array: o[1730] ],  
+	// Array
+	1730, [ nil,  nil,  '/Fader62',  '/Button60/x',  
+		nil ],  
+	// Rect
+	1731, [ left: 680.0,  top: 348.0,  
+		width: 300.0,  height: 173.0 ],  
+	// List
+	1732, [ array: o[1733] ],  
+	// List
+	1734, [ array: o[1735] ],  
+	// Array
+	1735, [ o[1736],  o[1738],  o[1740],  true ],  
+	// List
+	1736, [ array: o[1737] ],  
+	// Array
+	1737, [ o[128] ],  
+	// List
+	1738, [ array: o[1739] ],  
+	// Array
+	1739, [ 47,  44,  45,  46,  
+		48,  49,  50 ],  
+	// List
+	1740, [ array: o[1741] ],  
+	// Array
+	1741, [ o[253],  o[1742],  o[1744],  o[1746] ],  
+	// List
+	1742, [ array: o[1743] ],  
+	// Array
+	1743, [ 0.036281186166534,  0 ],  
+	// List
+	1744, [ array: o[1745] ],  
+	// Array
+	1745, [ '/Fader83',  nil ],  
+	// Rect
+	1746, [ left: 33.0,  top: 339.0,  
+		width: 400.0,  height: 46.0 ],  
+	// List
+	1747, [ array: o[1748] ],  
+	// Array
+	1748, [ o[1749],  o[1751],  o[1753],  true ],  
+	// List
+	1749, [ array: o[1750] ],  
+	// Array
+	1750, [ o[49] ],  
+	// List
+	1751, [ array: o[1752] ],  
+	// Array
+	1752, [ 124 ],  
+	// List
+	1753, [ array: o[1754] ],  
+	// Array
+	1754, [ o[584],  o[1755],  o[1757],  o[1759] ],  
+	// List
+	1755, [ array: o[1756] ],  
+	// Array
+	1756, [ -1.0,  1.0,  0 ],  
+	// List
+	1757, [ array: o[1758] ],  
+	// Array
+	1758, [ nil,  '/Fader66',  nil ],  
+	// Rect
+	1759, [ left: 1341.0,  top: 298.0,  
+		width: 300.0,  height: 106.0 ],  
+	// List
+	1760, [ array: o[1761] ],  
+	// Array
+	1761, [ o[1762],  o[1764],  o[1766],  true ],  
+	// List
+	1762, [ array: o[1763] ],  
+	// Array
+	1763, [ o[66] ],  
+	// List
+	1764, [ array: o[1765] ],  
+	// Array
+	1765, [ 324,  292,  284,  276 ],  
+	// List
+	1766, [ array: o[1767] ],  
+	// Array
+	1767, [ o[598],  o[1768],  nil,  nil ],  
+	// List
+	1768, [ array: o[1769] ],  
+	// List
+	1770, [ array: o[1771] ],  
+	// List
+	1772, [ array: o[1773] ],  
+	// Array
+	1773, [ o[1774],  o[1776],  o[1778],  true ],  
+	// List
+	1774, [ array: o[1775] ],  
+	// Array
+	1775, [ o[128] ],  
+	// List
+	1776, [ array: o[1777] ],  
+	// Array
+	1777, [ 47,  44,  45,  46,  
+		48,  49,  50 ],  
+	// List
+	1778, [ array: o[1779] ],  
+	// Array
+	1779, [ o[318],  o[1780],  o[1782],  o[1784] ],  
+	// List
+	1780, [ array: o[1781] ],  
+	// Array
+	1781, [ 0.0,  64.0,  0 ],  
+	// List
+	1782, [ array: o[1783] ],  
+	// Array
+	1783, [ '/Fader84',  nil ],  
+	// Rect
+	1784, [ left: 97.0,  top: 491.0,  
+		width: 330.0,  height: 109.0 ],  
+	// List
+	1785, [ array: o[1786] ],  
+	// List
+	1787, [ array: o[1788] ],  
+	// List
+	1789, [ array: o[1790] ],  
+	// Array
+	1790, [ o[1791],  o[1793],  o[1795],  false ],  
+	// List
+	1791, [ array: o[1792] ],  
+	// Array
+	1792, [ o[115] ],  
+	// List
+	1793, [ array: o[1794] ],  
+	// Array
+	1794, [ 508,  476 ],  
+	// List
+	1795, [ array: o[1796] ],  
+	// Array
+	1796, [ o[598],  o[1797],  nil,  nil ],  
+	// List
+	1797, [ array: o[1798] ],  
+	// List
+	1799, [ array: o[1800] ],  
+	// List
+	1801, [ array: o[1802] ],  
+	// List
+	1803, [ array: o[1804] ],  
+	// List
+	1805, [ array: o[1806] ],  
+	// List
+	1807, [ array: o[1808] ],  
+	// List
+	1809, [ array: o[1810] ],  
+	// List
+	1811, [ array: o[1812] ],  
+	// List
+	1813, [ array: o[1814] ],  
+	// List
+	1815, [ array: o[1816] ],  
+	// List
+	1817, [ array: o[1818] ],  
+	// List
+	1819, [ array: o[1820] ],  
+	// List
+	1821, [ array: o[1822] ],  
+	// List
+	1823, [ array: o[1824] ],  
+	// List
+	1825, [ array: o[1826] ],  
+	// List
+	1827, [ array: o[1828] ],  
+	// List
+	1829, [ array: o[1830] ],  
+	// List
+	1831, [ array: o[1832] ],  
+	// Array
+	1832, [ o[1833],  o[1835],  o[1837],  true ],  
+	// List
+	1833, [ array: o[1834] ],  
+	// Array
+	1834, [ o[128] ],  
+	// List
+	1835, [ array: o[1836] ],  
+	// Array
+	1836, [ 732,  708,  724,  716 ],  
+	// List
+	1837, [ array: o[1838] ],  
+	// Array
+	1838, [ o[598],  o[1839],  nil,  nil ],  
+	// List
+	1839, [ array: o[1840] ],  
+	// List
+	1841, [ array: o[1842] ],  
+	// Array
+	1842, [ o[1843],  o[1845],  o[1847],  true ],  
+	// List
+	1843, [ array: o[1844] ],  
+	// Array
+	1844, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1845, [ array: o[1846] ],  
+	// Array
+	1846, [ 100,  332,  772,  540 ],  
+	// List
+	1847, [ array: o[1848] ],  
+	// Array
+	1848, [ o[972],  o[1849],  o[1851],  o[1853] ],  
+	// List
+	1849, [ array: o[1850] ],  
+	// Array
+	1850, [ 0,  0,  1,  0,  
+		0,  0,  0,  0,  
+		0 ],  
+	// List
+	1851, [ array: o[1852] ],  
+	// Array
+	1852, [ '[ /Switches52/x, 1, 0, 0, 0, 0, 0, 0, 0 ]',  '[ /Switches52/x, 0, 1, 0, 0, 0, 0, 0, 0 ]',  '[ /Switches52/x, 0, 0, 1, 0, 0, 0, 0, 0 ]',  '[ /Switches52/x, 0, 0, 0, 1, 0, 0, 0, 0 ]',  
+		'[ /Switches52/x, 0, 0, 0, 0, 1, 0, 0, 0 ]',  '[ /Switches52/x, 0, 0, 0, 0, 0, 1, 0, 0 ]',  '[ /Switches52/x, 0, 0, 0, 0, 0, 0, 1, 0 ]',  '[ /Switches52/x, 0, 0, 0, 0, 0, 0, 0, 1 ]',  
+		nil ],  
+	// Rect
+	1853, [ left: 452.0,  top: 396.0,  
+		width: 790.0,  height: 77.0 ],  
+	// List
+	1854, [ array: o[1855] ],  
+	// List
+	1856, [ array: o[1857] ],  
+	// List
+	1858, [ array: o[1859] ],  
+	// List
+	1860, [ array: o[1861] ],  
+	// Array
+	1861, [ o[1862],  o[1864],  o[1866],  true ],  
+	// List
+	1862, [ array: o[1863] ],  
+	// Array
+	1863, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1864, [ array: o[1865] ],  
+	// Array
+	1865, [ 180 ],  
+	// List
+	1866, [ array: o[1867] ],  
+	// Array
+	1867, [ o[913],  o[1868],  o[1870],  o[1872] ],  
+	// List
+	1868, [ array: o[1869] ],  
+	// Array
+	1869, [ 1,  0,  0,  1.232469,  
+		0.860656,  0 ],  
+	// List
+	1870, [ array: o[1871] ],  
+	// Array
+	1871, [ '[ /Switches53/x, 1, 0, 0 ]',  '[ /Switches53/x, 0, 1, 0 ]',  '[ /Switches53/x, 0, 0, 1 ]',  nil,  
+		nil,  nil,  nil ],  
+	// Rect
+	1872, [ left: 315.0,  top: 229.0,  
+		width: 188.0,  height: 330.0 ],  
+	// List
+	1873, [ array: o[1874] ],  
+	// List
+	1875, [ array: o[1876] ],  
+	// List
+	1877, [ array: o[1878] ],  
+	// List
+	1879, [ array: o[1880] ],  
+	// List
+	1881, [ array: o[1882] ],  
+	// List
+	1883, [ array: o[1884] ],  
+	// List
+	1885, [ array: o[1886] ],  
+	// List
+	1887, [ array: o[1888] ],  
+	// List
+	1889, [ array: o[1890] ],  
+	// List
+	1891, [ array: o[1892] ],  
+	// List
+	1893, [ array: o[1894] ],  
+	// List
+	1895, [ array: o[1896] ],  
+	// List
+	1897, [ array: o[1898] ],  
+	// List
+	1899, [ array: o[1900] ],  
+	// List
+	1901, [ array: o[1902] ],  
+	// List
+	1903, [ array: o[1904] ],  
+	// List
+	1905, [ array: o[1906] ],  
+	// List
+	1907, [ array: o[1908] ],  
+	// List
+	1909, [ array: o[1910] ],  
+	// List
+	1911, [ array: o[1912] ],  
+	// Array
+	1912, [ o[1913],  o[1915],  o[1917],  true ],  
+	// List
+	1913, [ array: o[1914] ],  
+	// Array
+	1914, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1915, [ array: o[1916] ],  
+	// Array
+	1916, [ 188 ],  
+	// List
+	1917, [ array: o[1918] ],  
+	// Array
+	1918, [ o[1919],  o[1920],  o[1922],  o[1924] ],  
+	// List
+	1920, [ array: o[1921] ],  
+	// Array
+	1921, [ 1.0,  1.0,  -4.0,  1,  
+		0 ],  
+	// List
+	1922, [ array: o[1923] ],  
+	// Array
+	1923, [ nil,  nil,  '/Fader57',  '[ /Switches54/x, 1, 0 ]',  
+		'[ /Switches54/x, 0, 1 ]' ],  
+	// Rect
+	1924, [ left: 1222.0,  top: 80.0,  
+		width: 274.0,  height: 287.0 ],  
+	// List
+	1925, [ array: o[1926] ],  
+	// List
+	1927, [ array: o[1928] ],  
+	// List
+	1929, [ array: o[1930] ],  
+	// List
+	1931, [ array: o[1932] ],  
+	// Array
+	1932, [ o[1933],  o[1935],  o[1937],  true ],  
+	// List
+	1933, [ array: o[1934] ],  
+	// Array
+	1934, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1935, [ array: o[1936] ],  
+	// Array
+	1936, [ 228 ],  
+	// List
+	1937, [ array: o[1938] ],  
+	// Array
+	1938, [ o[1939],  o[1940],  o[1943],  o[1945] ],  
+	// List
+	1940, [ array: o[1941] ],  
+	// Array
+	1941, [ 0,  0,  o[1942] ],  
+	// Array
+	1942, [ 0.01,  0.1 ],  
+	// List
+	1943, [ array: o[1944] ],  
+	// Array
+	1944, [ '/Button50/x',  '/Button51/x',  nil ],  
+	// Rect
+	1945, [ left: 539.0,  top: 452.0,  
+		width: 290.0,  height: 75.0 ],  
+	// List
+	1946, [ array: o[1947] ],  
+	// List
+	1948, [ array: o[1949] ],  
+	// List
+	1950, [ array: o[1951] ],  
+	// List
+	1952, [ array: o[1953] ],  
+	// Array
+	1953, [ o[1954],  o[1956],  o[1958],  true ],  
+	// List
+	1954, [ array: o[1955] ],  
+	// Array
+	1955, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1956, [ array: o[1957] ],  
+	// Array
+	1957, [ 236 ],  
+	// List
+	1958, [ array: o[1959] ],  
+	// Array
+	1959, [ o[1014],  o[1960],  o[1962],  o[1964] ],  
+	// List
+	1960, [ array: o[1961] ],  
+	// Array
+	1961, [ 0.84149,  0,  0 ],  
+	// List
+	1962, [ array: o[1963] ],  
+	// Array
+	1963, [ nil,  '/Button52/x' ],  
+	// Rect
+	1964, [ left: 1000.0,  top: 103.0,  
+		width: 274.0,  height: 77.0 ],  
+	// List
+	1965, [ array: o[1966] ],  
+	// List
+	1967, [ array: o[1968] ],  
+	// List
+	1969, [ array: o[1970] ],  
+	// List
+	1971, [ array: o[1972] ],  
+	// Array
+	1972, [ o[1973],  o[1975],  o[1977],  false ],  
+	// List
+	1973, [ array: o[1974] ],  
+	// Array
+	1974, [ o[49],  o[66],  o[115],  o[128] ],  
+	// List
+	1975, [ array: o[1976] ],  
+	// Array
+	1976, [ 244 ],  
+	// List
+	1977, [ array: o[1978] ],  
+	// Array
+	1978, [ o[1979],  o[1980],  o[1982],  o[1984] ],  
+	// List
+	1980, [ array: o[1981] ],  
+	// Array
+	1981, [ 0,  0 ],  
+	// List
+	1982, [ array: o[1983] ],  
+	// Array
+	1983, [ nil,  nil ],  
+	// Rect
+	1984, [ left: 754.0,  top: 366.0,  
+		width: 160.0,  height: 50.0 ],  
+	// List
+	1985, [ array: o[1986] ],  
+	// List
+	1987, [ array: o[1988] ],  
+	// List
+	1989, [ array: o[1990] ],  
+	// List
+	1991, [ array: o[1992] ],  
+	// Array
+	1992, [ o[1993],  o[1994],  o[2032] ],  
+	// Rect
+	1993, [ left: 69.0,  top: 120.0,  
+		width: 505.0,  height: 278.0 ],  
+	// List
+	1994, [ array: o[1995] ],  
+	// Array
+	1995, [ o[1996],  o[2005],  o[2014],  o[2023] ],  
+	// List
+	1996, [ array: o[1997] ],  
+	// Array
+	1997, [ nil,  o[1998],  o[2000],  o[2002],  
+		o[2003] ],  
+	// List
+	1998, [ array: o[1999] ],  
+	// Array
+	1999, [ 0.0,  3,  2 ],  
+	// List
+	2000, [ array: o[2001] ],  
+	// Array
+	2001, [ nil,  nil ],  
+	// Rect
+	2002, [ left: 5.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2003, [ array: o[2004] ],  
+	// List
+	2005, [ array: o[2006] ],  
+	// Array
+	2006, [ nil,  o[2007],  o[2009],  o[2011],  
+		o[2012] ],  
+	// List
+	2007, [ array: o[2008] ],  
+	// Array
+	2008, [ 0.0,  3,  0 ],  
+	// List
+	2009, [ array: o[2010] ],  
+	// Array
+	2010, [ nil,  nil ],  
+	// Rect
+	2011, [ left: 60.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2012, [ array: o[2013] ],  
+	// List
+	2014, [ array: o[2015] ],  
+	// Array
+	2015, [ nil,  o[2016],  o[2018],  o[2020],  
+		o[2021] ],  
+	// List
+	2016, [ array: o[2017] ],  
+	// Array
+	2017, [ 1.0,  3,  2 ],  
+	// List
+	2018, [ array: o[2019] ],  
+	// Array
+	2019, [ nil,  nil ],  
+	// Rect
+	2020, [ left: 115.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2021, [ array: o[2022] ],  
+	// Array
+	2022, [ 132 ],  
+	// List
+	2023, [ array: o[2024] ],  
+	// Array
+	2024, [ nil,  o[2025],  o[2027],  o[2029],  
+		o[2030] ],  
+	// List
+	2025, [ array: o[2026] ],  
+	// Array
+	2026, [ 0.508035,  3,  0 ],  
+	// List
+	2027, [ array: o[2028] ],  
+	// Array
+	2028, [ nil,  nil ],  
+	// Rect
+	2029, [ left: 170.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2030, [ array: o[2031] ],  
+	// Array
+	2031, [ 244 ],  
+	// List
+	2032, [ array: o[2033] ],  
+	// Array
+	2033, [ o[2034],  o[2043],  o[2052],  o[2061],  
+		o[2070],  o[2079],  o[2088],  o[2097],  
+		o[2106],  o[2115],  o[2124],  o[2133],  
+		o[2142],  o[2151],  o[2160],  o[2169],  
+		o[2178],  o[2187],  o[2196],  o[2205] ],  
+	// List
+	2034, [ array: o[2035] ],  
+	// Array
+	2035, [ nil,  o[2036],  o[2038],  o[2040],  
+		o[2041] ],  
+	// List
+	2036, [ array: o[2037] ],  
+	// Array
+	2037, [ 1.0,  3,  0 ],  
+	// List
+	2038, [ array: o[2039] ],  
+	// Array
+	2039, [ nil,  nil ],  
+	// Rect
+	2040, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2041, [ array: o[2042] ],  
+	// List
+	2043, [ array: o[2044] ],  
+	// Array
+	2044, [ nil,  o[2045],  o[2047],  o[2049],  
+		o[2050] ],  
+	// List
+	2045, [ array: o[2046] ],  
+	// Array
+	2046, [ 0.0,  3,  0 ],  
+	// List
+	2047, [ array: o[2048] ],  
+	// Array
+	2048, [ nil,  nil ],  
+	// Rect
+	2049, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2050, [ array: o[2051] ],  
+	// List
+	2052, [ array: o[2053] ],  
+	// Array
+	2053, [ nil,  o[2054],  o[2056],  o[2058],  
+		o[2059] ],  
+	// List
+	2054, [ array: o[2055] ],  
+	// Array
+	2055, [ 0.0,  3,  0 ],  
+	// List
+	2056, [ array: o[2057] ],  
+	// Array
+	2057, [ nil,  nil ],  
+	// Rect
+	2058, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2059, [ array: o[2060] ],  
+	// List
+	2061, [ array: o[2062] ],  
+	// Array
+	2062, [ nil,  o[2063],  o[2065],  o[2067],  
+		o[2068] ],  
+	// List
+	2063, [ array: o[2064] ],  
+	// Array
+	2064, [ 0.0,  3,  0 ],  
+	// List
+	2065, [ array: o[2066] ],  
+	// Array
+	2066, [ nil,  nil ],  
+	// Rect
+	2067, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2068, [ array: o[2069] ],  
+	// List
+	2070, [ array: o[2071] ],  
+	// Array
+	2071, [ nil,  o[2072],  o[2074],  o[2076],  
+		o[2077] ],  
+	// List
+	2072, [ array: o[2073] ],  
+	// Array
+	2073, [ 0.0,  3,  0 ],  
+	// List
+	2074, [ array: o[2075] ],  
+	// Array
+	2075, [ nil,  nil ],  
+	// Rect
+	2076, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2077, [ array: o[2078] ],  
+	// List
+	2079, [ array: o[2080] ],  
+	// Array
+	2080, [ nil,  o[2081],  o[2083],  o[2085],  
+		o[2086] ],  
+	// List
+	2081, [ array: o[2082] ],  
+	// Array
+	2082, [ 0.0,  3,  0 ],  
+	// List
+	2083, [ array: o[2084] ],  
+	// Array
+	2084, [ nil,  nil ],  
+	// Rect
+	2085, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2086, [ array: o[2087] ],  
+	// List
+	2088, [ array: o[2089] ],  
+	// Array
+	2089, [ nil,  o[2090],  o[2092],  o[2094],  
+		o[2095] ],  
+	// List
+	2090, [ array: o[2091] ],  
+	// Array
+	2091, [ 0.0,  3,  0 ],  
+	// List
+	2092, [ array: o[2093] ],  
+	// Array
+	2093, [ nil,  nil ],  
+	// Rect
+	2094, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2095, [ array: o[2096] ],  
+	// List
+	2097, [ array: o[2098] ],  
+	// Array
+	2098, [ nil,  o[2099],  o[2101],  o[2103],  
+		o[2104] ],  
+	// List
+	2099, [ array: o[2100] ],  
+	// Array
+	2100, [ 0.0,  3,  0 ],  
+	// List
+	2101, [ array: o[2102] ],  
+	// Array
+	2102, [ nil,  nil ],  
+	// Rect
+	2103, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2104, [ array: o[2105] ],  
+	// List
+	2106, [ array: o[2107] ],  
+	// Array
+	2107, [ nil,  o[2108],  o[2110],  o[2112],  
+		o[2113] ],  
+	// List
+	2108, [ array: o[2109] ],  
+	// Array
+	2109, [ 0.0,  3,  0 ],  
+	// List
+	2110, [ array: o[2111] ],  
+	// Array
+	2111, [ nil,  nil ],  
+	// Rect
+	2112, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2113, [ array: o[2114] ],  
+	// List
+	2115, [ array: o[2116] ],  
+	// Array
+	2116, [ nil,  o[2117],  o[2119],  o[2121],  
+		o[2122] ],  
+	// List
+	2117, [ array: o[2118] ],  
+	// Array
+	2118, [ 0.0,  3,  0 ],  
+	// List
+	2119, [ array: o[2120] ],  
+	// Array
+	2120, [ nil,  nil ],  
+	// Rect
+	2121, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2122, [ array: o[2123] ],  
+	// List
+	2124, [ array: o[2125] ],  
+	// Array
+	2125, [ nil,  o[2126],  o[2128],  o[2130],  
+		o[2131] ],  
+	// List
+	2126, [ array: o[2127] ],  
+	// Array
+	2127, [ 1.0,  3,  0 ],  
+	// List
+	2128, [ array: o[2129] ],  
+	// Array
+	2129, [ nil,  nil ],  
+	// Rect
+	2130, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2131, [ array: o[2132] ],  
+	// Array
+	2132, [ 460 ],  
+	// List
+	2133, [ array: o[2134] ],  
+	// Array
+	2134, [ nil,  o[2135],  o[2137],  o[2139],  
+		o[2140] ],  
+	// List
+	2135, [ array: o[2136] ],  
+	// Array
+	2136, [ 0.0,  3,  0 ],  
+	// List
+	2137, [ array: o[2138] ],  
+	// Array
+	2138, [ nil,  nil ],  
+	// Rect
+	2139, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2140, [ array: o[2141] ],  
+	// List
+	2142, [ array: o[2143] ],  
+	// Array
+	2143, [ nil,  o[2144],  o[2146],  o[2148],  
+		o[2149] ],  
+	// List
+	2144, [ array: o[2145] ],  
+	// Array
+	2145, [ 0.0,  3,  0 ],  
+	// List
+	2146, [ array: o[2147] ],  
+	// Array
+	2147, [ nil,  nil ],  
+	// Rect
+	2148, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2149, [ array: o[2150] ],  
+	// List
+	2151, [ array: o[2152] ],  
+	// Array
+	2152, [ nil,  o[2153],  o[2155],  o[2157],  
+		o[2158] ],  
+	// List
+	2153, [ array: o[2154] ],  
+	// Array
+	2154, [ 0.0,  3,  0 ],  
+	// List
+	2155, [ array: o[2156] ],  
+	// Array
+	2156, [ nil,  nil ],  
+	// Rect
+	2157, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2158, [ array: o[2159] ],  
+	// List
+	2160, [ array: o[2161] ],  
+	// Array
+	2161, [ nil,  o[2162],  o[2164],  o[2166],  
+		o[2167] ],  
+	// List
+	2162, [ array: o[2163] ],  
+	// Array
+	2163, [ 0.0,  3,  0 ],  
+	// List
+	2164, [ array: o[2165] ],  
+	// Array
+	2165, [ nil,  nil ],  
+	// Rect
+	2166, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2167, [ array: o[2168] ],  
+	// List
+	2169, [ array: o[2170] ],  
+	// Array
+	2170, [ nil,  o[2171],  o[2173],  o[2175],  
+		o[2176] ],  
+	// List
+	2171, [ array: o[2172] ],  
+	// Array
+	2172, [ 0.0,  3,  0 ],  
+	// List
+	2173, [ array: o[2174] ],  
+	// Array
+	2174, [ nil,  nil ],  
+	// Rect
+	2175, [ left: 225.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2176, [ array: o[2177] ],  
+	// List
+	2178, [ array: o[2179] ],  
+	// Array
+	2179, [ nil,  o[2180],  o[2182],  o[2184],  
+		o[2185] ],  
+	// List
+	2180, [ array: o[2181] ],  
+	// Array
+	2181, [ 0.0,  3,  0 ],  
+	// List
+	2182, [ array: o[2183] ],  
+	// Array
+	2183, [ nil,  nil ],  
+	// Rect
+	2184, [ left: 280.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2185, [ array: o[2186] ],  
+	// List
+	2187, [ array: o[2188] ],  
+	// Array
+	2188, [ nil,  o[2189],  o[2191],  o[2193],  
+		o[2194] ],  
+	// List
+	2189, [ array: o[2190] ],  
+	// Array
+	2190, [ 0.0,  3,  0 ],  
+	// List
+	2191, [ array: o[2192] ],  
+	// Array
+	2192, [ nil,  nil ],  
+	// Rect
+	2193, [ left: 335.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2194, [ array: o[2195] ],  
+	// List
+	2196, [ array: o[2197] ],  
+	// Array
+	2197, [ nil,  o[2198],  o[2200],  o[2202],  
+		o[2203] ],  
+	// List
+	2198, [ array: o[2199] ],  
+	// Array
+	2199, [ 0.0,  3,  0 ],  
+	// List
+	2200, [ array: o[2201] ],  
+	// Array
+	2201, [ nil,  nil ],  
+	// Rect
+	2202, [ left: 390.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2203, [ array: o[2204] ],  
+	// List
+	2205, [ array: o[2206] ],  
+	// Array
+	2206, [ nil,  o[2207],  o[2209],  o[2211],  
+		o[2212] ],  
+	// List
+	2207, [ array: o[2208] ],  
+	// Array
+	2208, [ 0.0,  3,  0 ],  
+	// List
+	2209, [ array: o[2210] ],  
+	// Array
+	2210, [ nil,  nil ],  
+	// Rect
+	2211, [ left: 445.0,  top: 0.0,  
+		width: 50.0,  height: 300.0 ],  
+	// List
+	2212, [ array: o[2213] ]
+];
+prUnarchive(o,p);

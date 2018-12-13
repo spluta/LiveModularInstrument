@@ -63,7 +63,7 @@ SpecDelay_Mod : Module_Mod {
 			group.server.sync;
 			0.4.wait;
 
-			synths.add(Synth("specDelay_mod", [\inBus, mixerToSynthBus.index.postln, \outBus, outBus, \inVol, 0, \outVol, 1.5, \partialThresh, 5, \lowPassFreq, 4000, \dels0Buf, dels0Buf, \dels1Buf, dels1Buf, \fft0Buf, fft0Buf, \fft1Buf, fft1Buf, \fb0Buf, fb0Buf, \maxDelay, 3, \maxFeedBack, 0.4], group));
+			synths.add(Synth("specDelay_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \inVol, 0, \outVol, 1.5, \partialThresh, 5, \lowPassFreq, 4000, \dels0Buf, dels0Buf, \dels1Buf, dels1Buf, \fft0Buf, fft0Buf, \fft1Buf, fft1Buf, \fb0Buf, fb0Buf, \maxDelay, 3, \maxFeedBack, 0.4], group));
 
 			controls.add(QtEZSlider.new("inVol", ControlSpec(0,1,'amp'),
 				{|v|
@@ -155,6 +155,8 @@ SpecDelay_Mod : Module_Mod {
 		rout.reset;
 		rout.play;
 	}
+
+	load{}
 
 	pause {
 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};

@@ -84,7 +84,7 @@ SpaceJunk_Mod : Module_Mod {
 		var counter=0;
 
 		noteOnFunctions.keys.do{arg key;
-			oscMsgs.put(counter, "/manta/noteOn/"++key.asString);
+			oscMsgs.put(counter, "/manta/padOn/"++key.asString);
 			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key], setups);
 			counter=counter+1;
 		};
@@ -93,7 +93,7 @@ SpaceJunk_Mod : Module_Mod {
 
 	addFunctions {
 		16.do{arg i;
-			noteOnFunctions.put(33+i,
+			noteOnFunctions.put(32+i,
 					{
 						synths[0].set(\t_trig, 1);
 					});
@@ -122,7 +122,6 @@ SpaceJunk_Mod : Module_Mod {
 	}
 
 	load {arg loadArray;
-		loadArray.do{arg item; item.postln};
 		loadArray[1].do{arg controlLevel, i;
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};

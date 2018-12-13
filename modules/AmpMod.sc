@@ -20,8 +20,6 @@ AmpMod_Mod : Module_Mod {
 
 	init {
 
-		"outBus ".post; outBus.postln;
-
 		this.initControlsAndSynths(3);
 
 		this.makeMixerToSynthBus(8);
@@ -104,15 +102,12 @@ AmpMod_Mod : Module_Mod {
 			{arg val;
 				pulseRate = val.value;
 				if(impulseOn&&dustOn,{
-					"both".postln;
 					synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1]), \pulseRate1, rrand(pulseRate[0], pulseRate[1]));
 				},{
 					if(impulseOn,{
-						"impulse".postln;
 						synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1])*2);
 					},{
 						if(dustOn,{
-							"dust".postln;
 							synths[0].set(\pulseRate1, rrand(pulseRate[0], pulseRate[1])*2);
 						})
 					})
@@ -130,8 +125,6 @@ AmpMod_Mod : Module_Mod {
 		));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		//win.drawFunc_{arg win; win.bounds.postln;};
-
 	}
 }
 
