@@ -62,7 +62,7 @@ FeedbackSynth_Mod :  Module_Mod {
 	}
 
 	init {
-		this.makeWindow("FeedbackSynth",Rect(200, 230, 140, 280));
+		this.makeWindow("FeedbackSynth");
 
 		this.initControlsAndSynths(13);
 
@@ -70,7 +70,7 @@ FeedbackSynth_Mod :  Module_Mod {
 
 		texts = List.newClear(0);
 
-		["fbMult", "onOff", "lpHPSelect", "xFreezeShift", "yFreezeShift", "freezeGate", "zOnOff", "noiseSelect", "straightNoiseFreq", "ampModOn", "ampModRate", "pulseOn", "vol"].collect({|item| texts.add(StaticText().string_(item))});
+		texts = ["fbMult", "onOff", "lpHPSelect", "xFreezeShift", "yFreezeShift", "freezeGate", "zOnOff", "noiseSelect", "straightNoiseFreq", "ampModOn", "ampModRate", "pulseOn", "vol"];
 
 		functions = [
 
@@ -93,32 +93,27 @@ FeedbackSynth_Mod :  Module_Mod {
 		];
 
 		13.do{arg i;
-			oscMsgs.postln;
-			controls.add(TextField()
-				.action = {arg field;
-					if(oscMsgs[i]!=nil,{
-						MidiOscControl.clearController(group.server, oscMsgs[i]);
-						TypeOSCFunc_Mod.removeResponder(oscMsgs[i]);
-					});
-					TypeOSCFunc_Mod.addResponder(field.value);
-					oscMsgs.put(i, field.value.asString);
-					MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], functions[i], setups);
-		})};
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], functions[i], true));
+		};
 
 		win.layout_(
-			HLayout(
-				VLayout(*texts),
-				VLayout(*controls)
+			VLayout(
+				VLayout(*controls.collect({arg item; item.view}))
 			)
 		);
-		win.layout.spacing = 0;
-		win.layout.margins = [0,0,0,0];
+		win.layout.spacing_(1).margins_(1!4);
+		win.view.maxHeight_(13*17);
+		win.view.resizeTo(13*17,13*17);
+		win.front;
+
 	}
+
 
 	load {arg loadArray;
 
+		//only load the values in the textFields
+
 		loadArray[1].do{arg controlLevel, i;
-			//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
 			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
 			});
@@ -129,6 +124,5 @@ FeedbackSynth_Mod :  Module_Mod {
 			win.visible_(false);
 		});
 
-		this.loadExtra(loadArray);
 	}
 }

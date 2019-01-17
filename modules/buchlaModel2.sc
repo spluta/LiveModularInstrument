@@ -149,12 +149,12 @@ BuchlaModelSolo_Mod :  Module_Mod {
 		padFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/SeaboardPressure/"++key.asString);
 			//oscMsgs.postln;
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], padFunctions[key], setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], padFunctions[key]);
 			counter=counter+1;
 		};
 		noteOnFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/SeaboardNote/"++key.asString);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key], setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key]);
 			counter=counter+1;
 		};
 

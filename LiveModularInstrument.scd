@@ -1,28 +1,40 @@
 TimedLoop
 
 
-LiveModularInstrument.boot(2, [0,0,1,1,10, 19,3,4], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument
 
 
+LiveModularInstrument.boot(2, [0,0,1,1,10, 19,3,4], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
-LiveModularInstrument.boot(2, [14,15,16,17,18, 19,20,21], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+
+ServerOptions.devices
+
+Server.local.options.device_("Fireface UFX II (23856143)");
+
+LiveModularInstrument.boot(2, [14,15,16,17,18, 19,20,21], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 
 MIDIClient.init
 MIDIIn.connectAll
 
 //fly's eyes
-LiveModularInstrument.boot(1, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [0,1,4,5,6,7,2,3], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
+OSCFunc.trace
+
+ModularServers.servers[\lmi0].server.queryAllNodes
+
+ModularServers.servers[\lmi0].server
 
 
 LiveModularInstrument.boot(3, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [MantaOSC_Mod, Lemur_Mod]);
 
-//run the 2 server version of the softwar2
+//run the 2 server version of the softwar2SignalSwitcher
 LiveModularInstrument.boot(2, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [MantaOSC_Mod, Lemur_Mod]);
 
+"/Users/spluta/Library/"
 
-
+"/Users/spluta/Library/Application Support/SuperCollider/"
 
 LiveModularInstrument.boot(1, [0,1,2,3,4,5,6,7], nil, 64, nil, 'normal', [MantaOSC_Mod, Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 

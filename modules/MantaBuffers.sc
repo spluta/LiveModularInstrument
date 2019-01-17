@@ -132,14 +132,7 @@ MantaBuffers_Mod : Module_Mod {
 							synths[1].set(\zTrigs, zTrigs);
 						}
 					)
-				},
-				setups);
-			/*MidiOscControl.setControllerNoGui(group.server, oscMsgs[i+48+1],
-				{
-					trigRates.put(i, 0);
-					synths[1].set(\trigRates, trigRates)
-				},
-				setups);*/
+				});
 			counter=counter+1;
 		};
 

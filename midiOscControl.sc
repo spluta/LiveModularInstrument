@@ -1,5 +1,5 @@
 MidiOscControl {
-	classvar instantRequestModule, instantControlObject, instantServer, instantSetups, instantTypeOfController;
+	classvar instantRequestModule, <>instantControlObject, instantServer, instantTypeOfController;
 	classvar <>actions;
 
 
@@ -13,19 +13,19 @@ MidiOscControl {
 	}
 
 	*createActionDictionary {
+		actions.add('global' -> Dictionary.new);
 		ModularServers.servers.keys.do{arg item, i;
 			actions.add(item.asSymbol -> Dictionary.new);
 		};
-		actions.add(\global -> Dictionary.new);
+		actions.postln;
 	}
 
-	*requestInstantAssign {arg module, controlObject, typeOfController, server, setupsIn;
+	*requestInstantAssign {arg module, controlObject, typeOfController, server;
 
 		instantRequestModule = module;
 		instantControlObject = controlObject;
 		instantServer = server;
 		instantTypeOfController = typeOfController;
-		instantSetups = setupsIn;
 
 
 		//this sets all controllers to look for moving sliders/buttons
@@ -35,16 +35,40 @@ MidiOscControl {
 		};
 	}
 
-	*clearInstantAssign {
+	*setInstantTypeObject {arg val;
+		val.postln;
+		instantControlObject.postln;
+		{instantControlObject.string_(val)}.defer;
+	}
+
+	*requestInstantTypeAssign {arg controlObject, server;
+
+		"controlObject".post;controlObject.postln;
+
+		instantControlObject = controlObject;
+		instantServer = server;
+
+		//this sets all controllers to look for moving sliders/buttons
+
+		//this should probably be all OSC controllers
 		LiveModularInstrument.controllers.do{arg item;
-			item.sendRequest=false;
+			item.sendTypeRequest=true;
 		};
 	}
 
-	*getFunctionNSetController {arg module, controlObject, controllerKey, server, setups;
+	*clearInstantAssign {
+		"clearInstantAssign".postln;
+		LiveModularInstrument.controllers.do{arg item;
+			item.postln;
+			item.sendRequest_(false);
+			item.sendTypeRequest_(false);
+		};
+	}
+
+	*getFunctionNSetController {arg module, controlObject, controllerKey, server;
 		var function, tempDict, controlObjectLocal, counter;
 
-
+		"getFuncNSet".postln;
 		controlObjectLocal = controlObject;
 		//get the function
 		counter=0;
@@ -57,31 +81,32 @@ MidiOscControl {
 
 		//add the function to the Dictionary
 		if(function!=nil,{
-			if(server=='global',{
-				actions['global'].add(controllerKey.asSymbol->function);
-				module.setOscMsg(controllerKey.asSymbol);
-			},{
-				if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-					tempDict = Dictionary.new;
+			actions.postln;
+			if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
+				tempDict = Dictionary.new;
 
-					actions[server.asSymbol].add(controllerKey.asSymbol->tempDict);
-				});
+				//tempDict =
 
-				setups.do{arg setup; actions[server.asSymbol][controllerKey.asSymbol].add(setup.asSymbol->function)};
-				module.setOscMsg(controllerKey.asSymbol);
+				actions[server.asSymbol].add(controllerKey.asSymbol->function);
+
+				actions.postln;
 			});
+
+			module.setOscMsg(controllerKey.asSymbol);
 		});
 	}
 
-	*setControllerNoGui {arg server, key, function, setups;
-		var tempDict;
+	*setControllerNoGui {arg key, functions, server;
 
-		if(actions[server.asSymbol][key.asSymbol]==nil,{
-			tempDict = Dictionary.new;
-			actions[server.asSymbol].add(key.asSymbol->tempDict);
-		});
+		[key, functions].postln;
 
-		setups.do{arg setup; actions[server.asSymbol][key.asSymbol].add(setup.asSymbol->function)};
+		LiveModularInstrument.controllers.do{arg item;
+			item.sendRequest=false;
+		};
+
+		server.postln;
+		actions[server.asSymbol].add(key.asSymbol->functions);
+
 		actions.postln;
 	}
 
@@ -98,33 +123,16 @@ MidiOscControl {
 				item.sendRequest=false;
 			};
 
-			this.getFunctionNSetController(instantRequestModule, localControlObject, controllerKey, instantServer, instantSetups);
+			this.getFunctionNSetController(instantRequestModule, localControlObject, controllerKey, instantServer);
 		});
 
 	}
 
-	*addFuncToSetup {arg server, setup, msg;
-		var temp, key, function;
-
-		key = actions[server.asSymbol][msg.asSymbol].keys.choose;
-
-		function = actions[server.asSymbol][msg.asSymbol][key.asSymbol];
-
-		actions[server.asSymbol][msg.asSymbol].add(setup.asSymbol->function);
-	}
-
-	*removeFuncFromSetup {arg server, setup, item;
-		actions[server.asSymbol][item.asSymbol].removeAt(setup.asSymbol);
-	}
-
-	*clearController {arg serverClear, oscMsgClear;
-		actions[serverClear.asSymbol].removeAt(oscMsgClear.asSymbol);
-	}
-
-	*setControllersWCurrentSetup {arg serverName, oscMsg;
-		LiveModularInstrument.controllers.do{arg item;
-			item.setWCurrentSetup(serverName, oscMsg);
-		};
+	//MidiOscControl.clearController(group.server, oscMsgs[num])
+	*clearController {arg serverKey, oscMsgClear;
+		[serverKey, oscMsgClear].postln;
+		actions[serverKey.asSymbol].postln;
+		actions[serverKey.asSymbol].removeAt(oscMsgClear.asSymbol);
 	}
 
 	executeFunction {|serverKey, key, val|
@@ -133,39 +141,43 @@ MidiOscControl {
 
 
 	*respond { |key, val|
-		var nothing, key2, xyz, tempNode;
 
-		if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
-			#nothing, key2, xyz = key.asString.split;
-			tempNode = actions[\global][("/"++key2.asString).asSymbol];
-			if(tempNode!=nil, {
-				tempNode.value(xyz, val);
-			});
-		},{
-			tempNode = actions[\global][key.asSymbol];
-			if(tempNode!=nil, {
-				tempNode.value(val);
+		//this.doTheGUI('global');
+
+		ModularServers.serverSwitcher.currentServers.do{arg serverKey;
+			this.doTheGUI(serverKey, key, val);
+		};
+
+		this.doTheGUI('global', key, val);
+	}
+
+	/*	findLocation {arg serverKey, found;
+	var nothing, key2, xyz, tempNode;
+
+	if(found.not,{
+	tempNode = actions[serverKey.asSymbol];
+	if(tempNode!=nil,{found=true;tempNode = tempNode[key.asSymbol]});
+	if(tempNode!=nil,{
+	})
+
+	}*/
+
+	*doTheGUI {arg serverKey, key, val;
+		var nothing, key2, xyz, tempNode;
+		tempNode = actions[serverKey.asSymbol];
+		if(tempNode!=nil,{
+			if(tempNode[key.asSymbol]!=nil,{
+				tempNode[key.asSymbol].do{arg item; item.value(val)}
+			},{
+
+				if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
+					#nothing, key2, xyz = key.asString.split;
+					tempNode = tempNode[("/"++key2.asString).asSymbol];
+					if(tempNode!=nil,{
+						tempNode.value(xyz,val)
+					});
+				})
 			});
 		});
-
-		//only execute the function if the server is currently active
-		ModularServers.serverSwitcher.currentServers.do{arg serverKey;
-			var setup;
-			serverKey = serverKey.asSymbol;
-			setup = ModularServers.servers[serverKey].getCurrentSetup.asSymbol;
-
-			if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
-				#nothing, key2, xyz = key.asString.split;
-				tempNode = actions[serverKey][("/"++key2.asString).asSymbol];
-				if(tempNode!=nil, {
-					tempNode[setup].value(xyz, val);
-				});
-			},{
-				tempNode = actions[serverKey][key.asSymbol];
-				if(tempNode!=nil, {
-					tempNode[setup].value(val);
-				});
-			});
-		}
 	}
 }

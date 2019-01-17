@@ -12,11 +12,33 @@ AssignButton {
 			.action_{|v|
 				instantAction.(v);
 			};
+		if(bounds==nil,{instantButton.maxHeight_(15)});
 	}
 
 	setBounds {arg boundsIn;
 		bounds = boundsIn;
 		instantButton.bounds_(bounds);
+	}
+
+	layout {^instantButton}
+
+	setInstBut {arg val; instantButton.value = val}
+}
+
+TypeOSCAssignButton {
+	var <>instantButton, <>instantAction;
+
+	*new {
+		^super.new.init;
+	}
+
+	init {
+		instantAction = {};
+		instantButton = Button().font_(Font("Helvetica", 10)).maxWidth_(15).maxHeight_(15)
+		.states_([["AI",Color.red,Color.black],["OK",Color.black,Color.red]])
+		.action_({arg butt;
+			instantAction.(butt);
+		});
 	}
 
 	layout {^instantButton}

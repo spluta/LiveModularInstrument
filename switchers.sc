@@ -1,4 +1,4 @@
-SetupSwitcherObject {var modularObjects;
+/*SetupSwitcherObject {var modularObjects;
 	var currentSetup, setupMap, setupsTemp, objectsDict;
 
 	*new {arg modularObjects;
@@ -52,57 +52,57 @@ SetupSwitcherObject {var modularObjects;
 	showCurrentSetup {
 		objectsDict[currentSetup.asSymbol].resume;
 	}
-}
+}*/
 
-SetupSwitcher {
-	var <>modularObjects, currentLayer, nextLayer, xmlModules, color, setupTemp, setupsList, <>currentSetup;
-
-	*new {arg modularObjects;
-		^super.newCopyArgs(modularObjects).init;
-	}
-
-	init {
-
-		//creates a nXn of SetupSwitcherObjects that control which object brought to the front when the setup is changed
-		setupsList = List.fill(modularObjects.size*modularObjects[0].size, {arg i;
-			SetupSwitcherObject.new(modularObjects[i%5][(i/5).floor]);
-		});
-
-		setupsList = setupsList.clump(modularObjects.size);
-		currentSetup = 'setup0';
-	}
-
-	changeSetupMap {arg location, setup;
-		setupsList[location[0]][location[1]].changeSetupMap('setup'++location[2].asSymbol, setup);
-	}
-
-	changeSetup {arg changeToSetup;
-
-		currentSetup = changeToSetup.asSymbol;
-
-		setupsList.flatten.do{arg item, i;
-			item.changeSetup(changeToSetup);
-		};
-	}
-
-	hideCurrentSetup {
-		setupsList.flatten.do{arg item, i;
-			item.hideCurrentSetup;
-		};
-	}
-
-	hideAll {
-		setupsList.flatten.do{arg item;
-			item.hideAll;
-		}
-	}
-
-	showCurrentSetup {
-		setupsList.flatten.do{arg item, i;
-			item.showCurrentSetup;
-		};
-	}
-}
+// SetupSwitcher {
+// 	var <>modularObjects, currentLayer, nextLayer, xmlModules, color, setupTemp, setupsList, <>currentSetup;
+//
+// 	*new {arg modularObjects;
+// 		^super.newCopyArgs(modularObjects).init;
+// 	}
+//
+// 	init {
+//
+// 		//creates a nXn of SetupSwitcherObjects that control which object brought to the front when the setup is changed
+// 		setupsList = List.fill(modularObjects.size*modularObjects[0].size, {arg i;
+// 			SetupSwitcherObject.new(modularObjects[i%5][(i/5).floor]);
+// 		});
+//
+// 		setupsList = setupsList.clump(modularObjects.size);
+// 		currentSetup = 'setup0';
+// 	}
+//
+// 	changeSetupMap {arg location, setup;
+// 		setupsList[location[0]][location[1]].changeSetupMap('setup'++location[2].asSymbol, setup);
+// 	}
+//
+// 	changeSetup {arg changeToSetup;
+//
+// 		currentSetup = changeToSetup.asSymbol;
+//
+// 		setupsList.flatten.do{arg item, i;
+// 			item.changeSetup(changeToSetup);
+// 		};
+// 	}
+//
+// 	hideCurrentSetup {
+// 		setupsList.flatten.do{arg item, i;
+// 			item.hideCurrentSetup;
+// 		};
+// 	}
+//
+// 	hideAll {
+// 		setupsList.flatten.do{arg item;
+// 			item.hideAll;
+// 		}
+// 	}
+//
+// 	showCurrentSetup {
+// 		setupsList.flatten.do{arg item, i;
+// 			item.showCurrentSetup;
+// 		};
+// 	}
+// }
 
 ServerSwitcher : MidiOscObject {
 	var numServers, numButtons, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, hideServerButtons;

@@ -1,7 +1,7 @@
 Seaboard_Mod {
 
 	classvar responders;
-	classvar <>sendRequest = false;
+	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar <>netAddr, ip;
 
 	*initClass {}
@@ -41,7 +41,7 @@ Seaboard {
 
 	classvar <>netAddr, <>ip, <>mode, <>lowNote, <>keyboardWidth, <>triggerBoardDimensions, responders, keys, freshKeys, key, freshKey, xyVal;
 
-	classvar <>sendRequest = false;
+	classvar <>sendRequest = false, <>sendTypeRequest = false;
 
 	*initClass {
 	}

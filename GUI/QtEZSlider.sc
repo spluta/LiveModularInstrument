@@ -2,7 +2,7 @@ QtEZSlider {
 
 	var <>controlSpec, <>slider, <>numBox, <>label, <>layout;
 	var <>round = 0.001;
-	var <>action, <value, <>zAction;
+	var <>action, <value, <>zAction, viewArray;
 
 	*new { arg label, controlSpec, action, initVal,
 			initAction=false, orientation=\vert, viewNumberBox=true;
@@ -12,14 +12,16 @@ QtEZSlider {
 	}
 
 	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation, viewNumberBox;
-		var numberStep, viewArray;
+		var numberStep;
 
 		viewArray = List.newClear;
 
 		if(argLabel!=nil,{
 			label = StaticText();
 			label.string = argLabel;
+			label.maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10));
 			viewArray.add(label);
+
 		},{
 			label=nil
 		});
@@ -29,6 +31,8 @@ QtEZSlider {
 
 		numBox = NumberBox();
 		numBox.maxWidth_(60);
+		numBox.maxHeight_(15);
+		numBox.font_(Font("Helvetica", 10));
 		if(viewNumberBox, {viewArray.add(numBox)});
 
 		zAction = {}; //the default zAction is to do nothing
@@ -90,6 +94,12 @@ QtEZSlider {
 		slider.maxHeight_(val)
 	}
 
+	maxWidth_ {arg val;
+		viewArray.do{arg item;
+			item.maxWidth_(val);
+		}
+	}
+
 	onClose{controlSpec.removeDependant(this)}
 
 	value_ { arg val;
@@ -149,18 +159,18 @@ QtEZRanger {
 
 		rangeSlider = RangeSlider();
 		rangeSlider.orientation=orientation;
-		hiBox = NumberBox();
-		hiBox.maxWidth_(60);
-		loBox = NumberBox();
-		loBox.maxWidth_(60);
-		label = StaticText();
+		hiBox = NumberBox().font_(Font("Helvetica", 10));
+		hiBox.maxWidth_(60).maxHeight_(15);
+		loBox = NumberBox().font_(Font("Helvetica", 10));
+		loBox.maxWidth_(60).maxHeight_(15);
+		label = StaticText().font_(Font("Helvetica", 10));
 		label.string = argLabel;
 
 		switch(orientation,
 			\vert, {rangeSlider.orientation = \vertical; layout = VLayout(label, hiBox, rangeSlider, loBox)},
 			\vertical, {rangeSlider.orientation = \vertical; layout = VLayout(label, hiBox, rangeSlider, loBox)},
-			\horz, {rangeSlider.orientation = \horizontal; layout = HLayout(label, loBox, rangeSlider, hiBox)},
-			\horizontal, {rangeSlider.orientation = \horizontal; layout = HLayout(label, loBox, rangeSlider, hiBox)});
+			\horz, {rangeSlider.orientation = \horizontal; layout = HLayout(label, loBox, rangeSlider.maxHeight_(15), hiBox)},
+			\horizontal, {rangeSlider.orientation = \horizontal; layout = HLayout(label, loBox, rangeSlider.maxHeight_(15), hiBox)});
 
 		// set view parameters and actions
 

@@ -1,7 +1,7 @@
 MIDI_Mod {
 
 	classvar responders;
-	classvar <>sendRequest = false;
+	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar addr;
 
 	*initClass {}

@@ -1,14 +1,13 @@
 ChannelOutBox {
-	var <>view, <>rect, <>outBus, channelOutBox;
+	var <>outBus, <>view, <>rect, <>channelOutBox;
 
-	*new {arg view, rect, outBus;
-		^super.newCopyArgs(view, rect, outBus).init;
+	*new {arg outBus;
+		^super.newCopyArgs(outBus).init;
 	}
 
 
 	init {
-		channelOutBox = DragSource(view,rect);
-		channelOutBox.setProperty(\align,\center);
+		channelOutBox = DragSource(view,rect).font_(Font("Helvetica",10)).maxWidth_(20).maxHeight_(15);
 		channelOutBox.object = [outBus, outBus.asString];
 		channelOutBox.string = outBus.asString;
 		channelOutBox.dragLabel = outBus.asString;
@@ -16,14 +15,14 @@ ChannelOutBox {
 }
 
 ModularObjectPanel {
-	var server, group, outBus, location, panel, point;
+	var <>server, <>group, outBusIndex, panel, point;
 
-	var busAssignSink, inputBusString, synth, mixerGroup, synthGroup, lastSynth, internalBusses, mixer, sepInputBusses, index, xmlSynth, counter, inBusTemp, inBusTempList, isMixer, isRouter, synthAssignSink, synthDisp, synthKill, setupTemp;
+	var <>busAssignSink, inputBusString, synth, mixerGroup, synthGroup, lastSynth, internalBusses, mixer, sepInputBusses, index, xmlSynth, counter, inBusTemp, inBusTempList, isMixer, isRouter, synthAssignSink, synthDisp, synthKill, setupTemp;
 
-	var showButton, hidden, channelOutBox, view, setupButtons, possibleSetups, setups, inputBusses;
+	var showButton, hidden, channelOutBox, <>view, setupButtons, inputBusses;
 
-	*new {arg server, group, outBus, location;
-		^super.newCopyArgs(server, group, outBus, location).init;
+	*new {arg server, group, outBusIndex;
+		^super.newCopyArgs(server, group, outBusIndex).init;
 	}
 
 	init {
@@ -32,73 +31,41 @@ ModularObjectPanel {
 
 		mixer = ModularMixer(mixerGroup);
 
-		possibleSetups = ModularServers.getSetups(server);
-		setups = List.newClear(0);
-		setups.add(possibleSetups[location[2]]);
 
 		isMixer = false;
 		isRouter = false;
-	}
 
-	addToWindow{arg window, visible;
-		var point;
+		view = CompositeView.new().minWidth_(80).minHeight_(80).maxWidth_(80).maxHeight_(80);
 
-		point = Point((100*location[0]), (90*location[1]+40));
-
-		view = CompositeView.new(window,Rect(point.x, point.y, 100, 95));
-
-		view.background_(ModularServers.setupColors[location[2]]);
-		view.visible = visible;
+		view.background_(Color.rand);
+		//view.visible = visible;
 		hidden = false;
 
-		setupButtons = List.new;
-		4.do{|i| setupButtons.add(Button(view, Rect(i*25,0,25,10))
-			.states_([["",Color.yellow,Color.black],["",Color.black,Color.yellow]])
-			.action_{|butt|
-				if(butt.value==1,{
+		busAssignSink = QtBusAssignSink(this, 4);
 
-					ModularServers.setModularPanelToSetup(server, location, possibleSetups[i]);
-
-					setups.add(possibleSetups[i]);
-					if(synth!=nil,{synth.addSetup(possibleSetups[i])});
-
-
-				},{
-					ModularServers.setModularPanelToSetup(server, [location[0],location[1],i], possibleSetups[i]);
-					if(synth!=nil,{synth.removeSetup(possibleSetups[i])});
-					setups.remove(possibleSetups[i]);
-				});
-			}
-		)};
-
-		setupButtons[location[2]].value = 1;
-		setupButtons[location[2]].setProperty(\enabled, false);
-
-		busAssignSink = BusAssignSink(this, view, Point(0,15));
-
-		synthAssignSink = DragSink(view, Rect(0, 48, 25, 20));
+		synthAssignSink = DragSink().font_(Font("Helvetica",8)).maxWidth_(20).maxHeight_(15).align_(\center);
 		synthAssignSink.string="Syn";
-		synthAssignSink.background_(Color.blue);
+		synthAssignSink.background_(Color.yellow);
 		synthAssignSink.receiveDragHandler={
 			if(ModularClassList.checkSynthName(View.currentDrag.asString),{
 				synthDisp.string = View.currentDrag.asString;
 				this.makeNewSynth(View.currentDrag.asString);
 			});
 		};
-		synthDisp = StaticText(view, Rect(25, 48, 64, 20));
-		synthDisp.font_(Font("Helvetica",10));
-		synthKill = Button(view, Rect(84,48,16,20))
+		synthDisp = StaticText()
+		.maxWidth_(45).maxHeight_(15).minWidth_(40).minHeight_(15)
+		.font_(Font("Helvetica",8)).align_(\left);
+		synthKill = Button().maxWidth_(15).maxHeight_(15).minWidth_(15)
 		.states_([["k", Color.black, Color.red]])
 		.action_{
 			synthDisp.string = "";
 			this.killCurrentSynth;
-			showButton.visible_(false);
 			busAssignSink.removeButtons;
 		};
 
-		showButton = Button.new(view,Rect(50, 68, 45, 16))
+		showButton = Button.new().maxHeight_(15).maxWidth_(40).font_(Font("Helvetica",10))
 		.states_([ [ "Hide", Color(0.0, 0.0, 0.0, 1.0), Color(1.0, 0.0, 0.0, 1.0) ], [ "Show", Color(1.0, 1.0, 1.0, 1.0), Color(0.0, 0.0, 1.0, 1.0) ] ])
-		.action_{|v|
+		.action_({|v|
 			if(v.value==1,{
 				synth.hide;
 				hidden = true;
@@ -106,10 +73,19 @@ ModularObjectPanel {
 				synth.show;
 				hidden = false;
 			})
-		}
-		.visible_(false);
+		})
+		.visible_(true);
+		showButton.value_(1);
 
-		channelOutBox = ChannelOutBox(view, Rect(0, 68, 45, 16), outBus.index);
+		channelOutBox = ChannelOutBox(outBusIndex+1);
+
+		view.layout_(
+			VLayout(
+				[busAssignSink.panel,align:\topLeft],
+				HLayout([synthAssignSink,align:\left], synthDisp, [synthKill,align:\right]),
+				HLayout([channelOutBox.channelOutBox,align:\bottomLeft], [showButton,align:\bottomRight])
+			).margins_(2!4).spacing_(0)
+		)
 	}
 
 	confirmValidBus {arg bus;
@@ -155,58 +131,11 @@ ModularObjectPanel {
 		showButton.visible_(true);
 		this.killCurrentSynth;
 		if((synthName=="Mixer")||(synthName=="SignalSwitcher")||(synthName=="SignalSwitcher4")||(synthName=="AmpFollower")||(synthName=="SpecMul")||(synthName=="AmpInterrupter")||(synthName=="RingModStereo")||(synthName=="Convolution")||(synthName=="AnalysisFilters")||(synthName=="LucerneVideo")||(synthName=="TVFeedback"),{
-			switch(synthName,
-				"Mixer",{
-					synth = ModularClassList.initMixer(synthGroup, outBus, outBus.index+"Mixer", 4);
-				},
-				"SignalSwitcher",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"SignalSwitcher4",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"AmpFollower",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"AmpInterrupter",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"SpecMul",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"RingModStereo",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"Convolution",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"AnalysisFilters",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"LucerneVideo",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"TVFeedback",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2;
-				},
-				"MixerSolo",{
-					synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
-					synth.init2
-				}
-			);
+
+			synth = ModularClassList.initModule(synthName, synthGroup, ModularServers.getObjectBusses(group.server).at(outBusIndex));
 			isMixer = true;
 		},{
-			synth = ModularClassList.initModule(synthName, synthGroup, outBus, setups);
+			synth = ModularClassList.initModule(synthName, synthGroup, ModularServers.getObjectBusses(group.server).at(outBusIndex));
 			mixer.outBus = synth.mixerToSynthBus;
 			mixer.volBus.set(1);
 			isMixer=false;
@@ -218,27 +147,21 @@ ModularObjectPanel {
 
 		inputBusses = inputBussesIn;
 
-		if((synth!=nil)&&(isMixer.not),{mixer.setInputBusses(inputBussesIn, synth.numBusses)});
+		if((synth!=nil)&&(isMixer.not),{mixer.setInputBusses(inputBussesIn)});
 	}
 
 	killMe {
 		if(synth!=nil,{
 			synth.killMe;
 		});
-		outBus.free;
 	}
 
 	save {
-		var saveList, temp;
+		var saveList;
 
 		saveList = List.newClear(0);
 		if(synth!=nil, {
-			saveList.add(setups); //add setups
-			temp = List.newClear(0);
-			mixer.inputBusses.do{arg item;
-				temp.add(item); //add busses
-			};
-			saveList.add(temp);
+			saveList.add(busAssignSink.busInLabels.postln;);
 			saveList.add(synth.save);
 			saveList.add(hidden);
 		});
@@ -246,41 +169,25 @@ ModularObjectPanel {
 	}
 
 	load {arg loadArray;
-		var temp, soundInBusses, stereoSoundInBusses;
+		var temp, soundInBusses;
 
-		synthDisp.string = loadArray[2][0];
-		this.makeNewSynth(loadArray[2][0]); //load the synth first
+		"loadArray".postln;
+		loadArray.postln;
+		"".postln;
+		loadArray.do{arg item; item.postln};
 
-		loadArray[0].do{arg item;
-			if(setupButtons[ModularServers.setups.indexOfEqual(item.asString)].value!=1, {
-				setupButtons[ModularServers.setups.indexOfEqual(item.asString)].valueAction_(1);
-			});
-		};
+		synthDisp.string = loadArray[1][0].postln;
+		this.makeNewSynth(loadArray[1][0]); //load the synth first
 
-		loadArray[1].do{arg item, i;
-			var bus, label, index, temp;
-
-			temp = ModularServers.servers[server.asSymbol].busMap[0][item.asSymbol];
-
-			if(temp!=nil,{
-				#bus, index=temp;
-				busAssignSink.assignBus(bus, "S"++(index).asString);
-			},{
-				temp = ModularServers.servers[server.asSymbol].busMap[1][item.asSymbol];
-				if(temp!=nil,{
-					#bus, index=temp;
-					busAssignSink.assignBus(bus, "S"++((index*2)).asString++((index*2+1)).asString);
-				},{
-					bus = ModularServers.servers[server.asSymbol].busMap[2][item.asSymbol];
-					if(bus!=nil,{busAssignSink.assignBus(bus, bus)});
-				})
-			});
+		//load the busses
+		loadArray[0].do{arg item, i;
+			busAssignSink.assignBus(item);
 		};
 
 
-		synth.load(loadArray[2]);
-		if(loadArray[3]!=nil,{
-			if(loadArray[3]==true,{showButton.valueAction_(1)});
+		synth.load(loadArray[1]);
+		if(loadArray[2].postln!=nil,{
+			if(loadArray[2]==false,{showButton.valueAction_(0)});
 		});
 	}
 

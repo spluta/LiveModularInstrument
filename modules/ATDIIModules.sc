@@ -216,55 +216,6 @@ ShifterFeedback_Mod : Module_Mod {
 				Out.ar(outBus, pauseEnv*env*LeakDC.ar(out*Lag.kr(vol, 0.05)));
 			}).writeDefFile;
 
-			SynthDef("busToOuts4_mod", {arg outBus, bus1, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus1a, bus2a, bus3a, bus4a, bus5a, bus6a, bus7a, bus8a, fade, volBus, gate=1, pauseGate = 1;
-				var outa, outb, out1, out2, out3, out4, out5, out6, out7, out8, fade2, pauseEnv, env, vol;
-
-				vol = In.kr(volBus);
-
-				fade2 = Lag.kr(fade, 0.05);
-
-				out1 = XFade2.ar(In.ar(bus1), In.ar(bus1a), fade2);
-				out2 = XFade2.ar(In.ar(bus2), In.ar(bus2a), fade2);
-				out3 = XFade2.ar(In.ar(bus3), In.ar(bus3a), fade2);
-				out4 = XFade2.ar(In.ar(bus4), In.ar(bus4a), fade2);
-				out5 = XFade2.ar(In.ar(bus5), In.ar(bus5a), fade2);
-				out6 = XFade2.ar(In.ar(bus6), In.ar(bus6a), fade2);
-				out7 = XFade2.ar(In.ar(bus7), In.ar(bus7a), fade2);
-				out8 = XFade2.ar(In.ar(bus8), In.ar(bus8a), fade2);
-
-				outa = [out1, out3, out5, out7];
-				outb = [out2, out4, out6, out8];
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0.2,1,0.2), gate, doneAction:2);
-
-				Out.ar(outBus, pauseEnv*env*LeakDC.ar((outa+outb)*Lag.kr(vol, 0.05)));
-			}).writeDefFile;
-
-			SynthDef("busToOuts8_mod", {arg outBus, bus1, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus1a, bus2a, bus3a, bus4a, bus5a, bus6a, bus7a, bus8a, fade, volBus, gate=1, pauseGate = 1;
-				var out, out1, out2, out3, out4, out5, out6, out7, out8, fade2, pauseEnv, env, vol;
-
-				vol = In.kr(volBus);
-
-				fade2 = Lag.kr(fade, 0.05);
-
-				out1 = XFade2.ar(In.ar(bus1), In.ar(bus1a), fade2);
-				out2 = XFade2.ar(In.ar(bus2), In.ar(bus2a), fade2);
-				out3 = XFade2.ar(In.ar(bus3), In.ar(bus3a), fade2);
-				out4 = XFade2.ar(In.ar(bus4), In.ar(bus4a), fade2);
-				out5 = XFade2.ar(In.ar(bus5), In.ar(bus5a), fade2);
-				out6 = XFade2.ar(In.ar(bus6), In.ar(bus6a), fade2);
-				out7 = XFade2.ar(In.ar(bus7), In.ar(bus7a), fade2);
-				out8 = XFade2.ar(In.ar(bus8), In.ar(bus8a), fade2);
-
-				out = [out1, out2, out3, out4, out5, out6, out7, out8];
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0.2,1,0.2), gate, doneAction:2);
-
-				Out.ar(outBus, pauseEnv*env*LeakDC.ar(out*Lag.kr(vol, 0.05)));
-			}).writeDefFile;
-
 			SynthDef("delayBomb2_mod", {arg buf, outBus, volBus;
 				var out, env, env1, dur, vol;
 
@@ -279,40 +230,6 @@ ShifterFeedback_Mod : Module_Mod {
 				env1 = EnvGen.kr(Env.new([0,1,0],[0.1, dur]), doneAction:2);
 
 				Out.ar(outBus, Pan2.ar(CombC.ar(out, 0.3, Rand(0.1, 0.3), dur*4)*env1, Rand(-1,1), vol));
-
-			}).writeDefFile;
-
-			SynthDef("delayBomb4_mod", {arg buf, outBus, volBus;
-				var out, env, env1, dur, vol;
-
-				vol = In.kr(volBus);
-
-				env = EnvGen.kr(Env.sine(Rand(0.5, 0.9), 1));
-
-				out = PlayBuf.ar(1, buf, startPos: MouseX.kr*BufFrames.kr(buf))*env;
-
-				dur = Rand(7.0, 11.0);
-
-				env1 = EnvGen.kr(Env.new([0,1,0],[0.1, dur]), doneAction:2);
-
-				Out.ar(outBus, PanAz.ar(4, CombC.ar(out, 0.3, Rand(0.1, 0.3), dur*4)*env1, Rand(-1,1), vol));
-
-			}).writeDefFile;
-
-			SynthDef("delayBomb8_mod", {arg buf, outBus, volBus;
-				var out, env, env1, dur, vol;
-
-				vol = In.kr(volBus);
-
-				env = EnvGen.kr(Env.sine(Rand(0.5, 0.9), 1));
-
-				out = PlayBuf.ar(1, buf, startPos: MouseX.kr*BufFrames.kr(buf))*env;
-
-				dur = Rand(7.0, 11.0);
-
-				env1 = EnvGen.kr(Env.new([0,1,0],[0.1, dur]), doneAction:2);
-
-				Out.ar(outBus, PanAz.ar(8, CombC.ar(out, 0.3, Rand(0.1, 0.3), dur*4)*env1, Rand(-1,1), vol));
 
 			}).writeDefFile;
 		}
@@ -452,17 +369,7 @@ ShifterFeedback_Mod : Module_Mod {
 		controls.add(Button()
 			.states_([ [ "delayBomb", Color.green, Color.black ], [ "delayBomb", Color.black, Color.green ] ])
 			.action_({arg but;
-				switch(numChannels,
-					2, {
-						4.do{arg i; Synth("delayBomb2_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
-					},
-					4, {
-						4.do{arg i; Synth("delayBomb4_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
-					},
-					8, {
-						4.do{arg i; Synth("delayBomb8_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
-					}
-				)
+				4.do{arg i; Synth("delayBomb2_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
 			}));
 
 		this.addAssignButton(3,\onOff);
@@ -472,31 +379,6 @@ ShifterFeedback_Mod : Module_Mod {
 				bombVol.set(v.value)
 			}, 4, true, \horz));
 		this.addAssignButton(4,\continuous);
-
-		//multichannel button
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				synths[0].set(\gate, 0);
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						synths.put(0, Synth("busToOuts2_mod", [\outBus, outBus, \bus1, shiftBus.index, \bus2, shiftBus.index+1, \bus3, shiftBus.index+2, \bus4, shiftBus.index+3, \bus5, shiftBus.index+4, \bus6, shiftBus.index+5, \bus7, shiftBus.index+6, \bus8, shiftBus.index+7, \bus1a, distortBus.index, \bus2a, distortBus.index+1, \bus3a, distortBus.index+2, \bus4a, distortBus.index+3, \bus5a, distortBus.index+4, \bus6a, distortBus.index+5, \bus7a, distortBus.index+6, \bus8a, distortBus.index+7, \vol, 0, \fade, -1, \volBus, mainVol.index], mixGroup));
-					},
-					1, {
-						numChannels = 4;
-						synths.put(0, Synth("busToOuts4_mod", [\outBus, outBus, \bus1, shiftBus.index, \bus2, shiftBus.index+1, \bus3, shiftBus.index+2, \bus4, shiftBus.index+3, \bus5, shiftBus.index+4, \bus6, shiftBus.index+5, \bus7, shiftBus.index+6, \bus8, shiftBus.index+7, \bus1a, distortBus.index, \bus2a, distortBus.index+1, \bus3a, distortBus.index+2, \bus4a, distortBus.index+3, \bus5a, distortBus.index+4, \bus6a, distortBus.index+5, \bus7a, distortBus.index+6, \bus8a, distortBus.index+7, \vol, 0, \fade, -1, \volBus, mainVol.index], mixGroup));
-					},
-					2, {
-						numChannels = 8;
-						synths.put(0, Synth("busToOuts8_mod", [\outBus, outBus, \bus1, shiftBus.index, \bus2, shiftBus.index+1, \bus3, shiftBus.index+2, \bus4, shiftBus.index+3, \bus5, shiftBus.index+4, \bus6, shiftBus.index+5, \bus7, shiftBus.index+6, \bus8, shiftBus.index+7, \bus1a, distortBus.index, \bus2a, distortBus.index+1, \bus3a, distortBus.index+2, \bus4a, distortBus.index+3, \bus5a, distortBus.index+4, \bus6a, distortBus.index+5, \bus7a, distortBus.index+6, \bus8a, distortBus.index+7, \vol, 0, \fade, -1, \volBus, mainVol.index], mixGroup));
-					}
-				)
-			};
-
-
-
-		);
 
 
 		this.makeWindow("ShifterFeedback",Rect(1018, 644, 315, 212));
@@ -508,8 +390,7 @@ ShifterFeedback_Mod : Module_Mod {
 			HLayout(controls[1].layout,assignButtons[1].layout),
 			HLayout(controls[0].layout,assignButtons[0].layout),
 			HLayout(controls[2], assignButtons[2].layout, controls[3], assignButtons[3].layout),
-			HLayout(controls[4].layout,	assignButtons[4].layout),
-			controls[5].maxWidth_(60)
+			HLayout(controls[4].layout,	assignButtons[4].layout)
 		));
 		win.layout.spacing = 2;
 		win.layout.margins = [0,0,0,0];
@@ -563,89 +444,11 @@ BitCrusher_Mod : Module_Mod {
 				Out.ar(outbus, sines*0.25*sineVol*env*pauseEnv);
 				Out.ar(outbus,([fx1,fx2])*distVol*env*pauseEnv);
 			}).writeDefFile;
-
-			SynthDef("bitCrusher4_Mod",{ arg inbus, outbus, sr1Bus, sr2Bus, distVolBus, sineVolBus, gate = 1, pauseGate = 1;
-				var input, fx1, fx2, fx3, fx4, sines, sine0, sine1, sine2, sine3, sine4, fund, skip, freq, hasFreq, env, pauseEnv;
-				var sr1, sr2, distVol, sineVol;
-
-				sr1 = In.kr(sr1Bus);
-				sr2 = In.kr(sr2Bus);
-				distVol = In.kr(distVolBus);
-				sineVol = In.kr(sineVolBus);
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				input=In.ar(inbus, 1);
-				fx1=Latch.ar(input.round(0.125),Impulse.ar(sr1));
-				fx2=Latch.ar(input.round(0.1),Impulse.ar(sr2));
-				fx3=Latch.ar(input.round(0.1125),Impulse.ar(sr1-50));
-				fx4=Latch.ar(input.round(0.15),Impulse.ar(sr2+50));
-
-				#freq, hasFreq = Pitch.kr(fx1, ampThreshold: 0.02, median: 7);
-
-				fund = TIRand.kr(7, 50, hasFreq);
-				skip = TIRand.kr(1, 5, hasFreq);
-
-				sine0 = SinOsc.ar(freq, 0, hasFreq);
-				sine1 = SinOsc.ar(freq+(fund*skip), 0, hasFreq);
-				sine2 = SinOsc.ar(freq+(2*fund*skip), 0, hasFreq);
-				sine3 = SinOsc.ar(freq+(3*fund*skip), 0, hasFreq);
-				sine4 = SinOsc.ar(freq+(4*fund*skip), 0, hasFreq);
-
-				sines = Pan4.ar(sine0, TRand.kr(-1,1,hasFreq), TRand.kr(-1,1,hasFreq)) + Pan4.ar(sine1, TRand.kr(-1,1,hasFreq), TRand.kr(-1,1,hasFreq)) + Pan4.ar(sine2, TRand.kr(-1,1,hasFreq), TRand.kr(-1,1,hasFreq)) + Pan4.ar(sine3, TRand.kr(-1,1,hasFreq), TRand.kr(-1,1,hasFreq)) + Pan4.ar(sine4, TRand.kr(-1,1,hasFreq), TRand.kr(-1,1,hasFreq));
-
-				Out.ar(outbus, sines*0.25*sineVol*env*pauseEnv);
-				Out.ar(outbus,([fx1,fx2,fx3,fx4])*distVol*env*pauseEnv);
-			}).writeDefFile;
-
-			SynthDef("bitCrusher8_Mod",{ arg inbus, outbus, sr1Bus, sr2Bus, distVolBus, sineVolBus, gate = 1, pauseGate = 1;
-				var input, fx1, fx2, fx3, fx4, fx5, fx6, fx7, fx8, sines, sine0, sine1, sine2, sine3, sine4, fund, skip, freq, hasFreq, env, pauseEnv;
-				var sr1, sr2, distVol, sineVol;
-
-				sr1 = In.kr(sr1Bus);
-				sr2 = In.kr(sr2Bus);
-				distVol = In.kr(distVolBus);
-				sineVol = In.kr(sineVolBus);
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				input=In.ar(inbus, 1);
-				fx1=Latch.ar(input.round(0.125),Impulse.ar(sr1));
-				fx2=Latch.ar(input.round(0.1),Impulse.ar(sr2));
-				fx3=Latch.ar(input.round(0.1125),Impulse.ar(sr1-25));
-				fx4=Latch.ar(input.round(0.15),Impulse.ar(sr2+25));
-				fx5=Latch.ar(input.round(0.125),Impulse.ar(sr1-50));
-				fx6=Latch.ar(input.round(0.1),Impulse.ar(sr2+50));
-				fx7=Latch.ar(input.round(0.1125),Impulse.ar(sr1-75));
-				fx8=Latch.ar(input.round(0.15),Impulse.ar(sr2+75));
-
-				#freq, hasFreq = Pitch.kr(fx1, ampThreshold: 0.02, median: 7);
-
-				fund = TIRand.kr(7, 50, hasFreq);
-				skip = TIRand.kr(1, 5, hasFreq);
-
-				sine0 = SinOsc.ar(freq, 0, hasFreq);
-				sine1 = SinOsc.ar(freq+(fund*skip), 0, hasFreq);
-				sine2 = SinOsc.ar(freq+(2*fund*skip), 0, hasFreq);
-				sine3 = SinOsc.ar(freq+(3*fund*skip), 0, hasFreq);
-				sine4 = SinOsc.ar(freq+(4*fund*skip), 0, hasFreq);
-
-				sines = PanAz.ar(8, sine0, TRand.kr(-1,1,hasFreq)) +
-					PanAz.ar(8, sine1, TRand.kr(-1,1,hasFreq)) +
-					PanAz.ar(8, sine2, TRand.kr(-1,1,hasFreq)) +
-					PanAz.ar(8, sine3, TRand.kr(-1,1,hasFreq)) +
-					PanAz.ar(8, sine4, TRand.kr(-1,1,hasFreq));
-
-				Out.ar(outbus, sines*0.25*sineVol*env*pauseEnv);
-				Out.ar(outbus,([fx1,fx2,fx3,fx4,fx5,fx6,fx7,fx8])*distVol*env*pauseEnv);
-			}).writeDefFile;
 		}
 	}
 
 	init {
-		this.makeWindow("BitCrusher",Rect(718, 645, 135, 270));
+		this.makeWindow("BitCrusher");
 
 		this.makeMixerToSynthBus;
 
@@ -687,28 +490,6 @@ BitCrusher_Mod : Module_Mod {
 			}, 0, layout:\vert));
 		this.addAssignButton(3,\continuous,Rect(70, 240, 60, 20));
 
-
-		//multichannel button
-		controls.add(Button(win,Rect(5, 265, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				synths[0].set(\gate, 0);
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						synths.put(0, Synth("bitCrusher2_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \sineVolBus, sineVolBus], group));
-					},
-					1, {
-						numChannels = 4;
-						synths.put(0, Synth("bitCrusher4_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \sineVolBus, sineVolBus], group));
-					},
-					2, {
-						numChannels = 8;
-						synths.put(0, Synth("bitCrusher8_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \sineVolBus, sineVolBus], group));
-					}
-				)
-			};
-		);
 	}
 
 }

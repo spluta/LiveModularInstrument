@@ -30,7 +30,7 @@ RingModStereo_Mod : SignalSwitcher_Mod {
 		2.do{localBusses.add(Bus.audio(group.server, 8))};
 		mixerStrips = List.new;
 		2.do{arg i;
-			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));
+			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i]));
 			mixerStrips[i].init2(win, Point(5+(i*55), 0));
 		};
 

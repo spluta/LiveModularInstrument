@@ -1,65 +1,31 @@
-Convolution_Mod : SignalSwitcher_Mod {
+Convolution_Mod : MainMixer {
 
 	*initClass {
 		StartUp.add {
-			SynthDef("convolution_mod", {arg inBus0, inBus1, outBus, vol, lpFreq=2000, gate = 1, pauseGate = 1;
+			SynthDef("convolution_mod", {arg inBus0, inBus1, outBus, gate = 1, pauseGate = 1;
 				var in0, in1, env, out, pauseEnv;
 
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
-				in0 = Mix(In.ar(inBus0, 8));
-				in1 = Mix(In.ar(inBus1, 8));
+				in0 = In.ar(inBus0, 2);
+				in1 = In.ar(inBus1, 2);
 
-				out = Convolution.ar(in0, in1, 2048)*env*vol*pauseEnv;
+				out = [Convolution.ar(in0[0], in1[0], 2048),Convolution.ar(in0[1], in1[1], 2048)]*env*pauseEnv;
 
-				Out.ar(outBus, out, 0);
+				Out.ar(outBus, out);
 			}).writeDefFile;
 		}
 	}
 
-	init2 {
+	init3 {
+		synthName = "Convolution";
 
-		this.makeWindow("Convolution", Rect(860, 200, 220, 150));
-		this.initControlsAndSynths(1);
+		synths.add(Synth("convolution_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \outBus, outBus], outGroup));
 
-		mixerGroup = Group.tail(group);
-		synthGroup = Group.tail(group);
-
-		localBusses = List.new;
-		2.do{localBusses.add(Bus.audio(group.server, 8))};
-
-
-		mixerStrips = List.new;
-		2.do{arg i;
-			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i], setups));
-			mixerStrips[i].init2(win, Point(5+(i*55), 0))
-		};
-
-		synths = List.newClear(3);
-		synths.put(0, Synth("convolution_mod", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus.index, \vol, 1], synthGroup));
-		controls = List.new;
-		controls.add(EZSlider.new(win,Rect(10, 70, 200, 20), "vol", ControlSpec(0,2,'amp'),
-			{|v|
-				synths[0].set(\vol, v.value);
-			}, 1.0, true, layout:\horz));
-		this.addAssignButton(0,\continuous,Rect(10, 90, 200, 20));
+		win.name_(outBus.index.asString+"Convolution");
+		win.layout_(HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0));
+		win.front;
 	}
 
-	saveExtra {arg saveArray;
-		var temp;
-
-		temp = List.newClear(0);
-		//save the regular mixers
-		mixerStrips.do{arg item;  //save the all setup mixer items
-			temp.add(item.save);
-		};
-		saveArray.add(temp);
-	}
-
-	loadExtra {arg loadArray;
-		loadArray[4].do{arg item, i;
-			mixerStrips[i].load(item);
-		};
-	}
 }

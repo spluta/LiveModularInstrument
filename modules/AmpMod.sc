@@ -13,7 +13,7 @@ AmpMod_Mod : Module_Mod {
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
-				Out.ar(outBus, In.ar(inBus, 8)*env*mod*pauseEnv);
+				Out.ar(outBus, In.ar(inBus, 2)*env*mod*pauseEnv);
 			}).writeDefFile;
 		}
 	}
@@ -22,7 +22,7 @@ AmpMod_Mod : Module_Mod {
 
 		this.initControlsAndSynths(3);
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
 		synths.add(Synth("ampMod_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus], group));
 

@@ -140,38 +140,14 @@ GlassSineObject : Module_Mod {
 		8.do{|i|
 			key = "/SeaboardPressure/"++((mantaRow*8)+i).asString;
 			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)}, setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)});
 
 			key = "/SeaboardNote/"++((mantaRow*8)+i).asString;
 			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\zvol, val)}, setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\zvol, val)});
 		};
-
-		/*8.do{|i|
-			key = "/SeaboardPressure/"++(Seaboard.lowNote+(mantaRow*8)+i).asString;
-			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)}, setups);
-		};*/
 	}
-/*		setManta {
-		var key;
 
-		8.do{|i|
-			key = "/MultiBall"++(100+(mantaRow*8)+i).asString;
-			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], functions[i], setups);
-		};
-	}*/
-
-/*	setManta {
-		var key;
-
-		8.do{|i|
-			key = "/manta/pad/"++(mantaRow*8+i).asString;
-			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], functions[i], setups);
-		};
-	}*/
 
 	clearManta {
 		8.do{|i|
@@ -227,7 +203,7 @@ GlassSines_Mod : Module_Mod {
 		glassSineObjects = List.new;
 
 		4.do{arg i;
-			glassSineObjects.add(GlassSineObject(group, outBus, setups));
+			glassSineObjects.add(GlassSineObject(group, outBus));
 			glassSineObjects[i].setWinPoint(i, volBus);
 		};
 

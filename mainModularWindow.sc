@@ -1,63 +1,35 @@
 MainProcessingWindow : MidiOscObject {
-	var synthList, availableModules, synthLocation, availableBusses, paths, file, text, num;
-	var saveButtons, loadButtons, soundInBussesTemp, stereoSoundInBussesTemp, availableBussesTemp, soundInBoxes, stereoSoundInBoxes, classBoxes, classBoxItems, classScroller, modularClassList, xmlBounds;
-	var setupButtons, currentSetup, objectBusses, <>assignMantaButton, <>mainSwitchSet;
+	var <>modularObjects;
+	var synthList, availableModules;
 	var resetOscButton, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
+	var modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton;
+	var buttonView, infoView, objectView;
 
-	*new {arg group;
-		^super.new.group_(group).init;
+	*new {arg group, modularObjects;
+		^super.new.group_(group).modularObjects_(modularObjects).init;
 	}
 
 	init {
 
-		setups = ModularServers.setups;
+		this.initControlsAndSynths(0);
 
-		win = Window("Live Modular Instrument"+group.server, Rect(0, Window.screenBounds.height*2, 675, 90*5+110));
+		buttonView = CompositeView().maxHeight_(15);
+		infoView = CompositeView().maxHeight_(15);
+		objectView = CompositeView().maxHeight_(360).maxWidth_(360);
 
-		this.initControlsAndSynths(8);
-
-		dontLoadControls = [0,1,2,3];
-
-		soundInBoxes = List.new;
-		ModularServers.getSoundInBusses(group.server).do{arg item, i;
-			soundInBoxes.add(DragSource(win,Rect(5+(45*i), 0, 45, 16)));
-			soundInBoxes[i].setProperty(\align,\center);
-			soundInBoxes[i].object = [item, "S"+i.asString];
-			soundInBoxes[i].string="S"+i.asString;
-			soundInBoxes[i].dragLabel="S"+i.asString;
+		inputsButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
+		.states_([["Inputs", Color.black, Color.grey]])
+		.action_{
+			InBusWindow_Mod.makeWindow
 		};
 
-	/*	stereoSoundInBoxes = List.new;
-		ModularServers.getStereoSoundInBusses(group.server).do{arg item, i;
-			stereoSoundInBoxes.add(DragSource(win,Rect(5+(90*i), 20, 90, 16)));
-			stereoSoundInBoxes[i].setProperty(\align,\center);
-			stereoSoundInBoxes[i].object = [item, "S"++(i*2).asString++((i*2)+1).asString];
-			stereoSoundInBoxes[i].string="S"++(i*2).asString++((i*2)+1).asString;
-			stereoSoundInBoxes[i].dragLabel="S"++(i*2).asString++((i*2)+1).asString;
-		};*/
-
-		classBoxes = List.new;
-		classBoxItems = List.new;
-		classBoxItems = ModularClassList.classArray.deepCopy;
-
-		min(20, classBoxItems.size).do{arg i;
-			classBoxes.add(DragSource(win,Rect(500, i*25, 150, 20)));
-			classBoxes[i].object = classBoxItems[i];
+		modulesButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
+		.states_([["Modules", Color.black, Color.grey]])
+		.action_{
+			ClassWindow_Mod.makeWindow
 		};
 
-		classScroller = EZScroller(win, Rect(650, 0, 20, 20*25), 20, classBoxItems.size, {
-			arg scroller;
-
-			classBoxes.do{|drag, i| drag.object_(classBoxItems[scroller.value.asInteger+i] ? ""); };
-		});
-		classScroller.visible_(classBoxItems.size>20);
-
-		synthList = List.new;
-
-		saveButtons = List.newClear(0);
-		loadButtons = List.newClear(0);
-
-		saveButtons.add(Button(win, Rect(5, 90*5+50, 100, 16))
+		saveButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
 			.states_([["Save", Color.black, Color.green]])
 			.action_{
 				visibleArray = List.newClear(0);
@@ -74,10 +46,10 @@ MainProcessingWindow : MidiOscObject {
 					},{
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
-		});
+		};
 
-		saveButtons.add(Button(win, Rect(5, 90*5+70, 100, 16))
-			.states_([["SaveServer", Color.black, Color.green]])
+		saveServerButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
+			.states_([["S Server", Color.black, Color.green]])
 			.action_{
 				visibleArray = List.newClear(0);
 				Window.allWindows.do{arg item;
@@ -93,28 +65,9 @@ MainProcessingWindow : MidiOscObject {
 					},{
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 				});
-		});
+		};
 
-		saveButtons.add(Button(win, Rect(5, 90*5+90, 100, 16))
-			.states_([["SaveSetup", Color.black, Color.green]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
-
-					visibleArray.add(item.visible);
-					item.visible = false
-				};
-
-				Dialog.savePanel({ arg path;
-					ModularServers.servers[group.server.asSymbol].saveSetup(path, currentSetup);
-
-					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-				});
-		});
-
-		loadButtons.add(Button(win, Rect(110, 90*5+50, 100, 16))
+		loadButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
 			.states_([["Load", Color.green, Color.black]])
 			.action_{
 				visibleArray = List.newClear(0);
@@ -133,10 +86,10 @@ MainProcessingWindow : MidiOscObject {
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 						};
 				});
-		});
+		};
 
-		loadButtons.add(Button(win, Rect(110, 90*5+70, 100, 16))
-			.states_([["LoadServer", Color.green, Color.black]])
+		loadServerButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
+			.states_([["L Server", Color.green, Color.black]])
 			.action_{
 				visibleArray = List.newClear(0);
 				Window.allWindows.do{arg item;
@@ -152,65 +105,14 @@ MainProcessingWindow : MidiOscObject {
 						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 						};
 				});
-		});
-
-		loadButtons.add(Button(win, Rect(110, 90*5+90, 100, 16))
-			.states_([["LoadSetup", Color.green, Color.black]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
-
-					visibleArray.add(item.visible);
-					item.visible = false
-				};
-				Dialog.openPanel({ arg path;
-					ModularServers.servers[group.server.asSymbol].loadSetup(path, currentSetup);
-
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-				});
-		});
-
-		currentSetup = 0;
-
-		4.do{arg i;
-			controls.add(Button(win, Rect(220+(60*i), 90*5+50, 60, 16))
-				.states_([["setup"++i, Color.green, Color.black],["setup"++i, Color.black, Color.green]])
-				.action_{arg butt;
-					var temp;
-					(0..3).do{arg i2; controls[i2].value = 0};
-					butt.value = 1;
-					currentSetup = i;
-					ModularServers.changeSetup(group.server, currentSetup);
-					MidiOscControl.setControllersWCurrentSetup(group.server, oscMsgs[i]);
-				};
-			);
-		};
-
-		4.do{arg i;
-			this.addAssignButton(i, \onOff, Rect(220+(60*i), 90*5+70, 60, 16))
-		};
-
-		4.do{arg i;
-			controls.add(Button()
-				.states_([["setup"++i, Color.green, Color.black],["setup"++i, Color.black, Color.green]])
-				.action_{arg butt;
-					var temp;
-					controls[i].valueAction_(1);
-				};
-			);
-		};
-
-		(4..7).do{arg i;
-			this.addAssignButton(i, \onOff, Rect(220+(60*(i-4)), 90*5+90, 60, 16))
 		};
 
 
-		mainSwitchSet = false;
+
+		//mainSwitchSet = false;
 
 		//think about how to do this that is good for all OSC controllers
-		resetOscButton = Button(win, Rect(460, 90*5+50, 90, 16))
+		resetOscButton = Button().font_(Font("Helvetica", 10)).maxWidth_(60)
 		.states_([["ResetOSC"]])
 		.action_{
 			LiveModularInstrument.controllers.do{arg item;
@@ -218,24 +120,32 @@ MainProcessingWindow : MidiOscObject {
 			}
 		};
 
-		listeningPort = StaticText(win, Rect(550, 90*5+50, 90, 16));
+		listeningPort = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		listeningPort.string = NetAddr.langPort.asString;
 
-		cpuUsage0 = StaticText(win, Rect(460, 90*5+70, 90, 16));
+		cpuUsage0 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
+		cpuUsage1 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 
-		cpuUsage1 = StaticText(win, Rect(550, 90*5+70, 90, 16));
-
-		waitRand = rrand(1.9,2.1);
+		//waitRand = rrand(4.9,2.1);
 		cpuUsageRout = Routine({inf.do{
 			cpuUsage0.string = group.server.avgCPU.round(0.01).asString;
-			waitRand.wait;
+			0.2.wait;
 		}});
 
-		waitRandA = rrand(1.9,2.1);
+		//waitRandA = rrand(1.9,2.1);
 		cpuUsageRoutA = Routine({inf.do{
 			cpuUsage1.string = group.server.peakCPU.round(0.01).asString;
-			waitRandA.wait;
+			0.2.wait;
 		}});
+
+		win = Window("Live Modular Instrument"+group.server);
+		win.view.maxWidth_(320).maxHeight_(350);
+
+		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(4)).margins_(0!4).spacing_(0));
+		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
+		infoView.layout_(HLayout(listeningPort,resetOscButton, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
+
+		win.layout_(VLayout(buttonView, objectView, infoView).margins_(0!4).spacing_(0));
 
 		AppClock.play(cpuUsageRout);
 		AppClock.play(cpuUsageRoutA);
@@ -259,33 +169,20 @@ MainProcessingWindow : MidiOscObject {
 		win.visible = true;
 	}
 
-	changeSetup {arg num;
-		synthList.do{arg item; item.changeSetup(num)};
-	}
-
-	hitButton {arg num;
-		controls[num].valueAction_(1);
-	}
-
-	setName {arg name;
-		win.name_(name);
-	}
-
 }
 
 
 
 LiveModularInstrument {
 	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, modularInputArray, <>controllers;
-	classvar xmlDoc, xmlRoot, xmlMainProc, xmlMainMixer, xmlInputArray, file;
-	classvar numServers, setups, windows;
+	classvar numServers, windows;
 	classvar readyToRollCounter, addingServer=false;
 
 	*new {
 		^super.new.init;
 	}
 
-	*boot {arg numServersIn=1, inBussesIn, outBussesIn, hardwareBufferSizeIn=64, sampleRate=44100, whichClassListIn, controllersIn;
+	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn;
 
 		numServers=numServersIn;
 		inBusses = List.newClear(8);
@@ -296,29 +193,15 @@ LiveModularInstrument {
 				inBusses.put(i, item);
 		})};
 
-		outBusses=List[0,1,2,3,4,5,6,7];
-		outBussesIn.do{arg item, i;
-			if(i<8,{
-				outBusses.put(i, item);
-		})};
-
-		controllers = controllersIn; hardwareBufferSize=hardwareBufferSizeIn; whichClassList=whichClassListIn;
-
-		Server.local.options.hardwareBufferSize_(hardwareBufferSize);
-
-		Server.local.options.sampleRate_(sampleRate);
-
-		setups = List.newClear(0);
-		((numServers*4-1)..0).do{arg i; setups.add('setup'++i.asSymbol)};
+		controllers = controllersIn; whichClassList=whichClassListIn;
 
 		//set up the control devices and control GUI
-
 
 		if(whichClassList == nil, {whichClassList = 'normal'});
 		ModularClassList.new(whichClassList);
 
 		readyToRollCounter = 0;
-		ModularServers.boot(numServers, inBusses, outBusses); //sends readyToRoll messages once the servers are loaded
+		ModularServers.boot(numServers, inBusses); //sends readyToRoll messages once the servers are loaded
 	}
 
 	*addServer {
@@ -360,7 +243,6 @@ LiveModularInstrument {
 	}
 
 	*killMe {
-		MainMixer.killMe;
 		OSCFunc.allFuncProxies.do{arg item; item.remove};
 	}
 }

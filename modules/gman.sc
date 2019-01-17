@@ -87,18 +87,18 @@ GingerMan_Mod : Module_Mod {
 
 			key2 = "/SeaboardNote/"++(key).asString;
 			oscMsgs.put(counter, key2);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key], setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key]);
 			counter=counter+1;
 		};
 
 		oscMsgs.put(counter, "/SeaboardNote/31");
 		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 0)})}, setups);
+			{|val| if(val==1, {synths[0].set(\onOff, 0)})});
 		counter=counter+1;
 
 		oscMsgs.put(counter, "/SeaboardNote/30");
 		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 1)})}, setups);
+			{|val| if(val==1, {synths[0].set(\onOff, 1)})});
 
 	}
 
@@ -207,14 +207,7 @@ GingerMan_Mod : Module_Mod {
 		loadArray[1].do{arg controlLevel, i;
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};
-/*		loadArray[2].do{arg msg, i;
-			waitForSetNum = i;
-			if(msg!=nil,{
-				MidiOscControl.getFunctionNSetController(this, controls[i+1], msg, group.server, setups);
-				assignButtons[i+1].instantButton.value_(1);
-			})
-		};
-		win.bounds_(loadArray[3]);*/
+
 	}
 
 	killMeSpecial {

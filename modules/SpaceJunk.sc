@@ -85,7 +85,7 @@ SpaceJunk_Mod : Module_Mod {
 
 		noteOnFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/manta/padOn/"++key.asString);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key], setups);
+			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key]);
 			counter=counter+1;
 		};
 

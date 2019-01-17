@@ -134,7 +134,7 @@ SinArray_Mod : Module_Mod {
 	}
 
 	killMe {
-		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, setups, item)};
+		oscMsgs.do{arg item; MidiOscControl.clearController(item)};
 		win.close;
 		volBus.free;
 		group.set(\gate, 0);

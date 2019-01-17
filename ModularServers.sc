@@ -1,5 +1,5 @@
 ModularServerObject {
-	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, synthGroup, <>synthGroups, <>inBusses, <>inBusIndexes, <>stereoInBusses, <>stereoInBusIndexes, volumeInRack, setupSwitcher, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible;
+	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible;
 
 	*new {arg server;
 		^super.new.server_(server).init;
@@ -14,37 +14,26 @@ ModularServerObject {
 			mixerGroup = Group.tail(mainGroup);
 			postMixerGroup = Group.tail(mainGroup);
 
-			mixerTransferBus = Bus.audio(server, 8);
+			mixerDirectInBus = Bus.audio(server, 22);
+			mixerTransferBus = Bus.audio(server, 22);
 
 			//set up the inputs and outputs
 			inBusses = List.new;
-			inBusIndexes = List.new;
 			8.do{arg i;  //right now the number of input channels is hardcoded to 8
 				inBusses.add(Bus.audio(server,1));
-				inBusIndexes.add(inBusses[i].index);
 			};
 
-			stereoInBusses = List.new;
-			stereoInBusIndexes = List.new;
-			4.do{arg i;  //half of the number of input channels
-				stereoInBusses.add(Bus.audio(server,2));
-				stereoInBusIndexes.add(stereoInBusses[i].index);
-			};
 
 			//create objectBusses and groups in the shape of the dimensions array
 
 			objectBusses = List.new;
 
-			dimensions = [5,5,4]; //for now this is hard-coded
+			dimensions = [4,4]; //for now this is hard-coded
 
 
-			objectBusses = List.fill((dimensions[0]*dimensions[1]*dimensions[2]), {Bus.audio(server,8)});
+			objectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
 
-			objectBusses = objectBusses.clump(25).flop.clump(5);
-
-			synthGroups = List.fill((dimensions[0]*dimensions[1]*dimensions[2]), {Group.tail(synthGroup)});
-
-			synthGroups = synthGroups.clump(dimensions[2]).clump(dimensions[0]);
+			synthGroups = List.fill((dimensions[0]*dimensions[1]), {Group.tail(synthGroup)});
 
 			//create the Array of ModularObjects
 
@@ -52,93 +41,53 @@ ModularServerObject {
 
 			isVisible = true;
 
-			dimensions[0].do{arg i;
-				modularObjects.add(List.new);
-				dimensions[1].do{arg i2;
-					modularObjects[i].add(List.new);
-					dimensions[2].do{arg i3;
-						modularObjects[i][i2].add(
-							ModularObjectPanel(server, synthGroups[i][i2][i3], objectBusses[i][i2][i3], [i2,i,i3])
-						);
-					}
-				}
+			16.do{arg i;
+				modularObjects.add(
+					ModularObjectPanel(server, synthGroups[i], i)
+				);
 			};
 
-			setupSwitcher = SetupSwitcher(modularObjects);
+			mainWindow = MainProcessingWindow.new(mainGroup, modularObjects);
 
-			mainWindow = MainProcessingWindow.new(mainGroup);
-
-			this.addPanelsToWindow;
-
-			mainMixer = MainMixer.new(mixerGroup, mixerTransferBus);
+			mainMixer = MainMixer.new(mixerGroup, mixerTransferBus).init2(4, true);
 
 			LiveModularInstrument.readyToRoll();
 		})
 	}
 
-	saveSetup {arg path, setupNum;
-		var saveSetup, temp;
-
-		saveSetup = List.newClear(0);
-
-		saveSetup.add(inBusIndexes);
-		saveSetup.add(stereoInBusIndexes);
-
-		temp = List.newClear(0);
-
-		//saves
-
-		objectBusses.flatten.flatten.do{arg item, i;
-			if(i%setupNum==0, {
-				temp.add(item.index); //add busses
-			})
-		};
-		saveSetup.add(temp);
-
-		temp = List.newClear(0);
-
-		modularObjects.flatten.flatten.do{arg mop, i;
-			if(i%setupNum==0, {
-				temp.add(mop.save);
-			})
-		};
-
-		saveSetup.add(temp);
-
-		saveSetup = saveSetup.asCompileString;
-		saveSetup.writeArchive(path);
-	}
-
-	loadSetup {arg path, setupNum;
-		var loadArray, flatMOPs, mopData;
-
-		loadArray = Object.readArchive(path);
-		loadArray = loadArray.interpret;
-
-		this.makeBusMap([loadArray[0], loadArray[1], loadArray[2]]);
-
-		flatMOPs = modularObjects.flatten.flatten;
-		mopData = loadArray[3];
-		mopData.do{arg item, i; if((item.size>0)&&((i%setupNum)==0),
-			{flatMOPs[i].load(item)})
-		};
-	}
-
 	makeBusMap {arg loadArray;
-		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus;
 
-		inBusTemp = loadArray[0];
-		stereoInBusTemp = loadArray[1];
-		internalBusTemp = loadArray[2];
+		loadArray.postln;
 
-		busMap = List.fill(3, {arg i; Dictionary.new});
+		busMap = Array.fill(3, {Dictionary.new});
 
-		inBusTemp.do{arg item, i; busMap[0].add(item.asSymbol -> [inBusIndexes[i], i])};
-		stereoInBusTemp.do{arg item, i; busMap[1].add(item.asSymbol -> [stereoInBusIndexes[i], i])};
-		flatObjectBus = objectBusses.flatten.flatten;
-		internalBusTemp.do{arg item, i; busMap[2].add(item.asSymbol -> flatObjectBus[i].index)};
+		11.do{arg i; busMap.add((loadArray[0].asInteger+(i*2)).asSymbol -> (i*2))};
+
+		loadArray[1].do{arg item, i; busMap[1].add(item.asSymbol -> i)};
+
+		loadArray[2].do{arg item, i; busMap[2].add(item.asSymbol -> objectBusses[i].index)};
+
+		busMap.postln;
 	}
 
+	getBusFromMap {arg busIn;
+		var temp;
+
+		temp = busMap[0][busIn];
+		if(temp!=nil,{
+			temp = "D"++temp.asString;
+			temp.postln;
+		},{
+			temp = busMap[1][busIn];
+			if(temp!=nil,{
+				temp = "S"++temp.asString
+
+			},{
+				temp = busMap[2][busIn];
+			})
+		});
+		^temp
+	}
 
 	save {
 		var saveServer, temp;
@@ -149,73 +98,49 @@ ModularServerObject {
 
 		saveServer.add(mainWindow.save);
 
-		saveServer.add(inBusIndexes);
-		saveServer.add(stereoInBusIndexes);
+		saveServer.add(mixerDirectInBus.index);
 
 		temp = List.newClear(0);
-		objectBusses.flatten.flatten.do{arg item;
+		inBusses.do{arg item;
 			temp.add(item.index); //add busses
 		};
 		saveServer.add(temp);
 
 		temp = List.newClear(0);
-		modularObjects.flatten.flatten.do{arg mop, i;
+		objectBusses.do{arg item;
+			temp.add(item.index); //add busses
+		};
+		saveServer.add(temp);
+
+		temp = List.newClear(0);
+		modularObjects.do{arg mop, i;
 			temp.add(mop.save);
 		};
-
 		saveServer.add(temp);
+
 		saveServer.add(mainMixer.save);
+
 		^saveServer;
 	}
 
 
 	load {arg loadArray;
 		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
+		loadArray.do{arg item; item.postln};
 
 		mainWindow.load(loadArray[0]);
 
-		this.makeBusMap([loadArray[1], loadArray[2], loadArray[3]]);
+		this.makeBusMap(loadArray.copyRange(1,3));
 
-		flatMOPs = modularObjects.flatten.flatten;
-		mopData = loadArray[4];
-		mopData.do{arg item, i; if(item.size>0, {flatMOPs[i].load(item)})};
+		loadArray[4].do{arg item, i;
+
+			if(item.size>0, {modularObjects[i].load(item)})
+		};
 
 		mainMixer.load(loadArray[5]);
-
-		setupSwitcher.hideAll;
-		//setupSwitcher.changeSetup(\setup0);
-		mainWindow.hitButton(0);
-		setupSwitcher.showCurrentSetup;
 	}
 
 
-	confirmValidBus {arg bus;
-		var valid = false;
-
-		inBusIndexes.do{arg item; if(item==bus,{valid = true})};
-		stereoInBusIndexes.do{arg item; if(item==bus,{valid = true})};
-		objectBusses.flatten.flatten.do{arg item; if(item.index==bus,{valid = true})};
-		^valid
-	}
-
-	getCurrentSetup {
-		^setupSwitcher.currentSetup;
-	}
-
-	changeSetup {|setup|
-		setupSwitcher.changeSetup(setup);
-		mainMixer.changeSetup(setup);
-	}
-
-	addPanelsToWindow {
-		modularObjects.flatten.flatten.do{arg item, i;
-			item.addToWindow(mainWindow.win, ((i%4)==0));
-		}
-	}
-
-	setModularPanelToSetup {arg location, setupName;
-		setupSwitcher.changeSetupMap(location, setupName);
-	}
 
 	makeVisible {arg val;
 		isVisible = val;
@@ -238,13 +163,11 @@ ModularServerObject {
 			});
 
 			mainMixer.unmute;
-			setupSwitcher.showCurrentSetup;
 
-			},{
-				mainWindow.hide;
-				mainMixer.hide;
-				mainMixer.mute;
-				setupSwitcher.hideCurrentSetup;
+		},{
+			mainWindow.hide;
+			mainMixer.hide;
+			mainMixer.mute;
 		});
 	}
 
@@ -259,14 +182,12 @@ ModularServerObject {
 }
 
 ModularServers {
-	classvar <>numServers, <>inBusses, <>outBusses, <>setupColors;
-	classvar <>servers, <>setups, <>modularInputsArray, <>serverSwitcher;
+	classvar <>numServers, <>inBusses;
+	classvar <>servers, <>modularInputsArray, <>serverSwitcher;
 
-	*boot {arg numServersIn, inBussesIn, outBussesIn;
-		numServers = numServersIn; inBusses = inBussesIn; outBusses = outBussesIn;
+	*boot {arg numServersIn, inBussesIn;
+		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
-		setups = List.fill(4, {arg i; ('setup'++i.asSymbol)});
-		setupColors = [Color.blue.multiply(0.5).alpha_(0.25), Color.green.multiply(0.5).alpha_(0.25), Color.red.multiply(0.5).alpha_(0.25), Color.magenta.multiply(0.5).alpha_(0.25)];
 		numServers.do{arg i;
 			("adding a server: "++i.asString).postln;
 			servers.add(("lmi"++i).asSymbol-> ModularServerObject.new(Server.new("lmi"++i.asString, NetAddr("localhost", 57111+i), Server.local.options)));
@@ -284,8 +205,8 @@ ModularServers {
 		if(numServers>1,{
 			"saveSwitcher".postln;
 			saveServers.add(serverSwitcher.save);
-			},{
-				saveServers.add(nil)
+		},{
+			saveServers.add(nil)
 		});
 
 		temp = List.newClear(0);
@@ -294,8 +215,8 @@ ModularServers {
 			numServers.do{arg i;
 				temp.add(servers[("lmi"++i).asSymbol].save)
 			}; //save the servers
-			},{
-				temp.add(servers[serverName.asSymbol].save)
+		},{
+			temp.add(servers[serverName.asSymbol].save)
 		});
 
 		saveServers.add(temp);
@@ -309,21 +230,25 @@ ModularServers {
 
 		loadArray = Object.readArchive(path);
 
-		modularInputsArray.load(loadArray[0]);
-		numServersInFile = loadArray[2].size;
 
 		if(serverName==nil,{
+			modularInputsArray.load(loadArray[0]);
+			numServersInFile = loadArray[2].size;
+
+
 			min(numServersInFile, numServers).do{arg i;
 				servers[("lmi"++i).asSymbol].load(loadArray[2][i])
-			}
-			}, {
-				servers[serverName.asSymbol].load(loadArray[2][0])
+			};
+			//load the serverSwitcher last so that it can update the server windows
+			if(loadArray[1]!=nil,{
+				serverSwitcher.load(loadArray[1]);
+			});
+
+		}, {
+			servers[serverName.asSymbol].load(loadArray[2][0])
 		});
 
-		//load the serverSwitcher last so that it can update the server windows
-		if(loadArray[1]!=nil,{
-			serverSwitcher.load(loadArray[1]);
-		});
+
 
 	}
 
@@ -335,8 +260,8 @@ ModularServers {
 	*updateServerSwitcher {
 		if(serverSwitcher!=nil,{
 			serverSwitcher.reset;
-			},{
-				serverSwitcher = ServerSwitcher.new();
+		},{
+			serverSwitcher = ServerSwitcher.new();
 		});
 	}
 
@@ -347,35 +272,24 @@ ModularServers {
 		this.updateServerSwitcher;
 	}
 
-	*changeSetup {|serverName, setupNum|
-		servers[serverName.asSymbol].changeSetup(setups[setupNum])
-	}
-
-	*setModularPanelToSetup{arg serverName, location, setupName;
-		servers[serverName.asSymbol].setModularPanelToSetup(location, setupName);
-	}
-
-	*getSynthGroup {arg serverName, location;
-		^servers[serverName.asSymbol].synthGroups[location];
-	}
-
-	*getMixerGroup {arg serverName;
-		^servers[serverName.asSymbol].mixerGroup;
-	}
-
 	*getSoundInBusses {arg serverName;
-		^servers[serverName.asSymbol].inBusIndexes;
+		^servers[serverName.asSymbol].inBusses.collect({arg item; item.index}).postln;
 	}
 
-	*getStereoSoundInBusses {arg serverName;
-		^servers[serverName.asSymbol].stereoInBusIndexes;
+	*getDirectInBus {arg serverName;
+		^servers[serverName.asSymbol].mixerDirectInBus.index;
 	}
-
-	*getSetups {arg serverName;
-		^setups;
-	}
-
 	*getObjectBusses {arg serverName;
 		^servers[serverName.asSymbol].objectBusses;
 	}
+
+	/*	*getSynthGroup {arg serverName, location;
+	^servers[serverName.asSymbol].synthGroups[location];
+	}
+
+	*getMixerGroup {arg serverName;
+	^servers[serverName.asSymbol].mixerGroup;
+	}*/
+
+
 }

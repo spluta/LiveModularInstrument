@@ -280,7 +280,7 @@ BandPassFreeze_Mod : Module_Mod {
 			loadArray[2].do{arg msg, i;
 				waitForSetNum = i;
 				if(msg!=nil,{
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
 					assignButtons[i].instantButton.value_(1);
 				})
 			};

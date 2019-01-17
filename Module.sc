@@ -1,4 +1,4 @@
-MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>oscMsgs, assignButtons, <>setups;
+MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
 	var waitForSetNum, modName, dontLoadControls, synths, visibleArray;
 
 	initControlsAndSynths {arg num;
@@ -12,7 +12,7 @@ MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>osc
 		dontLoadControls = List.newClear(0);
 
 		synths = List.newClear(0);
-		bigSynthGroup = Group.new(group);
+		bigSynthGroup = Group.new(group);  //this is only in the sampler...not sure why
 	}
 
 	setOscMsg {arg msg;
@@ -21,7 +21,6 @@ MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>osc
 
 	clearMidiOsc {
 		//should just have to send all osc message to MidiOscControl for deletion
-		setups.do{arg item; this.removeSetup(item)};
 		oscMsgs = List.newClear(oscMsgs.size);
 	}
 
@@ -35,13 +34,32 @@ MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>osc
 				if(butt.value==1,{
 
 					waitForSetNum = num;
-					MidiOscControl.requestInstantAssign(this, controls[num], type, group.server, setups);
+					MidiOscControl.requestInstantAssign(this, controls[num], type, group.server);
 				},{
-						MidiOscControl.clearInstantAssign;
-						MidiOscControl.clearController(group.server, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
-						oscMsgs.put(num, nil);
+					MidiOscControl.clearInstantAssign;
+					MidiOscControl.clearController(group.server, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
+					oscMsgs.put(num, nil);
 				})
-			});
+		});
+	}
+
+	addTypeOSCAssignButton {|num|
+		var temp, tempString;
+
+		temp = TypeOSCAssignButton.new()
+		.instantAction_{|butt|
+			if(butt.value==1,{
+				MidiOscControl.requestInstantTypeAssign(controls[num].textField, group.server);
+			},{
+				MidiOscControl.clearInstantAssign;
+				tempString = controls[num].textField.string;
+				tempString.postln;
+				controls[num].textField.valueAction_(controls[num].textField.string);
+			})
+		};
+
+		//assignButtons.put(num, temp);
+		^temp
 	}
 
 	saveExtra{}//does nothing unless the module overrides this method
@@ -85,7 +103,7 @@ MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>osc
 		loadArray[2].do{arg msg, i;
 			waitForSetNum = i;
 			if(msg!=nil,{
-				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server, setups);
+				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
 				assignButtons[i].instantButton.value_(1);
 			})
 		};
@@ -95,7 +113,7 @@ MidiOscObject {var <>group, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, <>osc
 			win.visible_(false);
 		});
 
-		this.loadExtra(loadArray);
+		this.loadExtra(loadArray[4]);
 	}
 }
 
@@ -103,29 +121,8 @@ Module_Mod : MidiOscObject {
 	var <>outBus, <>mixerToSynthBus, xmlSynth, numChannels = 2, rout;
 
 
-	*new {arg group, outBus, setups;
-		^super.new.group_(group).outBus_(outBus).setups_(setups).init;
-	}
-
-	addSetup {arg setup;
-		//happens when the user hits the addSetup button on the MainWindow
-
-		//setups.add(setup);
-		oscMsgs.do{arg item, i;
-			if(item!=nil, {
-				MidiOscControl.addFuncToSetup(group.server, setup, item)
-			})
-		}
-	}
-
-	removeSetup {arg setup;
-		//setups.remove(setup);
-		//should just have to send the osc message to MidiOscControl to be deleted
-		oscMsgs.do{arg item, i;
-			if(item!=nil, {
-				MidiOscControl.removeFuncFromSetup(group.server, setup, item)
-			})
-		}
+	*new {arg group, outBus;
+		^super.new.group_(group).outBus_(outBus).init;
 	}
 
 	makeWindow {arg name, rect;

@@ -1,10 +1,6 @@
 MincekSine_Mod : Module_Mod {
 	var sineWaves, freqList, lagList, volList, freqNum, text;
 
-	// *new {arg group, outBus, midiHidControl, manta, lemur, bcf2000, setups;
-	// 	^super.new.group_(group).outBus_(outBus).midiHidControl_(midiHidControl).manta_(manta).lemur_(lemur).bcf2000_(bcf2000).setups_(setups).init;
-	// }
-
 	*initClass {
 		StartUp.add {
 			SynthDef("mincekSine_mod", {arg freq, lagTime, outBus, vol=0, lilVol = 1, gate = 1, pauseGate = 1;

@@ -40,14 +40,14 @@ MantaToMidi_Mod :  Module_Mod {
 			MidiOscControl.setControllerNoGui(group.server, oscMsgs[key],
 				{
 					midiOut.noteOn(0, key+36, 127)
-				}, setups);
+				});
 		};
 		48.do{arg key;
 			oscMsgs.put(key+48, "/manta/padOff/"++((key).asString));
 			MidiOscControl.setControllerNoGui(group.server, oscMsgs[key+48],
 				{
 					midiOut.noteOff(0, key+36, 0)
-				}, setups);
+				});
 		};
 
 	}

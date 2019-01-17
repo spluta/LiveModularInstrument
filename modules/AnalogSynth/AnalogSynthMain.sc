@@ -169,7 +169,7 @@ AnalogSynth_Mod : Module_Mod {
 			analogSynths[layerNum][analogSynthIndex].killMe;
 		});
 		if (newSynthName!="nil", {
-			analogSynths[layerNum].put(analogSynthIndex, ModularClassList.initAnalogSynthModule(newSynthName, synthGroup, localBusses, setups));
+			analogSynths[layerNum].put(analogSynthIndex, ModularClassList.initAnalogSynthModule(newSynthName, synthGroup, localBusses));
 			analogSynths[layerNum][analogSynthIndex].parent_(this);
 		},{
 			analogSynths[layerNum].put(analogSynthIndex, nil);
@@ -213,10 +213,6 @@ AnalogSynth_Mod : Module_Mod {
 
 AnalogModule_Mod : Module_Mod {
 	var <>localBusses, <>garbageBus, temp0, temp1, texts, <>parent, <>plugs;
-
-	/*	*new {arg group, localBusses, setups;
-	^super.new.group_(group).localBusses_(localBusses).setups_(setups).init;
-	}*/
 
 	localPlayPause {arg val;
 		if(val==0,{

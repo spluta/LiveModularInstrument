@@ -10,7 +10,7 @@ AtdV_Mod : Module_Mod {
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 				muteEnv = EnvGen.kr(Env.asr(0,1,0), muteGate);
 
-				in = In.ar(inBus, 8);
+				in = In.ar(inBus, 2);
 
 				Out.ar(outBus, in*env*pauseEnv*muteEnv);
 			}).writeDefFile;
@@ -43,7 +43,7 @@ AtdV_Mod : Module_Mod {
 		this.makeWindow("AtdV", Rect(600, 645, 330, 240));
 		this.initControlsAndSynths(5);
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
 		synths = List.newClear(6);
 

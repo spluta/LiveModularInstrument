@@ -159,7 +159,7 @@ UpDownSines_Mod : Module_Mod {
 	}
 
 	killMe {
-		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, setups, item)};
+		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
 		win.close;
 		if(synths!=nil,{
 			synths.do{|item0| item0.do{|item| if(item!=nil, item.set(\gate, 0))}};
