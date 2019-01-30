@@ -207,14 +207,15 @@ GingerMan_Mod : Module_Mod {
 		loadArray[1].do{arg controlLevel, i;
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};
-/*		loadArray[2].do{arg msg, i;
+
+		loadArray[2].do{arg msg, i;
 			waitForSetNum = i;
 			if(msg!=nil,{
 				MidiOscControl.getFunctionNSetController(this, controls[i+1], msg, group.server, setups);
 				assignButtons[i+1].instantButton.value_(1);
 			})
 		};
-		win.bounds_(loadArray[3]);*/
+		win.bounds_(loadArray[3]);
 	}
 
 	killMeSpecial {
