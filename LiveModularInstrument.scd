@@ -1,7 +1,7 @@
 TimedLoop
 
 
-LiveModularInstrument.boot(2, [0,0,1,1,10, 19,3,4], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(2, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 
 
