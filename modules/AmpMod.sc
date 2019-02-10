@@ -52,7 +52,8 @@ AmpMod_Mod : Module_Mod {
 					});
 					butt.value_(1);
 					controls[2].value_(0);
-				})
+				});
+				this.sendButtonOsc(0, butt.value);
 			})
 		);
 
@@ -78,7 +79,8 @@ AmpMod_Mod : Module_Mod {
 					});
 					butt.value_(1);
 					controls[2].value_(0);
-				})
+				});
+				this.sendButtonOsc(1, butt.value);
 			})
 		);
 
@@ -91,6 +93,7 @@ AmpMod_Mod : Module_Mod {
 				butt.value_(1);
 				controls[0].value_(0);
 				controls[1].value_(0);
+				this.sendButtonOsc(2, butt.value);
 			})
 		);
 
@@ -116,15 +119,16 @@ AmpMod_Mod : Module_Mod {
 
 		controls[2].valueAction_(1);
 
-		this.makeWindow("AmpMod", Rect(832, 531, 233, 74));
+		this.makeWindow("AmpMod", Rect(0, 0, 200, 40));
 
 		win.layout_(VLayout(
-			HLayout(controls[0], controls[1], controls[2]),
+			HLayout(controls[0].maxHeight_(15), controls[1].maxHeight_(15), controls[2].maxHeight_(15)),
 			HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout),
 			controls[3].layout
 		));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
+		win.front;
 	}
 }
 

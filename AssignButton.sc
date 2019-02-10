@@ -12,7 +12,7 @@ AssignButton {
 			.action_{|v|
 				instantAction.(v);
 			};
-		if(bounds==nil,{instantButton.maxHeight_(15)});
+		if(bounds==nil,{instantButton.maxHeight_(15).maxWidth_(60)});
 	}
 
 	setBounds {arg boundsIn;

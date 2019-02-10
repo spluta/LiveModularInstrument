@@ -189,8 +189,8 @@ ModularServers {
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
 		numServers.do{arg i;
-			("adding a server: "++i.asString).postln;
-			servers.add(("lmi"++i).asSymbol-> ModularServerObject.new(Server.new("lmi"++i.asString, NetAddr("localhost", 57111+i), Server.local.options)));
+			("adding a server: "++(i+1).asString).postln;
+			servers.add(("lmi"++i+1).asSymbol-> ModularServerObject.new(Server.new("lmi"++(i+1).asString, NetAddr("localhost", 57111+i), Server.local.options)));
 		};
 
 	}
@@ -213,7 +213,7 @@ ModularServers {
 
 		if(serverName==nil,{
 			numServers.do{arg i;
-				temp.add(servers[("lmi"++i).asSymbol].save)
+				temp.add(servers[("lmi"++(i+1)).asSymbol].save)
 			}; //save the servers
 		},{
 			temp.add(servers[serverName.asSymbol].save)
@@ -237,7 +237,7 @@ ModularServers {
 
 
 			min(numServersInFile, numServers).do{arg i;
-				servers[("lmi"++i).asSymbol].load(loadArray[2][i])
+				servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i])
 			};
 			//load the serverSwitcher last so that it can update the server windows
 			if(loadArray[1]!=nil,{
@@ -266,8 +266,10 @@ ModularServers {
 	}
 
 	*addServer{
-		("adding a server: "++numServers.asString).postln;
-		servers.add(("lmi"++numServers.asString).asSymbol-> ModularServerObject.new(Server.new(("lmi"++numServers.asString).asSymbol, NetAddr("localhost", 57111+numServers), Server.local.options)));
+		var num;
+		num = numServers+1;
+		("adding a server: "++num.asString).postln;
+		servers.add(("lmi"++num.asString).asSymbol-> ModularServerObject.new(Server.new(("lmi"++num.asString).asSymbol, NetAddr("localhost", 57111+numServers), Server.local.options)));
 		numServers = numServers+1;
 		this.updateServerSwitcher;
 	}

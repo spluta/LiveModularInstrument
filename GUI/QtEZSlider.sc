@@ -27,6 +27,7 @@ QtEZSlider {
 		});
 
 		slider = Slider();
+		slider.maxHeight_(150);
 		viewArray.add(slider);
 
 		numBox = NumberBox();

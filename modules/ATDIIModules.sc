@@ -342,13 +342,15 @@ ShifterFeedback_Mod : Module_Mod {
 
 		controls.add(QtEZSlider.new("fade", ControlSpec(-1,1,'linear'),
 			{|v|
-				synths[0].set(\fade, v.value)
+				synths[0].set(\fade, v.value);
+				this.sendSliderOsc(0, v.value);
 			},-1, true, \horz));
 		this.addAssignButton(0,\continuous);
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
-				mainVol.set(v.value)
+				mainVol.set(v.value);
+				this.sendSliderOsc(1, v.value);
 			}, 0, true, \horz));
 		this.addAssignButton(1,\continuous);
 
@@ -363,6 +365,7 @@ ShifterFeedback_Mod : Module_Mod {
 				},{
 					but.enabled_(false);
 				});
+				this.sendButtonOsc(2, but.value);
 			}));
 		this.addAssignButton(2,\onOff);
 
@@ -370,13 +373,16 @@ ShifterFeedback_Mod : Module_Mod {
 			.states_([ [ "delayBomb", Color.green, Color.black ], [ "delayBomb", Color.black, Color.green ] ])
 			.action_({arg but;
 				4.do{arg i; Synth("delayBomb2_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
+				this.sendButtonOsc(3, but.value);
 			}));
 
 		this.addAssignButton(3,\onOff);
 
 		controls.add(QtEZSlider.new("bVol", ControlSpec(0,4,'amp'),
 			{|v|
-				bombVol.set(v.value)
+				bombVol.set(v.value);
+
+				this.sendSliderOsc(4, v.value);
 			}, 4, true, \horz));
 		this.addAssignButton(4,\continuous);
 
@@ -448,7 +454,6 @@ BitCrusher_Mod : Module_Mod {
 	}
 
 	init {
-		this.makeWindow("BitCrusher");
 
 		this.makeMixerToSynthBus;
 
@@ -457,38 +462,42 @@ BitCrusher_Mod : Module_Mod {
 		distVolBus = Bus.control(group.server);
 		sineVolBus = Bus.control(group.server);
 
-		this.initControlsAndSynths(4);
+		this.initControlsAndSynths(3);
 
 		synths = List.new;
 		synths.add(Synth("bitCrusher2_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \sineVolBus, sineVolBus], group));
 
-		controls.add(EZKnob.new(win,Rect(5, 0, 60, 100), "blipVol", ControlSpec(0,1,'amp'),
+		controls.add(QtEZSlider.new("blip", ControlSpec(0,1,'amp'),
 			{|v|
-				sineVolBus.set(v.value)
+				sineVolBus.set(v.value);
+				this.sendSliderOsc(0, v.value);
+		}, 0, true));
+		this.addAssignButton(0, \continuous);
+
+
+		controls.add(QtEZSlider.new("bit", ControlSpec(0,1,'amp'),
+			{|v|
+				distVolBus.set(v.value);
+				this.sendSliderOsc(1, v.value);
 			}, 0, true));
-		this.addAssignButton(0, \continuous, Rect(5, 100, 60, 20));
 
+		this.addAssignButton(1, \continuous);
 
-		controls.add(EZSlider.new(win,Rect(5, 120, 60, 120), "bitVol", ControlSpec(0,1,'amp'),
-			{|v|
-				distVolBus.set(v.value)
-			}, 0, layout:\vert));
-
-		this.addAssignButton(1, \continuous, Rect(5, 240, 60, 20));
-
-		controls.add(EZKnob.new(win,Rect(70, 0, 60, 100), "sr", ControlSpec(0,127,'linear'),
+		controls.add(QtEZSlider.new("sr", ControlSpec(0,127,'linear'),
 			{|v|
 				sr1Bus.set(v.value*40+400);
 				sr2Bus.set(v.value*40+300);
+				this.sendSliderOsc(2, v.value);
 			}, 0));
-		this.addAssignButton(2,\continuous, Rect(70, 100, 60, 20));
+		this.addAssignButton(2,\continuous);
 
-		controls.add(EZSlider.new(win,Rect(70, 120, 60, 120), "sr", ControlSpec(0,127,'linear'),
-			{|v|
-				sr1Bus.set(v.value*40+400);
-				sr2Bus.set(v.value*40+300);
-			}, 0, layout:\vert));
-		this.addAssignButton(3,\continuous,Rect(70, 240, 60, 20));
+		this.makeWindow("BitCrusher", Rect(0, 0, 200, 200));
+
+		win.layout_(VLayout(
+			HLayout(controls[0].layout, controls[1].layout, controls[2].layout),
+			HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout)
+		).spacing_(0).margins_(0!4));
+		win.front;
 
 	}
 
@@ -522,62 +531,6 @@ BitInterrupter_Mod : Module_Mod {
 
 				Out.ar(outbus,out);
 			}).writeDefFile;
-
-			SynthDef("bitInterrupter4_Mod",{ arg inbus, outbus, sr1Bus, sr2Bus, distVolBus, distortSwitch, gate = 1, pauseGate = 1;
-				var in, fx1, fx2, fx3, fx4, env, pauseEnv, out;
-				var sr1, sr2, distVol;
-
-				sr1 = In.kr(sr1Bus);
-				sr2 = In.kr(sr2Bus);
-				distVol = In.kr(distVolBus);
-
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				in=In.ar(inbus, 4);
-
-				fx1=Latch.ar(in[0].round(0.125),Impulse.ar(sr1));
-				fx2=Latch.ar(in[1].round(0.1),Impulse.ar(sr2));
-				fx3=Latch.ar(in[2].round(0.1125),Impulse.ar(sr1-50));
-				fx4=Latch.ar(in[3].round(0.15),Impulse.ar(sr2+50));
-
-				out = ([fx1,fx2,fx3,fx4])*distVol*env*pauseEnv;
-
-				out = (Lag.kr(1-distortSwitch, 0.05)*in)+(Lag.kr(distortSwitch, 0.05)*out);
-
-				Out.ar(outbus,out);
-			}).writeDefFile;
-
-			SynthDef("bitInterrupter8_Mod",{ arg inbus, outbus, sr1Bus, sr2Bus, distVolBus, distortSwitch, gate = 1, pauseGate = 1;
-				var in, fx1, fx2, fx3, fx4, fx5, fx6, fx7, fx8, env, pauseEnv, out;
-				var sr1, sr2, distVol;
-
-				sr1 = In.kr(sr1Bus);
-				sr2 = In.kr(sr2Bus);
-				distVol = In.kr(distVolBus);
-
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				in=In.ar(inbus, 8);
-
-				fx1=Latch.ar(in[0].round(0.125),Impulse.ar(sr1));
-				fx2=Latch.ar(in[1].round(0.1),Impulse.ar(sr2));
-				fx3=Latch.ar(in[2].round(0.1125),Impulse.ar(sr1-25));
-				fx4=Latch.ar(in[3].round(0.15),Impulse.ar(sr2+25));
-				fx5=Latch.ar(in[4].round(0.125),Impulse.ar(sr1-50));
-				fx6=Latch.ar(in[5].round(0.1),Impulse.ar(sr2+50));
-				fx7=Latch.ar(in[6].round(0.1125),Impulse.ar(sr1-75));
-				fx8=Latch.ar(in[7].round(0.15),Impulse.ar(sr2+75));
-
-				out = ([fx1,fx2,fx3,fx4,fx5,fx6,fx7,fx8])*distVol*env*pauseEnv;
-
-				out = (Lag.kr(1-distortSwitch, 0.05)*in)+(Lag.kr(distortSwitch, 0.05)*out);
-
-				Out.ar(outbus,out);
-			}).writeDefFile;
 		}
 	}
 
@@ -604,52 +557,33 @@ BitInterrupter_Mod : Module_Mod {
 				},{
 					synths[0].set(\distortSwitch, 0);
 				});
+				this.sendButtonOsc(0, butt.value);
 			});
 		this.addAssignButton(0,\onOff, Rect(5, 100, 60, 20));
 
 		controls.add(EZSlider.new(win,Rect(5, 120, 60, 120), "bitVol", ControlSpec(0,1,'amp'),
 			{|v|
-				distVolBus.set(v.value)
+				distVolBus.set(v.value);
+				this.sendSliderOsc(1, v.value);
 			}, 0, layout:\vert));
 
 		this.addAssignButton(1,\continuous, Rect(5, 240, 60, 20));
 
-		controls.add(EZKnob.new(win,Rect(70, 0, 60, 100), "sr", ControlSpec(0,127,'linear'),
+		controls.add(EZKnob.new(win,Rect(70, 0, 60, 100), "sr", ControlSpec(300,5500,'linear'),
 			{|v|
-				sr1Bus.set(v.value*40+400);
-				sr2Bus.set(v.value*40+300);
+				sr1Bus.set(v.value+100);
+				sr2Bus.set(v.value);
+				this.sendSliderOsc(2, v.value);
 			}, 0));
 		this.addAssignButton(2,\continuous, Rect(70, 100, 60, 20));
 
-		controls.add(EZSlider.new(win,Rect(70, 120, 60, 120), "sr", ControlSpec(0,127,'linear'),
+		controls.add(EZSlider.new(win,Rect(70, 120, 60, 120), "sr", ControlSpec(300,5500,'linear'),
 			{|v|
-				sr1Bus.set(v.value*40+400);
-				sr2Bus.set(v.value*40+300);
+				sr1Bus.set(v.value+100);
+				sr2Bus.set(v.value);
+				this.sendSliderOsc(3, v.value);
 			}, 0, layout:\vert));
 		this.addAssignButton(3,\continuous, Rect(70, 240, 60, 20));
-
-
-		//multichannel button
-		controls.add(Button(win,Rect(5, 265, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				synths[0].set(\gate, 0);
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						synths.put(0, Synth("bitInterrupter2_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \distortSwitch, 0], group));
-					},
-					1, {
-						numChannels = 4;
-						synths.put(0, Synth("bitInterrupter4_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \distortSwitch, 0], group));
-					},
-					2, {
-						numChannels = 8;
-						synths.put(0, Synth("bitInterrupter8_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \distortSwitch, 0], group));
-					}
-				)
-			};
-		);
 	}
 }
 

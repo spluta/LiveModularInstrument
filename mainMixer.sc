@@ -21,6 +21,9 @@ QtModularMixerStrip : Module_Mod {
 
 	init2 {arg isMainMixer=false;
 
+		"outBus".postln;
+		outBus.postln;
+
 		this.initControlsAndSynths(2);
 
 		mixerGroup = Group.head(group);
@@ -132,8 +135,9 @@ QtModularMixerStrip : Module_Mod {
 		};
 	}
 
-	killMeSpecial {
+	killMe {
 		localResponder.free;
+		group.freeAll;
 	}
 
 }
@@ -147,10 +151,10 @@ MainMixer : Module_Mod {
 	*initClass {
 		StartUp.add {
 
-			SynthDef("mixerTransfer_mod", {arg inBus0, inBus1, outBus, gate;
+			SynthDef("mixerTransfer_mod", {arg inBus, outBus, gate=1;
 				var signal, env;
 
-				signal = In.ar(inBus0, 2)+In.ar(inBus1, 2);
+				signal = In.ar(inBus, 2);
 
 				env = EnvGen.kr(Env.asr(0,1,0), gate);
 
@@ -171,7 +175,9 @@ MainMixer : Module_Mod {
 
 		[group, outBus, numMixers, isMainMixer].postln;
 
-		if(isMainMixer,{name = group.server.name+"Main Output Mixer"},{name = outBus.index.asString});
+		if(isMainMixer,{name = group.server.name++" Main Out"},{
+			name = "Mix"++(ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).indexOf(outBus)+1);
+		});
 
 		win = Window(name, ((70*numMixers)@150), false);
 		win.userCanClose_(false);
@@ -179,7 +185,7 @@ MainMixer : Module_Mod {
 		mixerGroup = Group.tail(group);
 		outGroup = Group.tail(group);
 
-		localBusses = Array.fill(2, {Bus.audio(group.server, 2)});
+		localBusses = Array.fill(numMixers, {Bus.audio(group.server, 2)});
 
 		mixerStrips = List.newClear(0);
 
@@ -197,7 +203,9 @@ MainMixer : Module_Mod {
 	init3 {
 		synthName = "Mixer";
 
-		synths.add(Synth("mixerTransfer_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \outBus, outBus], outGroup));
+		numMixers.do{arg i;
+			synths.add(Synth("mixerTransfer_mod", [\inBus, localBusses[i], \outBus, outBus], outGroup));
+		};
 
 		win.layout_(HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0));
 		win.front;
@@ -291,7 +299,7 @@ SignalSwitcher_Mod : ModularMainMixer {
 
 	*initClass {
 		{
-			SynthDef("signalSwither_mod", {arg inBus0, inBus1, outBus, whichSignal = 0, addSecondSignal=0, pulseRate0=0, onBypass=0, gate = 1, pauseGate = 1;
+			SynthDef("signalSwitcher_mod", {arg inBus0, inBus1, outBus, whichSignal = 0, addSecondSignal=0, pulseRate0=0, onBypass=0, gate = 1, pauseGate = 1;
 				var in0, in1, env, out, impulse, signal, pauseEnv;
 
 				impulse = Impulse.kr(pulseRate0);
@@ -315,6 +323,8 @@ SignalSwitcher_Mod : ModularMainMixer {
 
 	init3 {
 		synthName = "SignalSwitcher";
+
+		win.name = "SS"++(ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).indexOf(outBus)+1);
 
 		this.initControlsAndSynths(5);
 

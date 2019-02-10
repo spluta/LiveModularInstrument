@@ -15,6 +15,43 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 		bigSynthGroup = Group.new(group);  //this is only in the sampler...not sure why
 	}
 
+	sendButtonOsc {|num, val|
+		var name, nums, string;
+
+		if(oscMsgs[num]!=nil, {
+			string = oscMsgs[num].asString;
+			if(string.contains("Switches"),{
+
+				name = string.findRegexp("/Switches.*/x").at(0);
+
+				nums = ("["++(string.copyRange(name[0]+name[1].size+2, string.size-1))).interpret;
+
+				name = Array.with(name[1]).addAll(nums);
+
+				Lemur_Mod.sendOSCBundle(name);
+			},{
+				Lemur_Mod.sendOSC(oscMsgs[num], val);
+			});
+		})
+	}
+
+	sendSliderOsc {|num, val|
+		if(oscMsgs[num]!=nil, {
+			Lemur_Mod.sendOSC(oscMsgs[num]++"/x", controls[num].controlSpec.unmap(val));
+		})
+	}
+
+	// initControlsAndSynthsB {
+	// 	//oscMsgs holds the
+	//
+	// 	controls = ModuleControls_Mod.new(this);
+	//
+	// 	//put a number in this List if you don't want the object to initialize itself upon loading from a file
+	// 	dontLoadControls = List.newClear(0);
+	//
+	// 	synths = List.newClear(0);
+	// }
+
 	setOscMsg {arg msg;
 		oscMsgs.put(waitForSetNum, msg);
 	}
@@ -126,9 +163,9 @@ Module_Mod : MidiOscObject {
 	}
 
 	makeWindow {arg name, rect;
-		win = Window.new(name, rect);
+		if(rect!=nil, {win = Window.new(name, rect)},{win = Window.new(name)});
 		win.userCanClose_(false);
-		win.front;
+		//win.front;
 		modName = name;
 	}
 

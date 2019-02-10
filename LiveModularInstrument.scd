@@ -4,7 +4,15 @@ TimedLoop
 LiveModularInstrument
 
 
-LiveModularInstrument.boot(2, [0,0,1,1,10, 19,3,4], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [0,0,1,1,10, 19,3,4], 'normal', [Lemur_Mod.setPorts([8000, 8001]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+
+OSCFunc.trace
+
+Lemur_Mod.setPorts([8000, 8001])
+
+ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).collect({arg item; item.index}).indexOf(104)+1
+
+/Fader22/x
 
 
 ServerOptions.devices

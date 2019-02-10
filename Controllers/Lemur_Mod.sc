@@ -2,7 +2,7 @@ Lemur_Mod {
 
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
-	classvar <>netAddr, ip;
+	classvar <>netAddrs, ip;
 
 	*initClass {}
 
@@ -10,12 +10,34 @@ Lemur_Mod {
 		^super.new.init();
 	}
 
+	*setPorts {|ports|
+		var netAddr;
+
+		netAddrs = List.newClear(0);
+		ports.do{arg port;
+			try {netAddr = NetAddr("127.0.0.1", port)}{netAddr = nil};
+			netAddrs.add(netAddr);
+		}
+	}
+
+	*sendOSCBundle {|oscMsg|
+		netAddrs.do{arg item;
+			if(item!=nil,{
+				item.sendBundle(0.0, oscMsg);
+			});
+		}
+	}
+
+	*sendOSC {|oscMsg, val|
+		netAddrs.do{arg item;
+			if(item!=nil,{
+				item.sendMsg(oscMsg, val);
+			});
+		}
+	}
+
 	*start {arg ipIn;
 		if(responders.size!=0,{responders.do{arg item; item.free}});
-
-		if(ipIn==nil, {ip = "127.0.0.1"},{ip = ipIn});
-
-		try {netAddr = NetAddr(ip, 8000)}{netAddr = nil};
 
 		//the responder to switch out the servers
 		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/ServerSwitch/x").asSymbol);
@@ -112,21 +134,7 @@ Lemur_Mod {
 	}
 
 	*resetOSCAddr {arg ip;
-		try {netAddr = NetAddr(ip.asString, 8000)}{netAddr = nil};
-	}
 
-	*setWCurrentSetup {arg serverName, oscMsg;
-		var object, setting;
-
-		try {
-			if (netAddr!=nil, {
-				oscMsg = oscMsg.asString.replace("[", "").replace("]", "").replace(" ", "").split($,);
-				oscMsg = oscMsg.copyRange(1, oscMsg.size-1).asInteger.reverse.add(oscMsg[0]).reverse;
-				//netAddr.postln;
-				//oscMsg.postln;
-				netAddr.sendBundle(0.0, oscMsg);
-			});
-		}{"don't send that shit, bitch!"}
 	}
 
 	*getFunctionFromKey {arg module, controllerKey, object;
@@ -209,157 +217,144 @@ Lemur_Mod {
 
 }
 
+TouchOSC_Mod : Lemur_Mod {
+
+	addResponders {|address, type, addZ|
+
+		OSCFunc({ |msg|
+			//sendTypeRequest.postln;
+			MidiOscControl.respond(msg[0], msg[1]);
+			if(sendRequest,{
+				MidiOscControl.setController(address.asSymbol, type)
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+
+			});
+		}, address.asSymbol);
+
+		if(addZ,{
+			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
+				(address++"/z").asSymbol)
+		});
+	}
+
+	addXYResponders {|address, type, addZ|
+
+		OSCFunc({ |msg|
+			//sendTypeRequest.postln;
+			MidiOscControl.respond(msg[0], [msg[1], msg[2]]);
+			if(sendRequest,{
+				MidiOscControl.setController(address.asSymbol, type)
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+
+			});
+		}, address.asSymbol);
+
+		if(addZ,{
+			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
+				(address++"/z").asSymbol)
+		});
+	}
+
+	*start {arg ipIn;
+		var address;
+
+		if(responders.size!=0,{responders.do{arg item; item.free}});
+
+		//the responder to switch out the servers
+		(1..8).do{arg i;
+			OSCFunc({ |msg| MidiOscControl.respond(msg[0]) }, ("/"++i.asString).asSymbol);
+		};
 
 
+		(1..8).do{arg i;
 
-// Lemur_Mod {
-//
-// 	classvar responders;
-// 	classvar <>sendRequest = false;
-// 	classvar <>netAddr, ip;
-//
-// 	*initClass {}
-//
-// 	*new {
-// 		^super.new.init();
-// 	}
-//
-// 	*start {arg ipIn;
-// 		if(responders.size!=0,{responders.do{arg item; item.free}});
-//
-// 		if(ipIn==nil, {ip = "127.0.0.1"},{ip = ipIn});
-//
-// 		try {netAddr = NetAddr(ip, 8000)}{netAddr = nil};
-//
-// 		//the responder to switch out the servers
-// 		OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2], msg[3], msg[4]]) }, ("/ServerSwitch/x").asSymbol);
-//
-// 		responders = List.newClear[0];
-//
-// 		200.do{arg i;
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/x").asSymbol));
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Fader"++i.asString).asSymbol, \continuous)}); }, ("/Fader"++i.asString++"/z").asSymbol));
-// 		};
-//
-// 		200.do{arg i;
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/Button"++i.asString++"/x").asSymbol, \onOff)}); }, ("/Button"++i.asString++"/x").asSymbol));
-//
-//
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController( ("/PadButton"++i.asString++"/x").asSymbol, \increment)}); }, ("/PadButton"++i.asString++"/x").asSymbol));
-//
-// 			//The Switches uses the array of values as part of the path to identify where the message is coming from
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg.asSymbol, 1); if(sendRequest,{MidiOscControl.setController(msg.asSymbol, \onOff)}); }, ("/Switches"++i.asString++"/x").asSymbol));
-//
-// 		};
-//
-//
-// 		200.do{arg i;
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/x").asSymbol));
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/y").asSymbol));
-// 			responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/MultiBall"++i.asString).asSymbol, \slider2D)}); }, ("/MultiBall"++i.asString++"/z").asSymbol));
-// 		};
-//
-// 		/*		100.do{arg i;
-// 		responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1],msg[2]]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/x").asSymbol));
-// 		responders.add(OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]); if(sendRequest,{MidiOscControl.setController(("/Range"++i.asString).asSymbol, \range)}); }, ("/Range"++i.asString++"/z").asSymbol));
-// 		};*/
-// 	}
-//
-// 	*resetOSCAddr {arg ip;
-// 		try {netAddr = NetAddr(ip.asString, 8000)}{netAddr = nil};
-// 	}
-//
-// 	*setWCurrentSetup {arg serverName, oscMsg;
-// 		var object, setting;
-//
-// 		try {
-// 			if (netAddr!=nil, {
-// 				oscMsg = oscMsg.asString.replace("[", "").replace("]", "").replace(" ", "").split($,);
-// 				oscMsg = oscMsg.copyRange(1, oscMsg.size-1).asInteger.reverse.add(oscMsg[0]).reverse;
-// 				//netAddr.postln;
-// 				//oscMsg.postln;
-// 				netAddr.sendBundle(0.0, oscMsg);
-// 			});
-// 		}{"don't send that shit, bitch!"}
-// 	}
-//
-// 	*getFunctionFromKey {arg module, controllerKey, object;
-// 		var nothing, keyShort, localControlObject, function;
-//
-// 		localControlObject = object;
-//
-// 		#nothing, keyShort = controllerKey.asString.split;
-// 		if(keyShort.beginsWith("Button"),{
-// 			function = {|val| {localControlObject.valueAction_(val)}.defer};
-// 		});
-//
-// 		if(keyShort.beginsWith("PadButton"),{
-// 			function = {|val|
-// 				if(val == 1,{
-// 					{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer
-// 				})
-// 			};
-// 		});
-//
-// 		if(keyShort.beginsWith("Switches"),{
-// 			function = {|val|
-// 			{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
-// 		});
-// 		if(keyShort.beginsWith("Fader"),{
-// 			function =  {|xyz, val|
-// 				switch(xyz.asSymbol,
-// 					'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
-// 					'z',{localControlObject.zAction.value(val)}
-// 				)
-// 			};
-// 		});
-// 		if(keyShort.beginsWith("MultiBall"),{
-// 			function = {|xyz, val|
-// 				switch(xyz.asSymbol,
-// 					'x', {{localControlObject.activex_(val)}.defer},
-// 					'y', {{localControlObject.activey_(val)}.defer},
-// 					'z',{localControlObject.zAction.value(val)}
-// 				)
-// 			};
-// 		});
-// 		if(keyShort.beginsWith("Range"),{
-// 			function = {|xyz, val|
-// 				switch(xyz.asSymbol,
-// 					'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
-// 					'z',{localControlObject.zAction.value(val)}
-// 				)
-// 			};
-// 			}
-// 		);
-// 		^function
-// 	}
-//
-// 	*getMainSwitchControls {arg serverName, controls;
-// 		var functions, function, controllerKey;
-//
-// 		//for Lemur
-// 		function = {|val|
-//
-// 			if(val[0]==1,{
-// 				{controls[0].valueAction_(controls[0].value+1)}.defer;
-// 				},{
-// 					if(val[1]==1,{
-// 						{controls[1].valueAction_(controls[1].value+1)}.defer;
-// 						},{
-// 							if(val[2]==1,{
-// 								{controls[2].valueAction_(controls[2].value+1)}.defer;
-// 								},{
-// 									if(val[3]==1,{
-// 										{controls[3].valueAction_(controls[3].value+1)}.defer;
-// 									})
-// 							})
-// 					})
-// 			});
-// 		};
-// 		controllerKey = "/MainSwitch/"++serverName++"/x";  //I added the server to the key from the previous version
-//
-// 		^[[function, controllerKey]]
-// 	}
-//
-// }
-//
+			40.do{arg i2;
+
+				//FADERS
+
+				this.addResponders("/"++i.asString++"/fader"++i2.asString, \continuous, true);
+				this.addResponders("/"++i.asString++"/toggle"++i2.asString, \onOff, false);
+
+				(1..2).do{arg row;
+					(1..10).do{arg column;
+						this.addResponders("/"++i.asString++"/multitoggle"++i2.asString++"/"++row.asString++"/"++column.asString, \onOff, false);
+					}
+				};
+
+				this.addXYResponders("/"++i.asString++"/fader"++i2.asString, \slider2D, true);
+			}
+		}
+	}
+
+	*resetOSCAddr {arg ip;
+
+	}
+
+	*getFunctionFromKey {arg module, controllerKey, object;
+		var nothing, keyShort, localControlObject, function;
+
+		localControlObject = object;
+
+		#nothing, keyShort = controllerKey.asString.split;
+		if(keyShort.contains("toggle"),{
+			function = {|val| {localControlObject.valueAction_(val)}.defer};
+		});
+
+		if(keyShort.contains("multitoggle"),{
+			function = {|val|
+				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
+		});
+		if(keyShort.contains("fader"),{
+			function =  {|xyz, val|
+				switch(xyz.asSymbol,
+					'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
+					'z',{localControlObject.zAction.value(val)}
+				)
+			};
+		});
+		if(keyShort.contains("xy"),{
+			function = {|xyz, val|
+				switch(xyz.asSymbol,
+					'x', {{localControlObject.activex_(val)}.defer},
+					'y', {{localControlObject.activey_(val)}.defer},
+					'z',{localControlObject.zAction.value(val)}
+				)
+			};
+		});
+		^function
+	}
+
+/*	*getMainSwitchControls {arg serverName, controls;
+		var functions, function, controllerKey;
+
+		//for Lemur
+		function = {|val|
+
+			if(val[0]==1,{
+				{controls[0].valueAction_(controls[0].value+1)}.defer;
+			},{
+				if(val[1]==1,{
+					{controls[1].valueAction_(controls[1].value+1)}.defer;
+				},{
+					if(val[2]==1,{
+						{controls[2].valueAction_(controls[2].value+1)}.defer;
+					},{
+						if(val[3]==1,{
+							{controls[3].valueAction_(controls[3].value+1)}.defer;
+						})
+					})
+				})
+			});
+		};
+		controllerKey = "/MainSwitch/"++serverName++"/x";  //I added the server to the key from the previous version
+
+		^[[function, controllerKey]]
+	}*/
+
+}
+
+
