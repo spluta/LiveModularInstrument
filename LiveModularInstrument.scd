@@ -1,12 +1,17 @@
 TimedLoop
 
 
-LiveModularInstrument
+MidiOscControl.actions
 
 
-LiveModularInstrument.boot(1, [0,0,1,1,10, 19,3,4], 'normal', [Lemur_Mod.setPorts([8000, 8001]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [0,0,1,1,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8000, 8001]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+
+
+TouchOSC_Mod.netAddrs[1].sendMsg('/n/multitoggle1/1/3', 1)
 
 OSCFunc.trace
+
+OSCFunc.trace(false)
 
 Lemur_Mod.setPorts([8000, 8001])
 

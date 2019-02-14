@@ -113,13 +113,13 @@ ModularInputsArray : Module_Mod {
 
 		synths = List.newClear(0);
 
-		oscMsgs = List.newClear(ModularServers.servers['lmi0'].inBusses.size+5);
+		oscMsgs = List.newClear(ModularServers.servers['lmi1'].inBusses.size+5);
 		controls = List.newClear(0);
 		chanInBoxes = List.newClear(0);
 		assignButtons = List.newClear(0);
 		layouts = List.newClear;
 
-		ModularServers.servers['lmi0'].inBusses.size.do{arg i;
+		ModularServers.servers['lmi1'].inBusses.size.do{arg i;
 
 			dispArray = dispArray.add(ModularVolumeObject(inBusses[i], i));  //this is sending the inBus that SoundIn uses in the MVO
 

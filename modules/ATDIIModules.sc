@@ -343,14 +343,14 @@ ShifterFeedback_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("fade", ControlSpec(-1,1,'linear'),
 			{|v|
 				synths[0].set(\fade, v.value);
-				this.sendSliderOsc(0, v.value);
+				this.sendOSC(0, v.value);
 			},-1, true, \horz));
 		this.addAssignButton(0,\continuous);
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
 				mainVol.set(v.value);
-				this.sendSliderOsc(1, v.value);
+				this.sendOSC(1, v.value);
 			}, 0, true, \horz));
 		this.addAssignButton(1,\continuous);
 
@@ -382,7 +382,7 @@ ShifterFeedback_Mod : Module_Mod {
 			{|v|
 				bombVol.set(v.value);
 
-				this.sendSliderOsc(4, v.value);
+				this.sendOSC(4, v.value);
 			}, 4, true, \horz));
 		this.addAssignButton(4,\continuous);
 
@@ -470,7 +470,7 @@ BitCrusher_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("blip", ControlSpec(0,1,'amp'),
 			{|v|
 				sineVolBus.set(v.value);
-				this.sendSliderOsc(0, v.value);
+				this.sendOSC(0, v.value);
 		}, 0, true));
 		this.addAssignButton(0, \continuous);
 
@@ -478,7 +478,7 @@ BitCrusher_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("bit", ControlSpec(0,1,'amp'),
 			{|v|
 				distVolBus.set(v.value);
-				this.sendSliderOsc(1, v.value);
+				this.sendOSC(1, v.value);
 			}, 0, true));
 
 		this.addAssignButton(1, \continuous);
@@ -487,7 +487,7 @@ BitCrusher_Mod : Module_Mod {
 			{|v|
 				sr1Bus.set(v.value*40+400);
 				sr2Bus.set(v.value*40+300);
-				this.sendSliderOsc(2, v.value);
+				this.sendOSC(2, v.value);
 			}, 0));
 		this.addAssignButton(2,\continuous);
 
@@ -564,7 +564,7 @@ BitInterrupter_Mod : Module_Mod {
 		controls.add(EZSlider.new(win,Rect(5, 120, 60, 120), "bitVol", ControlSpec(0,1,'amp'),
 			{|v|
 				distVolBus.set(v.value);
-				this.sendSliderOsc(1, v.value);
+				this.sendOSC(1, v.value);
 			}, 0, layout:\vert));
 
 		this.addAssignButton(1,\continuous, Rect(5, 240, 60, 20));
@@ -573,7 +573,7 @@ BitInterrupter_Mod : Module_Mod {
 			{|v|
 				sr1Bus.set(v.value+100);
 				sr2Bus.set(v.value);
-				this.sendSliderOsc(2, v.value);
+				this.sendOSC(2, v.value);
 			}, 0));
 		this.addAssignButton(2,\continuous, Rect(70, 100, 60, 20));
 
@@ -581,7 +581,7 @@ BitInterrupter_Mod : Module_Mod {
 			{|v|
 				sr1Bus.set(v.value+100);
 				sr2Bus.set(v.value);
-				this.sendSliderOsc(3, v.value);
+				this.sendOSC(3, v.value);
 			}, 0, layout:\vert));
 		this.addAssignButton(3,\continuous, Rect(70, 240, 60, 20));
 	}

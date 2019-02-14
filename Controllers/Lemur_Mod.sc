@@ -29,12 +29,23 @@ Lemur_Mod {
 	}
 
 	*sendOSC {|oscMsg, val|
+
 		netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(oscMsg, val);
 			});
 		}
 	}
+
+	*sendOSCxy {|oscMsg, val|
+		netAddrs.do{arg item;
+			if(item!=nil,{
+				item.sendMsg(oscMsg, val[1], val[0]);  //x and y are reversed for TouchOSC
+			});
+		}
+	}
+
+
 
 	*start {arg ipIn;
 		if(responders.size!=0,{responders.do{arg item; item.free}});
@@ -219,13 +230,13 @@ Lemur_Mod {
 
 TouchOSC_Mod : Lemur_Mod {
 
-	addResponders {|address, type, addZ|
+	*addResponders {|address, type, addZ|
 
 		OSCFunc({ |msg|
 			//sendTypeRequest.postln;
 			MidiOscControl.respond(msg[0], msg[1]);
 			if(sendRequest,{
-				MidiOscControl.setController(address.asSymbol, type)
+				MidiOscControl.setController(address.asSymbol, type);
 			});
 			if(sendTypeRequest,{
 				MidiOscControl.setInstantTypeObject(address)
@@ -239,7 +250,27 @@ TouchOSC_Mod : Lemur_Mod {
 		});
 	}
 
-	addXYResponders {|address, type, addZ|
+	*addMultToggleResponders {|address, type, addZ|
+		OSCFunc({ |msg|
+			if(msg[1]>0,{
+				MidiOscControl.respond(msg[0], msg[1]);
+				if(sendRequest,{
+					MidiOscControl.setController(address.asSymbol, type);
+				});
+				if(sendTypeRequest,{
+					MidiOscControl.setInstantTypeObject(address)
+
+				});
+			});
+		}, address.asSymbol);
+
+		if(addZ,{
+			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
+				(address++"/z").asSymbol)
+		});
+	}
+
+	*addXYResponders {|address, type, addZ|
 
 		OSCFunc({ |msg|
 			//sendTypeRequest.postln;
@@ -270,7 +301,7 @@ TouchOSC_Mod : Lemur_Mod {
 		};
 
 
-		(1..8).do{arg i;
+		["n"].addAll((1..8)).do{arg i;
 
 			40.do{arg i2;
 
@@ -281,11 +312,11 @@ TouchOSC_Mod : Lemur_Mod {
 
 				(1..2).do{arg row;
 					(1..10).do{arg column;
-						this.addResponders("/"++i.asString++"/multitoggle"++i2.asString++"/"++row.asString++"/"++column.asString, \onOff, false);
+						this.addMultToggleResponders("/"++i.asString++"/multitoggle"++i2.asString++"/"++row.asString++"/"++column.asString, \onOff, false);
 					}
 				};
 
-				this.addXYResponders("/"++i.asString++"/fader"++i2.asString, \slider2D, true);
+				this.addXYResponders("/"++i.asString++"/xy"++i2.asString, \slider2D, true);
 			}
 		}
 	}
@@ -299,62 +330,34 @@ TouchOSC_Mod : Lemur_Mod {
 
 		localControlObject = object;
 
-		#nothing, keyShort = controllerKey.asString.split;
-		if(keyShort.contains("toggle"),{
+		//#nothing, keyShort = controllerKey.asString.split;
+
+		//keyShort.postln;
+
+		controllerKey = controllerKey.asString;
+
+		if(controllerKey.contains("toggle"),{
 			function = {|val| {localControlObject.valueAction_(val)}.defer};
 		});
 
-		if(keyShort.contains("multitoggle"),{
+		if(controllerKey.contains("multitoggle"),{
 			function = {|val|
 				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
 		});
-		if(keyShort.contains("fader"),{
-			function =  {|xyz, val|
-				switch(xyz.asSymbol,
-					'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
-					'z',{localControlObject.zAction.value(val)}
-				)
+		if(controllerKey.contains("fader"),{
+			function =  {|val|
+				{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer;
 			};
 		});
-		if(keyShort.contains("xy"),{
-			function = {|xyz, val|
-				switch(xyz.asSymbol,
-					'x', {{localControlObject.activex_(val)}.defer},
-					'y', {{localControlObject.activey_(val)}.defer},
-					'z',{localControlObject.zAction.value(val)}
-				)
-			};
+		if(controllerKey.contains("xy"),{
+			function = [{|val|
+				{
+					localControlObject.activex_(val[0]);
+					localControlObject.activey_(val[1]);
+			}.defer}, {|val| localControlObject.zAction.value(val)}]
 		});
 		^function
 	}
-
-/*	*getMainSwitchControls {arg serverName, controls;
-		var functions, function, controllerKey;
-
-		//for Lemur
-		function = {|val|
-
-			if(val[0]==1,{
-				{controls[0].valueAction_(controls[0].value+1)}.defer;
-			},{
-				if(val[1]==1,{
-					{controls[1].valueAction_(controls[1].value+1)}.defer;
-				},{
-					if(val[2]==1,{
-						{controls[2].valueAction_(controls[2].value+1)}.defer;
-					},{
-						if(val[3]==1,{
-							{controls[3].valueAction_(controls[3].value+1)}.defer;
-						})
-					})
-				})
-			});
-		};
-		controllerKey = "/MainSwitch/"++serverName++"/x";  //I added the server to the key from the previous version
-
-		^[[function, controllerKey]]
-	}*/
-
 }
 
 

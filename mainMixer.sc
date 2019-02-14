@@ -175,8 +175,9 @@ MainMixer : Module_Mod {
 
 		[group, outBus, numMixers, isMainMixer].postln;
 
-		if(isMainMixer,{name = group.server.name++" Main Out"},{
-			name = "Mix"++(ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).indexOf(outBus)+1);
+		if(isMainMixer==true,{name = group.server.name++" Main Out"},{
+			"isMainMixer, huh?".postln;
+			name = "Mix"++(ModularServers.getObjectBusses(ModularServers.servers[group.server.asSymbol].server).indexOf(outBus)+1);
 		});
 
 		win = Window(name, ((70*numMixers)@150), false);

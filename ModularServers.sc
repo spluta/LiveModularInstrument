@@ -190,7 +190,7 @@ ModularServers {
 		servers = Dictionary.new(0);
 		numServers.do{arg i;
 			("adding a server: "++(i+1).asString).postln;
-			servers.add(("lmi"++i+1).asSymbol-> ModularServerObject.new(Server.new("lmi"++(i+1).asString, NetAddr("localhost", 57111+i), Server.local.options)));
+			servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new(Server.new("lmi"++(i+1).asString, NetAddr("localhost", 57111+i), Server.local.options)));
 		};
 
 	}

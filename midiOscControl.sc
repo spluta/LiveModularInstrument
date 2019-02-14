@@ -66,9 +66,10 @@ MidiOscControl {
 	}
 
 	*getFunctionNSetController {arg module, controlObject, controllerKey, server;
-		var function, tempDict, controlObjectLocal, counter;
+		var function, controlObjectLocal, counter;
 
 		"getFuncNSet".postln;
+		[module, controlObject, controllerKey, server].postln;
 		controlObjectLocal = controlObject;
 		//get the function
 		counter=0;
@@ -79,22 +80,32 @@ MidiOscControl {
 			}
 		);
 
+		function.postln;
+
 		//add the function to the Dictionary
 		if(function!=nil,{
 			actions.postln;
-			if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-				tempDict = Dictionary.new;
-
-				//tempDict =
-
-				actions[server.asSymbol].add(controllerKey.asSymbol->function);
-
-				actions.postln;
+			if(function.size.postln<2,{
+				this.setFunction(module, controllerKey, function, server);
+			},{
+				this.setFunction(module, controllerKey, function[0], server);
+				controllerKey = controllerKey++"/z";
+				this.setFunction(module, controllerKey, function[1], server, false);
 			});
-
-			module.setOscMsg(controllerKey.asSymbol);
 		});
 	}
+
+
+	*setFunction {|module, controllerKey, function, server, setMsg=true|
+		var tempDict;
+
+		if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
+			tempDict = Dictionary.new;
+			actions[server.asSymbol].add(controllerKey.asSymbol->function);
+		});
+		if(setMsg,{module.setOscMsg(controllerKey.asSymbol)});
+	}
+
 
 	*setControllerNoGui {arg key, functions, server;
 
@@ -150,17 +161,6 @@ MidiOscControl {
 
 		this.doTheGUI('global', key, val);
 	}
-
-	/*	findLocation {arg serverKey, found;
-	var nothing, key2, xyz, tempNode;
-
-	if(found.not,{
-	tempNode = actions[serverKey.asSymbol];
-	if(tempNode!=nil,{found=true;tempNode = tempNode[key.asSymbol]});
-	if(tempNode!=nil,{
-	})
-
-	}*/
 
 	*doTheGUI {arg serverKey, key, val;
 		var nothing, key2, xyz, tempNode;

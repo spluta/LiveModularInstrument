@@ -15,42 +15,55 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 		bigSynthGroup = Group.new(group);  //this is only in the sampler...not sure why
 	}
 
+	sendOSC {|num, val|
+		var unmapped;
+
+		if(oscMsgs[num]!=nil, {
+			if(val.size<2,{
+				try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
+				TouchOSC_Mod.sendOSC(oscMsgs[num], unmapped);
+			},{
+				unmapped = [controls[num].controlSpecX.unmap(val[0]), controls[num].controlSpecY.unmap(val[1])];
+				TouchOSC_Mod.sendOSCxy(oscMsgs[num], unmapped);
+			});
+		})
+	}
+
+/*
 	sendButtonOsc {|num, val|
 		var name, nums, string;
 
 		if(oscMsgs[num]!=nil, {
-			string = oscMsgs[num].asString;
-			if(string.contains("Switches"),{
+			TouchOSC_Mod.sendOSC(oscMsgs[num], val);
+			//string = oscMsgs[num].asString;
+			//if(string.contains("multitoggle"),{
 
-				name = string.findRegexp("/Switches.*/x").at(0);
+				//name = string.findRegexp("/Switches.blahBlahx").at(0);
 
-				nums = ("["++(string.copyRange(name[0]+name[1].size+2, string.size-1))).interpret;
+				//nums = ("["++(string.copyRange(name[0]+name[1].size+2, string.size-1))).interpret;
 
-				name = Array.with(name[1]).addAll(nums);
+				//name = Array.with(name[1]).addAll(nums);
 
-				Lemur_Mod.sendOSCBundle(name);
-			},{
-				Lemur_Mod.sendOSC(oscMsgs[num], val);
-			});
+				//Lemur_Mod.sendOSCBundle(name);
+			//},{
+				//Lemur_Mod.sendOSC(oscMsgs[num], val);
+			//});
+		})
+	}
+
+	sendXYOsc {|num, val|
+		if(oscMsgs[num]!=nil, {
+			TouchOSC_Mod.sendOSC(oscMsgs[num], controls[num].controlSpec.unmap(val));
 		})
 	}
 
 	sendSliderOsc {|num, val|
 		if(oscMsgs[num]!=nil, {
-			Lemur_Mod.sendOSC(oscMsgs[num]++"/x", controls[num].controlSpec.unmap(val));
+			TouchOSC_Mod.sendOSC(oscMsgs[num], controls[num].controlSpec.unmap(val));
+			//I should probably go through the controllers here
+			//Lemur_Mod.sendOSC(oscMsgs[num]++"/x", controls[num].controlSpec.unmap(val));
 		})
-	}
-
-	// initControlsAndSynthsB {
-	// 	//oscMsgs holds the
-	//
-	// 	controls = ModuleControls_Mod.new(this);
-	//
-	// 	//put a number in this List if you don't want the object to initialize itself upon loading from a file
-	// 	dontLoadControls = List.newClear(0);
-	//
-	// 	synths = List.newClear(0);
-	// }
+	}*/
 
 	setOscMsg {arg msg;
 		oscMsgs.put(waitForSetNum, msg);

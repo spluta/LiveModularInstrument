@@ -315,6 +315,7 @@ LoopMachineOverLap_Mod : Module_Mod {
 			.action_{|v|
 				if(v.value==1,{
 					controls[7].zAction = {|val|
+						"z me".postln;
 						synths[1].set(\z2OnOff, val.value);
 						synths[0].set(\smallGate0, val.value);
 					};
