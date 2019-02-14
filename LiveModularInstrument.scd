@@ -3,9 +3,10 @@ TimedLoop
 
 LiveModularInstrument.boot(2, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
+atdV
 
 
-LiveModularInstrument.boot(2, [14,15,16,17,18, 19,20,21], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [14,15,16,17,18, 19,20,21], nil, 64, nil, 'atdV', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 
 MIDIClient.init
