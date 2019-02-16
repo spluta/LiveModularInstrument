@@ -503,19 +503,20 @@ Sampler_Mod : Module_Mod {
 		temp = loadArray[4];
 
 		SystemClock.sched(5.0, {
-		temp.do{arg item, i;
-			item.postln;
-			this.loadFilesOnLoad(item[0], i);
-			samplerSettings[i].variance = item[1];
-			samplerSettings[i].volume = item[2];
-			samplerSettings[i].volBus.set(item[2]);
-			samplerSettings[i].loopTrig = item[3];
-			samplerSettings[i].onSets = item[4];
-			samplerSettings[i].durs = item[5];
-		};
+			temp.do{arg item, i;
+				item.postln;
+				if(item!=nil,{
+					this.loadFilesOnLoad(item[0], i);
+					samplerSettings[i].variance = item[1];
+					samplerSettings[i].volume = item[2];
+					samplerSettings[i].volBus.set(item[2]);
+					samplerSettings[i].loopTrig = item[3];
+					samplerSettings[i].onSets = item[4];
+					samplerSettings[i].durs = item[5];
+				});
+			};
+			panelLoader.valueAction=0;
 			nil
 		});
-
-		panelLoader.valueAction=0;
 	}
 }

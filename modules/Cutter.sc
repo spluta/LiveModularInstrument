@@ -40,82 +40,6 @@ Cutter_Mod : Module_Mod {
 
 				Out.ar(outBus, TGrains2.ar(2, clk, bufnum, 1.0, point, dur, TRand.kr(-1, 1, clk), 1, 0.01, 0.01, 4)*vol*env*pauseEnv);
 			}).writeDefFile;
-
-			SynthDef("cutter4_mod", {arg inBus, outBus, bufnum, pointClkFreeze, latchPoint, lowRate, highRate, volBus, onOff, overlap = 1, gate = 1, pauseGate = 1;
-				var in, trate, dur, xPos, clk, pointClk, point, point0, point1, point2, point3, point4, point5, point6, point7, phasor, env, pauseEnv, vol;
-
-				vol = In.kr(volBus);
-
-				trate = Select.kr(onOff, [LFNoise2.kr(LFNoise2.kr(0.5, 1.5, 2)).range(lowRate, highRate), 0]);
-				dur = (1 / trate)*overlap;
-				clk = Impulse.kr(trate);
-
-				phasor = Phasor.ar(0, BufRateScale.kr(bufnum), 0, BufFrames.kr(bufnum));
-
-				in = In.ar(inBus);
-
-				BufWr.ar(in, bufnum, phasor, 1);
-
-				xPos = (phasor/SampleRate.ir);
-
-				pointClk = Select.kr(pointClkFreeze, [clk, 0]);
-
-				point0 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 0));
-				point1 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 1));
-				point2 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 2));
-				point3 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 3));
-				point4 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 4));
-				point5 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 5));
-				point6 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 6));
-				point7 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 7));
-
-				point = TWChoose.kr(clk, [point0,point1,point2,point3], [LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1),LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1),LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1)].normalizeSum);
-
-				point = Select.kr(latchPoint, [point, Latch.kr(point, latchPoint)]);
-
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0.1,1,0.1), pauseGate, doneAction:1);
-
-				Out.ar(outBus, TGrains2.ar(4, clk, bufnum, 1.0, point, dur, TRand.kr(-1, 1, clk), 1, 0.01, 0.01, 4)*vol*env*pauseEnv);
-			}).writeDefFile;
-
-			SynthDef("cutter8_mod", {arg inBus, outBus, bufnum, pointClkFreeze, latchPoint, lowRate, highRate, volBus, onOff, overlap = 1, gate = 1, pauseGate = 1;
-				var in, trate, dur, xPos, clk, pointClk, point, point0, point1, point2, point3, point4, point5, point6, point7, phasor, env, pauseEnv, vol;
-
-				vol = In.kr(volBus);
-
-				trate = Select.kr(onOff, [LFNoise2.kr(LFNoise2.kr(0.5, 1.5, 2)).range(lowRate, highRate), 0]);
-				dur = (1 / trate)*overlap;
-				clk = Impulse.kr(trate);
-
-				phasor = Phasor.ar(0, BufRateScale.kr(bufnum), 0, BufFrames.kr(bufnum));
-
-				in = In.ar(inBus);
-
-				BufWr.ar(in, bufnum, phasor, 1);
-
-				xPos = (phasor/SampleRate.ir);
-
-				pointClk = Select.kr(pointClkFreeze, [clk, 0]);
-
-				point0 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 0));
-				point1 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 1));
-				point2 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 2));
-				point3 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 3));
-				point4 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 4));
-				point5 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 5));
-				point6 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 6));
-				point7 = Latch.kr(xPos, PulseDivider.kr(pointClk, 8, 7));
-
-				point = TWChoose.kr(clk, [point0,point1,point2,point3], [LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1),LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1),LFNoise0.kr(0.5, 0.5,1), LFNoise0.kr(0.5, 0.5,1)].normalizeSum);
-
-				point = Select.kr(latchPoint, [point, Latch.kr(point, latchPoint)]);
-
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0.1,1,0.1), pauseGate, doneAction:1);
-
-				Out.ar(outBus, TGrains2.ar(8, clk, bufnum, 1.0, point, dur, TRand.kr(-1, 1, clk), 1, 0.01, 0.01, 4)*vol*env*pauseEnv);
-			}).writeDefFile;
 		}
 	}
 
@@ -179,7 +103,7 @@ Cutter_Mod : Module_Mod {
 		this.addAssignButton(6, \continuous);
 
 		//multichannel button
-		numChannels = 2;
+/*		numChannels = 2;
 		controls.add(Button()
 			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
 			.action_{|butt|
@@ -201,7 +125,7 @@ Cutter_Mod : Module_Mod {
 					}
 				)
 			};
-		);
+		);*/
 
 		//start me in the off position
 		controls[0].value = 1;
@@ -209,7 +133,7 @@ Cutter_Mod : Module_Mod {
 		win.layout_(
 			HLayout(
 				VLayout(
-					HLayout(controls[0], controls[1], controls[2], controls[3]),
+					HLayout(controls[0].maxHeight_(15), controls[1].maxHeight_(15), controls[2].maxHeight_(15), controls[3].maxHeight_(15)),
 					HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout),
 					HLayout(controls[4].layout,assignButtons[4].layout),
 					controls[5].layout,
@@ -218,6 +142,7 @@ Cutter_Mod : Module_Mod {
 			)
 		);
 		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 	}
 
 	killMeSpecial {

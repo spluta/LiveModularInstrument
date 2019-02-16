@@ -1,5 +1,5 @@
 QtModularMixerStrip : Module_Mod {
-	var assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, <>panel, waitForSet, waitForType, controls, assignButtons, mixerGroup, reducerGroup, reducer, transferBus, rms, localResponder, transferSynth, busGuiArray, isMainMixer;
+	var <>location, <>parent, assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, <>panel, waitForSet, waitForType, controls, assignButtons, mixerGroup, reducerGroup, reducer, transferBus, rms, localResponder, transferSynth, busGuiArray, isMainMixer;
 
 	*initClass {
 		StartUp.add {
@@ -46,6 +46,13 @@ QtModularMixerStrip : Module_Mod {
 	}
 
 	init3 {arg isMainMixer;
+
+		//replace the 2 channel transferSynth with a 22 channel synth
+		//transferSynth.free;
+		//transferSynth = Synth.tail(reducerGroup, "transferSynthB22_mod", [\transferBus, transferBus, \outBus, outBus]);
+
+		location = 1;
+
 		controls.add(QtEZSlider(nil, ControlSpec(0,1,'amp'), {|v|
 			mixer.setVol(v.value);
 		}, 0, true, 'vert', false, false));
@@ -54,7 +61,10 @@ QtModularMixerStrip : Module_Mod {
 
 		outBus.postln;
 		controls.add(NumberBox().clipLo_(1).clipHi_(22)
-			.action_{arg box; transferSynth.set(\outBus, outBus.index+(box.value-1))};
+			.action_{arg box;
+				parent.setOutBus(location, box.value);
+				//synths[location].set(\outBus, outBus.index+(box.value-1)) //set the out of the parent to the correct channel
+			};
 		);
 
 		//don't let the user change the channel if it isn't the main mixer
@@ -175,8 +185,9 @@ MainMixer : Module_Mod {
 
 		[group, outBus, numMixers, isMainMixer].postln;
 
-		if(isMainMixer==true,{name = group.server.name++" Main Out"},{
-			"isMainMixer, huh?".postln;
+		if(isMainMixer==true,{
+			name = group.server.name++" Main Out"
+		},{
 			name = "Mix"++(ModularServers.getObjectBusses(ModularServers.servers[group.server.asSymbol].server).indexOf(outBus)+1);
 		});
 
@@ -204,12 +215,20 @@ MainMixer : Module_Mod {
 	init3 {
 		synthName = "Mixer";
 
+		//set the MixerStrips to know their location
+
 		numMixers.do{arg i;
 			synths.add(Synth("mixerTransfer_mod", [\inBus, localBusses[i], \outBus, outBus], outGroup));
+			mixerStrips[i].location_(i);
+			mixerStrips[i].parent_(this);
 		};
 
 		win.layout_(HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0));
 		win.front;
+	}
+
+	setOutBus {arg location, val;
+		synths[location].set(\outBus, outBus.index+val-1);
 	}
 
 	saveExtra {}//these are here just so the SignalSwitcher can inherit

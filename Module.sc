@@ -1,5 +1,5 @@
 MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
-	var waitForSetNum, modName, dontLoadControls, synths, visibleArray;
+	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray;
 
 	initControlsAndSynths {arg num;
 		//oscMsgs holds the
