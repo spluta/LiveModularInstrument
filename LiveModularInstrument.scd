@@ -1,7 +1,8 @@
 
 
-LiveModularInstrument.boot(1, [0,0,1,1,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8000, 8001]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(9, [0,0,1,1,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
+ServerSwitcher
 
 TouchOSC_Mod.netAddrs[1].sendMsg('/n/multitoggle1/1/3', 1)
 

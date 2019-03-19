@@ -1,5 +1,6 @@
-MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
-	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray;
+MidiOscObject {
+	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
+	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController;
 
 	initControlsAndSynths {arg num;
 		//oscMsgs holds the
@@ -13,6 +14,7 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 
 		synths = List.newClear(0);
 		bigSynthGroup = Group.new(group);  //this is only in the sampler...not sure why
+
 	}
 
 	sendOSC {|num, val|
@@ -29,7 +31,7 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 		})
 	}
 
-/*
+
 	sendButtonOsc {|num, val|
 		var name, nums, string;
 
@@ -63,7 +65,7 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 			//I should probably go through the controllers here
 			//Lemur_Mod.sendOSC(oscMsgs[num]++"/x", controls[num].controlSpec.unmap(val));
 		})
-	}*/
+	}
 
 	setOscMsg {arg msg;
 		oscMsgs.put(waitForSetNum, msg);
@@ -153,7 +155,12 @@ MidiOscObject {var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>c
 		loadArray[2].do{arg msg, i;
 			waitForSetNum = i;
 			if(msg!=nil,{
-				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+				if(isGlobalController==true,{
+					//this is only true for the server switcher
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
+				},{
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+				});
 				assignButtons[i].instantButton.value_(1);
 			})
 		};

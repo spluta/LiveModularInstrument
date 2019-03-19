@@ -2,7 +2,7 @@ RadioButtons {
 
 	var <>layout;
 	var <>action, <value;
-	var buttons;
+	var buttons, activeButtons, <>onButtons;
 
 	*new { arg buttons, labels, actions, initVal, initAction=true;
 
@@ -12,16 +12,34 @@ RadioButtons {
 	init { arg buttons, argLabels, argActions, initVal, initAction;
 		var numberStep, buttonRow;
 
+		activeButtons = List.newClear.addAll(buttons);
+		onButtons = List.newClear;
+
 		buttons.do{arg item, i;
 			item.states_(argLabels[i])
 			.action_{|v|
-				buttons.do{arg item; item.do{|item2| item2.value=0}};
+				if(activeButtons.indexOf(v)!=nil,{
+					activeButtons.do{arg item; item.do{|item2| item2.value=0}};
+				});
 				buttons[i].value=1;
+				onButtons = List.newClear(0);
+				buttons.do({|item, i| if(item.value==1, {onButtons.add(i)})});
+				onButtons.postln;
 				argActions[i].value(v.value);
 			}
 		};
 
 		if(initAction,{buttons[initVal].valueAction=1;});
+	}
+
+	deactivateButton {|button|
+		activeButtons.remove(button);
+		activeButtons.postln;
+	}
+
+	activateButton {|button|
+		activeButtons.add(button);
+		activeButtons.postln;
 	}
 
 	value_ { arg val;

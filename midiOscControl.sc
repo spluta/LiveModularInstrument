@@ -9,7 +9,6 @@ MidiOscControl {
 
 	init {
 		actions = Dictionary.new;
-
 	}
 
 	*createActionDictionary {
@@ -139,6 +138,23 @@ MidiOscControl {
 
 	}
 
+/*	*setServerSwitcherController {arg controllerKey, typeOfController;
+		//possible control types are onOff, continuous, note, slider2D, and range
+		var function, localControlObject;
+
+		if((typeOfController==instantTypeOfController),{
+
+			localControlObject = instantControlObject;
+
+			LiveModularInstrument.controllers.do{arg item;
+				item.sendRequest=false;
+			};
+
+			this.getFunctionNSetController(instantRequestModule, localControlObject, controllerKey, instantServer);
+		});
+
+	}*/
+
 	//MidiOscControl.clearController(group.server, oscMsgs[num])
 	*clearController {arg serverKey, oscMsgClear;
 		[serverKey, oscMsgClear].postln;
@@ -150,15 +166,15 @@ MidiOscControl {
 
 	}
 
+/*	*respondGlobal {|key, val|
+		this.doTheGUI('global', key, val);
+	}*/
 
 	*respond { |key, val|
-
-		//this.doTheGUI('global');
-
-		ModularServers.serverSwitcher.currentServers.do{arg serverKey;
+		ModularServers.serverSwitcher.currentServers.flatten.do{arg serverKey;
 			this.doTheGUI(serverKey, key, val);
 		};
-
+		//[key,val].postln;
 		this.doTheGUI('global', key, val);
 	}
 

@@ -160,11 +160,13 @@ ModularServerObject {
 			if(isVisible,{
 				mainWindow.show;
 				mainMixer.unhide;
+				modularObjects.do{|item| item.resume};
 			});
 
 			mainMixer.unmute;
 
 		},{
+			modularObjects.do{|item| item.pause};
 			mainWindow.hide;
 			mainMixer.hide;
 			mainMixer.mute;
@@ -261,7 +263,7 @@ ModularServers {
 		if(serverSwitcher!=nil,{
 			serverSwitcher.reset;
 		},{
-			serverSwitcher = ServerSwitcher.new();
+			serverSwitcher = ServerSwitcher2.new();
 		});
 	}
 

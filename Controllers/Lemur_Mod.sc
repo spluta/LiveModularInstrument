@@ -1,5 +1,6 @@
 Lemur_Mod {
 
+	classvar <>sendServerSwitcherRequest = false;
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar <>netAddrs, ip;
@@ -297,8 +298,16 @@ TouchOSC_Mod : Lemur_Mod {
 
 		//the responder to switch out the servers
 		(1..8).do{arg i;
-			OSCFunc({ |msg| MidiOscControl.respond(msg[0]) }, ("/"++i.asString).asSymbol);
+			OSCFunc({ |...msg|
+				"getting the Changer".postln;
+				MidiOscControl.respond((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, 1);
+				if(sendRequest,{
+					MidiOscControl.setController((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, \onOff);
+				});
+			}, ("/"++i.asString).asSymbol);
 		};
+
+
 
 
 		["n"].addAll((1..8)).do{arg i;
@@ -335,6 +344,10 @@ TouchOSC_Mod : Lemur_Mod {
 		//keyShort.postln;
 
 		controllerKey = controllerKey.asString;
+
+		if(controllerKey.contains("/800"),{
+			function = {|val| {localControlObject.postln; localControlObject.valueAction_(1)}.defer};
+		});
 
 		if(controllerKey.contains("toggle"),{
 			function = {|val| {localControlObject.valueAction_(val)}.defer};
