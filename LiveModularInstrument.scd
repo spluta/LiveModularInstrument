@@ -1,5 +1,9 @@
 TimedLoop
 
+Server.local.options.numAudioBusChannels_(4096*2);
+Server.local.options.numControlBusChannels_(4096*2);
+Server.local.options.maxNodes_(4096*2);
+
 
 LiveModularInstrument.boot(2, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
