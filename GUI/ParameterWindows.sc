@@ -35,9 +35,9 @@ InBusWindow_Mod : ParameterWindow_Mod {
 		11.do{arg i;
 			directStereoBoxes.add(DragSource().maxWidth_(40).maxHeight_(15).font_(Font("Helvetica",10))
 				.setProperty(\align,\center)
-				.object_(["D"++(i+1*2+1).asString, "D"++(i+1*2+1).asString])
-					.string_("D"++(i+1*2+1).asString)
-						.dragLabel_("D"++(i+1*2+1).asString)
+				.object_(["D"++(i*2+1).asString, "D"++(i*2+1).asString])
+					.string_("D"++(i*2+1).asString)
+						.dragLabel_("D"++(i*2+1).asString)
 			)
 		};
 
@@ -58,10 +58,7 @@ ClassWindow_Mod : ParameterWindow_Mod {
 	*makeWindow {
 		classBoxes = List.new;
 		classBoxItems = List.new;
-		//ModularClassList.classArray.do{arg item; classBoxItems.add(item.asString)};
 		classBoxItems = ModularClassList.classArray.deepCopy;
-
-		classBoxItems.postln;
 
 		classBoxItems.size.do{arg i;
 			classBoxes.add(DragSource().font_(Font("Helvetica",10)).maxHeight_(15));
@@ -74,8 +71,5 @@ ClassWindow_Mod : ParameterWindow_Mod {
 		);
 		visible = true;
 		win.front;
-		//win.userCanClose_(false);
-		//win.userCanClose_(false);
-		//win.visible_(visible);
 	}
 }

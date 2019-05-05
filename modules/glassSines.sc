@@ -1,3 +1,40 @@
+GSObject2 : GlassSineObject {
+
+	setWinPoint {arg rowNum, volBus;
+
+		mantaRow = rowNum;
+		this.initControlsAndSynths(9);
+		oscMsgs = List.newClear(16);
+
+		//if(win.isNil, {win = winIn});
+
+		sineWaves = List.new;
+		8.do{arg i;
+			sineWaves.add(Synth("glassSine2", [\freq, 440, \volBus, volBus, \outBus, outBus], group));
+			controls.add(NumberBox()
+				.action_{arg val;
+					sineWaves[i].set(\freq, val.value)
+				}
+				.valueAction_(440);
+			);
+
+		};
+
+		controls.add(Button()
+			.states_([ [ "A", Color.red, Color.black ] ,[ "C", Color.black, Color.red ] ])
+			.action_{|v|
+				if(v.value==1,{
+					this.setManta;
+					}, {
+						this.clearManta;
+				})
+		});
+
+		layout = HLayout(*controls);
+
+	}
+}
+
 GlassSineObject : Module_Mod {
 	var win, sineWaves, midiNoteNum, volFunctions, interval, availableIntervals, win, availableIntervalsList, mantaRow, <>layout;
 
@@ -14,32 +51,6 @@ GlassSineObject : Module_Mod {
 				mainVol = Lag.kr(In.kr(volBus), 0.1);
 
 				Out.ar(outBus, Pan2.ar(sine*AmpComp.kr(freq)*env*pauseEnv*mainVol, Rand(-1, 1)));
-			}).writeDefFile;
-
-			SynthDef("glassSine4", {arg freq, volBus, outBus, vol=0, gate = 1, pauseGate = 1;
-				var sine, env, pauseEnv, mainVol;
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,6), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-
-				sine = SinOsc.ar(freq+LFNoise2.kr(0.1, 5), 0, LagUD.kr(vol, LFNoise2.kr(0.1, 1.25, 1.5), LFNoise2.kr(0.1, 2.25, 3.5))*0.1);
-
-				mainVol = Lag.kr(In.kr(volBus), 0.1);
-
-				Out.ar(outBus, PanAz.ar(4, sine*AmpComp.kr(freq)*env*pauseEnv*mainVol, Rand(-1, 1)));
-			}).writeDefFile;
-
-			SynthDef("glassSine8", {arg freq, volBus, outBus, vol=0, gate = 1, pauseGate = 1;
-				var sine, env, pauseEnv, mainVol;
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,6), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-
-				sine = SinOsc.ar(freq+LFNoise2.kr(0.1, 5), 0, LagUD.kr(vol, LFNoise2.kr(0.1, 1.25, 1.5), LFNoise2.kr(0.1, 2.25, 3.5))*0.1);
-
-				mainVol = Lag.kr(In.kr(volBus), 0.1);
-
-				Out.ar(outBus, PanAz.ar(8, sine*AmpComp.kr(freq)*env*pauseEnv*mainVol, Rand(-1, 1)));
 			}).writeDefFile;
 		}
 	}
@@ -108,14 +119,6 @@ GlassSineObject : Module_Mod {
 
 		layout = HLayout(controls[0].layout, controls[1], controls[2], controls[3]);
 
-
-
-		/*volFunctions = List.fill(8, {|i| {|xyz, val|
-			switch(xyz.asSymbol,
-				'y', {sineWaves[i].set(\vol, val)},
-				'z', {sineWaves[i].set(\zvol, val)}
-			)
-		}});*/
 	}
 
 	setFreq {
@@ -140,11 +143,11 @@ GlassSineObject : Module_Mod {
 		8.do{|i|
 			key = "/SeaboardPressure/"++((mantaRow*8)+i).asString;
 			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)});
+			MidiOscControl.setControllerNoGui(oscMsgs[i], {|val|			sineWaves[i].set(\vol, val)}, group.server);
 
 			key = "/SeaboardNote/"++((mantaRow*8)+i).asString;
 			oscMsgs.put(i, key);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[i], {|val|			sineWaves[i].set(\zvol, val)});
+			MidiOscControl.setControllerNoGui(oscMsgs[i], {|val|			sineWaves[i].set(\zvol, val)}, group.server);
 		};
 	}
 
@@ -161,22 +164,21 @@ GlassSineObject : Module_Mod {
 
 		saveArray = List.newClear(0);
 
-		temp = List.newClear(0);
 		controls.do{arg item;
-			temp.add(item.value);
+			saveArray.add(item.value);
 		};
-		saveArray.add(temp);
-		// saveArray.add(oscMsgs);
 
 		^saveArray
 	}
 
 	load {arg loadArray;
+		"loadArray".postln;
+		loadArray.postln;
 
-		loadArray[0].do{arg controlLevel, i;
-			if((controls[i].value!= controlLevel) && (dontLoadControls.includes(i).not),{
+		loadArray.do{arg controlLevel, i;
+			try {
 				controls[i].valueAction_(controlLevel);
-			});
+			} {"nope".postln};
 		};
 	}
 
@@ -203,7 +205,7 @@ GlassSines_Mod : Module_Mod {
 		glassSineObjects = List.new;
 
 		4.do{arg i;
-			glassSineObjects.add(GlassSineObject(group, outBus));
+			glassSineObjects.add(GSObject2(group, outBus));
 			glassSineObjects[i].setWinPoint(i, volBus);
 		};
 
@@ -263,6 +265,7 @@ GlassSines_Mod : Module_Mod {
 	saveExtra {arg saveArray;
 		var temp;
 
+
 		temp = List.newClear(0); //controller settings
 		glassSineObjects.do{arg item, i;
 			temp.add(item.save);
@@ -275,7 +278,11 @@ GlassSines_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 
-		loadArray[4].do{arg item, i;
+		"loadArray".postln;
+		loadArray.postln;
+
+		loadArray.do{arg item, i;
+			"loadtheglass".postln;
 			glassSineObjects[i].load(item);
 		};
 	}

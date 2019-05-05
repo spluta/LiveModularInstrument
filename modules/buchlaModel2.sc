@@ -71,38 +71,15 @@ BuchlaModelSolo_Mod :  Module_Mod {
 				})
 		});
 
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| buchlaFilters[i+1].killMe};
-					},
-					1, {
-						numChannels = 4;
-						buchlaFilters.put(1,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index, outBus.index+2));
-					},
-					2, {
-						if(numChannels==2,{
-							3.do{|i| buchlaFilters.put(i+1,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index, outBus.index+(2*(i+1))))};
-						},{
-							2.do{|i| buchlaFilters.put(i+2,BuchlaFiltersSynths_Mod(filterGroup, transferBus.index, outBus.index+(2*(i+2))))};
-						});
-						numChannels = 8;
-
-					}
-				)
-			};
-		);
 
 		win.layout_(
 			VLayout(
 				HLayout(controls[0].layout, controls[1].layout),
-				HLayout(controls[2], controls[3])
+				HLayout(controls[2])
 			)
 		);
-
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 
 		specs = List.new;
 		specs.add(ControlSpec(200, 1000, 'exponential'));
@@ -149,12 +126,12 @@ BuchlaModelSolo_Mod :  Module_Mod {
 		padFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/SeaboardPressure/"++key.asString);
 			//oscMsgs.postln;
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], padFunctions[key]);
+			MidiOscControl.setControllerNoGui(oscMsgs[counter], padFunctions[key], group.server);
 			counter=counter+1;
 		};
 		noteOnFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/SeaboardNote/"++key.asString);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key]);
+			MidiOscControl.setControllerNoGui(oscMsgs[counter], noteOnFunctions[key], group.server);
 			counter=counter+1;
 		};
 

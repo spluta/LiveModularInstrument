@@ -66,50 +66,16 @@ TriggerDelays_Mod : Module_Mod {
 		controls.add(Button.new()
 			.states_([[ "T", Color.black, Color.red ], [ "T", Color.red, Color.black ]])
 			.action_{|v|
-				switch(numChannels,
-					2,{
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-					},
-					4,{
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index+2, \outBus, outBus.index+2, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-					},
-					8,{
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index+2, \outBus, outBus.index+2, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index+4, \outBus, outBus.index+4, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-						Synth("triggerDelays_mod", [\input, mixerToSynthBus.index+6, \outBus, outBus.index+6, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
-					}
-				)
+				Synth("triggerDelays_mod", [\input, mixerToSynthBus.index, \outBus, outBus, \volBus, volBus, \trigDur, rrand(delLow, delHi), \decayTime, rrand(decayLo, decayHi)], group);
 			});
 		this.addAssignButton(3,\onOff);
-
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button(win,Rect(10, 190, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-					},
-					1, {
-						numChannels = 4;
-					},
-					2, {
-						numChannels = 8;
-					}
-				)
-			};
-		);
 
 		win.layout_(
 			VLayout(
 				HLayout(controls[0].layout, assignButtons[0].layout),
 				HLayout(controls[1].layout, assignButtons[1].layout),
 				HLayout(controls[2].layout, assignButtons[2].layout),
-				HLayout(controls[3], assignButtons[3].layout),
-				HLayout(controls[4], nil)
+				HLayout(controls[3], assignButtons[3].layout)
 			)
 		);
 		win.layout.spacing = 0;

@@ -61,7 +61,6 @@ Lemur_Mod {
 			//FADERS
 
 			responders.add(OSCFunc({ |msg|
-				//sendTypeRequest.postln;
 				MidiOscControl.respond(msg[0], msg[1]);
 				if(sendRequest,{
 					MidiOscControl.setController(("/Fader"++i.asString).asSymbol, \continuous)
@@ -234,7 +233,6 @@ TouchOSC_Mod : Lemur_Mod {
 	*addResponders {|address, type, addZ|
 
 		OSCFunc({ |msg|
-			//sendTypeRequest.postln;
 			MidiOscControl.respond(msg[0], msg[1]);
 			if(sendRequest,{
 				MidiOscControl.setController(address.asSymbol, type);
@@ -274,7 +272,6 @@ TouchOSC_Mod : Lemur_Mod {
 	*addXYResponders {|address, type, addZ|
 
 		OSCFunc({ |msg|
-			//sendTypeRequest.postln;
 			MidiOscControl.respond(msg[0], [msg[1], msg[2]]);
 			if(sendRequest,{
 				MidiOscControl.setController(address.asSymbol, type)
@@ -299,7 +296,6 @@ TouchOSC_Mod : Lemur_Mod {
 		//the responder to switch out the servers
 		(1..8).do{arg i;
 			OSCFunc({ |...msg|
-				"getting the Changer".postln;
 				MidiOscControl.respond((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, 1);
 				if(sendRequest,{
 					MidiOscControl.setController((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, \onOff);
@@ -339,27 +335,31 @@ TouchOSC_Mod : Lemur_Mod {
 
 		localControlObject = object;
 
-		//#nothing, keyShort = controllerKey.asString.split;
-
-		//keyShort.postln;
-
 		controllerKey = controllerKey.asString;
 
 		if(controllerKey.contains("/800"),{
-			function = {|val| {localControlObject.postln; localControlObject.valueAction_(1)}.defer};
+			function = {|val|
+				{localControlObject.valueAction_(1)}.defer
+			};
 		});
 
 		if(controllerKey.contains("toggle"),{
-			function = {|val| {localControlObject.valueAction_(val)}.defer};
+			function = {|val|
+				{localControlObject.valueAction_(val)}.defer;
+				this.sendOSC(controllerKey, val);
+			};
 		});
 
 		if(controllerKey.contains("multitoggle"),{
 			function = {|val|
-				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
+				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer;
+				this.sendOSC(controllerKey, val);
+			};
 		});
 		if(controllerKey.contains("fader"),{
 			function =  {|val|
 				{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer;
+				this.sendOSC(controllerKey, val);
 			};
 		});
 		if(controllerKey.contains("xy"),{
@@ -367,6 +367,7 @@ TouchOSC_Mod : Lemur_Mod {
 				{
 					localControlObject.activex_(val[0]);
 					localControlObject.activey_(val[1]);
+					this.sendOSCxy(controllerKey, val);
 			}.defer}, {|val| localControlObject.zAction.value(val)}]
 		});
 		^function

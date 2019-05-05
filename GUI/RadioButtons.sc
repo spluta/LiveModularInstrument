@@ -24,7 +24,6 @@ RadioButtons {
 				buttons[i].value=1;
 				onButtons = List.newClear(0);
 				buttons.do({|item, i| if(item.value==1, {onButtons.add(i)})});
-				onButtons.postln;
 				argActions[i].value(v.value);
 			}
 		};
@@ -34,12 +33,10 @@ RadioButtons {
 
 	deactivateButton {|button|
 		activeButtons.remove(button);
-		activeButtons.postln;
 	}
 
 	activateButton {|button|
 		activeButtons.add(button);
-		activeButtons.postln;
 	}
 
 	value_ { arg val;

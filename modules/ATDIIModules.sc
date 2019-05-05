@@ -343,14 +343,12 @@ ShifterFeedback_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("fade", ControlSpec(-1,1,'linear'),
 			{|v|
 				synths[0].set(\fade, v.value);
-				this.sendOSC(0, v.value);
 			},-1, true, \horz));
 		this.addAssignButton(0,\continuous);
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
 				mainVol.set(v.value);
-				this.sendOSC(1, v.value);
 			}, 0, true, \horz));
 		this.addAssignButton(1,\continuous);
 
@@ -365,7 +363,6 @@ ShifterFeedback_Mod : Module_Mod {
 				},{
 					but.enabled_(false);
 				});
-				this.sendButtonOsc(2, but.value);
 			}));
 		this.addAssignButton(2,\onOff);
 
@@ -373,7 +370,6 @@ ShifterFeedback_Mod : Module_Mod {
 			.states_([ [ "delayBomb", Color.green, Color.black ], [ "delayBomb", Color.black, Color.green ] ])
 			.action_({arg but;
 				4.do{arg i; Synth("delayBomb2_mod", [\buf, bufferArray[i].bufnum, \outBus, outBus, \volBus, bombVol.index], group)};
-				this.sendButtonOsc(3, but.value);
 			}));
 
 		this.addAssignButton(3,\onOff);
@@ -382,7 +378,6 @@ ShifterFeedback_Mod : Module_Mod {
 			{|v|
 				bombVol.set(v.value);
 
-				this.sendOSC(4, v.value);
 			}, 4, true, \horz));
 		this.addAssignButton(4,\continuous);
 
@@ -470,7 +465,6 @@ BitCrusher_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("blip", ControlSpec(0,1,'amp'),
 			{|v|
 				sineVolBus.set(v.value);
-				this.sendOSC(0, v.value);
 		}, 0, true));
 		this.addAssignButton(0, \continuous);
 
@@ -478,7 +472,6 @@ BitCrusher_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("bit", ControlSpec(0,1,'amp'),
 			{|v|
 				distVolBus.set(v.value);
-				this.sendOSC(1, v.value);
 			}, 0, true));
 
 		this.addAssignButton(1, \continuous);
@@ -487,7 +480,6 @@ BitCrusher_Mod : Module_Mod {
 			{|v|
 				sr1Bus.set(v.value*40+400);
 				sr2Bus.set(v.value*40+300);
-				this.sendOSC(2, v.value);
 			}, 0));
 		this.addAssignButton(2,\continuous);
 
@@ -537,19 +529,19 @@ BitInterrupter_Mod : Module_Mod {
 	init {
 		this.makeWindow("BitInterrupter",Rect(718, 645, 135, 270));
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
 		sr1Bus = Bus.control(group.server);
 		sr2Bus = Bus.control(group.server);
 		distVolBus = Bus.control(group.server);
 		sineVolBus = Bus.control(group.server);
 
-		this.initControlsAndSynths(4);
+		this.initControlsAndSynths(3);
 
 		synths = List.new;
 		synths.add(Synth("bitInterrupter2_Mod", [\inbus, mixerToSynthBus.index, \outbus, outBus, \sr1Bus, sr1Bus, \sr2Bus, sr2Bus, \distVolBus, distVolBus, \distortSwitch, 0], group));
 
-		controls.add(Button(win,Rect(5, 0, 60, 100))
+		controls.add(Button()
 			.states_([["Off", Color.black, Color.red],["On", Color.black, Color.green]])
 			.action_{|butt|
 				if(butt.value==1,{
@@ -557,33 +549,31 @@ BitInterrupter_Mod : Module_Mod {
 				},{
 					synths[0].set(\distortSwitch, 0);
 				});
-				this.sendButtonOsc(0, butt.value);
 			});
-		this.addAssignButton(0,\onOff, Rect(5, 100, 60, 20));
+		this.addAssignButton(0,\onOff);
 
-		controls.add(EZSlider.new(win,Rect(5, 120, 60, 120), "bitVol", ControlSpec(0,1,'amp'),
+		controls.add(QtEZSlider.new("bitVol", ControlSpec(0,1,'amp'),
 			{|v|
 				distVolBus.set(v.value);
-				this.sendOSC(1, v.value);
 			}, 0, layout:\vert));
 
-		this.addAssignButton(1,\continuous, Rect(5, 240, 60, 20));
+		this.addAssignButton(1,\continuous);
 
-		controls.add(EZKnob.new(win,Rect(70, 0, 60, 100), "sr", ControlSpec(300,5500,'linear'),
+		controls.add(QtEZSlider.new("sr", ControlSpec(300,5500,'linear'),
 			{|v|
 				sr1Bus.set(v.value+100);
 				sr2Bus.set(v.value);
-				this.sendOSC(2, v.value);
-			}, 0));
-		this.addAssignButton(2,\continuous, Rect(70, 100, 60, 20));
-
-		controls.add(EZSlider.new(win,Rect(70, 120, 60, 120), "sr", ControlSpec(300,5500,'linear'),
-			{|v|
-				sr1Bus.set(v.value+100);
-				sr2Bus.set(v.value);
-				this.sendOSC(3, v.value);
 			}, 0, layout:\vert));
-		this.addAssignButton(3,\continuous, Rect(70, 240, 60, 20));
+		this.addAssignButton(2,\continuous);
+
+		win.layout_(
+			VLayout(
+				HLayout(controls[0].maxHeight_(15).maxWidth_(40), assignButtons[0].layout),
+				HLayout(controls[1].layout, controls[2].layout),
+				HLayout(assignButtons[1].layout,assignButtons[2].layout)
+		));
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 	}
 }
 

@@ -56,7 +56,7 @@ SamplerSet {
 }
 
 Sampler_Mod : Module_Mod {
-	var buffers, fileNames, bufferNames, buffer, startPos, volBus, duration, overlaps, loadFileButton, fileText, dursText, savePath, fromStopBeginning, startMoved, scMir, onSets, durs, currentPanel, fileText, text1, text2, onSetsButton, varianceSlider, samplerSettings, onSetsText, volSlider, loopTrigButton, panelLoader, loopGroup, clearFileButton;
+	var buffers, fileNames, bufferNames, buffer, startPos, volBus, duration, overlaps, loadFileButton, fileText, dursText, savePath, fromStopBeginning, startMoved, scMir, onSets, durs, currentPanel, fileText, text1, text2, onSetsButton, varianceSlider, samplerSettings, onSetsText, volSlider, loopTrigButton, panelLoader, loopGroup, trigGroup, clearFileButton;
 
 	*initClass {
 
@@ -115,7 +115,8 @@ Sampler_Mod : Module_Mod {
 	init {
 		this.makeWindow("Sampler", Rect(318, 645, 360, 80));
 		this.initControlsAndSynths(10);
-		loopGroup = Group(bigSynthGroup);
+		loopGroup = Group.tail(group);
+		trigGroup = Group.tail(group);
 
 		dontLoadControls = (0..9);
 
@@ -164,7 +165,7 @@ Sampler_Mod : Module_Mod {
 		onSetsText = TextField().string_("0");
 		onSetsText.action = {arg item;
 			try {
-				onSets = item.value.split($ ).asInteger;
+				onSets = item.value.split($ ).asFloat;
 			}
 			{
 				onSets = ["0"];
@@ -176,7 +177,9 @@ Sampler_Mod : Module_Mod {
 		dursText = TextField().string_("1");
 		dursText.action = {arg item;
 			try {
-				durs = item.value.split($ ).asInteger
+				durs = item.value.split($ ).asFloat;
+				if(durs[0]==0,{durs.removeAt(0)});
+				if(durs.size<1,{durs = ["1"]});
 			}
 			{
 				durs = ["1"];
@@ -236,7 +239,8 @@ Sampler_Mod : Module_Mod {
 			.states_([["allOff", Color.red, Color.black ], ["allOff", Color.black, Color.blue ]])
 			.action_{|v|
 				this.setDaButtons(0);
-				bigSynthGroup.set(\gate, 0);
+				loopGroup.set(\gate, 0);
+				trigGroup.set(\gate, -1.01);
 		});
 		this.addAssignButton(0, \onOff);
 
@@ -392,7 +396,7 @@ Sampler_Mod : Module_Mod {
 					Synth("samplerPlayerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
 					"samplerTriggerMono_mod".postln;
-					Synth("samplerTriggerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], bigSynthGroup);
+					Synth("samplerTriggerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			},{
 				if(samplerSettings[num].loopTrig==0,{
@@ -400,7 +404,7 @@ Sampler_Mod : Module_Mod {
 					Synth("samplerPlayerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
 					"samplerTriggerStereo_mod".postln;
-					Synth("samplerTriggerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], bigSynthGroup);
+					Synth("samplerTriggerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			})
 		});
@@ -500,9 +504,10 @@ Sampler_Mod : Module_Mod {
 	loadExtra {arg loadArray;
 		var temp;
 
-		temp = loadArray[4];
+		temp = loadArray;
+		temp.postln;
 
-		SystemClock.sched(5.0, {
+		AppClock.sched(5.0, {
 			temp.do{arg item, i;
 				item.postln;
 				if(item!=nil,{

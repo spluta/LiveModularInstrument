@@ -1,5 +1,5 @@
 BandPassFreeze_Mod : Module_Mod {
-	var win, frozenAudioBus, fftBus, levelBus, updateDisplayRout, volDisplay, displayVol, volumeDisplay, onOff, rout, volBus, threshBus, onOffBus, buffers, soundGroup, panGroup, transferBus, getTrig, trigButton;
+	var win, frozenAudioBus, fftBus, levelBus, updateDisplayRout, volDisplay, displayVol, volumeDisplay, onOff, rout, volBus, threshBus, onOffBus, buffers, soundGroup, panGroup, transferBus, getTrig, trigButton, waitForSet;
 
 	*initClass {
 		StartUp.add {
@@ -77,70 +77,6 @@ BandPassFreeze_Mod : Module_Mod {
 				Out.ar(audioOutBus, outSig);
 
 			}).writeDefFile;
-
-			SynthDef("bpfPan4_mod", {arg transferBus, audioOutBus, onOff = 1, vol=0, pauseGate = 1, gate = 1;
-				var in, pan0, pan1, pan2, outSig0, outSig1, outSig2, outSig, pauseEnv, muteEnv, env;
-
-				in = In.ar(transferBus, 3);
-
-				pan0 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				pan1 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				pan2 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				outSig0 = PanAz.ar(4, in[0], pan0, 1);
-				outSig1 = PanAz.ar(4, in[1], pan1, 1);
-				outSig2 = PanAz.ar(4, in[2], pan2, 1);
-
-				outSig = outSig0+outSig1+outSig2;
-
-				outSig = Compander.ar(outSig, outSig,
-					thresh: 0.8,
-					slopeBelow: 1,
-					slopeAbove: 0.5,
-					clampTime: 0.01,
-					relaxTime: 0.01
-				);
-
-				muteEnv = EnvGen.kr(Env.asr(0.001, 1, 0.001), onOff);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				outSig = outSig*vol*env*pauseEnv*muteEnv;
-
-				Out.ar(audioOutBus, outSig);
-
-			}).writeDefFile;
-
-			SynthDef("bpfPan8_mod", {arg transferBus, audioOutBus, onOff = 1, vol=0, pauseGate = 1, gate = 1;
-				var in, pan0, pan1, pan2, outSig0, outSig1, outSig2, outSig, pauseEnv, muteEnv, env;
-
-				in = In.ar(transferBus, 3);
-
-				pan0 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				pan1 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				pan2 = SinOsc.ar(LFNoise2.kr(0.1).range(0.2, 1))+SinOsc.ar(LFNoise2.kr(0.1).range(0.05, 0.1), Rand(0, 2));
-				outSig0 = PanAz.ar(8, in[0], pan0, 1);
-				outSig1 = PanAz.ar(8, in[1], pan1, 1);
-				outSig2 = PanAz.ar(8, in[2], pan2, 1);
-
-				outSig = outSig0+outSig1+outSig2;
-
-				outSig = Compander.ar(outSig, outSig,
-					thresh: 0.8,
-					slopeBelow: 1,
-					slopeAbove: 0.5,
-					clampTime: 0.01,
-					relaxTime: 0.01
-				);
-
-				muteEnv = EnvGen.kr(Env.asr(0.001, 1, 0.001), onOff);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-				env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-
-				outSig = outSig*vol*env*pauseEnv*muteEnv;
-
-				Out.ar(audioOutBus, outSig);
-
-			}).writeDefFile;
 		}
 	}
 
@@ -165,6 +101,7 @@ BandPassFreeze_Mod : Module_Mod {
 		onOff = 0;
 
 		rout = Routine({
+			waitForSet = false;
 			group.server.sync;
 			1.5.wait;
 			buffers.do{arg item; item.zero};
@@ -224,37 +161,9 @@ BandPassFreeze_Mod : Module_Mod {
 				if(msg[2]==10, {
 					{trigButton.value = (trigButton.value+1).wrap(0,1)}.defer
 			})}, '/tr');
-
-			//multichannel button
-			numChannels = 2;
-			controls.add(Button(win,Rect(5, 355, 60, 20))
-				.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-				.action_{|butt|
-					AppClock.sched(1.0, {
-						switch(butt.value,
-							0, {
-								synths[1].set(\gate, 0);
-								numChannels = 2;
-								synths.put(1, Synth("bpfPan2_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-							},
-							1, {
-								synths[1].set(\gate, 0);
-								numChannels = 4;
-								synths.put(1, Synth("bpfPan4_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-							},
-							2, {
-								synths[1].set(\gate, 0);
-								numChannels = 8;
-								synths.put(1, Synth("bpfPan8_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
-							}
-						);
-						nil
-					});
-				};
-			);
-
-
+			0.1.wait;
 			win.front;
+			waitForSet = true;
 
 		});
 
@@ -266,31 +175,35 @@ BandPassFreeze_Mod : Module_Mod {
 		var routB;
 
 		routB = Routine({
-			group.server.sync;
-			3.2.wait;
-			group.server.sync;
-			1.wait;
-			loadArray[1].do{arg controlLevel, i;
-				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
-					controls[i].valueAction_(controlLevel);
-				});
-			};
+			20.do{
+				if (waitForSet == false, {
+					0.5.wait;
+				},{
+					loadArray[1].do{arg controlLevel, i;
+						//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+						if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
+							controls[i].valueAction_(controlLevel);
+						});
+					};
 
-			loadArray[2].do{arg msg, i;
-				waitForSetNum = i;
-				if(msg!=nil,{
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
-					assignButtons[i].instantButton.value_(1);
+					loadArray[2].do{arg msg, i;
+						waitForSetNum = i;
+						if(msg!=nil,{
+							MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+							assignButtons[i].instantButton.value_(1);
+						})
+					};
+
+					if(win!=nil,{
+						win.bounds_(loadArray[3]);
+						win.visible_(false);
+					});
+
+					this.loadExtra(loadArray);
+					routB.stop;
+					"stopping".postln;
 				})
-			};
-
-			if(win!=nil,{
-				win.bounds_(loadArray[3]);
-				win.visible_(false);
-			});
-
-			this.loadExtra(loadArray);
+			}
 		});
 
 		AppClock.play(routB);

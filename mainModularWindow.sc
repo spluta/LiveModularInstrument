@@ -1,7 +1,7 @@
 MainProcessingWindow : MidiOscObject {
 	var <>modularObjects;
 	var synthList, availableModules;
-	var resetOscButton, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
+	var sendGUIVals, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
 	var modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton;
 	var buttonView, infoView, objectView;
 
@@ -107,17 +107,12 @@ MainProcessingWindow : MidiOscObject {
 				});
 		};
 
-
-
-		//mainSwitchSet = false;
-
 		//think about how to do this that is good for all OSC controllers
-		resetOscButton = Button().font_(Font("Helvetica", 10)).maxWidth_(60)
-		.states_([["ResetOSC"]])
+		sendGUIVals = Button().font_(Font("Helvetica", 10)).maxWidth_(60)
+		.states_([["SendGUIVals"]])
 		.action_{
-			LiveModularInstrument.controllers.do{arg item;
-				item.resetOSCAddr;
-			}
+			ModularServers.servers.do{arg item; item.sendGUIVals};
+			ModularServers.modularInputsArray.sendGUIVals;
 		};
 
 		listeningPort = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
@@ -143,7 +138,7 @@ MainProcessingWindow : MidiOscObject {
 
 		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(4)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
-		infoView.layout_(HLayout(listeningPort,resetOscButton, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
+		infoView.layout_(HLayout(listeningPort,sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
 
 		win.layout_(VLayout(buttonView, objectView, infoView).margins_(0!4).spacing_(0));
 
@@ -174,7 +169,7 @@ MainProcessingWindow : MidiOscObject {
 
 
 LiveModularInstrument {
-	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, modularInputArray, <>controllers;
+	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers;
 	classvar numServers, windows;
 	classvar readyToRollCounter, addingServer=false;
 

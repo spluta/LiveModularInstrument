@@ -131,15 +131,21 @@ ModularObjectPanel {
 		showButton.visible_(true);
 		this.killCurrentSynth;
 		if((synthName=="Mixer")||(synthName=="SignalSwitcher")||(synthName=="SignalSwitcher4")||(synthName=="AmpFollower")||(synthName=="SpecMul")||(synthName=="AmpInterrupter")||(synthName=="RingModStereo")||(synthName=="Convolution")||(synthName=="AnalysisFilters")||(synthName=="LucerneVideo")||(synthName=="TVFeedback"),{
-
 			synth = ModularClassList.initModule(synthName, synthGroup, ModularServers.getObjectBusses(group.server).at(outBusIndex));
 			isMixer = true;
 		},{
-			synth = ModularClassList.initModule(synthName, synthGroup, ModularServers.getObjectBusses(group.server).at(outBusIndex));
-			mixer.outBus = synth.mixerToSynthBus;
-			mixer.volBus.set(1);
-			isMixer=false;
+			if(ModularClassList.checkSynthName(synthName),{
+				synth = ModularClassList.initModule(synthName, synthGroup, ModularServers.getObjectBusses(group.server).at(outBusIndex));
+				mixer.outBus = synth.mixerToSynthBus;
+				mixer.volBus.set(1);
+				isMixer=false;
+			})
+		})
+	}
 
+	sendGUIVals {
+		if(synth!=nil,{
+			synth.sendGUIVals;
 		})
 	}
 
@@ -147,7 +153,11 @@ ModularObjectPanel {
 
 		inputBusses = inputBussesIn;
 
-		if((synth!=nil)&&(isMixer.not),{mixer.setInputBusses(inputBussesIn)});
+		if((synth!=nil)&&(isMixer.not)&&(synth.needsSequentialMixer==false),{mixer.setInputBusses(inputBussesIn)});
+		if(synth.needsSequentialMixer==true, {
+			"set sequentially".postln;
+			mixer.setInputBussesSequentially(inputBussesIn);
+		});
 	}
 
 	killMe {
@@ -161,7 +171,7 @@ ModularObjectPanel {
 
 		saveList = List.newClear(0);
 		if(synth!=nil, {
-			saveList.add(busAssignSink.busInLabels.postln;);
+			saveList.add(busAssignSink.busInLabels);
 			saveList.add(synth.save);
 			saveList.add(hidden);
 		});
@@ -169,26 +179,28 @@ ModularObjectPanel {
 	}
 
 	load {arg loadArray;
-		var temp, soundInBusses;
+		var temp, soundInBusses, synthName;
 
-		"loadArray".postln;
-		loadArray.postln;
-		"".postln;
-		loadArray.do{arg item; item.postln};
+		synthName = loadArray[1][0];
+		if(synthName!=nil,{
+			synthDisp.string = loadArray[1][0];
+			this.makeNewSynth(loadArray[1][0]); //load the synth first
 
-		synthDisp.string = loadArray[1][0].postln;
-		this.makeNewSynth(loadArray[1][0]); //load the synth first
-
-		//load the busses
-		loadArray[0].do{arg item, i;
-			busAssignSink.assignBus(item);
-		};
+			//load the busses
+			loadArray[0].do{arg item, i;
+				busAssignSink.assignBus(item);
+			};
 
 
-		synth.load(loadArray[1]);
-		if(loadArray[2].postln!=nil,{
-			if(loadArray[2]==false,{showButton.valueAction_(0)});
-		});
+			synth.load(loadArray[1]);
+			if(loadArray[2]!=nil,{
+				if(loadArray[2]==false,{
+					showButton.valueAction_(0)
+				},{
+					showButton.valueAction_(1)
+				});
+			});
+		})
 	}
 
 }

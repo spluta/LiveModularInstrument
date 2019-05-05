@@ -1,10 +1,31 @@
+Seaboard.start
+Seaboard_Mod.start
+
+(
+//Server.local.options.device = "Fireface UFX II (23856143)";
+
+LiveModularInstrument.boot(9, [9,10,11,4,1,10,3,3], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+)
+
+LiveModularInstrument.boot(1, [1,2,3,4,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 
-LiveModularInstrument.boot(9, [0,0,1,1,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+//Just MIDI
+LiveModularInstrument.boot(1, [1,2,3,4,10, 19,3,4], 'normal', [MIDI_Mod]);
+
+
+
+
+TypeOSCFunc_Mod.responders
+MidiOscControl.actions
 
 ServerSwitcher
 
 TouchOSC_Mod.netAddrs[1].sendMsg('/n/multitoggle1/1/3', 1)
+
+MidiOscControl.actions
+
+OSCFunc({|...msg| msg.postln;}, '/Reverb/x', nil, 9002)
 
 OSCFunc.trace
 
@@ -23,19 +44,23 @@ Server.local.options.device_("Fireface UFX II (23856143)");
 
 LiveModularInstrument.boot(2, [14,15,16,17,18, 19,20,21], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
-
-MIDIClient.init
-MIDIIn.connectAll
+(
+MIDIClient.init;
+MIDIIn.connectAll;
+MIDIFunc.trace(false);
+)
 
 //fly's eyes
 LiveModularInstrument.boot(1, [0,1,4,5,6,7,2,3], 'normal', [Lemur_Mod, Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 OSCFunc.trace
 
+
 ModularServers.servers[\lmi1].server.queryAllNodes
 
 ModularServers.servers[\lmi0].server
 
+	n = NetA
 
 LiveModularInstrument.boot(3, [0,1,4,5,6,7,2,3], nil, 64, nil, 'normal', [MantaOSC_Mod, Lemur_Mod]);
 

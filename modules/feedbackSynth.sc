@@ -1,11 +1,11 @@
 //with the roli
 
-FeedbackSynth_Mod :  Module_Mod {
-	var texts, functions;
+FeedbackSynth_Mod :  TypeOSCModule_Mod {
+	var texts, functions, isXY;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("feedbackSynth_mod", {arg outBus, fbMult=1500, freezeGate = 1, xFreezeShift = 1, yFreezeShift = 1, straightNoiseFreq=100, noiseSelect=0, ampModOn = 0, ampModRate = 10, vol=0, onOff=1, zOnOff=0, onOff2=0, lpHPSelect=0, pulseOn=0, pulseFreqs=#[8,30], pulseWidths=#[0.1,0.5], gate=1, pauseGate=1;
+			SynthDef("feedbackSynth_mod", {arg outBus, fbMult=1500, freezeGate = 1, xFreezeShift = 1, yFreezeShift = 1, straightNoiseFreq=100, noiseSelect=0, ampModOn = 0, ampModRate = 10, vol=0, onOff=0, zOnOff=1, onOff2=0, lpHPSelect=0, pulseOn=0, pulseFreqs=#[8,30], pulseWidths=#[0.1,0.5], gate=1, pauseGate=1;
 
 				var fb;
 				var noise, noiseFreq, out;
@@ -70,16 +70,19 @@ FeedbackSynth_Mod :  Module_Mod {
 
 		texts = List.newClear(0);
 
-		texts = ["fbMult", "onOff", "lpHPSelect", "xFreezeShift", "yFreezeShift", "freezeGate", "zOnOff", "noiseSelect", "straightNoiseFreq", "ampModOn", "ampModRate", "pulseOn", "vol"];
+		texts = ["fbMult", "onOff", "lpHPSelect", "xyFreezeShift", "freezeGate", "zOnOff", "noiseSelect", "straightNoiseFreq", "ampModOn", "ampModRate", "pulseOn", "vol"];
+
+		isXY = List.fill(texts.size, {false});
+		isXY.put(0, true);
+		isXY.put(3, true);
 
 		functions = [
 
-			{arg val; synths[0].set(\fbMult, val.linlin(0,1,1000,10000))},
+			{arg val; synths[0].set(\fbMult, val[0].linlin(0,1,1000,10000))},
 			{arg val; synths[0].set(\onOff, val)},
 
 			{arg val;  synths[0].set(\lpHPSelect, 1-val)},
-			{arg val;  synths[0].set(\xFreezeShift, val.linlin(0,1,0.95,1.05))},
-			{arg val;  synths[0].set(\yFreezeShift, val.linlin(0,1,0.95,1.05))},
+			{arg val;  synths[0].set(\xFreezeShift, val[0].linlin(0,1,0.95,1.05), \yFreezeShift, val[1].linlin(0,1,0.95,1.05))},
 
 			{arg val;  synths[0].set(\freezeGate, 1-val, \onOff2, val)},
 
@@ -92,8 +95,8 @@ FeedbackSynth_Mod :  Module_Mod {
 			{arg val;  synths[0].set(\vol, val)}
 		];
 
-		13.do{arg i;
-			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], functions[i], true));
+		functions.do{arg func, i;
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, isXY[i]));
 		};
 
 		win.layout_(
@@ -114,7 +117,7 @@ FeedbackSynth_Mod :  Module_Mod {
 		//only load the values in the textFields
 
 		loadArray[1].do{arg controlLevel, i;
-			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
+			if(((controls[i]!=nil) and: controls[i].value!=controlLevel) and:(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
 			});
 		};

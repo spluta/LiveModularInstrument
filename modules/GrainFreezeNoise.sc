@@ -43,72 +43,7 @@ GFNGrainPlayer {
 
 				Out.ar(outBus, out);
 			}).writeDefFile;
-
-			SynthDef("gfn4_mod", {arg inBus, outBus, volBus, bufnum, dur, playRate, attackTime=0, gate=0, pauseGate=0, t_trig=0;
-				var in, out, env0, env1, env2, env7, vol, pan, impulse, volOsc, trig, pos;
-
-				vol = In.kr(volBus);
-
-				trig = Decay.kr(t_trig, dur);
-
-				impulse = DelayC.kr(Impulse.kr(playRate), 0.05, 0.05);
-
-				pos = EnvGen.kr(Env.new([0,dur/2, BufDur.kr(bufnum)-0.3], [0,1], 0.95), trig) + (SinOsc.kr(Rand(0.05, 0.1)).range((BufDur.kr(bufnum)-0.45).neg, 0)*EnvGen.kr(Env.new([0,0,0,1],[0,0.2, 2]), trig));
-
-				out = TGrains.ar(4, impulse, bufnum, 1, pos, dur, LFNoise2.kr(Rand(2.0,4.0), 2), 2, 4);
-
-				volOsc = SinOsc.kr(0.3, 0.5).range(0.7, 1);
-
-				env1 = EnvGen.kr(Env.asr(attackTime,1,Rand(0.3,0.5)), gate, doneAction:0);
-
-				env2 =  EnvGen.kr(Env.asr(0.2,1,Rand(1,1.5)), pauseGate, doneAction: 1);
-
-				out = [out[0],out[1],out[3],out[2]]*env1*env2*volOsc*vol;
-
-				Out.ar(outBus, out);
-			}).writeDefFile;
-
-			SynthDef("gfn8_mod", {arg inBus, outBus, volBus, bufnum, dur, playRate, attackTime=0, gate=0, pauseGate=0, t_trig=0;
-				var in, out, env0, env1, env2, env7, vol, pan, impulse, volOsc, trig, pos;
-
-				vol = In.kr(volBus);
-
-				trig = Decay.kr(t_trig, dur);
-
-				impulse = DelayC.kr(Impulse.kr(playRate), 0.05, 0.05);
-
-				pos = EnvGen.kr(Env.new([0,dur/2, BufDur.kr(bufnum)-(dur+0.05)], [0,1], 0.95), trig) + (SinOsc.kr(Rand(0.05, 0.1)).range((BufDur.kr(bufnum)-0.45).neg, 0)*EnvGen.kr(Env.new([0,0,0,1],[0,0.2, 2]), trig));
-
-				out = TGrains.ar(8, impulse, bufnum, 1, pos, dur, LFNoise2.kr(Rand(2.0,4.0), 2), 2, 4);
-
-				volOsc = SinOsc.kr(0.3, 0.5).range(0.7, 1);
-
-				env1 = EnvGen.kr(Env.asr(attackTime,1,Rand(0.3,0.5)), gate, doneAction:0);
-
-				env2 =  EnvGen.kr(Env.asr(0.2,1,Rand(1,1.5)), pauseGate, doneAction: 1);
-
-				out = [out[0],out[1],out[7],out[2],out[6],out[3],out[5],out[4]]*env1*env2*volOsc*vol;
-
-				Out.ar(outBus, out);
-			}).writeDefFile;
 		}
-	}
-
-	assignNumChannels {arg num;
-		switch(num,
-			2, {
-				synth.set(\gate, 0);
-				synth=Synth.newPaused("gfn2_mod", [\inBus, inBus, \outBus, outBus, \volBus, volBus, \bufnum, buffer.bufnum, \dur, dur, \playRate, playRate], playGroup);
-			},
-			4, {
-				synth.set(\gate, 0);
-				synth=Synth.newPaused("gfn4_mod", [\inBus, inBus, \outBus, outBus, \volBus, volBus, \bufnum, buffer.bufnum, \dur, dur, \playRate, playRate], playGroup);
-			},
-			8, {
-				synth.set(\gate, 0);
-				synth=Synth.newPaused("gfn8_mod", [\inBus, inBus, \outBus, outBus, \volBus, volBus, \bufnum, buffer.bufnum, \dur, dur, \playRate, playRate], playGroup);
-			}
-		)
 	}
 
 	init {
@@ -329,32 +264,13 @@ GrainFreezeNoise_Mod : Module_Mod {
 
 		//multichannel button
 		numChannels = 2;
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					},
-					1, {
-						numChannels = 4;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					},
-					2, {
-						numChannels = 8;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					}
-				)
-			};
-		);
+
 
 		win.layout_(
 			VLayout(
 				HLayout(controls[0], controls[1], controls[2], controls[3], controls[4], controls[5], controls[6]),
 				HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout, assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout),
-				HLayout(controls[7].layout, assignButtons[7].layout),
-				controls[8]
+				HLayout(controls[7].layout, assignButtons[7].layout)
 			)
 		);
 		win.layout.spacing = 0;
@@ -454,36 +370,13 @@ GFNoiseMini_Mod : Module_Mod {
 		this.addAssignButton(3, \continuous);
 
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					},
-					1, {
-						numChannels = 4;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					},
-					2, {
-						numChannels = 8;
-						grainObjects.do{|item| item.assignNumChannels(numChannels)};
-					}
-				)
-			};
-		);
-
 		controls[0].valueAction = 1;
 
 		win.layout_(
 			VLayout(
 				HLayout(controls[0], controls[1], controls[2]),
 				HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout),
-				HLayout(controls[3].layout, assignButtons[3].layout),
-				HLayout(controls[4], nil)
+				HLayout(controls[3].layout, assignButtons[3].layout)
 			)
 		);
 		win.layout.spacing = 0;

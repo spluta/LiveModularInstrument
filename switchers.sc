@@ -115,7 +115,9 @@ ServerSwitcher : MidiOscObject {
 		numServers = ModularServers.servers.size;
 		currentServers = ModularServers.servers.keys.asList.sort;
 		modName = "ServerSwitcher";
-		dontLoadControls = Array.fill(16, {arg i; i});
+
+		//dontLoadControls = Array.fill(16, {arg i; i});
+
 		if(numServers>1, {
 
 			numButtons = 2**numServers;
@@ -173,27 +175,7 @@ ServerSwitcher : MidiOscObject {
 		});
 	}
 
-	addAssignButton {|num, type, rect|
-		var temp;
-
-		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
-
-		assignButtons.put(num, temp
-			.instantAction_{|butt|
-				if(butt.value==1,{
-
-					//the main thing here is that the messages go into the \global key in the MidiOscControl
-					waitForSetNum = num;
-					MidiOscControl.requestInstantAssign(this, controls[num], type, \global, nil);
-				},{
-					MidiOscControl.clearInstantAssign;
-					MidiOscControl.clearController(\global, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
-					oscMsgs.put(num, nil);
-				})
-		});
-	}
-
-	load {arg loadArray;
+/*	load {arg loadArray;
 		loadArray[2].do{arg msg, i;
 			waitForSetNum = i;
 			if(msg!=nil,{
@@ -203,7 +185,7 @@ ServerSwitcher : MidiOscObject {
 				});
 			})
 		};
-	}
+	}*/
 
 	reset {
 		this.clearMidiOsc;
@@ -303,7 +285,7 @@ ServerSwitcher2 : MidiOscObject {
 		}
 	}
 
-	addAssignButton {|num, type, rect|
+/*	addAssignButton {|num, type, rect|
 		var temp;
 
 		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
@@ -321,7 +303,7 @@ ServerSwitcher2 : MidiOscObject {
 					oscMsgs.put(num, nil);
 				})
 		});
-	}
+	}*/
 
 	// load {arg loadArray;
 	//

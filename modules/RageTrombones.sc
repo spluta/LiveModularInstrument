@@ -871,7 +871,9 @@ RageTrombones_Mod : Module_Mod {
 		numItemsPerGroup = [3,4,1,2];
 		this.initControlsAndSynths(6+(numItemsPerGroup.sum));
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
+
+		dontLoadControls = (0..5);
 
 		inBus0 = mixerToSynthBus.index;
 		inBus1 = mixerToSynthBus.index+1;
@@ -1020,7 +1022,8 @@ RageTrombones_Mod : Module_Mod {
 				HLayout(StaticText().string_("Drone"), controls[22].layout, controls[23].layout),
 				HLayout(StaticText().string_("PopLip"), controls[24].layout, controls[25].layout)
 		));
-
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 	}
 
 	/*		saveExtra {arg saveArray;
@@ -1032,7 +1035,7 @@ RageTrombones_Mod : Module_Mod {
 	}*/
 
 
-	load {arg loadArray;
+/*	load {arg loadArray;
 
 		loadArray[1].do{arg controlLevel, i;
 			//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
@@ -1055,5 +1058,5 @@ RageTrombones_Mod : Module_Mod {
 		});
 
 		this.loadExtra(loadArray);
-	}
+	}*/
 }

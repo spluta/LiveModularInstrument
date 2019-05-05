@@ -170,28 +170,6 @@ Freeze_Mod : Module_Mod {
 
 		//multichannel button
 		numChannels = 2;
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-/*				switch(butt.value,
-					0, {
-						numChannels = 2;
-						6.do{|i| synths[i+2].set(\gate, 0)};
-					},
-					1, {
-						2.do{|i| synths.put(i+2, Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index+i+2, \audioOutBus, outBus.index+i+2, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[i+2]], group))};
-						numChannels = 4;
-					},
-					2, {
-						if(numChannels==2,{
-							2.do{|i| synths.put(i+2, Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index+i+2, \audioOutBus, outBus.index+i+2, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[i+2]], group))};
-						});
-						4.do{|i| synths.put(i+4, Synth("rdFreeze_mod", [\audioInBus, mixerToSynthBus.index+i+4, \audioOutBus, outBus.index+i+4, \levelBus, levelBus.index, \onOffBus, onOffBus, \muteGateBus, muteGateBus, \volBus, volBus, \threshBus, threshBus, \buffer, buffers[i+4]], group))};
-						numChannels = 8;
-					}
-				)*/
-			};
-		);
 
 		rout = Routine({
 			group.server.sync;
@@ -215,8 +193,8 @@ Freeze_Mod : Module_Mod {
 					VLayout(controls[3].layout, assignButtons[3].layout)
 				),
 				HLayout(
-					VLayout(controls[4], controls[5], controls[6], controls[7]),
-				VLayout(assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout, nil)
+					VLayout(controls[4], controls[5], controls[6]),
+				VLayout(assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout)
 					)
 			)
 		);
@@ -296,73 +274,6 @@ TFreeze_Mod : Module_Mod {
 
 				Out.ar(outBus, ((audioIn*switch0)+(outSig*switch1*vol))*pauseEnv*env);
 			}).writeDefFile;
-
-			//the multichannel Synths need to be updated to reflect some envelope changes seen above
-
-			//
-			// SynthDef("tFreeze4_mod", { arg inBus, outBus, modeBus, trigRateBus, dustOnBus, t_trig, volBus, gate = 1, pauseGate = 1, buffer0, buffer1, buffer2, buffer3;
-			// 	var audioIn, chain, outSig, trig, trig0, trig1, switch0, switch1, env, pauseEnv, trigRate, dustOn, vol, mode;
-			//
-			// 	audioIn = In.ar(inBus, 4);
-			//
-			// 	dustOn = In.kr(dustOnBus);
-			// 	vol = In.kr(volBus);
-			// 	trigRate = In.kr(trigRateBus);
-			// 	mode = In.kr(modeBus);
-			//
-			// 	chain = FFT([buffer0, buffer1, buffer2, buffer3], audioIn);
-			//
-			// 	trig0 = Trig1.kr(Decay.kr(t_trig, 0.1), 0.1);
-			// 	trig1 = Trig1.kr(Dust.kr(trigRate, 0.1));
-			//
-			// 	trig = trig0+(trig1*dustOn);
-			//
-			// 	chain = PV_Freeze(chain, 1 - (trig));
-			//
-			// 	outSig = IFFT(chain);
-			//
-			// 	outSig = Compander.ar(outSig, outSig, 0.5, 1, 0.5, 0.01, 0.01);
-			//
-			// 	switch0 = Lag.kr(Select.kr(mode, [1, 0]), 0.01);
-			// 	switch1 = Lag.kr(Select.kr(mode, [0, 1]), 0.01);
-			//
-			// 	pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			// 	env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-			//
-			// 	Out.ar(outBus, ((audioIn*switch0)+(outSig*switch1*vol))*pauseEnv*env);
-			// }).writeDefFile;
-			//
-			// SynthDef("tFreeze8_mod", { arg inBus, outBus, modeBus, trigRateBus, dustOnBus, t_trig, volBus, gate = 1, pauseGate = 1, buffer0, buffer1, buffer2, buffer3, buffer4, buffer5, buffer6, buffer7;
-			// 	var audioIn, chain, outSig, trig, trig0, trig1, switch0, switch1, env, pauseEnv, trigRate, dustOn, vol, mode;
-			//
-			// 	audioIn = In.ar(inBus, 8);
-			//
-			// 	dustOn = In.kr(dustOnBus);
-			// 	vol = In.kr(volBus);
-			// 	trigRate = In.kr(trigRateBus);
-			// 	mode = In.kr(modeBus);
-			//
-			// 	chain = FFT([buffer0, buffer1, buffer2, buffer3, buffer4, buffer5, buffer6, buffer7], audioIn);
-			//
-			// 	trig0 = Trig1.kr(Decay.kr(t_trig, 0.1), 0.1);
-			// 	trig1 = Trig1.kr(Dust.kr(trigRate, 0.1));
-			//
-			// 	trig = trig0+(trig1*dustOn);
-			//
-			// 	chain = PV_Freeze(chain, 1 - (trig));
-			//
-			// 	outSig = IFFT(chain);
-			//
-			// 	outSig = Compander.ar(outSig, outSig, 0.5, 1, 0.5, 0.01, 0.01);
-			//
-			// 	switch0 = Lag.kr(Select.kr(mode, [1, 0]), 0.01);
-			// 	switch1 = Lag.kr(Select.kr(mode, [0, 1]), 0.01);
-			//
-			// 	pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			// 	env = EnvGen.kr(Env.asr(0.1,1,0.1), gate, doneAction:2);
-			//
-			// 	Out.ar(outBus, ((audioIn*switch0)+(outSig*switch1*vol))*pauseEnv*env);
-			// }).writeDefFile;
 		}
 	}
 
@@ -452,40 +363,6 @@ TFreeze_Mod : Module_Mod {
 
 		//multichannel button
 		numChannels = 2;
-		/*controls.add(Button(win,Rect(0, 285, 40, 20))
-		.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-		.action_{|butt|
-		buffers.do{|item| item.bufnum};
-
-		switch(butt.value,
-		0, {
-		numChannels = 2;
-		//						synths[0].set(\gate, 0);
-		//						synths.put(0, Synth("tFreeze2_mod", [\inBus, mixerToSynthBus, \outBus, outBus, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[0].bufnum, \buffer1, buffers[1].bufnum], group));
-		},
-		1, {
-		//						numChannels = 4;
-		//
-		//						synths.put(1, Synth("tFreeze2_mod", [\inBus, mixerToSynthBusses[2], \outBus, outBus.index+2, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[2].bufnum, \buffer1, buffers[3].bufnum], group));
-
-		//synths[0].set(\gate, 0);
-		//						synths.put(0, Synth("tFreeze4_mod", [\inBus, mixerToSynthBus, \outBus, outBus, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[0].bufnum, \buffer1, buffers[1].bufnum, \buffer2, buffers[2].bufnum, \buffer3, buffers[3].bufnum], group));
-		},
-		2, {
-		//						if(numChannels==2,
-		//						{
-		//							synths.put(1, Synth("tFreeze2_mod", [\inBus, mixerToSynthBusses[2], \outBus, outBus.index+2, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[2].bufnum, \buffer1, buffers[3].bufnum], group));
-		//						});
-		//						2.do{|i|
-		//							synths.put(i+2, Synth("tFreeze2_mod", [\inBus, mixerToSynthBusses[(i*2)+4], \outBus, outBus.index+(i*2)+4, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[(i*2)+4].bufnum, \buffer1, buffers[(i*2)+5].bufnum], group));
-		//						};
-		//						numChannels = 8;
-		//						//synths[0].set(\gate, 0);
-		////						synths.put(0, Synth("tFreeze8_mod", [\inBus, mixerToSynthBus, \outBus, outBus, \modeBus, modeBus, \trigRateBus, trigRateBus, \dustOnBus, dustOnBus, \volBus, volBus, \t_trig, 0, \buffer0, buffers[0].bufnum, \buffer1, buffers[1].bufnum, \buffer2, buffers[2].bufnum, \buffer3, buffers[3].bufnum, \buffer4, buffers[4].bufnum, \buffer5, buffers[5].bufnum, \buffer6, buffers[6].bufnum, \buffer7, buffers[7].bufnum], group));
-		}
-		)
-		};
-		);*/
 
 		rout = Routine( {
 			group.server.sync;
@@ -507,8 +384,7 @@ TFreeze_Mod : Module_Mod {
 				HLayout(
 					VLayout(controls[3].layout, assignButtons[3].layout),
 					VLayout(controls[4].layout, assignButtons[4].layout)
-				),
-				HLayout(controls[5].layout, nil)
+				)
 			)
 		);
 		win.layout.spacing = 0;

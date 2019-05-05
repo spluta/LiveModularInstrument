@@ -198,66 +198,66 @@ KlankFilter2_Mod : Module_Mod {
 
 
 
-PinkNoise_Mod : Module_Mod {
-
-	*initClass {
-		StartUp.add {
-			SynthDef(\pinknoise_mod, { arg outBus, vol=0, pauseGate=1, gate=1;
-
-				var env, pauseEnv, out;
-
-				out = PinkNoise.ar([vol, vol]);
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				env = EnvGen.kr(Env.asr(0.02,1,0.02), gate, doneAction: 2);
-
-				Out.ar(outBus, out*env*pauseEnv);
-			}).writeDefFile;
-		}
-	}
-
-	init {
-		this.makeWindow("PinkNoise", Rect(900, 500, 190, 230));
-		this.initControlsAndSynths(1);
-
-		this.makeMixerToSynthBus;
-
-		synths = List.newClear(4);
-		synths.put(0, Synth("pinknoise_mod", [\outBus, outBus, \vol, 0], group));
-
-		controls.add(EZSlider(win, Rect(5, 5, 60, 160),"vol", ControlSpec(0.0,2.0,\amp),
-			{|v|
-				synths[0].set(\vol, v.value);
-			}, 0, true, 40, 40, 0, 16, \vert));
-		this.addAssignButton(0, \continuous, Rect(5, 165, 60, 16));
-
-		//multichannel button
-//		numChannels = 2;
-//		controls.add(Button(win,Rect(5, 230, 60, 20))
-//			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-//			.action_{|butt|
-//				switch(butt.value,
-//					0, {
-//						numChannels = 2;
-//						3.do{|i| synths[i+1].set(\gate, 0)};
-//					},
-//					1, {
-//						synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
-//						numChannels = 4;
-//					},
-//					2, {
-//						if(numChannels==2,{
-//							synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
-//						});
-//						synths.put(2, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+4, \volBus, volBus], group));
-//						synths.put(3, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+6, \volBus, volBus], group));
-//						numChannels = 8;
-//					}
-//				)
-//			};
-//		);
-
-	}
-}
+// PinkNoise_Mod : Module_Mod {
+//
+// 	*initClass {
+// 		StartUp.add {
+// 			SynthDef(\pinknoise_mod, { arg outBus, vol=0, pauseGate=1, gate=1;
+//
+// 				var env, pauseEnv, out;
+//
+// 				out = PinkNoise.ar([vol, vol]);
+//
+// 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
+//
+// 				env = EnvGen.kr(Env.asr(0.02,1,0.02), gate, doneAction: 2);
+//
+// 				Out.ar(outBus, out*env*pauseEnv);
+// 			}).writeDefFile;
+// 		}
+// 	}
+//
+// 	init {
+// 		this.makeWindow("PinkNoise", Rect(900, 500, 190, 230));
+// 		this.initControlsAndSynths(1);
+//
+// 		this.makeMixerToSynthBus;
+//
+// 		synths = List.newClear(4);
+// 		synths.put(0, Synth("pinknoise_mod", [\outBus, outBus, \vol, 0], group));
+//
+// 		controls.add(EZSlider(win, Rect(5, 5, 60, 160),"vol", ControlSpec(0.0,2.0,\amp),
+// 			{|v|
+// 				synths[0].set(\vol, v.value);
+// 		}, 0, true, 40, 40, 0, 16, \vert));
+// 		this.addAssignButton(0, \continuous, Rect(5, 165, 60, 16));
+//
+// 		//multichannel button
+// 		//		numChannels = 2;
+// 		//		controls.add(Button(win,Rect(5, 230, 60, 20))
+// 		//			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
+// 		//			.action_{|butt|
+// 		//				switch(butt.value,
+// 		//					0, {
+// 		//						numChannels = 2;
+// 		//						3.do{|i| synths[i+1].set(\gate, 0)};
+// 		//					},
+// 		//					1, {
+// 		//						synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
+// 		//						numChannels = 4;
+// 		//					},
+// 		//					2, {
+// 		//						if(numChannels==2,{
+// 		//							synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
+// 		//						});
+// 		//						synths.put(2, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+4, \volBus, volBus], group));
+// 		//						synths.put(3, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+6, \volBus, volBus], group));
+// 		//						numChannels = 8;
+// 		//					}
+// 		//				)
+// 		//			};
+// 		//		);
+//
+// 	}
+// }
 

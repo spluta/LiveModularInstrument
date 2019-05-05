@@ -29,13 +29,13 @@ GingerMan_Mod : Module_Mod {
 
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
+				env = EnvGen.kr(Env.asr(0,0.5,0), gate, doneAction:2);
 
 				Out.ar(outBus, [out[0], Delay2.ar(out[1])].distort*pauseEnv*env);
 
-				Out.ar(outBus+2, [Delay2.ar(out[0]), out[1]].distort*pauseEnv*env);
+/*				Out.ar(outBus+2, [Delay2.ar(out[0]), out[1]].distort*pauseEnv*env);
 				Out.ar(outBus+4, [out[0], Delay2.ar(out[1])].distort*pauseEnv*env);
-				Out.ar(outBus+6, [Delay2.ar(out[0]), out[1]].distort*pauseEnv*env);
+				Out.ar(outBus+6, [Delay2.ar(out[0]), out[1]].distort*pauseEnv*env);*/
 
 			}).writeDefFile;
 		}
@@ -45,10 +45,12 @@ GingerMan_Mod : Module_Mod {
 		this.makeWindow("GingerMan", Rect(600, 300, 200, 60));
 		this.initControlsAndSynths(40);
 
+		dontLoadControls = (2..39);
+
 		synthGroup = Group.tail(group);
 		filterGroup = Group.tail(group);
 
-		transferBus = Bus.audio(group.server, 8);
+		transferBus = Bus.audio(group.server, 2);
 
 		synths.add(Synth("gman", [\sinFreq0, 20, \sinFreq1, 20000, \gmanFreq0, 20, \gmanFreq1, 20000, \dustFreq0, 35, \dustFreq1, 40, \dustFreq2, 0, \dustFreq3, 0, \outBus, transferBus.index], synthGroup));
 
@@ -80,34 +82,34 @@ GingerMan_Mod : Module_Mod {
 	}
 
 	setManta {
-		var counter=0;
+		var counter=2;
 
 		noteOnFunctions.keys.do{arg key;
 			var key2;
 
 			key2 = "/SeaboardNote/"++(key).asString;
 			oscMsgs.put(counter, key2);
-			MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter], noteOnFunctions[key]);
+			MidiOscControl.setControllerNoGui(oscMsgs[counter], noteOnFunctions[key], group.server);
 			counter=counter+1;
 		};
 
 		oscMsgs.put(counter, "/SeaboardNote/31");
-		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 0)})});
+		MidiOscControl.setControllerNoGui(oscMsgs[counter],
+			{|val| if(val==1, {synths[0].set(\onOff, 0)})}, group.server);
 		counter=counter+1;
 
 		oscMsgs.put(counter, "/SeaboardNote/30");
-		MidiOscControl.setControllerNoGui(group.server, oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 1)})});
+		MidiOscControl.setControllerNoGui(oscMsgs[counter],
+			{|val| if(val==1, {synths[0].set(\onOff, 1)})}, group.server, );
 
 	}
-
 
 	addFunctions {
 		4.do{arg gmanCount;
 			6.do{arg sinCount;
 				noteOnFunctions.put(((gmanCount*8)+(sinCount)), {|val|
 					if(val==1,{
+						((gmanCount*8)+(sinCount)).postln;
 						this.getSin(sinCount);
 						this.getGman(gmanCount);
 						synths[0].set(\sinFreq0, sinTemp0, \sinFreq1, sinTemp1, \gmanFreq0, gmanTemp0, \gmanFreq1, gmanTemp1);
@@ -178,7 +180,9 @@ GingerMan_Mod : Module_Mod {
 		)
 	}
 
-	save {
+
+
+/*	save {
 		var saveArray, temp;
 
 		saveArray = List.newClear(0);
@@ -208,7 +212,9 @@ GingerMan_Mod : Module_Mod {
 			if(controls[i].value!=controlLevel, {controls[i].valueAction_(controlLevel)});
 		};
 
-	}
+	}*/
+
+	//load{}
 
 	killMeSpecial {
 		buchlaFilters.do{arg item; if(item!=nil,{item.killMe})};

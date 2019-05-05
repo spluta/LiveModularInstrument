@@ -29,9 +29,9 @@ Mute_Mod : Module_Mod {
 		pulseRate = [11,17];
 
 		controls.add(Button(win, Rect(5, 5, 280, 20))
-			.states_([["on", Color.blue, Color.black],["mute", Color.black, Color.blue]])
+			.states_([["mute", Color.blue, Color.black],["on", Color.black, Color.blue]])
 			.action_({arg butt;
-				synths[0].set(\mute, (butt.value-1).abs)
+				synths[0].set(\mute, (butt.value).abs)
 			})
 		);
 

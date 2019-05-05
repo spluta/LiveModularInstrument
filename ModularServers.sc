@@ -49,15 +49,18 @@ ModularServerObject {
 
 			mainWindow = MainProcessingWindow.new(mainGroup, modularObjects);
 
-			mainMixer = MainMixer.new(mixerGroup, mixerTransferBus).init2(4, true);
+			mainMixer = MainMixer.new(mixerGroup, 0).init2(4, true);
 
 			LiveModularInstrument.readyToRoll();
 		})
 	}
 
-	makeBusMap {arg loadArray;
+	sendGUIVals {
+		modularObjects.do{arg item; item.sendGUIVals};
+		mainMixer.sendGUIVals;
+	}
 
-		loadArray.postln;
+	makeBusMap {arg loadArray;
 
 		busMap = Array.fill(3, {Dictionary.new});
 
@@ -66,8 +69,6 @@ ModularServerObject {
 		loadArray[1].do{arg item, i; busMap[1].add(item.asSymbol -> i)};
 
 		loadArray[2].do{arg item, i; busMap[2].add(item.asSymbol -> objectBusses[i].index)};
-
-		busMap.postln;
 	}
 
 	getBusFromMap {arg busIn;
@@ -76,7 +77,6 @@ ModularServerObject {
 		temp = busMap[0][busIn];
 		if(temp!=nil,{
 			temp = "D"++temp.asString;
-			temp.postln;
 		},{
 			temp = busMap[1][busIn];
 			if(temp!=nil,{
@@ -126,7 +126,6 @@ ModularServerObject {
 
 	load {arg loadArray;
 		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
-		loadArray.do{arg item; item.postln};
 
 		mainWindow.load(loadArray[0]);
 
@@ -191,7 +190,6 @@ ModularServers {
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
 		numServers.do{arg i;
-			("adding a server: "++(i+1).asString).postln;
 			servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new(Server.new("lmi"++(i+1).asString, NetAddr("localhost", 57111+i), Server.local.options)));
 		};
 
@@ -205,7 +203,6 @@ ModularServers {
 		saveServers.add(modularInputsArray.save); //save the inputs array
 
 		if(numServers>1,{
-			"saveSwitcher".postln;
 			saveServers.add(serverSwitcher.save);
 		},{
 			saveServers.add(nil)
@@ -270,14 +267,13 @@ ModularServers {
 	*addServer{
 		var num;
 		num = numServers+1;
-		("adding a server: "++num.asString).postln;
 		servers.add(("lmi"++num.asString).asSymbol-> ModularServerObject.new(Server.new(("lmi"++num.asString).asSymbol, NetAddr("localhost", 57111+numServers), Server.local.options)));
 		numServers = numServers+1;
 		this.updateServerSwitcher;
 	}
 
 	*getSoundInBusses {arg serverName;
-		^servers[serverName.asSymbol].inBusses.collect({arg item; item.index}).postln;
+		^servers[serverName.asSymbol].inBusses.collect({arg item; item.index});
 	}
 
 	*getDirectInBus {arg serverName;

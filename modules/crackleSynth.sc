@@ -36,7 +36,7 @@ CrackleSynth_Mod : Module_Mod {
 	}
 
 	init {
-		this.makeWindow("CrackleSynth", Rect(500, 500, 350, 260));
+		this.makeWindow("CrackleSynth", Rect(500, 500, 100, 100));
 
 		this.initControlsAndSynths(6);
 
@@ -107,6 +107,8 @@ CrackleSynth_Mod : Module_Mod {
 				VLayout(controls[4].layout, assignButtons[4].layout, controls[5].layout, assignButtons[5].layout)
 			)
 		);
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 	}
 
 	pause {

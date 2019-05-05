@@ -153,8 +153,6 @@ QtModularMixerStrip : Module_Mod {
 }
 
 
-
-
 MainMixer : Module_Mod {
 	var <>mixerTransferBus, <>numMixers, isMainMixer, mixerStrips, win, assignDefaultsButton, numMixers, mixerGroup, outGroup, name, localBusses, mixerTransfer, synthName;
 
@@ -227,12 +225,16 @@ MainMixer : Module_Mod {
 		win.front;
 	}
 
-	setOutBus {arg location, val;
-		synths[location].set(\outBus, outBus.index+val-1);
+	sendGUIMixer {
+		"sendMixerStripsVals".postln;
+		mixerStrips.do{arg item;
+				item.sendGUIVals;
+			}
 	}
 
-	saveExtra {}//these are here just so the SignalSwitcher can inherit
-	loadExtra {}
+	setOutBus {arg location, val;
+		synths[location].set(\outBus, outBus+val-1);
+	}
 
 	save {
 		var saveArray, temp;
@@ -344,11 +346,11 @@ SignalSwitcher_Mod : ModularMainMixer {
 	init3 {
 		synthName = "SignalSwitcher";
 
-		win.name = "SS"++(ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).indexOf(outBus)+1);
+		win.name = "SS"++(ModularServers.getObjectBusses(ModularServers.servers[group.server.asSymbol].server).indexOf(outBus)+1);
 
 		this.initControlsAndSynths(5);
 
-		synths.add(Synth("signalSwither_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \outBus, outBus], outGroup));
+		synths.add(Synth("signalSwitcher_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \outBus, outBus], outGroup));
 
 		impulseOn = false;
 
@@ -431,7 +433,7 @@ SignalSwitcher_Mod : ModularMainMixer {
 		win.front;
 	}
 
-	pause {
+/*	pause {
 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
 		mixerStrips.do{|item| item.mute};
 	}
@@ -439,7 +441,7 @@ SignalSwitcher_Mod : ModularMainMixer {
 	unpause {
 		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
 		mixerStrips.do{|item| item.unmute};
-	}
+	}*/
 
 	saveExtra {arg saveArray;
 		var temp, tempArray;

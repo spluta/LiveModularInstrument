@@ -25,7 +25,6 @@ QtBusAssignSink {
 		var busInLabel;
 
 		busInLabel = busIn.asSymbol;
-		[busIn, busInLabel].postln;
 
 		if(busInLabels.indexOf(busInLabel)==nil,{
 			busInLabels.add(busInLabel);
@@ -37,14 +36,12 @@ QtBusAssignSink {
 					buttons[butt.states[0][0].asSymbol].setProperty(\visible, false);
 					buttons.removeAt(butt.states[0][0].asSymbol);
 					"busInLabels".post;
-					if(parent!=nil, {parent.setInputBusses(busInLabels.postln)});
+					if(parent!=nil, {parent.setInputBusses(busInLabels)});
 					this.updateButtons;
 				});
 			);
 			buttons[busIn.asSymbol].font_(Font("Helvetica",8)).maxWidth_(20).maxHeight_(10);
 			this.updateButtons;
-
-			busInLabels.postln;
 
 			if(parent!=nil, {parent.setInputBusses(busInLabels)});
 		});
@@ -61,7 +58,7 @@ QtBusAssignSink {
 			buttons[butt.states[0][0].asSymbol].setProperty(\visible, false);
 			buttons.removeAt(butt.states[0][0].asSymbol);
 			"busInLabels".post;
-			if(parent!=nil, {parent.setInputBusses(busInLabels.postln)});
+			if(parent!=nil, {parent.setInputBusses(busInLabels)});
 			this.updateButtons;
 		};
 		busIns = List.new;
@@ -71,7 +68,6 @@ QtBusAssignSink {
 	updateButtons {
 		buttonListTemp = List.new;
 		columnListTemp = List.new;
-		buttons.postln;
 		buttons.keys.do{arg item;
 			buttonListTemp.add([item.asInteger, buttons[item]])
 		};
@@ -86,7 +82,6 @@ QtBusAssignSink {
 			})
 		};
 		columns = columnListTemp;
-		columns.do{arg item; item.postln};
 		panel.layout_(GridLayout.columns(*columns).margins_(0!4).spacing_(0));
 
 	}
