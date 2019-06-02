@@ -1,5 +1,5 @@
 Seaboard.start
-Seaboard_Mod.start
+Seaoboard_Mod.start
 
 (
 //Server.local.options.device = "Fireface UFX II (23856143)";
