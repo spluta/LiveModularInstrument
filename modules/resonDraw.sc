@@ -71,14 +71,12 @@ ResonDraw_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("noiseVol", ControlSpec(0,1,'amp'),
 			{|v|
 				synths[0].set(\noiseVol, v.value);
-				this.sendOSC(0, v.value);
 		}, 0, true, \vert));
 		this.addAssignButton(0,\continuous);
 
 		controls.add(QtEZSlider.new("inOut", ControlSpec(0,4,'amp'),
 			{|v|
 				synths[0].set(\inOutVol, v.value);
-				this.sendOSC(1, v.value);
 		}, 0, true, \vert));
 		this.addAssignButton(1,\continuous);
 
@@ -86,7 +84,6 @@ ResonDraw_Mod : Module_Mod {
 		controls.add(QtEZSlider2D.new(ControlSpec(0, 50), ControlSpec(80, 15080),
 			{arg vals;
 				synths[0].set(\centerFreq, vals[1], \lfoFreq, vals[0]);
-				this.sendOSC(2, vals);
 		}));
 		this.addAssignButton(2,\slider2D);
 

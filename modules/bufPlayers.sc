@@ -336,11 +336,12 @@ LoopBuf_Mod : Module_Mod {
 	}
 
 	saveExtra {arg saveArray;
+		savePath.postln;
 		saveArray.add(savePath.asString);
 	}
 
 	loadExtra {arg loadArray;
-		savePath = loadArray[4];
+		savePath = loadArray;
 		this.loadFile;
 	}
 }

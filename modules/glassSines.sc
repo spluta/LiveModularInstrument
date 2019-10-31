@@ -1,4 +1,5 @@
 GSObject2 : GlassSineObject {
+	var setValBox;
 
 	setWinPoint {arg rowNum, volBus;
 
@@ -30,7 +31,29 @@ GSObject2 : GlassSineObject {
 				})
 		});
 
-		layout = HLayout(*controls);
+		setValBox = TextField()
+		.action = {arg field;
+			var temp;
+			try {
+				temp = field.value.split($ ).postln;
+				temp = temp.collect{|item| item.asInteger};
+				switch (temp.size)
+				{1} {8.do{|i| controls[i].valueAction_(temp[0]+(i*5))}}
+				{2} {8.do{|i| controls[i].valueAction_(temp[0]+(i*temp[1]))}}
+				{3} {
+					4.do{|i| controls[i].valueAction_(temp[0]+(i*temp[1]))};
+					4.do{|i| controls[i+4].valueAction_(temp[2]+(i*5))};
+					}
+				{
+					4.do{|i| controls[i].valueAction_(temp[0]+(i*temp[1]))};
+					4.do{|i| controls[i+4].valueAction_(temp[2]+(i*temp[3]))};
+				};
+			}{
+				setValBox.string = "440";
+			};
+};
+
+		layout = HLayout(setValBox, nil, *controls);
 
 	}
 }

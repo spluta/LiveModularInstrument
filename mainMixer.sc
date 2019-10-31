@@ -1,15 +1,17 @@
 QtModularMixerStrip : Module_Mod {
-	var <>location, <>parent, assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, <>panel, waitForSet, waitForType, controls, assignButtons, mixerGroup, reducerGroup, reducer, transferBus, rms, localResponder, transferSynth, busGuiArray, isMainMixer;
+	var <>location, <>parent, assignedChannelsArray, mixer, index, inputBusses, discardBusses, inputBusString, assignInputButton, inputDisplay, assignMidiButton, sepInputBusses, xmlMixerStrip, inBusTemp, inBusTempList, counter, numBusses, temp, busAssignSink, <>panel, waitForSet, waitForType, controls, assignButtons, mixerGroup, reducerGroup, reducer, transferBus, rms, localResponder, transferSynth, busGuiArray, isMainMixer, panBox;
 
 	*initClass {
 		StartUp.add {
 
-			SynthDef("transferSynthB_mod", {arg transferBus, outBus;
+			SynthDef("transferSynthB_mod", {arg transferBus, outBus, pan;
 				var signal;
 
 				signal = In.ar(transferBus, 2);
 
 				SendPeakRMS.kr(Mix(signal), 10.0, 3, "/stripVol", transferBus);
+
+				signal = Pan2.ar(signal[0], pan.linlin(-1,1,-3,1).clip(-1, 1))+Pan2.ar(signal[1], pan.linlin(-1,1,-1,3).clip(-1, 1));
 
 				Out.ar(outBus, signal);
 
@@ -53,6 +55,7 @@ QtModularMixerStrip : Module_Mod {
 
 		location = 1;
 
+
 		controls.add(QtEZSlider(nil, ControlSpec(0,1,'amp'), {|v|
 			mixer.setVol(v.value);
 		}, 0, true, 'vert', false, false));
@@ -70,6 +73,11 @@ QtModularMixerStrip : Module_Mod {
 		//don't let the user change the channel if it isn't the main mixer
 		if(isMainMixer.not,{controls[1].visible_(false)});
 
+		controls.add(NumberBox().clipLo_(-1).clipHi_(1).step_(0.05).scroll_step_(0.05)
+			.action_{arg box;
+				transferSynth.set(\pan, box.value);
+		});
+
 		rms = LevelIndicator().maxWidth_(10);
 
 		localResponder = OSCFunc({ |msg|
@@ -81,6 +89,7 @@ QtModularMixerStrip : Module_Mod {
 
 		panel.layout_(
 			VLayout(
+				controls[2].maxWidth_(40).maxHeight_(15),
 				HLayout([busAssignSink.panel, align:\top], controls[0].layout, rms).margins_(0!4).spacing_(0),
 				HLayout(20, assignButtons[0].layout.maxWidth_(20), controls[1].maxWidth_(20).maxHeight_(15)).margins_(0!4).spacing_(0)
 			).margins_(0!4).spacing_(0)

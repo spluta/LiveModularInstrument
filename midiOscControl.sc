@@ -72,12 +72,27 @@ MidiOscControl {
 
 		//add the function to the Dictionary
 		if(function!=nil,{
-			if(function.size<2,{
-				this.setFunction(module, controllerKey, function, server);
-			},{
-				this.setFunction(module, controllerKey, function[0], server);
-				controllerKey = controllerKey++"/z";
-				this.setFunction(module, controllerKey, function[1], server, false);
+			//"function size: ".post; function.size.postln;
+			switch(function.size,
+				0,{
+					this.setFunction(module, controllerKey, function, server);
+				},
+				1, {
+					this.setFunction(module, controllerKey, function, server);
+				},
+				2, {
+					controllerKey = controllerKey.asString;
+					controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
+					this.setFunction(module, controllerKey++"x", function[0], server);
+					this.setFunction(module, controllerKey++"z", function[1], server);
+				},
+				3, {
+				//this is just for MultiBall..shit I broke it for TouchOsc
+				controllerKey = controllerKey.asString;
+				controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
+				this.setFunction(module, controllerKey++"x", function[0], server);
+				this.setFunction(module, controllerKey++"y", function[1], server);
+				this.setFunction(module, controllerKey++"z", function[2], server, false);
 			});
 		});
 	}
@@ -142,16 +157,8 @@ MidiOscControl {
 		tempNode = actions[serverKey.asSymbol];
 		if(tempNode!=nil,{
 			if(tempNode[key.asSymbol]!=nil,{
-				tempNode[key.asSymbol].do{arg item; item.value(val)}
-			},{
-/*
-				if(key.asString.beginsWith("/MultiBall")||key.asString.beginsWith("/Fader")||key.asString.beginsWith("/Range"),{
-					#nothing, key2, xyz = key.asString.split;
-					tempNode = tempNode[("/"++key2.asString).asSymbol];
-					if(tempNode!=nil,{
-						tempNode.value(xyz,val)
-					});
-				})*/
+				tempNode[key.asSymbol].do{arg item;
+					item.value(val)}
 			});
 		});
 	}

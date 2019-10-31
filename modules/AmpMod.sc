@@ -42,6 +42,7 @@ AmpMod_Mod : Module_Mod {
 		controls.add(Button()
 			.states_([["bypass", Color.blue, Color.black],["bypass", Color.black, Color.blue]])
 			.action_({arg butt;
+				"bypass".postln;
 				synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \onBypass, 0);
 				controls[0].value_(0);
 				this.sendOSC(1, butt.value);

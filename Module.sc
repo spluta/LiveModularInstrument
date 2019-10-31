@@ -1,5 +1,5 @@
 MidiOscObject {
-	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons, <>needsSequentialMixer=false;
+	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons/*, <>needsSequentialMixer=false*/;
 	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController;
 
 	initControlsAndSynths {arg num;
@@ -21,14 +21,13 @@ MidiOscObject {
 		var vals;
 		controls.do{arg item, i;
 			vals = item.value;
+			vals.postln;
 			if(vals.size<2,{
 				if(vals!=nil,{
 					this.sendOSC(i, vals)
 				});
 			},{
-				if((vals[0]!=nil)&&(vals[1]!=nil),{
-					this.sendOSC(i, vals)
-				});
+				try {this.sendOSC(i, [item.x, item.y])}
 			})
 		};
 		if(this.isKindOf(MainMixer),{
@@ -36,42 +35,28 @@ MidiOscObject {
 		});
 	}
 
+	//why is it calling this
 	sendOSC {|num, val|
 		var unmapped;
-
+		[num, val].postln;
 		if(oscMsgs[num]!=nil, {
-			if(val.size<2,{
-				try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
-				TouchOSC_Mod.sendOSC(oscMsgs[num], unmapped);
+			oscMsgs[num].postln;
+			if(oscMsgs[num].asString.contains("/Switches"), {
+				if(controls[num].value==1,{
+					Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
+				});
 			},{
 
-				unmapped = [controls[num].controlSpecX.unmap(val[0]), controls[num].controlSpecY.unmap(val[1])];
-				TouchOSC_Mod.sendOSCxy(oscMsgs[num], unmapped);
+				if(val.size<2,{
+					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
+					Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
+				},{
+					Lemur_Mod.sendOSC(oscMsgs[num][0].postln, controls[num].x);
+					Lemur_Mod.sendOSC(oscMsgs[num][1], controls[num].y);
+				});
 			});
 		})
 	}
-
-
-	/*	sendButtonOsc {|num, val|
-	var name, nums, string;
-
-	if(oscMsgs[num]!=nil, {
-	TouchOSC_Mod.sendOSC(oscMsgs[num], val);
-	//string = oscMsgs[num].asString;
-	//if(string.contains("multitoggle"),{
-
-	//name = string.findRegexp("/Switches.blahBlahx").at(0);
-
-	//nums = ("["++(string.copyRange(name[0]+name[1].size+2, string.size-1))).interpret;
-
-	//name = Array.with(name[1]).addAll(nums);
-
-	//Lemur_Mod.sendOSCBundle(name);
-	//},{
-	//Lemur_Mod.sendOSC(oscMsgs[num], val);
-	//});
-	})
-	}*/
 
 	sendXYOsc {|num, val|
 		if(oscMsgs[num]!=nil, {
@@ -79,15 +64,9 @@ MidiOscObject {
 		})
 	}
 
-	/*	sendSliderOsc {|num, val|
-	if(oscMsgs[num]!=nil, {
-	TouchOSC_Mod.sendOSC(oscMsgs[num], controls[num].controlSpec.unmap(val));
-	//I should probably go through the controllers here
-	//Lemur_Mod.sendOSC(oscMsgs[num]++"/x", controls[num].controlSpec.unmap(val));
-	})
-	}*/
-
 	setOscMsg {arg msg;
+		oscMsgs.postln;
+		[waitForSetNum, msg].postln;
 		oscMsgs.put(waitForSetNum, msg);
 	}
 
@@ -98,7 +77,7 @@ MidiOscObject {
 	}
 
 	addAssignButton {|num, type, rect|
-		var temp;
+		var temp, oscMsg;
 
 		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
 
@@ -114,11 +93,25 @@ MidiOscObject {
 					});
 				},{
 					MidiOscControl.clearInstantAssign;
-					if(isGlobalController==true,{
-						MidiOscControl.clearController(\global, oscMsgs[num]);
+
+					//because MultiBall has to clear 3 functions
+
+					oscMsg = oscMsgs[num].asString;
+
+					if(oscMsg.contains("MultiBall"), {
+						oscMsg = ["x","y","z"].collect{arg item; oscMsg.copyRange(0, oscMsg.size-2)++item};
 					},{
-						MidiOscControl.clearController(group.server, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
+						oscMsg = [oscMsg]
 					});
+					oscMsg.postln;
+
+					oscMsg.do{|msg|
+						if(isGlobalController==true,{
+							MidiOscControl.clearController(\global, msg);
+						},{
+							MidiOscControl.clearController(group.server, msg); //send a message to clear the OSC data from the MidiOscControl
+						});
+					};
 					oscMsgs.put(num, nil);
 				})
 		});
@@ -281,18 +274,42 @@ TypeOSCModule_Mod : Module_Mod {
 	//this makes them not send the data back to the controller, which isn't ideal
 
 	sendGUIVals {
-/*		var vals;
+		/*		var vals;
 		controls.do{arg item, i;
-			vals = item.value;
-			if(vals.size<2,{
-				if(vals!=nil,{
-					this.sendOSC(i, vals)
-				});
-			},{
-				if((vals[0]!=nil)&&(vals[1]!=nil),{
-					this.sendOSC(i, vals)
-				});
-			})
+		vals = item.value;
+		if(vals.size<2,{
+		if(vals!=nil,{
+		this.sendOSC(i, vals)
+		});
+		},{
+		if((vals[0]!=nil)&&(vals[1]!=nil),{
+		this.sendOSC(i, vals)
+		});
+		})
 		}*/
+	}
+
+	load {arg loadArray;
+
+		//only load the values in the textFields
+
+		"LoadingTypeOSC".postln;
+
+		loadArray[1].do{arg controlLevel, i;
+			[controlLevel, i].postln;
+			if(((controls[i]!=nil) and: controls[i].value!=controlLevel) and:(dontLoadControls.includes(i).not),{
+				controls[i].valueAction_(controlLevel);
+				oscMsgs.postln;
+
+			});
+		};
+
+		if(win!=nil,{
+			win.bounds_(loadArray[3]);
+			win.visible_(false);
+		});
+
+		this.loadExtra(loadArray[4]);
+
 	}
 }

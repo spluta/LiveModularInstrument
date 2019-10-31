@@ -153,11 +153,11 @@ ModularObjectPanel {
 
 		inputBusses = inputBussesIn;
 
-		if((synth!=nil)&&(isMixer.not)&&(synth.needsSequentialMixer==false),{mixer.setInputBusses(inputBussesIn)});
-		if(synth.needsSequentialMixer==true, {
+		if((synth!=nil)&&(isMixer.not)/*&&(synth.needsSequentialMixer==false)*/,{mixer.setInputBusses(inputBussesIn)});
+/*		if(synth.needsSequentialMixer==true, {
 			"set sequentially".postln;
 			mixer.setInputBussesSequentially(inputBussesIn);
-		});
+		});*/
 	}
 
 	killMe {

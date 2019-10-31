@@ -34,6 +34,7 @@ NoisePulse_Mod : Module_Mod {
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0,1,'amp'),
 			{|v|
+				v.value.postln;
 				synths[0].set(\vol, v.value)
 		},0, true));
 		this.addAssignButton(0,\continuous);
@@ -41,6 +42,7 @@ NoisePulse_Mod : Module_Mod {
 		controls.add(Button()
 			.states_([["off", Color.blue, Color.black],["on", Color.black, Color.blue]])
 			.action_({arg butt;
+				"butt".postln;
 				synths[0].set(\onOff, butt.value);
 			})
 		);

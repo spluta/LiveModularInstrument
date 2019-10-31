@@ -120,8 +120,8 @@ ServerSwitcher : MidiOscObject {
 
 		if(numServers>1, {
 
-			numButtons = 2**numServers;
-			this.initControlsAndSynths(numButtons);
+			numButtons = 2*numServers;
+			this.initControlsAndSynths(numButtons*2+1);
 
 			controls = List.fill(numButtons, {Button.new()});
 
@@ -195,7 +195,7 @@ ServerSwitcher : MidiOscObject {
 }
 
 ServerSwitcher2 : MidiOscObject {
-	var numServers, numButtons, numIPads, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, radioButtons;
+	var numServers, numButtons, numIPads, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, radioButtons, muteLayer2, server2MuteGrid;
 
 	*new {
 		^super.new.init;
@@ -209,12 +209,11 @@ ServerSwitcher2 : MidiOscObject {
 		modName = "ServerSwitcher2";
 		isGlobalController = true;
 
-		numIPads = TouchOSC_Mod.netAddrs.size;
+		numIPads = Lemur_Mod.netAddrs.size;
 
 		numButtons = 2*numServers;
 		this.initControlsAndSynths(numButtons);
-
-		//dontLoadControls = Array.fill(numButtons, {arg i; i});
+		oscMsgs = List.newClear(numButtons*2+1);
 
 		radioButtons = List.newClear(0);
 
@@ -235,17 +234,23 @@ ServerSwitcher2 : MidiOscObject {
 
 			radioButtons.add(RadioButtons(controlGrid[i], controlTexts, actions, 0, false));
 		};
+		"assButt".postln;
 
-
+		assignButtons.postln;
 		numButtons.do{arg i;
 			this.addAssignButton(i,\onOff);
+		};
+
+		(numServers).do{arg i;
 			controls[numButtons+i]
 			.states_([["Rotate", Color.red, Color.black ], [ "Keep Open", Color.green, Color.black ]])
 			.action_{|butt|
-				if(butt==0,{
-					radioButtons[(i/numServers).floor].activateButton(controls[i]);
+				if(butt.value==0,{
+					radioButtons[0].activateButton(controls[i]);
+					controls[i].value_(0);
 				},{
-					radioButtons[(i/numServers).floor].deactivateButton(controls[i]);
+					radioButtons[0].deactivateButton(controls[i]);
+					controls[i].valueAction_(1);
 				})
 			}
 		};
@@ -260,8 +265,34 @@ ServerSwitcher2 : MidiOscObject {
 		numServers.do{arg i;
 			grid.add(controlGrid[i]);
 			grid.add(assignGrid[i]);
-			grid.add(controlGrid[i+numServers]);
+			if(i==0,{
+				"add grid".postln;
+				grid.add(controlGrid[i+numButtons]);
+			});
 		};
+
+		muteLayer2 = 0;
+		controls.postln;
+		assignButtons = assignButtons.addAll(List.fill(numButtons+1, {nil}));
+		assignButtons.postln;
+		controls.add(Button()
+			.states_([["Pass Layer 2", Color.black, Color.red], ["Mute Layer 2", Color.black, Color.green]])
+			.action_{arg butt;
+				muteLayer2 = butt.value;
+				muteLayer2.postln;
+				if(muteLayer2==0,{
+					ModularServers.servers[currentServers[1][0].asSymbol].showAndPlay(true);
+				});
+				this.updateCurrentServers;
+		});
+		controls.postln;
+		assignButtons.postln;
+		//assignButtons.add(nil);
+		this.addAssignButton(numButtons*2, \onOff);
+		controls.postln;
+		assignButtons.postln;
+		server2MuteGrid = [controls[numButtons*2], assignButtons.last.layout];
+		grid.add(server2MuteGrid);
 
 		win = Window("Server Switcher");
 
@@ -270,77 +301,23 @@ ServerSwitcher2 : MidiOscObject {
 		);
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		win.view.maxWidth_(numServers*60).maxHeight_(numIPads*3*15);
+		win.view.maxWidth_(numServers*60).maxHeight_(numIPads*3*15+15);
 
 		win.front
 	}
 
 	updateCurrentServers {
+		var tempCurrent;
 		currentServers.postln;
+		if(muteLayer2==1, {tempCurrent=currentServers.first}, {tempCurrent=currentServers});
+		tempCurrent.postln;
 		ModularServers.servers.keys.asList.do{arg key;
-			if(currentServers.flatten.indexOf(key.asSymbol)==nil, {
+			if(tempCurrent.flatten.indexOf(key.asSymbol)==nil, {
 				"hide me ".post; key.postln;
 				ModularServers.servers[key.asSymbol].showAndPlay(false)
 			})
 		}
 	}
-
-/*	addAssignButton {|num, type, rect|
-		var temp;
-
-		if(rect!=nil, {temp = AssignButton.new(win, rect)},{temp = AssignButton.new()});
-
-		assignButtons.put(num, temp
-			.instantAction_{|butt|
-				if(butt.value==1,{
-
-					//the main thing here is that the messages go into the \global key in the MidiOscControl
-					waitForSetNum = num;
-					MidiOscControl.requestInstantAssign(this, controls[num], type, \global, nil);
-				},{
-					MidiOscControl.clearInstantAssign;
-					MidiOscControl.clearController(\global, oscMsgs[num]); //send a message to clear the OSC data from the MidiOscControl
-					oscMsgs.put(num, nil);
-				})
-		});
-	}*/
-
-	// load {arg loadArray;
-	//
-	// 	loadArray[1].do{arg controlLevel, i;
-	// 		//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-	// 		if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
-	// 			controls[i].valueAction_(controlLevel);
-	// 		});
-	// 	};
-	//
-	// 	loadArray[2].do{arg msg, i;
-	// 		waitForSetNum = i;
-	// 		if(msg!=nil,{
-	// 			MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
-	// 			assignButtons[i].instantButton.value_(1);
-	// 		})
-	// 	};
-	//
-	// 	if(win!=nil,{
-	// 		win.bounds_(loadArray[3]);
-	// 		win.visible_(false);
-	// 	});
-	//
-	// 	this.loadExtra(loadArray[4]);
-	// }
-	//
-	// load {arg loadArray;
-	// 	loadArray[2].do{arg msg, i;
-	// 		waitForSetNum = i;
-	// 		if(msg!=nil,{
-	// 			if(i<controls.size,{
-	// 				MidiOscControl.getFunctionNSetController(this, controls[i], msg, \global, nil);
-	// 				assignButtons[i].instantButton.value_(1);
-	// 			});
-	// 		})
-	// 	};
-	// }
 
 	reset {
 		this.clearMidiOsc;

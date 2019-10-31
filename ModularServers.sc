@@ -240,8 +240,10 @@ ModularServers {
 			};
 			//load the serverSwitcher last so that it can update the server windows
 			if(loadArray[1]!=nil,{
+				"load server switcher".postln;
 				serverSwitcher.load(loadArray[1]);
 			});
+			Window.allWindows.do{arg item; item.front};
 
 		}, {
 			servers[serverName.asSymbol].load(loadArray[2][0])

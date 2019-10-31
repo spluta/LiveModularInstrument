@@ -3,7 +3,7 @@ MainProcessingWindow : MidiOscObject {
 	var synthList, availableModules;
 	var sendGUIVals, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
 	var modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton;
-	var buttonView, infoView, objectView;
+	var buttonView, infoView, objectView, lemurPorts, tempOSCs;
 
 	*new {arg group, modularObjects;
 		^super.new.group_(group).modularObjects_(modularObjects).init;
@@ -115,8 +115,46 @@ MainProcessingWindow : MidiOscObject {
 			ModularServers.modularInputsArray.sendGUIVals;
 		};
 
+
 		listeningPort = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		listeningPort.string = NetAddr.langPort.asString;
+
+		if(group.server.asString=="lmi1",{
+		lemurPorts = Array.fill(2, {|i|
+			TextField().maxWidth_(60)
+			.string_(Lemur_Mod.netAddrs[i].port)
+			.action_{arg val;
+				Lemur_Mod.setPorts(lemurPorts.collect{|item| item.string.asInteger});
+			}
+		});
+
+		tempOSCs = List.newClear(2);
+		lemurPorts.do{|item, i|
+			try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString).postln};
+
+			item.focusGainedAction = {
+				tempOSCs.put(0, OSCFunc({|msg, time, addr|
+					addr.postln;
+					{item.string = addr.port}.defer;
+					tempOSCs[1].free;
+				}, '/Switches/x').oneShot);
+				tempOSCs.put(1, OSCFunc({|msg, time, addr|
+					addr.postln;
+					{item.string = addr.port}.defer;
+					tempOSCs[0].free;
+				}, '/Container2/Switches/x').oneShot);
+			};
+			item.focusLostAction = {
+				tempOSCs.do{|i2| i2.free}
+			}
+		};
+		},{
+			lemurPorts = Array.fill(2, {|i|
+				Button().maxWidth_(60)
+			})
+		});
+
+
 
 		cpuUsage0 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		cpuUsage1 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
@@ -138,7 +176,7 @@ MainProcessingWindow : MidiOscObject {
 
 		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(4)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
-		infoView.layout_(HLayout(listeningPort,sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
+		infoView.layout_(HLayout(listeningPort,lemurPorts[0], lemurPorts[1], sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
 
 		win.layout_(VLayout(buttonView, objectView, infoView).margins_(0!4).spacing_(0));
 
@@ -169,7 +207,7 @@ MainProcessingWindow : MidiOscObject {
 
 
 LiveModularInstrument {
-	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers;
+	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers, path;
 	classvar numServers, windows;
 	classvar readyToRollCounter, addingServer=false;
 
@@ -177,8 +215,9 @@ LiveModularInstrument {
 		^super.new.init;
 	}
 
-	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn;
+	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
 
+		path = pathIn;
 		numServers=numServersIn;
 		inBusses = List.newClear(8);
 
@@ -220,7 +259,7 @@ LiveModularInstrument {
 		readyToRollCounter = readyToRollCounter+1;
 		if(addingServer,{
 
-			ModularServers.modularInputsArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]); //this is stupid
+			ModularServers.modularInputsArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]);
 
 			numServers = numServers+1;
 			addingServer = false;
@@ -235,6 +274,8 @@ LiveModularInstrument {
 				});
 				Window.allWindows.do{arg item, i; item.front};
 		});
+		if(path!=nil, {ModularServers.load(path)});
+
 	}
 
 	*killMe {

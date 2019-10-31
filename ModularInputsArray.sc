@@ -127,7 +127,8 @@ ModularInputsArray : Module_Mod {
 		numBusses.do{arg i;
 			controls.add(TextField()
 				.action_{arg text;
-					TouchOSC_Mod.sendOSC(("/n/label"++(i+1).asString).asSymbol, text.value);
+					//TouchOSC_Mod.sendOSC(("/n/label"++(i+1).asString).asSymbol, text.value);
+					Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(("/MixerLabel"++(i+1).asString).asSymbol, "@content", text.value)};
 			});
 
 			layouts.add(VLayout(

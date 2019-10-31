@@ -10,7 +10,7 @@ LoopMachine_Mod : Module_Mod {
 				phasor = Phasor.ar(0, BufRateScale.kr(bufnum)*smallGate, 0, BufFrames.kr(bufnum));
 				Out.kr(phasorBus, A2K.kr(phasor));
 
-				in = In.ar(inBus,8);
+				in = In.ar(inBus,2);
 
 				//in = In.ar(inBus,2);
 
@@ -39,7 +39,7 @@ LoopMachine_Mod : Module_Mod {
 				phaseStart = Select.kr(rateSwitch, [Latch.kr(In.kr(phasorBus),1), TRand.kr(0,BufFrames.kr(bufnum),dust)]);
 				phase = (Phasor.ar(0, BufRateScale.kr(bufnum)*rate, 0, BufFrames.kr(bufnum))+phaseStart).wrap(0, BufFrames.kr(bufnum));
 
-				playBack = BufRd.ar(8, bufnum, phase, loop:1)*env*vol*pauseEnv;
+				playBack = BufRd.ar(2, bufnum, phase, loop:1)*env*vol*pauseEnv;
 
 				XOut.ar(outBus, env, playBack);
 			}).writeDefFile;
@@ -50,9 +50,9 @@ LoopMachine_Mod : Module_Mod {
 		this.makeWindow("LoopMachine", Rect(605, 67, 245, 287));
 		this.initControlsAndSynths(5);
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
-		buffer = Buffer.alloc(group.server, group.server.sampleRate*8, 8);
+		buffer = Buffer.alloc(group.server, group.server.sampleRate*8, 2);
 
 		volBus0 = Bus.control(group.server);
 		volBus1 = Bus.control(group.server);
@@ -125,19 +125,19 @@ LoopMachine_Mod : Module_Mod {
 	}
 
 
-/*	loadSettings {arg xmlSynth;
-		rout = Routine({
-			group.server.sync;
-			controls.do{arg item, i;
-				if(i<3,{
-					midiHidTemp = xmlSynth.getAttribute("controls"++i.asString);
-					if(midiHidTemp!=nil,{
-						controls[i].valueAction_(midiHidTemp.interpret);
-					});
-				})
-			};
-		});
-		AppClock.play(rout);
+	/*	loadSettings {arg xmlSynth;
+	rout = Routine({
+	group.server.sync;
+	controls.do{arg item, i;
+	if(i<3,{
+	midiHidTemp = xmlSynth.getAttribute("controls"++i.asString);
+	if(midiHidTemp!=nil,{
+	controls[i].valueAction_(midiHidTemp.interpret);
+	});
+	})
+	};
+	});
+	AppClock.play(rout);
 	}*/
 
 
@@ -162,7 +162,7 @@ LoopMachineOverLap_Mod : Module_Mod {
 				phasor = Phasor.ar(0, BufRateScale.kr(bufnum)*internalSmallGate, 0, BufFrames.kr(bufnum));
 				Out.kr(phasorBus, A2K.kr(phasor));
 
-				in = In.ar(inBus,8);
+				in = In.ar(inBus,2);
 
 				//in = In.ar(inBus,2);
 
@@ -204,7 +204,7 @@ LoopMachineOverLap_Mod : Module_Mod {
 
 				counter = Stepper.kr(impulse, 0, 0, 3, 1);
 
-				playBuf = PlayBuf.ar(8, bufnum, playRate*BufRateScale.kr(bufnum), toggle, startPos*BufFrames.kr(bufnum), 1)*envs;
+				playBuf = PlayBuf.ar(2, bufnum, playRate*BufRateScale.kr(bufnum), toggle, startPos*BufFrames.kr(bufnum), 1)*envs;
 
 				out = Mix(playBuf);
 
@@ -220,9 +220,9 @@ LoopMachineOverLap_Mod : Module_Mod {
 		this.makeWindow("LoopMachineOverLap", Rect(707, 393, 709, 217));
 		this.initControlsAndSynths(10);
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
-		buffer = Buffer.alloc(group.server, group.server.sampleRate*8, 8);
+		buffer = Buffer.alloc(group.server, group.server.sampleRate*8, 2);
 
 		synths = List.newClear(2);
 
@@ -286,21 +286,21 @@ LoopMachineOverLap_Mod : Module_Mod {
 				[[ "loop", Color.red, Color.black ], [ "loop", Color.black, Color.red ]], [[ "through", Color.red, Color.black ], [ "through", Color.black, Color.red ]]
 			],
 			[
-					{
-						synths[1].set(\onOff, 1, \t_trig, 1);
-						synths[0].set(\smallGate, 1);
+				{
+					synths[1].set(\onOff, 1, \t_trig, 1);
+					synths[0].set(\smallGate, 1);
 
-					},{
-						synths[1].set(\onOff, 0);
-						synths[0].set(\smallGate, 0);
-					}
+				},{
+					synths[1].set(\onOff, 0);
+					synths[0].set(\smallGate, 0);
+				}
 			],
 			1);
 
 		controls.add(QtEZSlider2D.new(ControlSpec(0,1), ControlSpec(0.001,1,\exp),
 			{arg vals;
 				controls[2].valueAction_([(vals.value[0]-(0.65*vals.value[1]*yRange)).clip(0,1), (vals.value[0]+(0.65*vals.value[1]*yRange)).clip(0,1)]);}
-			));
+		));
 		this.addAssignButton(7,\slider2D);
 
 
@@ -315,13 +315,12 @@ LoopMachineOverLap_Mod : Module_Mod {
 			.action_{|v|
 				if(v.value==1,{
 					controls[7].zAction = {|val|
-						"z me".postln;
 						synths[1].set(\z2OnOff, val.value);
 						synths[0].set(\smallGate0, val.value);
 					};
-					},{
-						controls[7].zAction = {};
-					}
+				},{
+					controls[7].zAction = {};
+				}
 				);
 			};
 		);
@@ -538,10 +537,11 @@ StraightLoop2_Mod : Module_Mod {
 					synths.put(0, Synth("straightLoop2Rec_mod", [\inBus, mixerToSynthBus.index, \bufnum, buffer.bufnum], recordGroup));
 					currentTime = Main.elapsedTime;
 					recording = true;
-					},
-					{
-						length = Main.elapsedTime-currentTime;
-						recording = false;
+				},
+				{
+					//synths[0].set(\gate, 0);
+					length = Main.elapsedTime-currentTime;
+					recording = false;
 				});
 		});
 		this.addAssignButton(0, \onOff, Rect(5, 25, 70, 20));

@@ -1,23 +1,45 @@
 Seaboard.start
 Seaoboard_Mod.start
 
-(
+//get Lemur Ports
+(a = OSCFunc({|msg, time, addr|
+	addr.postln;
+}, '/Switches/x').oneShot;
+b = OSCFunc({|msg, time, addr|
+	addr.postln;
+}, '/Container2/Switches/x').oneShot;
+)
 //Server.local.options.device = "Fireface UFX II (23856143)";
-
-LiveModularInstrument.boot(9, [9,10,11,4,1,10,3,3], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+(
+LiveModularInstrument.boot(9, [1,2,11,4,1,10,3,3], 'normal', [Lemur_Mod.setPorts([8000, 52876]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 )
 
-LiveModularInstrument.boot(1, [1,2,3,4,10, 19,3,4], 'normal', [TouchOSC_Mod.setPorts([8001, 8002]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+
+OSCFunc.trace
+
+57.midicps
+
+//
 
 
-//Just MIDI
+
+
+//Bryn Harrison
+LiveModularInstrument.boot(1, [1,2,3,4,10, 19,3,4], 'normal', [Lemur_Mod.setPorts([8000, 57798]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Harrison");
+
+
+//Just MIDIMixer
 LiveModularInstrument.boot(1, [1,2,3,4,10, 19,3,4], 'normal', [MIDI_Mod]);
 
 
 
 
-TypeOSCFunc_Mod.responders
-MidiOscControl.actions
+TypeOSCFunc_Mod.responders.do{arg item; item.postln;}
+MidiOscControl.actions[\lmi1]['/1/fader15'].value(0.1)
+
+MidiOscControl.actions[\lmi1]['/Container2/Fader4/z'].value(1)
+
+MidiOscControl.actions[\lmi1].keys.do{|i|i.postln;}
 
 ServerSwitcher
 
@@ -30,6 +52,8 @@ OSCFunc({|...msg| msg.postln;}, '/Reverb/x', nil, 9002)
 OSCFunc.trace
 
 OSCFunc.trace(false)
+
+
 
 Lemur_Mod.setPorts([8000, 8001])
 
@@ -58,7 +82,7 @@ OSCFunc.trace
 
 ModularServers.servers[\lmi1].server.queryAllNodes
 
-ModularServers.servers[\lmi0].server
+ModularServers.servers[\lmi1].server.asString=="lmi1"
 
 	n = NetA
 
@@ -114,7 +138,7 @@ LiveModularInstrument.boot(1, 0, 0, 64, 44100, 'neuwirth', [MantaCocoa_Mod.start
 //incorporate Modality into the system
 
 
-ModularServers.servers[\lmi0].server.queryAllNodes
+ModularServers.servers[\lmi1].server.queryAllNodes
 
 
 ModularServers.servers[\lmi0].server.prepareForRecord

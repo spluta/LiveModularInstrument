@@ -2,7 +2,7 @@ RadioButtons {
 
 	var <>layout;
 	var <>action, <value;
-	var buttons, activeButtons, <>onButtons;
+	var buttons, <>activeButtons, <>onButtons;
 
 	*new { arg buttons, labels, actions, initVal, initAction=true;
 

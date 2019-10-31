@@ -25,8 +25,8 @@ TypeOSCFunc_Mod {
 	}
 
 	*sendOSC {|oscMsg, val|
-
-		TouchOSC_Mod.netAddrs.do{arg item;
+		//this really should not be hard coded
+		Lemur_Mod.netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(oscMsg, val);
 			});
@@ -34,7 +34,7 @@ TypeOSCFunc_Mod {
 	}
 
 	*sendOSCxy {|oscMsg, val|
-		TouchOSC_Mod.netAddrs.do{arg item;
+		Lemur_Mod.netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(oscMsg, val[1], val[0]);  //x and y are reversed for TouchOSC
 			});
@@ -44,6 +44,11 @@ TypeOSCFunc_Mod {
 	*removeResponder {arg path;
 		responders.removeAt(path.asSymbol);
 	}
+
+	*getFunctionFromKey {arg module, controllerKey, object;
+		^nil
+	}
+
 	//
 	// *getFunctionFromKey {arg module, controllerKey, object;
 	// 	var nothing, keyShort, localControlObject, function;
@@ -122,13 +127,13 @@ TypeOSCFuncObject {
 			"do the action".postln;
 			if(oscMsg!=nil,{
 				MidiOscControl.clearController(mama.group.server, oscMsg);
-				TypeOSCFunc_Mod.removeResponder(oscMsg);
+				//TypeOSCFunc_Mod.removeResponder(oscMsg);
 			});
 			if(isXY==true, {
 				"add XY responder".postln;
-				TypeOSCFunc_Mod.addXYResponder(field.value);
+				//TypeOSCFunc_Mod.addXYResponder(field.value);
 			},{
-				TypeOSCFunc_Mod.addResponder(field.value);
+				//TypeOSCFunc_Mod.addResponder(field.value);
 			});
 			oscMsgs.put(location, field.value.asString);
 			oscMsgs.postln;
