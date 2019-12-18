@@ -1,66 +1,51 @@
 PitchShift_Mod : Module_Mod {
-	var shiftBus;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("pitchShift_mod", {arg inBus, outBus, shiftBus, gate = 1, pauseGate = 1;
-				var in, env, out, pauseEnv, shift;
+			SynthDef("pitchShift_mod", {
+				var in, envs, out;
 
-				shift = In.kr(shiftBus);
+				in = In.ar(\inBus.kr, 1);
 
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
+				out = [PitchShift.ar(in, 0.19, \shift.kr(0), 0, 0.001), PitchShift.ar(in, 0.21, \shift.kr, 0, 0.001)];
 
-				in = In.ar(inBus, 1);
+				envs = Envs.kr(1, \pauseGate.kr(1), \gate.kr(1));
 
-				out = [PitchShift.ar(in, 0.07, shift, 0, 0.001), PitchShift.ar(in, 0.07, shift, 0, 0.001)];
-
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				Out.ar(outBus, out*pauseEnv);
+				Out.ar(\outBus.kr, out*envs*\vol.kr(0, 0.1));
 			}).writeDefFile;
 		}
 	}
 
 	init {
-		this.makeWindow("PitchShift", Rect(560, 10, 80, 190));
-		this.initControlsAndSynths(1);
+		"initPitchshift".postln;
+		this.initControlsAndSynths(2);
 
 		this.makeMixerToSynthBus;
 
-		shiftBus = Bus.control(group.server);
+		synths = List.newClear(1);
+		synths.put(0, Synth("pitchShift_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \shift, 0], group));
 
-		synths = List.newClear(4);
-		synths.put(0, Synth("pitchShift_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \shiftBus, shiftBus], group));
-
-		controls.add(EZSlider.new(win,Rect(10, 10, 60, 150), "shift", ControlSpec(1,4,'exponential'),
+		controls.add(QtEZSlider.new("shift", ControlSpec(-1, 1),
 			{|v|
-				shiftBus.set(v.value);
-			}, 1.0, true, layout:\vert));
-		this.addAssignButton(0, \continuous, Rect(10, 160, 60, 20));
+				synths[0].set(\shift, v.value.midiratio.postln)
+			}, 0.0, true, \horz));
+		this.addAssignButton(0, \continuous);
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button(win,Rect(0, 325, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| synths[i+1].set(\gate, 0)};
-					},
-					1, {
-						synths.put(1, Synth("pitchShift_mod", [\inBus, mixerToSynthBus.index+2, \outBus, outBus.index+2, \shiftBus, shiftBus], group));
-						numChannels = 4;
-					},
-					2, {
-						if(numChannels==2,{
-							synths.put(1, Synth("pitchShift_mod", [\inBus, mixerToSynthBus.index+2, \outBus, outBus.index+2, \shiftBus, shiftBus], group));
-						});
-						2.do{|i| synths.put(i+2, Synth("pitchShift_mod", [\inBus, mixerToSynthBus.index+4+(2*i), \outBus, outBus.index+4+(2*i), \shiftBus, shiftBus], group))};
-						numChannels = 8;
-					}
-				)
-			};
-		);
+		controls.add(QtEZSlider.new("vol", ControlSpec(0,1),
+			{|v|
+				synths[0].set(\vol, v.value)
+			}, 1.0, true, \horz));
+		this.addAssignButton(1, \continuous);
+
+		this.makeWindow("PitchShift", Rect(0, 0, 200, 40));
+
+		win.layout_(VLayout(
+			HLayout(controls[0].layout, assignButtons[0].layout),
+			HLayout(controls[1].layout, assignButtons[1].layout)
+		));
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
+
+
 	}
 }

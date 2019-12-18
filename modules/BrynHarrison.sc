@@ -1,5 +1,5 @@
 BrynHarrison_Mod : Module_Mod {
-	var phaseBusses, volBus, recordGroup, playGroup, buffers, lengthRange, length, dur, bufferSeq, currentSynth, nextBuffer, recSynths;
+	var phaseBusses, volBus, recordGroup, playGroup, buffers, lengthRange, length, dur, bufferSeq, currentSynth, nextBuffer, recSynths, lastPhase, numLoops;
 
 	*initClass {
 		StartUp.add {
@@ -20,27 +20,33 @@ BrynHarrison_Mod : Module_Mod {
 
 				BufWr.ar(in, bufnum, phasor, loop:1);
 			}).writeDefFile;
-			SynthDef("brynPlay_mod", {arg outBus, phaseBus, bufnum, loopDur, dur, vol=0, gate=1, pauseGate=1;
+			SynthDef("brynPlay_mod", {arg outBus, phaseBus, lastPhase, whichPhase, bufnum, loopDur, dur, vol=0, gate=1, pauseGate=1;
 				var sig1, sig2, env1, env2, trig, trig1, trig2, phaseStart, env, smallEnv, pauseEnv;
 
-				phaseStart = Latch.kr(In.kr(phaseBus), Line.kr(-0.1, 1, 0.01))-(loopDur*BufSampleRate.kr(bufnum));
-
+				phaseStart = Select.kr(whichPhase, [Latch.kr(In.kr(phaseBus), Line.kr(-0.1, 1, 0.01))-(loopDur*BufSampleRate.kr(bufnum)), lastPhase]);
 				//phaseStart.poll;
 
-				trig  = DelayC.kr(Impulse.kr(2/(loopDur-0.5)), 0.01);
+				SendReply.kr(Line.kr(-0.3, 1, 0.02), '/phaseStart', [phaseStart]);
+
+				trig  = DelayC.kr(Impulse.kr(2/(loopDur)), 0.01);
+
+				//TGrains2.ar(
 
 				trig1 = PulseDivider.kr(trig, 2, 0);
 				trig2 = PulseDivider.kr(trig, 2, 1);
 
-				env1 = EnvGen.ar(Env([0,1,1,0], [0.1, loopDur-0.1, 0.1]), trig1);
-				env2 = EnvGen.ar(Env([0,1,1,0], [0.1, loopDur-0.1, 0.1]), trig2).poll;
+				//env1 = EnvGen.ar(Env([0,1,1,0], [0.1, loopDur-0.1, 0.1]), trig1);
+				//env2 = EnvGen.ar(Env([0,1,1,0], [0.1, loopDur-0.1, 0.1]), trig2);
 
-				sig1 = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum), trig1, phaseStart, loop: 1)*env1;
-				sig2 = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum), trig2, phaseStart, loop: 1)*env2;
+				env1 = Lag.kr(Trig1.kr(trig1, loopDur-0.2));
+				env2 = Lag.kr(Trig1.kr(trig2, loopDur-0.2));
+
+				sig1 = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum), trig1, phaseStart)*env1;
+				sig2 = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum), trig2, phaseStart)*env2;
 
 				//env = EnvGen.kr(Env.asr(0,1,0.01), gate, doneAction: 2);
 
-				env = EnvGen.kr(Env([0.01,1,0.01], [dur, 0.01], \exp), gate, doneAction: 2);
+				env = EnvGen.kr(Env([0.01,1,0.01], [dur, 0.01], \exp), gate, doneAction: 2)**2;
 
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
@@ -51,17 +57,17 @@ BrynHarrison_Mod : Module_Mod {
 
 	init {
 		this.makeWindow("BrynHarrison", Rect(600, 600, 235, 90));
-		this.initControlsAndSynths(6);
+		this.initControlsAndSynths(5);
 
 		this.makeMixerToSynthBus(2);
 
 		bufferSeq = Pseq(#[0,1,2,3], inf).asStream;
 
 		buffers = List.new;
-		4.do{buffers.add(Buffer.alloc(group.server, group.server.sampleRate*16, 2))};
+		1.do{buffers.add(Buffer.alloc(group.server, group.server.sampleRate*120, 2))};
 
 		phaseBusses = List.new;
-		4.do{phaseBusses.add(Bus.control(group.server))};
+		1.do{phaseBusses.add(Bus.control(group.server))};
 		volBus = Bus.control(group.server);
 
 		synths = List.newClear(4);
@@ -69,12 +75,14 @@ BrynHarrison_Mod : Module_Mod {
 		recordGroup = Group.head(group);
 		playGroup = Group.tail(group);
 
-		nextBuffer = bufferSeq.next;
+		//nextBuffer = bufferSeq.next;
 
 		recSynths = List.newClear(0);
 
-		4.do{|i|
-			recSynths.add(Synth("brynRec_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBusses[i].index, \bufnum, buffers[i].bufnum], recordGroup));
+		OSCFunc({arg msg; msg.postln; lastPhase = msg[3]}, '/phaseStart');
+
+		1.do{|i|
+			recSynths.add(Synth("brynRec_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBusses[0].index, \bufnum, buffers[0].bufnum], recordGroup));
 		};
 
 		lengthRange = List[1,1];
@@ -96,8 +104,9 @@ BrynHarrison_Mod : Module_Mod {
 				.action_{
 					"go".postln;
 					length = rrand(lengthRange[0],lengthRange[1]);
-					dur = rrand(1.5,3.0);
-					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum, \loopDur, length, \volBus, volBus.index, \dur, dur], playGroup);
+				dur = length*(rrand(numLoops,numLoops+1).round);
+
+					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[0].index, \lastPhase, lastPhase, \whichPhase, 0, \bufnum, buffers[0].bufnum, \loopDur, length, \volBus, volBus.index, \dur, dur], playGroup);
 				}
 			);
 
@@ -109,38 +118,23 @@ BrynHarrison_Mod : Module_Mod {
 					"go same".postln;
 					//length = rrand(lengthRange[0],lengthRange[1]);
 					//dur = rrand(2.0,4.0);
-					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum, \loopDur, length, \volBus, volBus.index, \dur, dur], playGroup);
+					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[0].index, \lastPhase, lastPhase, \whichPhase, 1, \bufnum, buffers[0].bufnum, \loopDur, length, \volBus, volBus.index, \dur, dur], playGroup);
 				}
 			);
-
 			this.addAssignButton(3, \onOff);
 
-			/*controls.add(QtEZSlider("go", ControlSpec(0.01,2.0,\exp),
-				{|v|
-					synths[i].set(\vol, v.value);
-			}, 0, true, \vert)
-			.zAction_{|val|
-				if(val.value==1, {
-					"zOn".postln;
-					length = rrand(lengthRange[0],lengthRange[1]);
-					//synths.put(i, Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum, \loopDur, length, \volBus, volBus.index, \dur, rrand(1.0,3.0)], playGroup));
-
-					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[nextBuffer].index, \bufnum, buffers[nextBuffer].bufnum, \loopDur, length, \volBus, volBus.index, \dur, rrand(2.0,4.0)], playGroup);
-
-					nextBuffer = bufferSeq.next;
-					nil
-				},{
-					"zOff".postln;
-					//synths[i].set(\gate, 0);
-				});
-			});*/
-
+		controls.add(QtEZSlider("dur", ControlSpec(3, 7),
+			{arg val;
+				numLoops = val.value;
+		}, 4, true, orientation:\horz));
+		this.addAssignButton(1, \continuous);
 
 		win.layout_(
 			VLayout(
 				VLayout(
 					HLayout(controls[0].layout,assignButtons[0].layout),
-					HLayout(controls[1].layout,assignButtons[1].layout)
+					HLayout(controls[1].layout,assignButtons[1].layout),
+					HLayout(controls[4].layout)
 				),
 				HLayout(
 					VLayout(controls[2],assignButtons[2].layout),

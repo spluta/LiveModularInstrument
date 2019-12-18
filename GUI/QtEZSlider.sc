@@ -7,8 +7,8 @@ QtEZSlider {
 	*new { arg label, controlSpec, action, initVal,
 			initAction=false, orientation=\vert, viewNumberBox=true;
 
-		^super.new.init(label, controlSpec, action, initVal,
-			initAction, orientation, viewNumberBox);
+	^super.new.init(label, controlSpec, action, initVal,
+		initAction, orientation, viewNumberBox);
 	}
 
 	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation, viewNumberBox;
@@ -91,6 +91,8 @@ QtEZSlider {
 
 	}
 
+	asView {^layout}
+
 	maxHeight_ {arg val;
 		slider.maxHeight_(val)
 	}
@@ -105,8 +107,10 @@ QtEZSlider {
 
 	value_ { arg val;
 		value = controlSpec.constrain(val);
-		numBox.value = value.round(round);
-		slider.value = controlSpec.unmap(value);
+		{
+			numBox.value = value.round(round);
+			slider.value = controlSpec.unmap(value);
+		}.defer;
 	}
 
 	map {arg val;
@@ -227,6 +231,8 @@ QtEZRanger {
 
 	}
 
+	asView {^layout}
+
 	map {arg val;
 		^controlSpec.unmap(value);
 	}
@@ -298,6 +304,8 @@ QtEZSlider2D {
 
 		layout = slider;
 	}
+
+	asView {^layout}
 
 	map {arg val;
 		^[controlSpecX.unmap(val[0]),controlSpecY.unmap(val[1])];

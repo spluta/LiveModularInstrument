@@ -12,7 +12,7 @@ GreatExpectations_Mod : Module_Mod {
 
 				in = In.ar(inBus,1);
 
-				allpass = CombC.ar(in, 1, Array.fill(60, {rrand(0.05, 1)}), Array.fill(60, {rrand(5,10)}), LFNoise2.kr(LFNoise2.kr(0.5).range(0.1, 0.2)).range(0,1) );
+				allpass = CombC.ar(in*allpassVol, 1, Array.fill(60, {rrand(0.05, 1)}), Array.fill(60, {rrand(5,10)}), LFNoise2.kr(LFNoise2.kr(0.5).range(0.1, 0.2)).range(0,1) );
 
 				allpass = Splay.ar(allpass);
 
@@ -30,7 +30,7 @@ GreatExpectations_Mod : Module_Mod {
 
 				verbSig = LPF.ar(verbSig, 400);
 
-				out = (verbSig*verbVol)+(allpass*allpassVol);
+				out = (verbSig*verbVol)+(allpass);
 
 				Out.ar(outBus, out*env*pauseEnv);
 			}).writeDefFile;

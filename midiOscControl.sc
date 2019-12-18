@@ -123,6 +123,8 @@ MidiOscControl {
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
 
+		[controllerKey, typeOfController].postln;
+
 		if((typeOfController==instantTypeOfController),{
 
 			localControlObject = instantControlObject;
@@ -137,6 +139,7 @@ MidiOscControl {
 	}
 
 	*clearController {arg serverKey, oscMsgClear;
+		[serverKey, oscMsgClear].postln;
 		actions[serverKey.asSymbol].removeAt(oscMsgClear.asSymbol);
 		actions[serverKey.asSymbol].removeAt((oscMsgClear++"/z").asSymbol);
 	}

@@ -100,7 +100,7 @@ GingerMan_Mod : Module_Mod {
 
 		oscMsgs.put(counter, "/SeaboardNote/30");
 		MidiOscControl.setControllerNoGui(oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 1)})}, group.server, );
+			{|val| if(val==1, {synths[0].set(\onOff, 1); "on".postln})}, group.server);
 
 	}
 
