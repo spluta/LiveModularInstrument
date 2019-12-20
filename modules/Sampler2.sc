@@ -33,7 +33,7 @@ SamplerSet {
 
 	loadBufferAgain {arg buf;
 		buffer = buf;
-		buffer.postln;
+		//buffer.postln;
 		scMir = SCMIRAudioFile.newFromZ(buffer.path.removeExtension++".scmirZ");
 		//scMir.extractFeatures();
 		//scMir.extractOnsets();
@@ -227,7 +227,7 @@ Sampler_Mod : Module_Mod {
 		panelLoader = PopUpMenu().items_((0..7))
 		.action_{|pop|
 			currentPanel = pop.value;
-			currentPanel.postln;
+			//currentPanel.postln;
 			this.setOnsetsAndDurs;
 			varianceSlider.value = samplerSettings[currentPanel].variance;
 			volSlider.value=samplerSettings[currentPanel].volume;
@@ -388,22 +388,22 @@ Sampler_Mod : Module_Mod {
 
 			#start, dur = this.getStartAndDur(num, buffer);
 
-			[start, dur, num, buffer,buffer.numChannels].postln;
+			//[start, dur, num, buffer,buffer.numChannels].postln;
 
 			if(buffer.numChannels==1,{
 				if(samplerSettings[num].loopTrig==0,{
-					"samplerPlayerMono_mod".postln;
+					//"samplerPlayerMono_mod".postln;
 					Synth("samplerPlayerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
-					"samplerTriggerMono_mod".postln;
+					//"samplerTriggerMono_mod".postln;
 					Synth("samplerTriggerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			},{
 				if(samplerSettings[num].loopTrig==0,{
-					"samplerPlayerStereo_mod".postln;
+					//"samplerPlayerStereo_mod".postln;
 					Synth("samplerPlayerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
-					"samplerTriggerStereo_mod".postln;
+					//"samplerTriggerStereo_mod".postln;
 					Synth("samplerTriggerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			})
@@ -413,7 +413,6 @@ Sampler_Mod : Module_Mod {
 	setOnsetsAndDurs {
 		var temp;
 
-		currentPanel.postln;
 		onSets = samplerSettings[currentPanel].onSets;
 		durs = samplerSettings[currentPanel].durs;
 		temp = "";
@@ -429,8 +428,6 @@ Sampler_Mod : Module_Mod {
 
 		startIndex = samplerSettings[num].onSets.size.rand;
 		startTime = samplerSettings[num].onSets[startIndex];
-
-		[startIndex, startTime].postln;
 
 		if(samplerSettings[num].loopTrig==0,{
 			dur = buf.duration;
@@ -456,7 +453,7 @@ Sampler_Mod : Module_Mod {
 
 
 		Buffer.read(group.server, path, action: {arg buf;
-			"lockedAndLoaded".postln;
+			//"lockedAndLoaded".postln;
 			{fileText.string_(path.split.pop)}.defer;
 			samplerSettings[currentPanel].fileText = path.split.pop;
 			samplerSettings[currentPanel].loadBuffer(buf);
@@ -465,7 +462,7 @@ Sampler_Mod : Module_Mod {
 
 	loadFilesOnLoad {arg path, num;
 
-		path.postln;
+		//path.postln;
 		Buffer.read(group.server, path, action: {arg buf;
 			samplerSettings[num].fileText = path.split.pop;
 			samplerSettings[num].loadBufferAgain(buf);
@@ -486,7 +483,7 @@ Sampler_Mod : Module_Mod {
 
 		samplerSettings.do{arg item,i;
 			lilTemp = List.newClear(0);
-			if(item.buffer.postln!=nil,{
+			if(item.buffer!=nil,{
 				lilTemp.add(item.buffer.path);
 				item.scMir.save(item.buffer.path.removeExtension++".scmirZ");
 			},{lilTemp.add(nil)});
@@ -495,9 +492,8 @@ Sampler_Mod : Module_Mod {
 			lilTemp.add(item.loopTrig);
 			lilTemp.add(item.onSets);
 			lilTemp.add(item.durs);
-			temp.add(lilTemp.postln);
+			temp.add(lilTemp);
 		};
-		temp.do{arg item; item.postln};
 		saveArray.add(temp);
 	}
 
@@ -505,11 +501,9 @@ Sampler_Mod : Module_Mod {
 		var temp;
 
 		temp = loadArray;
-		temp.postln;
 
 		AppClock.sched(5.0, {
 			temp.do{arg item, i;
-				item.postln;
 				if(item!=nil,{
 					this.loadFilesOnLoad(item[0], i);
 					samplerSettings[i].variance = item[1];

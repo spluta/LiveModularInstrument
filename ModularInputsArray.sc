@@ -88,6 +88,7 @@ ModularInputsArray : Module_Mod {
 		run = true;
 
 		modName = "ModularVolumeRack";
+		//"loadVolumeRack".postln;
 		this.initControlsAndSynths(16);
 
 		isGlobalController = true;

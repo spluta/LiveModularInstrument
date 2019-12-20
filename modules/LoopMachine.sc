@@ -299,7 +299,9 @@ LoopMachineOverLap_Mod : Module_Mod {
 
 		controls.add(QtEZSlider2D.new(ControlSpec(0,1), ControlSpec(0.001,1,\exp),
 			{arg vals;
-				controls[2].valueAction_([(vals.value[0]-(0.65*vals.value[1]*yRange)).clip(0,1), (vals.value[0]+(0.65*vals.value[1]*yRange)).clip(0,1)]);}
+				controls[2].valueAction_([(vals.value[0]-(0.65*vals.value[1]*yRange)).clip(0,1), (vals.value[0]+(0.65*vals.value[1]*yRange)).clip(0,1)]);
+
+			}
 		));
 		this.addAssignButton(7,\slider2D);
 

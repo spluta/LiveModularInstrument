@@ -76,7 +76,7 @@ FeedbackSynth_Mod :  TypeOSCModule_Mod {
 		functions = [
 
 			{arg val; synths[0].set(\fbMult, val.linlin(0,1,1000,10000))},
-			{arg val; synths[0].set(\onOff, val); "onOff".postln;},
+			{arg val; synths[0].set(\onOff, val)},
 
 			{arg val;  synths[0].set(\lpHPSelect, 1-val)},
 			{arg val;  synths[0].set(\xFreezeShift, val.linlin(0,1,0.95,1.05))},

@@ -57,12 +57,12 @@ ModularClassList {
 
 	*initModule {arg className, synthGroup, bus;
 		var item;
-		"init module".postln;
+		//"init module".postln;
 		item = classDictionary[className.asSymbol].value(synthGroup, bus);
-		className = className.asString.postln;
+		className = className.asString;
 		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower"),{
-			"initMixterModule".postln;
-			className.postln;
+			//"initMixterModule".postln;
+			//className.postln;
 			item.init2(2,false)
 		});
 		^item

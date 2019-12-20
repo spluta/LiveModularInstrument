@@ -225,8 +225,8 @@ ServerSwitcher2 : MidiOscObject {
 
 			actions = List.fill(numServers, {arg i2;
 				{arg button;
-					button.value.postln;
-					(i2+1).postln;
+					//button.value.postln;
+					//(i2+1).postln;
 					currentServers.put(i, radioButtons[i].onButtons.collect({|item| ("lmi"++(item+1).asString).asSymbol}));
 					ModularServers.servers[("lmi"++(i2+1).asString).asSymbol].showAndPlay(true);
 					this.updateCurrentServers;
@@ -234,9 +234,7 @@ ServerSwitcher2 : MidiOscObject {
 
 			radioButtons.add(RadioButtons(controlGrid[i], controlTexts, actions, 0, false));
 		};
-		"assButt".postln;
 
-		assignButtons.postln;
 		numButtons.do{arg i;
 			this.addAssignButton(i,\onOff);
 		};
@@ -266,31 +264,23 @@ ServerSwitcher2 : MidiOscObject {
 			grid.add(controlGrid[i]);
 			grid.add(assignGrid[i]);
 			if(i==0,{
-				"add grid".postln;
 				grid.add(controlGrid[i+numButtons]);
 			});
 		};
 
 		muteLayer2 = 0;
-		controls.postln;
 		assignButtons = assignButtons.addAll(List.fill(numButtons+1, {nil}));
-		assignButtons.postln;
 		controls.add(Button()
 			.states_([["Pass Layer 2", Color.black, Color.red], ["Mute Layer 2", Color.black, Color.green]])
 			.action_{arg butt;
 				muteLayer2 = butt.value;
-				muteLayer2.postln;
 				if(muteLayer2==0,{
 					ModularServers.servers[currentServers[1][0].asSymbol].showAndPlay(true);
 				});
 				this.updateCurrentServers;
 		});
-		controls.postln;
-		assignButtons.postln;
 		//assignButtons.add(nil);
 		this.addAssignButton(numButtons*2, \onOff);
-		controls.postln;
-		assignButtons.postln;
 		server2MuteGrid = [controls[numButtons*2], assignButtons.last.layout];
 		grid.add(server2MuteGrid);
 
@@ -308,12 +298,10 @@ ServerSwitcher2 : MidiOscObject {
 
 	updateCurrentServers {
 		var tempCurrent;
-		currentServers.postln;
 		if(muteLayer2==1, {tempCurrent=currentServers.first}, {tempCurrent=currentServers});
-		tempCurrent.postln;
 		ModularServers.servers.keys.asList.do{arg key;
 			if(tempCurrent.flatten.indexOf(key.asSymbol)==nil, {
-				"hide me ".post; key.postln;
+				//"hide me ".post; key.postln;
 				ModularServers.servers[key.asSymbol].showAndPlay(false)
 			})
 		}

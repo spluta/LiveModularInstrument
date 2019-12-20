@@ -231,6 +231,8 @@ ModularServers {
 
 
 		if(serverName==nil,{
+			"modularInputsArray".post;
+			modularInputsArray.postln;
 			modularInputsArray.load(loadArray[0]);
 			numServersInFile = loadArray[2].size;
 

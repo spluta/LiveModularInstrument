@@ -199,11 +199,13 @@ Lemur_Mod {
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
 			function = [
 				{|val|
-					{localControlObject.activex_(val)}.defer;
+					localControlObject.activex_(val);
+					//{}.defer;
 					this.sendOSC(controllerKey++"x", val);
 				},
 				{|val|
-					{localControlObject.activey_(val)}.defer;
+					localControlObject.activey_(val);
+					//{}.defer;
 					this.sendOSC(controllerKey++"y", val);
 				},
 				{|val| localControlObject.zAction.value(val)}]

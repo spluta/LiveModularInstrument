@@ -134,12 +134,12 @@ MainProcessingWindow : MidiOscObject {
 
 			item.focusGainedAction = {
 				tempOSCs.put(0, OSCFunc({|msg, time, addr|
-					addr.postln;
+					//addr.postln;
 					{item.string = addr.port}.defer;
 					tempOSCs[1].free;
 				}, '/Switches/x').oneShot);
 				tempOSCs.put(1, OSCFunc({|msg, time, addr|
-					addr.postln;
+					//addr.postln;
 					{item.string = addr.port}.defer;
 					tempOSCs[0].free;
 				}, '/Container2/Switches/x').oneShot);
@@ -271,10 +271,11 @@ LiveModularInstrument {
 					ModularServers.updateServerSwitcher;
 
 					MidiOscControl.createActionDictionary;
+				if(path!=nil, {ModularServers.load(path)});
 				});
 				Window.allWindows.do{arg item, i; item.front};
 		});
-		if(path!=nil, {ModularServers.load(path)});
+
 
 	}
 

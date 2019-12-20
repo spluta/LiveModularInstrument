@@ -49,6 +49,7 @@ NN_Synth_Mod : Module_Mod {
 
 		//set the system to receive messages from each python instance
 		OSCFunc.new({arg ...msg;
+			//msg.postln;
 			this.setSlidersAndSynth(msg[0].copyRange(2,sizeOfNN+1));
 			//valList = msg[0].copyRange(1,sizeOfNN).asList;
 		}, '/nnOutputs', nil, receivePort);
@@ -112,7 +113,9 @@ NN_Synth_Mod : Module_Mod {
 
 		nnVals.do{arg item, i;
 			controls.add(QtEZSlider(item[0], item[1], {arg val;
-				this.setSynth(item[0], i, val.slider.value, val.value);
+				//this.setSynth(item[0], i, val.slider.value, val.value);
+				synths[0].set(item[0], val.value);
+				{valList.put(i, val.slider.value)}.defer;
 			}, allValsList[0][i], true, \horz));
 			this.addAssignButton(2+numModels+i, \continuous);
 
@@ -270,7 +273,7 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSynth {|argument, i, val01, val|
-		//[argument, i, val].postln;
+		//"setSynth ".post;[argument, i, val].postln;
 		valList.put(i, val01);
 		synths[0].set(argument, val);
 	}
@@ -331,6 +334,11 @@ NN_Synth_Mod : Module_Mod {
 	setMultiBalls {|vals|
 		controls[0].valueAction_([vals[0],vals[1]]);
 		controls[1].valueAction_([vals[2],vals[3]]);
+
+		[[0,"/x"],[0,"/y"],[1,"/x"],[1,"/y"]].do{arg item, i;
+			//[item,i].postln;
+			Lemur_Mod.sendOSC((oscMsgs[item[0]].asString.copyRange(0,oscMsgs[item[0]].asString.size-3)++item[1]).asSymbol, vals[i]);
+		}
 	}
 
 	setAllVals{}

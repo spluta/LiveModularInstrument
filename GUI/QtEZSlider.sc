@@ -244,14 +244,18 @@ QtEZRanger {
 
 	lo_ { |val|
 		lo = controlSpec.constrain(val);
-		loBox.value_(lo.round(round));
-		rangeSlider.lo_(controlSpec.unmap(lo));
+		{
+			loBox.value_(lo.round(round));
+			rangeSlider.lo_(controlSpec.unmap(lo));
+		}.defer
 	}
 
 	hi_ { |val|
 		hi = controlSpec.constrain(val);
-		hiBox.value_(hi.round(round));
-		rangeSlider.hi_(controlSpec.unmap(hi));
+		{
+			hiBox.value_(hi.round(round));
+			rangeSlider.hi_(controlSpec.unmap(hi));
+		}.defer
 	}
 
 	onClose{controlSpec.removeDependant(this)}
@@ -277,6 +281,8 @@ QtEZSlider2D {
 		var numberStep;
 
 		slider = Slider2D();
+
+		x = 0; y = 0;
 
 		// set view parameters and actions
 
@@ -328,12 +334,22 @@ QtEZSlider2D {
 		slider.y_(controlSpecY.unmap(y));
 	}*/
 
+
+
 	activex_ { |val|
-		slider.activex_(val);
+		{slider.x_(val)}.defer;
+		x = val;
+		//[x,y].postln;
+		action.value([controlSpecX.map(x), controlSpecY.map(y)]);
+		//slider.activex_(val);
 	}
 
 	activey_ { |val|
-		slider.activey_(val);
+		{slider.y_(val)}.defer;
+		y = val;
+		//[x,y].postln;
+		action.value([controlSpecX.map(x), controlSpecY.map(y)]);
+		//slider.activex_(val);
 	}
 
 /*	onClose{controlSpecX.removeDependant(this);controlSpecY.removeDependant(this);}*/

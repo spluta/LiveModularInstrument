@@ -19,12 +19,12 @@ MidiOscObject {
 
 	sendGUIVals {
 		var vals;
-		"sendGUIVals".postln;
+		//"sendGUIVals".postln;
 		controls.do{arg item, i;
 
-			[item, i].postln;
+			//[item, i].postln;
 			vals = item.value;
-			vals.postln;
+			//vals.postln;
 			if(vals.size<2,{
 				if(vals!=nil,{
 					this.sendOSC(i, vals)
@@ -41,10 +41,10 @@ MidiOscObject {
 	//why is it calling this
 	sendOSC {|num, val|
 		var unmapped;
-		"sendOSC".postln;
-		[num, val].postln;
+		//"sendOSC".postln;
+		//[num, val].postln;
 		if(oscMsgs[num]!=nil, {
-			oscMsgs[num].postln;
+			//oscMsgs[num].postln;
 			if(oscMsgs[num].asString.contains("/Switches"), {
 				if(controls[num].value==1,{
 					Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
@@ -53,9 +53,9 @@ MidiOscObject {
 
 				if(val.size<2,{
 					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
-					Lemur_Mod.sendOSC(oscMsgs[num].postln, unmapped);
+					Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
 				},{
-					Lemur_Mod.sendOSC(oscMsgs[num][0].postln, controls[num].x);
+					Lemur_Mod.sendOSC(oscMsgs[num][0], controls[num].x);
 					Lemur_Mod.sendOSC(oscMsgs[num][1], controls[num].y);
 				});
 			});
@@ -69,8 +69,8 @@ MidiOscObject {
 	}
 
 	setOscMsg {arg msg;
-		oscMsgs.postln;
-		[waitForSetNum, msg].postln;
+		//oscMsgs.postln;
+		//[waitForSetNum, msg].postln;
 		msg = msg.asString;
 		if(msg.contains("/z")){
 			msg = msg.replace("/z", "/x");
@@ -111,7 +111,7 @@ MidiOscObject {
 					},{
 						oscMsg = [oscMsg]
 					});
-					oscMsg.postln;
+					//oscMsg.postln;
 
 					oscMsg.do{|msg|
 						if(isGlobalController==true,{
@@ -174,25 +174,25 @@ MidiOscObject {
 
 	load {arg loadArray;
 
-		"loadArray1".postln;
+		//"loadArray1".postln;
 		loadArray[1].do{arg controlLevel, i;
 			var control;
-			[controlLevel, i].postln;
+			//[controlLevel, i].postln;
 			try { control=controls[i] } { control = nil; };
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				dontLoadControls.postln;
-				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
+				//dontLoadControls.postln;
+				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not)&&(controlLevel.size<2),{
 					controls[i].valueAction_(controlLevel);
 				});
 			});
 		};
 
-		this.class.postln;
-		"loadArray2".postln;
+		//this.class.postln;
+		//"loadArray2".postln;
 		loadArray[2].do{arg msg, i;
 			var control;
-			[msg, i].postln;
+			//[msg, i].postln;
 			waitForSetNum = i;
 			try { control=controls[i] } { control = nil;};
 			if((msg!=nil)&&(control!=nil),{
@@ -214,7 +214,7 @@ MidiOscObject {
 		this.loadExtra(loadArray[4]);
 
 		this.sendGUIVals;
-		"doneLoading".postln;
+		//"doneLoading".postln;
 	}
 }
 
@@ -270,8 +270,8 @@ Module_Mod : MidiOscObject {
 		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
 		win.close;
 		if(synths!=nil,{
-			synths.postln;
-			"kill the synths".postln;
+			//synths.postln;
+			//"kill the synths".postln;
 			synths.do{arg item; if(item!=nil,{item.set(\gate, 0)})};
 		});
 		mixerToSynthBus.free;
@@ -313,7 +313,7 @@ TypeOSCModule_Mod : Module_Mod {
 			//[controlLevel, i].postln;
 			if(((controls[i]!=nil) and: controls[i].value!=controlLevel) and:(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
-				oscMsgs.postln;
+				//oscMsgs.postln;
 
 			});
 		};

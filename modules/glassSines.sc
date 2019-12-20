@@ -35,7 +35,7 @@ GSObject2 : GlassSineObject {
 		.action = {arg field;
 			var temp;
 			try {
-				temp = field.value.split($ ).postln;
+				temp = field.value.split($ );
 				temp = temp.collect{|item| item.asInteger};
 				switch (temp.size)
 				{1} {8.do{|i| controls[i].valueAction_(temp[0]+(i*5))}}
@@ -195,8 +195,6 @@ GlassSineObject : Module_Mod {
 	}
 
 	load {arg loadArray;
-		"loadArray".postln;
-		loadArray.postln;
 
 		loadArray.do{arg controlLevel, i;
 			try {
@@ -301,11 +299,9 @@ GlassSines_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 
-		"loadArray".postln;
-		loadArray.postln;
 
 		loadArray.do{arg item, i;
-			"loadtheglass".postln;
+
 			glassSineObjects[i].load(item);
 		};
 	}

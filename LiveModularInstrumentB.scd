@@ -1,7 +1,9 @@
 Seaboard.start;
 Seaboard_Mod.start;
 
-Pluta - 5-3
+SystemOverwrites
+
+ModularVolumeObject
 
 //get Lemur Ports
 (a = OSCFunc({|msg, time, addr|
@@ -12,23 +14,22 @@ b = OSCFunc({|msg, time, addr|
 }, '/Container2/Switches/x').oneShot;
 )
 
-72.midicps
+//indrid
 
-check send gui vals and seaboard start
+(
+LiveModularInstrument.boot(9, [9,10,3,4,9,10,5,5], 'normal', [Lemur_Mod.setPorts([8000, 52047]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/forIngridReh3");
+)
+
+
 
 //PA
 (
-LiveModularInstrument.boot(9, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 59361]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/HuddNYC");
+LiveModularInstrument.boot(9, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 59361]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 )
 
 
 
-//Wubbels
 
-(
-
-LiveModularInstrument.boot(9, [1,2,3,4,9,10,5,5], 'normal', [Lemur_Mod.setPorts([8000, 59361]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/withNNs");
-)
 
 
 OSCFunc.trace
@@ -41,7 +42,7 @@ MIDIFunc.trace
 //nothin
 LiveModularInstrument.boot(1, [1,2,3,4,5, 6,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN");
 
-LiveModularInstrument.boot(1, [1,2,3,4,5, 6,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [1,2,3,4,5, 6,7,8], 'normal', [Lemur_Mod.setPorts([8000, 62176]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/test");
 
 //Bryn Harrison
 LiveModularInstrument.boot(1, [1,2,4,9,11, 6,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Harrison");
