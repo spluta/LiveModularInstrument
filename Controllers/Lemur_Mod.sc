@@ -128,6 +128,24 @@ Lemur_Mod {
 
 			//FADERS
 			if(i==0,{
+				this.addResponders("/Container2/Container2/Fader/x", \continuous, true);
+				this.addResponders("/Container2/Container2/CustomButton/x", \onOff, false);
+				this.addResponders("/Container2/Container2/MultiBall/x", \slider2D, true);
+				this.addResponders("/Container2/Container2/MultiBall/y", \slider2D, false);
+				this.addSwitches("/Container2/Container2/Switches/x");
+			});
+			this.addResponders("/Container2/Container2/Fader"++i.asString++"/x", \continuous, true);
+			this.addResponders("/Container2/Container2/CustomButton"++i.asString++"/x", \onOff, false);
+			this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
+			this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
+			this.addSwitches("/Container2/Container2/Switches"++i.asString++"/x");
+
+		};
+
+		50.do{arg i;
+
+			//FADERS
+			if(i==0,{
 				this.addResponders("/Container2/Fader/x", \continuous, true);
 				this.addResponders("/Container2/CustomButton/x", \onOff, false);
 				this.addResponders("/Container2/MultiBall/x", \slider2D, true);

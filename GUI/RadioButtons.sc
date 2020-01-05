@@ -28,7 +28,7 @@ RadioButtons {
 			}
 		};
 
-		if(initAction,{buttons[initVal].valueAction=1;});
+		if(initAction){buttons[initVal].valueAction=1}{buttons[initVal].value=1};
 	}
 
 	deactivateButton {|button|

@@ -6,7 +6,7 @@ NN_Synth_ID {
 }
 
 
-NN_Synth_Mod : Module_Mod {
+NN_Synth : Module_Mod {
 	classvar <>pythonPath = "/usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/bin/python3.7";
 	var group, outBus, numModels, sizeOfNN, ports, pythonAddrs, hasControl, predictOnOff, zValsOnOff, currentPoint, pythonFile, whichModel, multiBallList, xyz, synth, synthVals, valList, allValsList, nnVals, otherVals, trainingList;
 	var saveFile, modelFile, predictOnOff, currentPoint, envOnOff, envChoice, loadedCount, updateSliders, receivePort, sliderCount;
@@ -332,11 +332,11 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setMultiBalls {|vals|
+		vals.postln;
 		controls[0].valueAction_([vals[0],vals[1]]);
 		controls[1].valueAction_([vals[2],vals[3]]);
 
 		[[0,"/x"],[0,"/y"],[1,"/x"],[1,"/y"]].do{arg item, i;
-			//[item,i].postln;
 			Lemur_Mod.sendOSC((oscMsgs[item[0]].asString.copyRange(0,oscMsgs[item[0]].asString.size-3)++item[1]).asSymbol, vals[i]);
 		}
 	}

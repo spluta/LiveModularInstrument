@@ -12,7 +12,7 @@ ModularClassList {
 
 		switch(whichArray,
 			'normal', {
-				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop", "CutterThrough", "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "AnalogSynth", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "SynthStack", "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise", "MFCCHarmonySynth", "Gain", "MFCCTimbreSynth", "MFCCTimbreSynth2", "BrynHarrison", "StraightLoop2", "PitchShift", "CrossFeedback1"].sort;
+				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop", "CutterThrough", "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "AnalogSynth", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "SynthStack", "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise", "MFCCHarmonySynth", "Gain", "MFCCTimbreSynth", "MFCCTimbreSynth2", "BrynHarrison", "StraightLoop2", "PitchShift", "CrossFeedback1", "NN_Synths"].sort;
 			},
 			'feedback', {classArray = ["Convolution", "CombFilter", "KlankFilter", "KlankFilter2","OscilMidBump", "Compander", "DistortMono", "PinkNoise", "LoopBuf", "AnalysisFilters", "SignalSwitcher", "TVFeedback", "Mixer", "RingModStereo", "LongDelay", "FeedbackControl"].sort},
 
@@ -53,6 +53,15 @@ ModularClassList {
 		['Maths','RandoCalrissian','ComplexOscillator','DualADSR','VCA','VCF','Sequencer'].do{arg item;
 			classDictionary.add(item->(("{arg synthGroup, localBusses; "++item++"_AnalogMod(synthGroup, localBusses)}").compile.value));
 		};
+
+		PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
+			folder.postln;
+			folder.files.select{arg file;
+				file.extension=="sc"
+			}
+		}.flatten.collect{arg item; item.fileNameWithoutExtension}.do{arg item;
+			classDictionary.add((item.asString++"_NNMod").asSymbol->(("{arg synthGroup, outBus; "++item++"_NNMod(synthGroup, outBus)}").compile.value));
+		};
 	}
 
 	*initModule {arg className, synthGroup, bus;
@@ -70,6 +79,14 @@ ModularClassList {
 
 	*initAnalogSynthModule {arg className, synthGroup, localBusses;
 		^classDictionary[className.asSymbol].value(synthGroup, localBusses);
+	}
+
+	*initNN_Synth{arg className, synthGroup, outBus;
+		^classDictionary[(className.asString++"_NNMod").asSymbol].value(synthGroup, outBus);
+	}
+
+	*initNN_Synth_FullName{arg className, synthGroup, outBus;
+		^classDictionary[className.asSymbol].value(synthGroup, outBus);
 	}
 
 	*initMixer {arg group, outBus, numMixers;

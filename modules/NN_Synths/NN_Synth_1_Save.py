@@ -14,6 +14,8 @@ if __name__ == "__main__":
 		default="crossModel0.h5", help="The file")
 	parser.add_argument("--num",
 		type=int, default=0, help="The model number")
+	parser.add_argument("--sendPort",
+		type=int, default=0, help="The port number to send on")
 	args = parser.parse_args()
 
 	# load the data set for one setting
@@ -43,8 +45,8 @@ if __name__ == "__main__":
 	#with open('model_config.json', 'w') as json_file:
 	#	json_file.write(json_config)
 	#model.save_weights('path_to_my_weights.h5')
-
-	client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+	#client = udp_client.SimpleUDPClient(args.ip, args.sendPort)
+	client = udp_client.SimpleUDPClient("127.0.0.1", args.sendPort)
 	client.send_message("/trained", args.num)
 	#os._exit(1)
 	#print("Saved model to disk")

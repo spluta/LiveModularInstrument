@@ -104,14 +104,16 @@ TypeOSCFunc_Mod {
 }
 
 TypeOSCFuncObject {
-	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscFunc, typeAssignButton, functions;
+	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction;
 
-	*new {arg mama, oscMsgs, location, text, function, viewNumBox=true, isXY=false;
-		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).viewNumBox_(viewNumBox).isXY_(isXY).init;
+	*new {arg mama, oscMsgs, location, text, function, viewNumBox=true, isXY=false, addZAction=false, zLocation, zFunction;
+		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).viewNumBox_(viewNumBox).isXY_(isXY).addZAction_(addZAction).zLocation_(zLocation).zFunction_(zFunction).init;
 	}
 
 	init {
 		[mama, oscMsgs, location, text, function].postln;
+
+		zAction = {};
 
 		functions = List[function];
 
@@ -127,6 +129,9 @@ TypeOSCFuncObject {
 			"do the action".postln;
 			if(oscMsg!=nil,{
 				MidiOscControl.clearController(mama.group.server, oscMsg);
+				if(oscMsg_Z!=nil){
+					MidiOscControl.clearController(mama.group.server, oscMsg_Z);
+				};
 				//TypeOSCFunc_Mod.removeResponder(oscMsg);
 			});
 			if(isXY==true, {
@@ -149,9 +154,12 @@ TypeOSCFuncObject {
 					functions.add({arg val; TypeOSCFunc_Mod.sendOSCxy(oscMsgs[location], val)});
 				});
 			});
+
 			functions.postln;
 
 			MidiOscControl.setControllerNoGui(oscMsg, functions, mama.group.server);
+
+			if(addZAction,{this.makeZAction(zLocation, oscMsg.copyRange(0, oscMsg.size-3)++"/z", zFunction)});
 		};
 		typeAssignButton = mama.addTypeOSCAssignButton(location);
 
@@ -162,6 +170,15 @@ TypeOSCFuncObject {
 		view.layout_(HLayout(label, textField, typeAssignButton.layout).spacing_(0).margins_([0,0,0,0])).maxHeight_(15);
 		});
 	}
+
+	makeZAction {|location, msg, function|
+		"makeZAction ".post; [location, msg, function].postln;
+		oscMsgs.put(location, msg);
+		MidiOscControl.setControllerNoGui(msg, List[function], mama.group.server);
+		oscMsg_Z = msg;
+	}
+
+	asView {^view}
 
 	value {
 		^textField.value
