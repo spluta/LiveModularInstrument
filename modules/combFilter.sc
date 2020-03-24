@@ -107,50 +107,33 @@ KlankFilter_Mod : Module_Mod {
 		synths = List.newClear(4);
 		synths.put(0, Synth("klankFilter_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \i_freq, 100], group));
 
-		controls.add(EZSlider(win, Rect(5, 5, 60, 160),"vol", ControlSpec(0.0,2.0,\amp),
+		controls.add(QtEZSlider("vol", ControlSpec(0.0,2.0,\amp),
 			{|v|
 				synths[0].set(\vol, v.value);
-			}, 0, true, 40, 40, 0, 16, \vert));
-		this.addAssignButton(0, \continuous, Rect(5, 165, 60, 16));
+			}, 0, true, \horz));
+		this.addAssignButton(0, \continuous);
 
-		controls.add(EZNumber(win, Rect(65, 5, 60, 40),"freq", ControlSpec(30,400),
-			{|v|
-				synths[0].set(\gate, 0);
-				synths.put(0, Synth("klankFilter_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \i_freq, v.value], group));
-			}, 100, layout:\line2));
-
-
-		controls.add(EZSlider(win, Rect(125, 5, 60, 160),"decTime", ControlSpec(0.1,5,\linear),
+		controls.add(QtEZSlider("decTime", ControlSpec(0.1,5,\linear),
 			{|v|
 				synths[0].set(\decayTime, v.value);
-			}, 1, true, 40, 40, 0, 16, \vert));
-		this.addAssignButton(0, \continuous, Rect(125, 165, 60, 16));
+			}, 1, true, \horz));
+		this.addAssignButton(0, \continuous);
 
-		//multichannel button
-//		numChannels = 2;
-//		controls.add(Button(win,Rect(5, 230, 60, 20))
-//			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-//			.action_{|butt|
-//				switch(butt.value,
-//					0, {
-//						numChannels = 2;
-//						3.do{|i| synths[i+1].set(\gate, 0)};
-//					},
-//					1, {
-//						synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
-//						numChannels = 4;
-//					},
-//					2, {
-//						if(numChannels==2,{
-//							synths.put(1, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \volBus, volBus], group));
-//						});
-//						synths.put(2, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+4, \volBus, volBus], group));
-//						synths.put(3, Synth("sand_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus.index+6, \volBus, volBus], group));
-//						numChannels = 8;
-//					}
-//				)
-//			};
-//		);
+		controls.add(NumberBox()
+			.action_{|v|
+				synths[0].set(\gate, 0);
+				synths.put(0, Synth("klankFilter_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \i_freq, v.value], group));
+			}
+			.value_(100)
+		);
+
+		win.layout_(VLayout(
+			HLayout(controls[0], assignButtons[0]),
+			HLayout(controls[1], assignButtons[1]),
+			HLayout(StaticText().string_("Freq"),controls[2])
+		));
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 
 	}
 }

@@ -1,4 +1,4 @@
-# MLP for Pima Indians Dataset saved to single file
+# Training for NN_Synth - @Sam Pluta
 from numpy import loadtxt
 from keras.models import Sequential
 from keras.layers import Dense
@@ -22,15 +22,15 @@ if __name__ == "__main__":
 	dataset = loadtxt(args.numbersFile, delimiter=",")
 
 	# split into input (X) and output (Y) variables
-	X = dataset[:,0:16]
-	Y = dataset[:,16:20]
+	X = dataset[:,0:20]
+	Y = dataset[:,20:24]
 
 	# define the model
 	model = Sequential()
-	model.add(Dense(6, input_dim=4, activation='relu'))
-	model.add(Dense(10, activation='relu'))
-	model.add(Dense(13, activation='relu'))
-	model.add(Dense(16, activation='sigmoid'))
+	model.add(Dense(7, input_dim=4, activation='relu'))
+	model.add(Dense(11, activation='relu'))
+	model.add(Dense(17, activation='relu'))
+	model.add(Dense(20, activation='sigmoid'))
 
 	# compile model
 	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])

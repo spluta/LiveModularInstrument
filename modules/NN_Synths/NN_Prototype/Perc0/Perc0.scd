@@ -50,25 +50,24 @@
 }).load(ModularServers.servers[\lmi1].server)
 )
 
-synthVals = [['/Fader/', \carFreq, ControlSpec(20, 5000, \exp)],
-	['/Fader2/', \mathsBFreq, ControlSpec(0.1, 20, \exp)],
-	['/Fader3/', \mathsRange, ControlSpec(10, 10000, \exp)],
-	['/Fader4/', \noiseFreq, ControlSpec(100, 15000)],
-	['/Fader5/', \noiseCutoff, ControlSpec(0, 3000)],
-	['/Fader6/', \noiseDur, ControlSpec(0, 2)],
-	['/Fader7/', \noiseVol, ControlSpec(0, 1)],
-	['/Fader8/', \rq, ControlSpec(0.1, 2)],
-	['/Fader9/', \fold, ControlSpec(0.1, 1)],
-	['/Fader10/', \dustRate, ControlSpec(1000, 1)],
-	['/Fader11/', \attack, ControlSpec(0.001, 0.01, \exp)],
-	['/Fader12/', \release, ControlSpec(0.001, 0.01, \exp)],
-	['/Fader13/', \outFilterFreq, ControlSpec(20, 20000, \exp)],
-	['/Fader14/', \outFilterRQ, ControlSpec(0.1, 2, \exp)],
-	['/Fader15/', \filtModFreq, ControlSpec(0, 30, \lin)],
-	['/Fader16/', \filtModAmp, ControlSpec(0, 1, \amp)],
-
-	['/Fader17/', \vol, ControlSpec(0, 0.2, \amp)],
-	['/Fader18/', \envRise, ControlSpec(0.01, 0.4, \exp)],
-	['/Fader19/', \envFall, ControlSpec(0.01, 0.4, \exp)]
+synthVals = [[\carFreq, ControlSpec(20, 5000, \exp)],
+	[\mathsBFreq, ControlSpec(0.1, 20, \exp)],
+	[\mathsRange, ControlSpec(10, 10000, \exp)],
+	[\noiseFreq, ControlSpec(100, 15000)],
+	[\noiseCutoff, ControlSpec(0, 3000)],
+	[\noiseDur, ControlSpec(0, 2)],
+	[\noiseVol, ControlSpec(0, 1)],
+	[\rq, ControlSpec(0.1, 2)],
+	[\fold, ControlSpec(0.1, 1)],
+	[\dustRate, ControlSpec(1000, 1)],
+	[\attack, ControlSpec(0.001, 0.01, \exp)],
+	[\release, ControlSpec(0.001, 0.01, \exp)],
+	[\outFilterFreq, ControlSpec(20, 20000, \exp)],
+	[\outFilterRQ, ControlSpec(0.1, 2, \exp)],
+	[\filtModFreq, ControlSpec(0, 30, \lin)],
+	[\filtModAmp, ControlSpec(0, 1, \amp)],
+	[\vol, ControlSpec(0, 0.2, \amp)],
+	[\envRise, ControlSpec(0.01, 0.4, \exp)],
+	[\envFall, ControlSpec(0.01, 0.4, \exp)]
 
 ];

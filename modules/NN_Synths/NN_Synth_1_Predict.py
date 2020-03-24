@@ -16,26 +16,17 @@ from keras.models import load_model
 from keras import backend as K
 
 def closeProgram(unused_addr, *args: List[Any]):
-  #print("closing")
   os._exit(1)
 
 def predict_handler(unused_addr, *args: List[Any]):
-  #whichModel = args[0:1][0]
-  #print("gotit")
-
   jammer = np.array([np.array(args[0:4])])
-  
   output = model.predict(jammer)
-  #num = args.port
   output = np.append(5000, output[0].astype(float))
   client.send_message("/nnOutputs", output)
-  #else:
-    #print("No model")
 
 def prime_arrays(unused_addr, *args: List[Any]):
   jammer = np.array([np.array(args[0:4])])
   output = model.predict(jammer)
-  #output = np.append(np.array(num), output[0].astype(float))
   client.send_message("/prime", output[0].astype(float))
 
 
@@ -56,7 +47,6 @@ if __name__ == "__main__":
   string = args.path+"modelFile"+str(args.num)+".h5"
   model = load_model(string)
 
-  #print (models)
 
   #code that deals with the incoming OSC messages
   dispatcher = dispatcher.Dispatcher()

@@ -5,7 +5,6 @@ NN_Synth_ID {
 	*path {this.filenameSymbol.postln}
 }
 
-
 NN_Synth : Module_Mod {
 	classvar <>pythonPath = "/usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/bin/python3.7";
 	var group, outBus, numModels, sizeOfNN, ports, pythonAddrs, hasControl, predictOnOff, zValsOnOff, currentPoint, pythonFile, whichModel, multiBallList, xyz, synth, synthVals, valList, allValsList, nnVals, otherVals, trainingList;
@@ -240,6 +239,19 @@ NN_Synth : Module_Mod {
 		});
 		this.addAssignButton(2+numModels+sizeOfNN+13, \onOff);
 
+
+		controls.add(Button()
+			.states_([["copyPoint", Color.green, Color.black],["copyPoint", Color.green, Color.black]])
+			.action_{
+
+		});
+
+		controls.add(Button()
+			.states_([["pastePoint", Color.green, Color.black],["pastePoint", Color.green, Color.black]])
+			.action_{
+
+		});
+
 		win.layout_(VLayout(
 			HLayout(
 				VLayout(controls[0], assignButtons[0]),
@@ -247,8 +259,10 @@ NN_Synth : Module_Mod {
 			HLayout(*controls.copyRange(2, 2+numModels-1)),
 			HLayout(*assignButtons.copyRange(2, 2+numModels-1)),
 			HLayout(
-				VLayout(*controls.copyRange(2+numModels, 2+numModels+sizeOfNN-1)),
-				VLayout(*assignButtons.copyRange(2+numModels, 2+numModels+sizeOfNN-1))
+				VLayout(*controls.copyRange(2+numModels, 2+numModels+sizeOfNN-1)
+					.addAll(controls.copyRange(2+numModels+sizeOfNN+14, 2+numModels+sizeOfNN+15))),
+				VLayout(*assignButtons.copyRange(2+numModels, 2+numModels+sizeOfNN-1)
+					.addAll(assignButtons.copyRange(2+numModels+sizeOfNN+14, 2+numModels+sizeOfNN+15))),
 			),
 
 			HLayout(*controls.copyRange(2+numModels+sizeOfNN, 2+numModels+sizeOfNN+3-1)),

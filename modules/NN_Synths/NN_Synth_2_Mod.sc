@@ -86,6 +86,12 @@ NN_Synth_Mod : Module_Mod {
 		this.createWindow;
 	}
 
+	init2 {arg nameIn, parent, otherValsBusses, onOffBus, envOnOffBus;
+		[nameIn, parent, otherValsBusses, onOffBus, envOnOffBus].postln;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+		this.init_window(parent);
+	}
+
 	createWindow {
 		nnVals.do{arg item, i;
 			controls.add(QtEZSlider(item[0], item[1], {arg val;
@@ -180,6 +186,8 @@ NN_Synth_Mod : Module_Mod {
 		};
 	}
 
+
+
 	reloadNN {
 		{
 			"close".postln;
@@ -208,10 +216,13 @@ NN_Synth_Mod : Module_Mod {
 		{
 			saveFile = (path++"trainingFile"++whichModel++".csv").postln;
 			saveFile = File(saveFile, "w");
-			trainingList.postln;
+			//trainingList.postln;
 			//if(trainingList.size<20,{trainingList.addAll(16-trainingList.size)});
 			//trainingList.postln;
 			trainingList.do{arg item;
+				item.postln;
+				(24-item.size).do{item = item.insert(sizeOfNN, 0)};
+				item.postln;
 				item.do{|item2, i|
 					if(i!=0){saveFile.write(", ")};
 					item2 = item2.asString;
@@ -248,6 +259,14 @@ NN_Synth_Mod : Module_Mod {
 
 	addPoint {
 		trainingList.add(valList.copyRange(0,sizeOfNN-1).addAll(multiBallList.flatten));
+	}
+
+	copyPoint {
+		^valList.copyRange(0,sizeOfNN-1)
+	}
+
+	pastePoint {|point|
+		trainingList.add(point.addAll(multiBallList.flatten));
 	}
 
 	removePoint {
@@ -288,13 +307,13 @@ NN_Synth_Mod : Module_Mod {
 NN_Synths_Mod : Module_Mod {
 
 	var <>hasControl, <>predictOnOff, zValsOnOff, currentPoint, otherVals, numModels;
-	var predictOnOff, currentPoint, envOnOff, <>updateSliders, nn_synths, currentSynth, nn_synthChoices, showHideButtons, nn_synths, currentSynth, otherValsBusses, loadedSynths, sliderControl, sliderControlButton, <>envChoice, <>onOffBus, <>envOnOffBus;
+	var predictOnOff, currentPoint, envOnOff, <>updateSliders, nn_synths, currentSynth, nn_synthChoices, showHideButtons, nn_synths, currentSynth, otherValsBusses, loadedSynths, sliderControl, sliderControlButton, <>envChoice, <>onOffBus, <>envOnOffBus, copiedPoint, twoDCounter;
 
 	init {
 
 		this.makeWindow("NN_Synths");
 
-		this.initControlsAndSynths(4+1+8+6+1+6+4);
+		this.initControlsAndSynths(4+1+8+6+1+6+4+2);
 
 		dontLoadControls = (0..29);
 
@@ -471,11 +490,14 @@ NN_Synths_Mod : Module_Mod {
 		});
 		this.addAssignButton(5+numModels+14, \onOff);
 
+
+		twoDCounter = 0;
 		2.do{|i|
 			controls.add(QtEZSlider2D.new(ControlSpec(0, 1), ControlSpec(0, 1),
 				{|vals|
 					if(nn_synths[currentSynth]!=nil){
-						nn_synths[currentSynth].setXYZ(i, vals)
+						twoDCounter = twoDCounter+1;
+						if(twoDCounter.odd){nn_synths[currentSynth].setXYZ(i, vals)}
 					}
 			}, [0, 0], false));
 			this.addAssignButton(5+numModels+15+i,\slider2D);
@@ -495,6 +517,19 @@ NN_Synths_Mod : Module_Mod {
 			if(button.value == 1){sliderControl.show}{sliderControl.hide}
 		};
 
+		controls.add(Button()
+			.states_([["copyPoint", Color.green, Color.black],["copyPoint", Color.green, Color.black]])
+			.action_{
+				if(nn_synths[currentSynth]!=nil){copiedPoint = nn_synths[currentSynth].copyPoint}{copiedPoint = nil};
+		});
+
+		controls.add(Button()
+			.states_([["pastePoint", Color.green, Color.black],["pastePoint", Color.green, Color.black]])
+			.action_{
+				if(nn_synths[currentSynth]!=nil&&copiedPoint!=nil){nn_synths[currentSynth].pastePoint(copiedPoint)};
+
+		});
+
 		win.layout_(VLayout(
 			HLayout(*(controls.copyRange(0, 4))),
 			HLayout(*assignButtons.copyRange(0, 4).add(nil)),
@@ -503,7 +538,8 @@ NN_Synths_Mod : Module_Mod {
 			HLayout(*controls.copyRange(5, 5+numModels-1)),
 			HLayout(*assignButtons.copyRange(5, 5+numModels-1)),
 			nil,
-			HLayout(*controls.copyRange(5+numModels, 5+numModels+6-1)),
+			HLayout(*controls.copyRange(5+numModels, 5+numModels+6-1)
+				.addAll(controls.copyRange(5+numModels+17, 5+numModels+18))),
 			HLayout(*assignButtons.copyRange(5+numModels, 2+numModels+6-1)),
 			nil,
 			HLayout(controls[5+numModels+6], assignButtons[5+numModels+7-1]),
@@ -542,8 +578,8 @@ NN_Synths_Mod : Module_Mod {
 		newSynthName = nn_synthChoices[num];
 		newSynthName.postln;
 		if (newSynthName!="nil", {
-			nn_synths.put(currentSynth, ModularClassList.initNN_Synth(newSynthName, group, outBus).postln);
-			nn_synths[currentSynth].init2(this, otherValsBusses, onOffBus, envOnOffBus);
+			nn_synths.put(currentSynth, ModularClassList.initNN_Synth(newSynthName++"_NNMod", group, outBus).postln);
+			nn_synths[currentSynth].init2(newSynthName++"_NNMod", this, otherValsBusses, onOffBus, envOnOffBus);
 		},{
 			nn_synths.put(currentSynth, nil);
 		});
@@ -561,9 +597,11 @@ NN_Synths_Mod : Module_Mod {
 			nn_synths[currentSynth];
 			this.setSlidersAndMultis;
 			controls[5+nn_synths[currentSynth].whichModel].value_(1);
+			Lemur_Mod.sendSwitchOSC(oscMsgs[5+nn_synths[currentSynth].whichModel].asString.postln);
 			sliderControl.setLabels(nn_synths[currentSynth].getLabels);
 		};
 		controls[4].value_(loadedSynths[currentSynth]);
+
 	}
 
 	setSlidersAndMultis {
@@ -624,8 +662,8 @@ NN_Synths_Mod : Module_Mod {
 				[item,i].postln;
 				if (item!="Nil", {
 					[item,i].postln;
-					nn_synths.put(i, ModularClassList.initNN_Synth_FullName(item, group, outBus).postln);
-					nn_synths[i].init2(this, otherValsBusses, onOffBus, envOnOffBus);
+					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus).postln);
+					nn_synths[i].init2(item, this, otherValsBusses, onOffBus, envOnOffBus);
 				},{
 					nn_synths.put(i, nil);
 				});

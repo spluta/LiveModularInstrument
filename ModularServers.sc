@@ -28,7 +28,7 @@ ModularServerObject {
 
 			objectBusses = List.new;
 
-			dimensions = [4,4]; //for now this is hard-coded
+			dimensions = [5,5]; //for now this is hard-coded
 
 
 			objectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
@@ -41,7 +41,7 @@ ModularServerObject {
 
 			isVisible = true;
 
-			16.do{arg i;
+			(dimensions[0]*dimensions[1]).do{arg i;
 				modularObjects.add(
 					ModularObjectPanel(server, synthGroups[i], i)
 				);
@@ -54,6 +54,23 @@ ModularServerObject {
 			LiveModularInstrument.readyToRoll();
 		})
 	}
+/*
+	newObjectPanel {
+		var newObjectBusses, newModularObjects;
+
+		newObjectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
+
+		newModularObjects = List.newClear(0);
+		(dimensions[0]*dimensions[1]).do{arg i;
+			newModularObjects.add(
+				ModularObjectPanel(server, synthGroups[i], i)
+			);
+		};
+
+		objectBusses.addAll(newObjectBusses);
+
+		^[newObjectBusses, newModularObjects]
+	}*/
 
 	sendGUIVals {
 		modularObjects.do{arg item; item.sendGUIVals};

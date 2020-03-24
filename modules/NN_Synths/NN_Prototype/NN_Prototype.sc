@@ -143,8 +143,10 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 				PrototypeElement()
 				.nnVals_(nnVals).location_(i).parent_(this)
 				.action_{arg proto;
-					synths[0].set(nnVals[i][0].asSymbol, proto.value);
-					{valList.put(i, proto.controlSpec.unmap(proto.value))}.defer;
+					if(i<sizeOfNN){
+						synths[0].set(nnVals[i][0].asSymbol, proto.value);
+						{valList.put(i, proto.controlSpec.unmap(proto.value))}.defer;
+					}
 				}
 			)
 		};

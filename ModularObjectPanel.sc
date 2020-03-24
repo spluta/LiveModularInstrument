@@ -35,7 +35,7 @@ ModularObjectPanel {
 		isMixer = false;
 		isRouter = false;
 
-		view = CompositeView.new().minWidth_(80).minHeight_(80).maxWidth_(80).maxHeight_(80);
+		view = CompositeView.new().minWidth_(80).minHeight_(60).maxWidth_(80).maxHeight_(60);
 
 		view.background_(Color.rand);
 		//view.visible = visible;
@@ -153,7 +153,7 @@ ModularObjectPanel {
 
 		inputBusses = inputBussesIn;
 
-		if((synth!=nil)&&(isMixer.not)/*&&(synth.needsSequentialMixer==false)*/,{mixer.setInputBusses(inputBussesIn)});
+		if((synth!=nil)&&(isMixer.not)){mixer.setInputBusses(inputBussesIn)};
 		/*		if(synth.needsSequentialMixer==true, {
 		"set sequentially".postln;
 		mixer.setInputBussesSequentially(inputBussesIn);

@@ -12,6 +12,8 @@ BuchlaModelSolo_Mod :  Module_Mod {
 
 				in = In.ar(inBus);
 
+
+
 				layer2 = WhiteNoise.ar(Lag.kr(amp5*zamp5))+PinkNoise.ar(Lag.kr(amp6*zamp6))+BrownNoise.ar(Lag.kr(amp7*zamp7));
 
 				layer2 = Select.ar(noise2Select, [layer2, Latch.ar(layer2, Dust.ar(TRand.ar(200, 1000, noise2Select)))]);
@@ -171,12 +173,14 @@ BuchlaModelSolo_Mod :  Module_Mod {
 		});
 		noteOnFunctions.put(17, {arg val;
 			if(val==1,{specs.put(5, ControlSpec(rrand(600,950), rrand(1800, 10000), 'exponential'))});
+			"zamp4".post;val.postln;
 			synths[0].set(\zamp4, val);
 		});
 
-		noteOnFunctions.put(26, {arg val;
+		noteOnFunctions.put(25, {arg val;
 			synths[0].set(\noise2Select, 2.rand);
 			synths[0].set(\zamp5, val);
+			"zamp5".post;val.postln;
 		});
 
 		noteOnFunctions.put(24, {arg val; buchlaFilters.do{|item| if(item!=nil,{item.trigger(trigVal)})}});
@@ -202,9 +206,13 @@ BuchlaModelSolo_Mod :  Module_Mod {
 
 		padFunctions.put(8, {arg val;  synths[0].set(\freq1, specs[4].map(val))});
 
-		padFunctions.put(26, {arg val;  synths[0].set(\amp4, fmAmpSpec.map(val))});
+		padFunctions.put(17, {arg val;
+			"amp4".post;val.postln;
+			synths[0].set(\amp4, fmAmpSpec.map(val))});
 
-		padFunctions.put(16, {arg val;  synths[0].set(\amp5, fmAmpSpec.map(val))});
+		padFunctions.put(25, {arg val;
+			"amp5".post;val.postln;
+			synths[0].set(\amp5, fmAmpSpec.map(val))});
 
 
 	}

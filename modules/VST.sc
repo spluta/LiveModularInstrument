@@ -38,7 +38,7 @@ VST_Mod : Module_Mod {
 		.action_({arg butt;
 			Dialog.openPanel({arg path;
 				try {
-					vst.open(path);
+					vst.open(path, editor: true);
 					vstPath = path;
 					fork {
 						2.wait;
@@ -62,7 +62,7 @@ VST_Mod : Module_Mod {
 		loadPresetButton = Button()
 		.states_([["load preset", Color.blue, Color.black]])
 		.action_({arg butt;
-			Dialog.loadPanel({arg path;
+			Dialog.openPanel({arg path;
 				try {
 					vst.readProgram(path);
 					presetFile = path;
@@ -73,7 +73,7 @@ VST_Mod : Module_Mod {
 		guiButton = Button()
 		.states_([["GUI", Color.yellow, Color.black]])
 		.action_({arg butt;
-			try{vst.gui}
+			try{vst.editor}
 		});
 
 		this.makeWindow("VST", Rect(500, 500, 240, 50));
@@ -96,6 +96,8 @@ VST_Mod : Module_Mod {
 		temp.add(vstPath);
 		temp.add(presetFile);
 
+		temp.postln;
+
 		saveArray.add(temp);  //controller messages
 
 		^saveArray
@@ -106,13 +108,18 @@ VST_Mod : Module_Mod {
 		loadArray.postln;
 
 		if(loadArray[0]!=nil, {
-			vst.open(loadArray[0]);
+			vst.open(loadArray[0], editor: true);
+			vstPath = loadArray[0];
 			fork {
 				"waiting".postln;
-				2.wait;
+				rrand(3.0,4.0).wait;
+				group.server.sync;
 				"loading".postln;
 				{vstName.string = vst.info.name}.defer;
-				if(loadArray[1]!=nil, {vst.readProgram(loadArray[1])});
+				if(loadArray[1]!=nil, {
+					vst.readProgram(loadArray[1]);
+					presetFile = loadArray[1].postln;
+				});
 			}
 		});
 

@@ -320,6 +320,8 @@ ModularMainMixer : MainMixer {
 	}
 
 	show {
+		this.postln;
+		win.postln;
 		win.visible = true;
 		win.front;
 	}

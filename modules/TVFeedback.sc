@@ -1,9 +1,9 @@
-TVFeedback_Mod : SignalSwitcher_Mod {
-	var volsBus, points, temp, tempOrder;
+TVFeedback_Mod : ModularMainMixer {
+	var volsBus, points, temp, tempOrder, tvBus;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("tvFeedback_mod", {arg inBus0, inBus1, outBus, filterBoost=10, filterSpeed=0.1, rq = 0.1, delaytime = 0.1, gate=1, pauseGate=1;
+			SynthDef("tvFeedback_mod", {arg inBus0, inBus1, outBus, filterBoost=7, filterSpeed=0.005, rq = 0.75, delaytime = 0.1, gate=1, pauseGate=1;
 				var env, in0, in1, pauseEnv, freq, chain, out, amp, tvOut;
 
 				in0 = Normalizer.ar(In.ar(inBus0));
@@ -27,33 +27,25 @@ TVFeedback_Mod : SignalSwitcher_Mod {
 
 				//tvOut = (in0*(1-min(amp*5, 1)))+in1;
 
-				Out.ar(outBus, [LPF.ar(LPF.ar(out, 8000), 8000), Delay2.ar(LPF.ar(LPF.ar(out, 8000), 8000)/*, 0.2, delaytime*/), tvOut, tvOut]);
+				Out.ar(outBus, [LPF.ar(LPF.ar(out, 8000), 8000), tvOut]);
 
 			}).writeDefFile;
 		}
 	}
 
-	init2 {
-		this.makeWindow("TVFeedback", Rect(860, 200, 220, 150));
-		this.initControlsAndSynths(4);
 
-		mixerGroup = Group.tail(group);
-		synthGroup = Group.tail(group);
+	init3 {
+		synthName = "TVFeedback";
 
-		synths = List.new;
+		win.name = "TVFeedback"++(ModularServers.getObjectBusses(ModularServers.servers[group.server.asSymbol].server).indexOf(outBus)+1);
 
-		localBusses = List.new;
-		2.do{localBusses.add(Bus.audio(group.server, 8))};
+		synths.add(Synth("tvFeedback_mod", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus], outGroup));
 
-		mixerStrips = List.new;
-		2.do{arg i;
-			mixerStrips.add(DiscreteInput_Mod(mixerGroup, localBusses[i]));
-			mixerStrips[i].init2(win, Point(5+(i*55), 0));
-		};
+		//tvBus = Bus.audio(group.server, 2);
 
-		synths.add(Synth("tvFeedback_mod", [\inBus0, localBusses[0].index, \inBus1, localBusses[1].index, \outBus, outBus], synthGroup));
+		//channelOutBox = ChannelOutBox(tvBus.index+1);
 
-		controls.add(EZSlider.new(win,Rect(10, 70, 200, 20), "filterBoost", ControlSpec(-10,20),
+/*		controls.add(EZSlider.new(win,Rect(10, 70, 200, 20), "filterBoost", ControlSpec(-10,20),
 			{|v|
 				synths[0].set(\filterBoost, v.value);
 			}, 0, true));
@@ -71,7 +63,10 @@ TVFeedback_Mod : SignalSwitcher_Mod {
 		controls.add(EZSlider.new(win,Rect(10, 130, 200, 20), "delTime", ControlSpec(0.0002, 0.2),
 			{|v|
 				synths[0].set(\delaytime, v.value);
-			}, 0.1, true));
+			}, 0.1, true));*/
+
+		win.layout_(HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0));
+		win.front;
 	}
 
 	killMeSpecial {

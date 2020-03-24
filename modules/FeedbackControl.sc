@@ -1,15 +1,15 @@
 FeedbackControl_Mod : Module_Mod {
-	var volBus;
+	var volBus, volsBus;
 
 	*initClass {
 		StartUp.add {
 
-			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin, pauseGate = 1, gate = 1;
-				var in, fft, out, volume, env, pauseEnv, buf;
+			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin;
+				var in, fft, out, volume, envs, pauseEnv, buf, buf2, demand, windowStarts, stream;
 
-				buf = LocalBuf(4096, 1);
+				buf = LocalBuf(2048, 1);
 
-				volume = In.kr(volBus);
+				buf2 = LocalBuf(2048, 1);
 
 				in  = In.ar(inBus);
 
@@ -22,28 +22,63 @@ FeedbackControl_Mod : Module_Mod {
 				);
 
 				fft = FFT(buf, in);
+				buf2 = PV_Copy(fft, buf2);
 
-				fft = PV_Control(fft, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin);
+				fft = PV_Control2(fft, buf2, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin);
 
-				out = IFFT(fft);
+				windowStarts = fft > -1;
 
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
+				stream = Unpack1FFT(buf2, 2048, (1..300), 0);
 
-				Out.ar(outBus, out*volume);
+				demand = Demand.kr(windowStarts, 0, stream);
+
+				Out.kr(\volsBus.kr, demand);
+
+				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 			}).writeDefFile;
+
+			SynthDef("feedbackControlVols_mod", {
+				var sound, envs, volume, vols;
+
+				volume = In.kr(\volBus.kr);
+
+				sound  = In.ar(\inBus.kr);
+
+				sound = Compander.ar(sound, sound,
+					thresh: 0.5,
+					slopeBelow: 1,
+					slopeAbove: 0.5,
+					clampTime: 0.01,
+					relaxTime: 0.01
+				);
+
+				vols = In.kr(\volsBus.kr, 300);
+
+				300.do{arg i;
+					sound = MidEQ.ar(sound, (i+1)*(22050/2048), \rq.kr(0.2), vols[i].lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb);
+				};
+
+				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
+
+				Out.ar(\outBus.kr, sound*volume*envs);
+			}).writeDefFile;
+
 		}
 	}
 
 	init {
 		this.makeWindow("FeedbackControl", Rect(318, 645, 345, 250));
-		this.initControlsAndSynths(10);
+		this.initControlsAndSynths(12);
 
 		this.makeMixerToSynthBus(1);
 
 		volBus = Bus.control(group.server);
 
-		synths.add(Synth("feedbackControl_mod",[\inBus, mixerToSynthBus, \outBus, outBus.index, \volBus, volBus.index, \thresh, 0.8, \mulFactor, 0.7, \limiter, 10, \attackReleaseFrames, 200, \sustainZeroFrames, 50, \waitGoFrames, 100, \tripCount, 5,  \tripBlockFrames, 300, \topBin, 400], group));
+		volsBus = Bus.control(group.server, 300);
+
+		synths.add(Synth.tail(group, "feedbackControl_mod" ,[\inBus, mixerToSynthBus, \volsBus, volsBus.index, \volBus, volBus.index, \thresh, 0.8, \mulFactor, 0.7, \limiter, 10, \attackReleaseFrames, 200, \sustainZeroFrames, 50, \waitGoFrames, 100, \tripCount, 5,  \tripBlockFrames, 300, \topBin, 400]));
+
+		synths.add(Synth.tail(group, "feedbackControlVols_mod" ,[\inBus, mixerToSynthBus, \outBus, outBus, \volsBus, volsBus.index, \volBus, volBus.index]));
 
 		controls.add(QtEZSlider.new( "vol", ControlSpec(0,1,'amp'),
 			{|v|
@@ -54,71 +89,88 @@ FeedbackControl_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("thresh", ControlSpec(0,1,'linear'),
 			{|v|
 				synths[0].set(\thresh, v.value);
-			}, 0.8, true, \horz ));
+		}, 0.8, true, \horz ));
 		this.addAssignButton(1,\continuous, Rect(65, 230, 60, 20));
 
 		controls.add(QtEZSlider.new("mulFactor", ControlSpec(0.1,0.9,'linear'),
 			{|v|
 				synths[0].set(\mulFactor, v.value);
-			}, 0.7, true, \horz));
+		}, 0.7, true, \horz));
 		this.addAssignButton(2,\continuous);
 
 		controls.add(QtEZSlider.new("limiter", ControlSpec(1,100,'linear'),
 			{|v|
 				synths[0].set(\limiter, v.value);
-			}, 10, true, \horz));
+		}, 100, true, \horz));
 		this.addAssignButton(3,\range);
 
 		controls.add(QtEZSlider.new("attackReleaseFrames", ControlSpec(10,1000,'linear'),
 			{|v|
 				synths[0].set(\attackReleaseFrames, v.value);
-			}, 200, true, \horz));
+		}, 200, true, \horz));
 		this.addAssignButton(4,\continuous);
 
 		controls.add(QtEZSlider.new("sustainZeroFrames", ControlSpec(1,1000,'linear'),
 			{|v|
 				synths[0].set(\sustainZeroFrames, v.value);
-			}, 50, true, \horz));
+		}, 50, true, \horz));
 		this.addAssignButton(5,\continuous);
 
 		controls.add(QtEZSlider.new("waitGoFrames", ControlSpec(1,1000,'linear'),
 			{|v|
 				synths[0].set(\waitGoFrames, v.value);
-			}, 100, true, \horz));
+		}, 100, true, \horz));
 		this.addAssignButton(6,\continuous);
 
 		controls.add(QtEZSlider.new("tripCount", ControlSpec(1,20,'linear'),
 			{|v|
 				synths[0].set(\tripCount, v.value);
-			}, 100, true, \horz));
+		}, 100, true, \horz));
 		this.addAssignButton(7,\continuous);
 
 		controls.add(QtEZSlider.new("tripBlockFrames", ControlSpec(1,1000,'linear'),
 			{|v|
 				synths[0].set(\tripBlockFrames, v.value);
-			}, 100, true, \horz));
+		}, 100, true, \horz));
 		this.addAssignButton(8,\continuous);
 
 		controls.add(QtEZSlider.new("topBin", ControlSpec(10,1000,'linear'),
 			{|v|
 				synths[0].set(\topBin, v.value);
-			}, 400, true, \horz));
+		}, 400, true, \horz));
 		this.addAssignButton(9,\continuous);
+
+		controls.add(QtEZSlider.new("ampMin", ControlSpec(1,0,'linear'),
+			{|v|
+				synths[0].set(\ampMin, v.value);
+		}, 0.5, true, \horz));
+		this.addAssignButton(10,\continuous);
+
+		controls.add(QtEZSlider.new("rq", ControlSpec(0.1,1,'linear'),
+			{|v|
+				synths[0].set(\rq, v.value);
+		}, 0.2, true, \horz));
+		this.addAssignButton(11,\continuous);
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, assignButtons[0].layout),
-				HLayout(controls[1].layout, assignButtons[1].layout),
-				HLayout(controls[2].layout, assignButtons[2].layout),
-				HLayout(controls[3].layout, assignButtons[3].layout),
-				HLayout(controls[4].layout, assignButtons[4].layout),
-				HLayout(controls[5].layout, assignButtons[5].layout),
-				HLayout(controls[6].layout, assignButtons[6].layout),
-				HLayout(controls[7].layout, assignButtons[7].layout),
-				HLayout(controls[8].layout, assignButtons[8].layout),
-				HLayout(controls[9].layout, assignButtons[9].layout)
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1]),
+				HLayout(controls[2], assignButtons[2]),
+				HLayout(controls[3], assignButtons[3]),
+				HLayout(controls[4], assignButtons[4]),
+				HLayout(controls[5], assignButtons[5]),
+				HLayout(controls[6], assignButtons[6]),
+				HLayout(controls[7], assignButtons[7]),
+				HLayout(controls[8], assignButtons[8]),
+				HLayout(controls[9], assignButtons[9]),
+				HLayout(controls[10], assignButtons[10]),
+				HLayout(controls[11], assignButtons[11])
 			)
 		);
+
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 
 	}
 
@@ -128,243 +180,243 @@ FeedbackControl_Mod : Module_Mod {
 
 /*MulArray {var <>size, <>mulBus, <>tripBus, <>multis, <>multFactor, <>calculateMethod, temp, <>threshold=0.5, depth, previousVolArrays, avgVolArray, <>mulArray, counterArray, incrementArray, task, maxes, tripped, tripCount, tripMul, tripCountTo, tripCountToRange, <>numBinsLong = 10, clipArray, waiting, <>waitTime;
 
-	*new {arg size, mulBus, tripBus, multis, multFactor, calculateMethod;
-		^super.new.size_(size).mulBus_(mulBus).tripBus_(tripBus).multis_(multis).multFactor_(multFactor).calculateMethod_(calculateMethod).init;
-	}
+*new {arg size, mulBus, tripBus, multis, multFactor, calculateMethod;
+^super.new.size_(size).mulBus_(mulBus).tripBus_(tripBus).multis_(multis).multFactor_(multFactor).calculateMethod_(calculateMethod).init;
+}
 
-	init {
-		waiting = false;
-		waitTime = [0,3];
+init {
+waiting = false;
+waitTime = [0,3];
 
-		this.setTripCountTo([1,10]);
+this.setTripCountTo([1,10]);
 
-		incrementArray = Array.fill(size, {rrand(0.04,0.06)});
-		tripCountTo = Array.fill(size, {rrand(7, 15)});
+incrementArray = Array.fill(size, {rrand(0.04,0.06)});
+tripCountTo = Array.fill(size, {rrand(7, 15)});
 
 
 
-		mulArray = Array.fill(size, 1.0);
-		avgVolArray = Array.fill(size, 0.0);
+mulArray = Array.fill(size, 1.0);
+avgVolArray = Array.fill(size, 0.0);
 
-		tripped = List.fill(size, false);
-		tripCount = List.fill(size, 0);
-		tripMul = Array.fill(size, 1);
-		tripBus.setn(tripMul);
+tripped = List.fill(size, false);
+tripCount = List.fill(size, 0);
+tripMul = Array.fill(size, 1);
+tripBus.setn(tripMul);
 
-		mulBus.setn(mulArray);
-		counterArray = List.fill(size, 0);
-		maxes = List.newClear(0);
+mulBus.setn(mulArray);
+counterArray = List.fill(size, 0);
+maxes = List.newClear(0);
 
-	}
+}
 
-	setTripCountTo {arg inCountArray;
-		tripCountToRange = inCountArray;
-		tripCountTo.size.do{|i|
-			tripCountTo.put(i, rrand(tripCountToRange[0], tripCountToRange[1]));
-		};
-	}
+setTripCountTo {arg inCountArray;
+tripCountToRange = inCountArray;
+tripCountTo.size.do{|i|
+tripCountTo.put(i, rrand(tripCountToRange[0], tripCountToRange[1]));
+};
+}
 
-	addVolArray {arg inArray;
-		avgVolArray = (avgVolArray*multFactor)+inArray;
-		this.calculateMulArray0;
+addVolArray {arg inArray;
+avgVolArray = (avgVolArray*multFactor)+inArray;
+this.calculateMulArray0;
 
-	}
+}
 
-	calculateMulArray0 {
-		avgVolArray.do{|item, i|
-			if((item>(threshold))&&(tripped[i]==false),{
-				//if(waiting == false, {
-				tripped.put(i, true);
-					SystemClock.sched(rrand(waitTime[0], waitTime[1]),{
-						counterArray.put(i, 100);
+calculateMulArray0 {
+avgVolArray.do{|item, i|
+if((item>(threshold))&&(tripped[i]==false),{
+//if(waiting == false, {
+tripped.put(i, true);
+SystemClock.sched(rrand(waitTime[0], waitTime[1]),{
+counterArray.put(i, 100);
 /*						if(tripped[i].not, {
-							tripCount.put(i, tripCount[i]+1);
-							if(tripCount[i]>=tripCountTo[i], {
-								tripped.put(i, true);
-								tripMul.put(i, 0);
+tripCount.put(i, tripCount[i]+1);
+if(tripCount[i]>=tripCountTo[i], {
+tripped.put(i, true);
+tripMul.put(i, 0);
 
-								SystemClock.sched(10.0, {
-									tripMul.put(i, 1);
-									tripped.put(i, false);
-									tripCount.put(i, 0);
-									tripCountTo.put(i, rrand(tripCountToRange[0], tripCountToRange[1]));
-									nil;
-								});
-							});
-						});*/
+SystemClock.sched(10.0, {
+tripMul.put(i, 1);
+tripped.put(i, false);
+tripCount.put(i, 0);
+tripCountTo.put(i, rrand(tripCountToRange[0], tripCountToRange[1]));
+nil;
+});
+});
+});*/
 //						waiting = false;
-						nil;
-					});//
+nil;
+});//
 //					waiting = true;
-				//});
-				//counterArray.put(i, 10);
+//});
+//counterArray.put(i, 10);
 
-			});
-		};
+});
+};
 
 
-		counterArray.do{|item,i|
-			if((item!=nil)&&(mulArray[i]!=nil),{
-				if((item>0)&&(mulArray[i]>0),{
+counterArray.do{|item,i|
+if((item!=nil)&&(mulArray[i]!=nil),{
+if((item>0)&&(mulArray[i]>0),{
 
-					mulArray.put(i, (mulArray[i]-incrementArray[i]).asFloat.abs);
-					counterArray.put(i, item-1);
-					if(counterArray[i]<=0, {tripped.put(i, false); counterArray.put(i,0)});
-					},{
-						if(mulArray[i]<1,{
-							mulArray.put(i, (mulArray[i]+incrementArray[i]).asFloat.abs);
-							incrementArray.put(i, rrand(0.04,0.06));
-						});
-						if(mulArray[i]>1.0, {mulArray.put(i, 1.0)});
-				});
-				},
-				{
-					counterArray.put(i, 0);
-					mulArray.put(i,1);
+mulArray.put(i, (mulArray[i]-incrementArray[i]).asFloat.abs);
+counterArray.put(i, item-1);
+if(counterArray[i]<=0, {tripped.put(i, false); counterArray.put(i,0)});
+},{
+if(mulArray[i]<1,{
+mulArray.put(i, (mulArray[i]+incrementArray[i]).asFloat.abs);
+incrementArray.put(i, rrand(0.04,0.06));
+});
+if(mulArray[i]>1.0, {mulArray.put(i, 1.0)});
+});
+},
+{
+counterArray.put(i, 0);
+mulArray.put(i,1);
 
-			});
-		};
+});
+};
 
-		mulBus.setn(mulArray);
-		//tripBus.setn(tripMul);
-	}
+mulBus.setn(mulArray);
+//tripBus.setn(tripMul);
+}
 
-	turnDispOn {
+turnDispOn {
 
-		task = Task({ {
-			//multis[0].value_(avgVolArray);
-			multis[0].value_(mulArray);
-			multis[1].value_(tripMul);
-			multis[2].value_(avgVolArray);
-			0.5.wait;
-		}.loop });
-		task.start(AppClock);
-	}
+task = Task({ {
+//multis[0].value_(avgVolArray);
+multis[0].value_(mulArray);
+multis[1].value_(tripMul);
+multis[2].value_(avgVolArray);
+0.5.wait;
+}.loop });
+task.start(AppClock);
+}
 
-	turnDispOff {
-		task.stop
-	}
+turnDispOff {
+task.stop
+}
 
-	killMe {
-		task.stop;
-	}
+killMe {
+task.stop;
+}
 
 }
 
 FeedbackDetection {
-	var <>group, <>inBus, <>outBus, <>size, <>multis, thresholdShort=0.5, thresholdLong = 0.5, temp, mulBus0, tripBus, synth, task, getArray, finalVals, tot, sepArray, buffer, inc, waitTime=0.5, mulArray0, mulArray1;
+var <>group, <>inBus, <>outBus, <>size, <>multis, thresholdShort=0.5, thresholdLong = 0.5, temp, mulBus0, tripBus, synth, task, getArray, finalVals, tot, sepArray, buffer, inc, waitTime=0.5, mulArray0, mulArray1;
 
-	*new {arg group, inBus, outBus, multis;
-		^super.new.group_(group).inBus_(inBus).outBus_(outBus).multis_(multis).init;
-	}
+*new {arg group, inBus, outBus, multis;
+^super.new.group_(group).inBus_(inBus).outBus_(outBus).multis_(multis).init;
+}
 
-	*initClass {
-		StartUp.add {
-			SynthDef("spectralLimiter_mod", {arg inBus, outBus, bufnum, threshold, mulBus0, tripBus, pauseGate = 1, gate=1;
-				var mulArray0, tripMul, chain0, chain1, env, pauseEnv, in, fftSize, clip, outSig;
+*initClass {
+StartUp.add {
+SynthDef("spectralLimiter_mod", {arg inBus, outBus, bufnum, threshold, mulBus0, tripBus, pauseGate = 1, gate=1;
+var mulArray0, tripMul, chain0, chain1, env, pauseEnv, in, fftSize, clip, outSig;
 
-				fftSize = 2048;
+fftSize = 2048;
 
-				in = In.ar(inBus, 2);
+in = In.ar(inBus, 2);
 
-				mulArray0 = Lag.kr(In.kr(mulBus0, 320), 0.1);
+mulArray0 = Lag.kr(In.kr(mulBus0, 320), 0.1);
 
-				tripMul = Lag.kr(In.kr(tripBus, 320), 3);
+tripMul = Lag.kr(In.kr(tripBus, 320), 3);
 
-				FFT(bufnum, in[0]);
+FFT(bufnum, in[0]);
 
-				chain0 = FFT(LocalBuf(fftSize), in[0], 0.75);
+chain0 = FFT(LocalBuf(fftSize), in[0], 0.75);
 
-				chain0 = chain0.pvcollect(fftSize, {|mag, phase, index|
-					mag*mulArray0[index]*tripMul[index];
-				}, frombin: 0, tobin: 319, zeroothers: 1);
+chain0 = chain0.pvcollect(fftSize, {|mag, phase, index|
+mag*mulArray0[index]*tripMul[index];
+}, frombin: 0, tobin: 319, zeroothers: 1);
 
-				env = EnvGen.kr(Env.asr(2,1,0), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
+env = EnvGen.kr(Env.asr(2,1,0), gate, doneAction:2);
+pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
-				outSig = IFFT(chain0);
+outSig = IFFT(chain0);
 
-				Out.ar(outBus, outSig*env*pauseEnv);
-			}).writeDefFile;
-		}
-	}
+Out.ar(outBus, outSig*env*pauseEnv);
+}).writeDefFile;
+}
+}
 
-	init {
-		size = 320;
+init {
+size = 320;
 
-		mulBus0 = Bus.control(group.server, size);
-		tripBus = Bus.control(group.server, size);
+mulBus0 = Bus.control(group.server, size);
+tripBus = Bus.control(group.server, size);
 
-		mulArray0 = MulArray(size, mulBus0, tripBus, multis, 0.5, 0);
-		//mulArray1 = MulArray(size, tripBus, multis[1], 0.25, 0);
+mulArray0 = MulArray(size, mulBus0, tripBus, multis, 0.5, 0);
+//mulArray1 = MulArray(size, tripBus, multis[1], 0.25, 0);
 
-		{
-			buffer = Buffer.alloc(group.server, 2048, 1);
-			group.server.sync;
-			0.4.wait;
+{
+buffer = Buffer.alloc(group.server, 2048, 1);
+group.server.sync;
+0.4.wait;
 
-			synth = Synth("spectralLimiter_mod", [\inBus, inBus, \outBus, outBus, \bufnum, buffer.bufnum, \threshold, 0.5, \mulBus0, mulBus0.index, \tripBus, tripBus.index], group);
-			group.server.sync;
-			0.4.wait;
+synth = Synth("spectralLimiter_mod", [\inBus, inBus, \outBus, outBus, \bufnum, buffer.bufnum, \threshold, 0.5, \mulBus0, mulBus0.index, \tripBus, tripBus.index], group);
+group.server.sync;
+0.4.wait;
 
-			task = Task({ { buffer.getn(2, size*2, { arg buf;
-				var z, x;
-				z = buf.clump(2).flop;
-				z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
-				x = Complex(z[0], z[1]);
-				getArray = (Array.newFrom(x.magnitude)* 0.05).squared;
-				mulArray0.addVolArray(getArray);
-			}); 0.2.wait;}.loop });
-			task.start;
-		}.fork;
-	}
+task = Task({ { buffer.getn(2, size*2, { arg buf;
+var z, x;
+z = buf.clump(2).flop;
+z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
+x = Complex(z[0], z[1]);
+getArray = (Array.newFrom(x.magnitude)* 0.05).squared;
+mulArray0.addVolArray(getArray);
+}); 0.2.wait;}.loop });
+task.start;
+}.fork;
+}
 
-	setThresholdShort {arg in;
-		mulArray0.threshold_(in);
-	}
+setThresholdShort {arg in;
+mulArray0.threshold_(in);
+}
 
-	setMultFactor0 {arg in;
-		mulArray0.multFactor_(in);
-	}
+setMultFactor0 {arg in;
+mulArray0.multFactor_(in);
+}
 
-	setTripCountTo {arg in;
-		mulArray0.setTripCountTo(in);
-	}
+setTripCountTo {arg in;
+mulArray0.setTripCountTo(in);
+}
 
-	pause {
-		if (task!=nil,{
-			task.pause;
-			synth.set(\pauseGate, 0);
-		});
-	}
+pause {
+if (task!=nil,{
+task.pause;
+synth.set(\pauseGate, 0);
+});
+}
 
-	unpause {
-		task.resume;
-		synth.set(\pauseGate, 1);
-		synth.run(true);
-	}
+unpause {
+task.resume;
+synth.set(\pauseGate, 1);
+synth.run(true);
+}
 
-	setAnalSec {arg analSex;
-		waitTime = 1/analSex;
-	}
+setAnalSec {arg analSex;
+waitTime = 1/analSex;
+}
 
-	turnDispOn {
-		mulArray0.turnDispOn;
-	}
+turnDispOn {
+mulArray0.turnDispOn;
+}
 
-	turnDispOff {
-		mulArray0.turnDispOff;
-	}
+turnDispOff {
+mulArray0.turnDispOff;
+}
 
-	setMulArrayWaitTime {arg in;
-		mulArray0.waitTime_(in);
-	}
+setMulArrayWaitTime {arg in;
+mulArray0.waitTime_(in);
+}
 
-	killMe {
-		mulArray0.killMe;
-		task.stop;
-		synth.set(\gate, 0);
-	}
+killMe {
+mulArray0.killMe;
+task.stop;
+synth.set(\gate, 0);
+}
 }*/
 
 // FeedbackControl_Mod : Module_Mod {

@@ -15,7 +15,7 @@ MainProcessingWindow : MidiOscObject {
 
 		buttonView = CompositeView().maxHeight_(15);
 		infoView = CompositeView().maxHeight_(15);
-		objectView = CompositeView().maxHeight_(360).maxWidth_(360);
+		objectView = CompositeView().maxHeight_(modularObjects.size.sqrt*60).maxWidth_(modularObjects.size.sqrt*80);
 
 		inputsButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
 		.states_([["Inputs", Color.black, Color.grey]])
@@ -172,9 +172,9 @@ MainProcessingWindow : MidiOscObject {
 		}});
 
 		win = Window("Live Modular Instrument"+group.server);
-		win.view.maxWidth_(320).maxHeight_(350);
+		win.view.maxWidth_(objectView.bounds.height+40).maxHeight_(objectView.bounds.width);
 
-		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(4)).margins_(0!4).spacing_(0));
+		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(modularObjects.size.sqrt)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
 		infoView.layout_(HLayout(listeningPort,lemurPorts[0], lemurPorts[1], sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
 
