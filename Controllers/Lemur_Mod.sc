@@ -106,7 +106,7 @@ Lemur_Mod {
 
 		if(responders.size!=0,{responders.do{arg item; item.free}});
 
-		25.do{arg i;
+		50.do{arg i;
 
 			//FADERS
 			if(i==0,{
@@ -124,7 +124,7 @@ Lemur_Mod {
 
 		};
 
-		25.do{arg i;
+		100.do{arg i;
 
 			//FADERS
 			if(i==0,{
@@ -207,7 +207,6 @@ Lemur_Mod {
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
 			function = [
 				{|val|
-					//{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer;
 					localControlObject.valueAction_(localControlObject.controlSpec.map(val));
 					this.sendOSC(controllerKey++"x", val);
 				},
@@ -218,12 +217,10 @@ Lemur_Mod {
 			function = [
 				{|val|
 					localControlObject.activex_(val);
-					//{}.defer;
 					this.sendOSC(controllerKey++"x", val);
 				},
 				{|val|
 					localControlObject.activey_(val);
-					//{}.defer;
 					this.sendOSC(controllerKey++"y", val);
 				},
 				{|val| localControlObject.zAction.value(val)}]

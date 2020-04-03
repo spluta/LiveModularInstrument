@@ -127,4 +127,45 @@ Routine.run({
 	(FM7.ar(ctls.flatten*MouseX.kr(0,100), mods.flatten/**MouseY.kr(0,4)*/).slice(chans) * [1, 1, LFSaw.kr(0.1).range(0, -12.dbamp), 1, -3.dbamp]).clump(2).sum*0.5;
             }.play)
 
-Pulse.ar(-0.5, 
+{Pulse.ar(-2, 0.5).poll}.scope
+
+
+
+"/Users/spluta/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/CrossFeedback1/trainingFile0.csv"
+
+({FM7.ar([[MouseX.kr(20, 10000), 0, 1], [MouseY.kr(20, 10000), 0, 1], [0,0,0], [0,0,0], [0,0,0], [0,0,0]],
+	[
+		[0, 1, 0, 0, 0, 0],
+		[1, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0]
+]).slice([0])*0.1}.play)
+
+		(
+{
+    var ctls, mods, chans;
+    ctls = [
+        // freq, phase, amp
+        [LFNoise1.kr(0.5).range(300, 310), 0, 1],
+        [LFNoise1.kr(0.5).exprange(3, 310), 0, 1],
+        [LFNoise1.kr(0.5).exprange(3, 100), 0, 1],
+        [LFNoise1.kr(0.5).exprange(3, 100), 0, 1],
+        [LFNoise1.kr(0.5).exprange(3, 100), 0, 1],
+        [LFNoise1.kr(0.5).exprange(3, 100), 0, 1]
+    ];
+    mods = [
+        [Line.kr(0, 0.001, 2), Line.kr(0.1, 0, 4), 0, MouseY.kr(0, 6), 0, 0],
+        [MouseX.kr(0, 6), 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0]
+    ];
+    chans = [0, 1];
+    FM7.ar(ctls, mods).slice(chans) * -12.dbamp; // using "slice" to select specific channels
+}.play;
+)
+
+DX7

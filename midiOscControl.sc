@@ -87,27 +87,34 @@ MidiOscControl {
 					this.setFunction(module, controllerKey++"z", function[1], server);
 				},
 				3, {
-				//this is just for MultiBall..shit I broke it for TouchOsc
-				controllerKey = controllerKey.asString;
-				controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
-				this.setFunction(module, controllerKey++"x", function[0], server);
-				this.setFunction(module, controllerKey++"y", function[1], server);
-				this.setFunction(module, controllerKey++"z", function[2], server, false);
+					controllerKey = controllerKey.asString;
+					controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
+					if(controllerKey.contains("Ball")){//Lemur Multiball should go here
+						this.setFunction(module, controllerKey++"x", function[0], server);
+						this.setFunction(module, controllerKey++"y", function[1], server);
+						this.setFunction(module, controllerKey++"z", function[2], server, false);
+					}/*{
+						if((controllerKey.contains("Slider1"))||(controllerKey.contains("Slider1"))){//Joystick only
+							//I really don't understand why this doesn't work
+							//function.postln;
+							this.setFunction(module, controllerKey.replace("Slider2", "Slider1"), function[0].deepCopy, server);
+							this.setFunction(module, controllerKey.replace("Slider1", "Slider2"), function[1].deepCopy, server);
+						}
+					}*/
 			});
 		});
 	}
 
-
 	*setFunction {|module, controllerKey, function, server, setMsg=true|
-		var tempDict;
+		[module, controllerKey, function, server].postln;
 
 		if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-			tempDict = Dictionary.new;
+			//"set it".postln;
 			actions[server.asSymbol].add(controllerKey.asSymbol->function);
+			//actions[server.asSymbol].keys.do{|item| item.postln};
 		});
 		if(setMsg,{module.setOscMsg(controllerKey.asSymbol)});
 	}
-
 
 	*setControllerNoGui {arg key, functions, server;
 
@@ -123,7 +130,7 @@ MidiOscControl {
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
 
-		[controllerKey, typeOfController].postln;
+		//[controllerKey, typeOfController, instantTypeOfController].postln;
 
 		if((typeOfController==instantTypeOfController),{
 
@@ -157,6 +164,7 @@ MidiOscControl {
 
 	*doTheGUI {arg serverKey, key, val;
 		var nothing, key2, xyz, tempNode;
+		//[serverKey, key, val].postln;
 		tempNode = actions[serverKey.asSymbol];
 		if(tempNode!=nil,{
 			if(tempNode[key.asSymbol]!=nil,{

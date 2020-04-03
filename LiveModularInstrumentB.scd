@@ -5,6 +5,10 @@ SystemOverwrites
 
 ModularVolumeObject
 
+b = OSCFunc({|msg, time, addr|
+	addr.postln;
+}, '/Container2/Container2/Fader/x').oneShot;
+
 //get Lemur Ports
 (a = OSCFunc({|msg, time, addr|
 	addr.postln;
@@ -14,6 +18,7 @@ b = OSCFunc({|msg, time, addr|
 }, '/Container2/Switches/x').oneShot;
 )
 
+HID
 
 (
 LiveModularInstrument.boot(9, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/Scores/Konus/SC/testSetup");
@@ -31,10 +36,9 @@ LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPort
 )
 
 
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
 
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
 
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/teaching/talks/NN_SynthTalk");
 
 
 71.midicps
