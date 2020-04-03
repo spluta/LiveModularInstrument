@@ -30,7 +30,7 @@ NN_Synth_Mod : Module_Mod {
 		pythonAddrs = List.fill(numModels, {|i| NetAddr("127.0.0.1", ports[i])});
 
 		trainingList = List.newClear(0);
-		controlValsList = List[];
+		controlValsList = (0!10);
 		valList = List.fill(sizeOfNN, {0});
 		//this.setAllVals;
 		allValsList = List.fill(8, {List.fill(sizeOfNN+4, {0})});

@@ -280,11 +280,11 @@ NN_Synths_Mod : Module_Mod {
 		};*/
 
 
-	setInputSlider {|vals|
+	setInputSliders {|vals|
 
 		if(nn_synths[currentSynth]!=nil){
 			synthControlCounter = synthControlCounter+1;
-			if(synthControlCounter.odd){nn_synths[currentSynth].setXYZ(i, vals)}//filters out half the messages
+			if(synthControlCounter.odd){nn_synths[currentSynth].setXYZVals(vals)}//filters out half the messages
 		}
 	}
 

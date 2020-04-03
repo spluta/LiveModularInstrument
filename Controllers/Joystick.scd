@@ -39,7 +39,7 @@ HID.action.value
 
 HID.action = {|...msg|
 	switch(msg[4],
-		1, {},
+		1, {"button0".postln},
 		2, {},
 		3, {},
 		4, {},
