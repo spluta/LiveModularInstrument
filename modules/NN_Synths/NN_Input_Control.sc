@@ -1,5 +1,5 @@
-NN_Synth_Control_NNMod :  TypeOSCModule_Mod {
-	var texts, functions, zFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox;
+NN_Input_Control_NNMod :  TypeOSCModule_Mod {
+	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals;
 
 	init {
 
@@ -9,23 +9,31 @@ NN_Synth_Control_NNMod :  TypeOSCModule_Mod {
 
 		texts = List.newClear(0);
 
-		numControls = 80;
+		numControls = 10;
 
-		texts = Array.fill(numControls, {|i| "slider"+(i+1).asString}).addAll(Array.fill(numControls, {|i| "zAction"+(i+1).asString}));
+		sliderVals = (0!numControls).asList;
+
+		texts = Array.fill(numControls, {|i| "slider"+(i+1).asString}).addAll(numControls, {|i| "onOff"+(i+1).asString});
 
 		functions = Array.fill(numControls, {|i|
-			{arg val; parent.setGUISlider(i, val)}
-		});
-		zFunctions = Array.fill(numControls, {|i|
-			{arg val; parent.setGUIzVal(i, val)}
+			{arg val;
+				sliderVals.put(i, val)
+				parent.setInputSliders(s)}
 		});
 
-		//would be better to add zActions to the above
+		onOffFunctions = Array.fill(numControls, {|i|
+			{arg val; parent.setInputButton(i, val)}
+		});
+
 		functions.do{arg func, i;
-			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false, true, i+functions.size, zFunctions[i]));
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false, true, i+functions.size));
 		};
 
-		labels = Array.fill(numControls, {|i|
+		onOffFunctions.do{arg func, i;
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false, true, i+onOffFunctions.size));
+		};
+
+		/*labels = Array.fill(numControls, {|i|
 			var field;
 			field = TextField().font_(Font("Helvetica", 10)).maxHeight_(15);
 			if(i==0){field.string_("/Container2/Container2/Text")}{field.string_("/Container2/Container2/Text"++(i+1).asString)}
@@ -77,7 +85,7 @@ NN_Synth_Control_NNMod :  TypeOSCModule_Mod {
 				parent.setGUISlider(val-1, rando);
 				this.setLemurRange(val-1, rando);
 			};
-		});
+		});*/
 
 		win.layout_(
 			VLayout(

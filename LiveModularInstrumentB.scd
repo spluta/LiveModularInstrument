@@ -50,7 +50,7 @@ VSTPlugin
 
 
 //nothin
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58124]), Joystick_Mod.setPaths(["USB_046d_c215_14410000"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 
 
 Slew
