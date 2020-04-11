@@ -13,8 +13,7 @@ Joystick_Mod {
 
 	*setPaths {|pathsIn|
 
-		pathsIn.postln;
-		HID.findAvailable.postln;
+		HID.findAvailable;
 		paths = List.newClear(0);
 
 		devices = List.newClear(0);
@@ -45,15 +44,12 @@ Joystick_Mod {
 				if (temp<12){address = "/HIDButton"++temp++"/"++path}
 				{address = "/HIDSlider"++(temp-11)++"/"++path};
 
-				address.postln;
 
 				MidiOscControl.respond(address.asSymbol, msg[0]);
 
 				if(sendRequest){
 					if (temp<12){type = \onOff}
 					{type = \slider2D};
-
-					type.postln;
 
 					MidiOscControl.setController(address.asSymbol, type)
 				};
@@ -82,7 +78,6 @@ Joystick_Mod {
 			if(localControlObject.isKindOf(QtEZSlider2D)){
 				function = [
 					{|val|
-						val.postln;
 						localControlObject.activex_(val);
 					},
 					{|val|

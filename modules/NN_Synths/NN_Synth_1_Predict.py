@@ -1,5 +1,5 @@
 """
-Neural Net for SC Cross-Feedback Synthesis Model
+Neural Net for SC NN Controlled Control Model
 """
 import argparse
 import math

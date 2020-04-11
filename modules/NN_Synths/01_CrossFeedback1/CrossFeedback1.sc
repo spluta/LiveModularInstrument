@@ -2,7 +2,7 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("CrossFeedback1_NNMod",{
-				var localIn, noise1, osc1, osc1a, osc1b, osc2, out, foldNum, dust, trigEnv, filtMod, filterFreq, envs, envRise, envFall;
+				var localIn, noise1, osc1, osc1a, osc1b, osc2, out, foldNum, dust, trigEnv, filtMod, filterFreq, envs, onOffSwitch;
 
 				localIn = LocalIn.ar(1);
 
@@ -28,14 +28,11 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 
 				out = SelectX.ar((\dustRate.kr<800), [out, out*dust]);
 
-				out = out*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*Lag.kr(In.kr(\onOffBus.kr), 0.01);
+				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
-				envRise = In.kr(\envRiseBus.kr).clip(0.001, 2);
-				envFall = In.kr(\envFallBus.kr).clip(0.001, 2);
+				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
 
-				trigEnv = LagUD.ar(LFPulse.ar(1/(envRise+envFall), 0, envRise/(envRise+envFall)), envRise, envFall);
-
-				trigEnv = SelectX.ar(In.kr(\envOnOffBus.kr), [K2A.ar(1), trigEnv]);
+				out = out*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*onOffSwitch;
 
 				filterFreq = \outFilterFreq.kr(20000).clip(20, 20000);
 
@@ -45,7 +42,7 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				Out.ar(\outBus.kr, out*trigEnv*envs);
+				Out.ar(\outBus.kr, out*envs);
 			}).writeDefFile;
 		}
 	}
@@ -91,8 +88,4 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 
 	}
 
-/*	init2 {arg parent, otherValsBusses, onOffBus, envOnOffBus;
-		synths.add(Synth("NN_Synth_CrossFeedback1b", [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
-		this.init_window(parent);
-	}*/
 }

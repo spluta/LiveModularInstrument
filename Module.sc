@@ -38,13 +38,9 @@ MidiOscObject {
 		});
 	}
 
-	//why is it calling this
 	sendOSC {|num, val|
 		var unmapped;
-		//"sendOSC".postln;
-		//[num, val].postln;
 		if(oscMsgs[num]!=nil, {
-			//oscMsgs[num].postln;
 			if(oscMsgs[num].asString.contains("/Switches"), {
 				if(controls[num].value==1,{
 					Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
@@ -139,7 +135,6 @@ MidiOscObject {
 			})
 		};
 
-		//assignButtons.put(num, temp);
 		^temp
 	}
 
@@ -174,14 +169,12 @@ MidiOscObject {
 
 	load {arg loadArray;
 
-		//"loadArray1".postln;
 		loadArray[1].do{arg controlLevel, i;
 			var control;
-			//[controlLevel, i].postln;
+
 			try { control=controls[i] } { control = nil; };
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				//dontLoadControls.postln;
 				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not)&&(controlLevel.size<2),{
 					controls[i].valueAction_(controlLevel);
 				});

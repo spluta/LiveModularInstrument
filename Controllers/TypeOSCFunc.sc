@@ -104,14 +104,13 @@ TypeOSCFunc_Mod {
 }
 
 TypeOSCFuncObject {
-	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction;
+	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction, <>frozen = false;
 
 	*new {arg mama, oscMsgs, location, text, function, viewNumBox=true, isXY=false, addZAction=false, zLocation, zFunction;
 		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).viewNumBox_(viewNumBox).isXY_(isXY).addZAction_(addZAction).zLocation_(zLocation).zFunction_(zFunction).init;
 	}
 
 	init {
-		[mama, oscMsgs, location, text, function].postln;
 
 		zAction = {};
 
@@ -126,7 +125,6 @@ TypeOSCFuncObject {
 		});
 		textField = TextField().font_(Font("Helvetica", 10)).maxHeight_(15)
 		.action_{arg field;
-			"do the action".postln;
 			if(oscMsg!=nil,{
 				MidiOscControl.clearController(mama.group.server, oscMsg);
 				if(oscMsg_Z!=nil){
@@ -141,7 +139,6 @@ TypeOSCFuncObject {
 				//TypeOSCFunc_Mod.addResponder(field.value);
 			});
 			oscMsgs.put(location, field.value.asString);
-			oscMsgs.postln;
 			oscMsg = field.value.asString;
 			functions = List[function];
 
@@ -154,8 +151,6 @@ TypeOSCFuncObject {
 					functions.add({arg val; TypeOSCFunc_Mod.sendOSCxy(oscMsgs[location], val)});
 				});
 			});
-
-			functions.postln;
 
 			MidiOscControl.setControllerNoGui(oscMsg, functions, mama.group.server);
 
@@ -172,7 +167,6 @@ TypeOSCFuncObject {
 	}
 
 	makeZAction {|location, msg, function|
-		"makeZAction ".post; [location, msg, function].postln;
 		oscMsgs.put(location, msg);
 		MidiOscControl.setControllerNoGui(msg, List[function], mama.group.server);
 		oscMsg_Z = msg;
@@ -186,5 +180,9 @@ TypeOSCFuncObject {
 
 	valueAction_ { arg val;
 		textField.valueAction_(val);
+	}
+
+	setExternal_ { arg val;
+		numberBoxes[0].value_(val);
 	}
 }

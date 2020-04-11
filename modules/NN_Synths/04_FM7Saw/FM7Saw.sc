@@ -2,7 +2,7 @@ FM7Saw_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("FM7Saw_NNMod", {
-				var ctls, mods, sig, filt, envs, onOff;
+				var ctls, mods, sig, filt, envs, onOffSwitch;
 
 				ctls = 3.collect{|i|2.collect{|i2| LFSaw.ar(*["frC","mulC","addC"].collect{|name| NamedControl.kr((name++i++i2).asSymbol, 1.5.linrand+0.5, 0.1)}.insert(1,0))}.insert(1,0)}.addAll(0!3!3);
 
@@ -12,8 +12,6 @@ FM7Saw_NNMod : NN_Synth_Mod {
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				onOff = Lag.kr(In.kr(\onOffBus.kr), 0.01);
-
 				filt = SelectX.ar( \filtMode.kr(0, 0.1), [
 					BMoog.ar(sig, \filtFrq.kr(500).clip(20, 20000), \filtQ.kr(0.2, 0.1).clip(0.001, 0.999), 0, \filtSat.kr(0.95, 0.1)),
 					BBandPass.ar(sig, \filtFrq.kr, \filtQ.kr)]);
@@ -22,9 +20,11 @@ FM7Saw_NNMod : NN_Synth_Mod {
 
 				sig = Normalizer.ar(sig, 0.9);
 
-				//sig = CrossoverDistortion.ar(sig, \distAmp.kr(1, 0.1), \distSmooth.kr(0.5, 0.1));
+				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
-				sig = Limiter.ar(sig*envs*onOff*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1), 0.9);
+				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
+
+				sig = Limiter.ar(sig*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1), 0.9);
 
 				Out.ar(\outBus.kr(0), sig);
 

@@ -25,7 +25,7 @@ LiveModularInstrument.boot(9, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 )
 
 //Feedback TV
- (
+(
 	LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/SkyTV");
 )
 
@@ -35,6 +35,10 @@ LiveModularInstrument.boot(9, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/Scores/Konus/SC/feedback1c");
 )
 
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN");
+
+
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
 
 
 LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");

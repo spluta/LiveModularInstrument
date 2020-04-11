@@ -2,7 +2,7 @@ FM7_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("FM7_NNMod", {
-	var ctls, mods, sig, envs, onOff;
+	var ctls, mods, sig, envs, onOffSwitch;
 
 	ctls = 2.collect{|i|2.collect{|i2| Pulse.ar(*["frC","widC","mulC","addC"].collect{|name| NamedControl.kr((name++i++i2).asSymbol, 1.5.linrand+0.5, 0.1)})}.insert(1,0)}.addAll(0!3!4);
 
@@ -12,11 +12,13 @@ FM7_NNMod : NN_Synth_Mod {
 
 	envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-	onOff = Lag.kr(In.kr(\onOffBus.kr), 0.01);
+	onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
+
+	onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
 
 	sig = Normalizer.ar(sig, 0.9);
 
-	sig = Limiter.ar(sig*envs*onOff*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1), 0.9);
+	sig = Limiter.ar(sig*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1), 0.9);
 
 	Out.ar(\outBus.kr(0), sig);
 

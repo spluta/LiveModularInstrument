@@ -72,7 +72,6 @@ MidiOscControl {
 
 		//add the function to the Dictionary
 		if(function!=nil,{
-			//"function size: ".post; function.size.postln;
 			switch(function.size,
 				0,{
 					this.setFunction(module, controllerKey, function, server);
@@ -96,7 +95,6 @@ MidiOscControl {
 					}/*{
 						if((controllerKey.contains("Slider1"))||(controllerKey.contains("Slider1"))){//Joystick only
 							//I really don't understand why this doesn't work
-							//function.postln;
 							this.setFunction(module, controllerKey.replace("Slider2", "Slider1"), function[0].deepCopy, server);
 							this.setFunction(module, controllerKey.replace("Slider1", "Slider2"), function[1].deepCopy, server);
 						}
@@ -106,12 +104,9 @@ MidiOscControl {
 	}
 
 	*setFunction {|module, controllerKey, function, server, setMsg=true|
-		[module, controllerKey, function, server].postln;
 
 		if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-			//"set it".postln;
 			actions[server.asSymbol].add(controllerKey.asSymbol->function);
-			//actions[server.asSymbol].keys.do{|item| item.postln};
 		});
 		if(setMsg,{module.setOscMsg(controllerKey.asSymbol)});
 	}
@@ -130,8 +125,6 @@ MidiOscControl {
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
 
-		//[controllerKey, typeOfController, instantTypeOfController].postln;
-
 		if((typeOfController==instantTypeOfController),{
 
 			localControlObject = instantControlObject;
@@ -146,7 +139,6 @@ MidiOscControl {
 	}
 
 	*clearController {arg serverKey, oscMsgClear;
-		[serverKey, oscMsgClear].postln;
 		actions[serverKey.asSymbol].removeAt(oscMsgClear.asSymbol);
 		actions[serverKey.asSymbol].removeAt((oscMsgClear++"/z").asSymbol);
 	}
@@ -164,7 +156,7 @@ MidiOscControl {
 
 	*doTheGUI {arg serverKey, key, val;
 		var nothing, key2, xyz, tempNode;
-		//[serverKey, key, val].postln;
+
 		tempNode = actions[serverKey.asSymbol];
 		if(tempNode!=nil,{
 			if(tempNode[key.asSymbol]!=nil,{

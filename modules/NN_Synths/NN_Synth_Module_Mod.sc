@@ -9,7 +9,7 @@ NN_Synth_Mod : Module_Mod {
 	classvar <>pythonPath = "/usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/bin/python3.7";
 	var pythonFilesPath;
 
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, xyz, valList, allValsList, nnVals, trainingList, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valList, allValsList, nnVals, trainingList, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1;
 
 	init_window {|parentIn|
 
@@ -19,9 +19,14 @@ NN_Synth_Mod : Module_Mod {
 
 		pythonFilesPath = pythonFilesPath.fullPath.copyRange(0, pythonFilesPath.colonIndices[pythonFilesPath.colonIndices.size-2]);
 
+		modelFolder = nil;
+
 		parent = parentIn;
 
 		sliderCount = 0;
+
+		onOff0 = 0;
+		onOff1 = 0;
 
 		receivePort = NN_Synth_ID.next;
 
@@ -30,18 +35,11 @@ NN_Synth_Mod : Module_Mod {
 		pythonAddrs = List.fill(numModels, {|i| NetAddr("127.0.0.1", ports[i])});
 
 		trainingList = List.newClear(0);
-		controlValsList = (0!10);
+		controlValsList = List.newClear(0);
 		valList = List.fill(sizeOfNN, {0});
-		//this.setAllVals;
 		allValsList = List.fill(8, {List.fill(sizeOfNN+4, {0})});
 
-		xyz = List.fill(2, {List.fill(3, {0})});
-
-		numModels.do{|i|
-			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+path.quote+"--port"+ports[i].asString
-				+"--sendPort"+receivePort.asString+"--num"+i.asString+"&").unixCmd;
-			ServerQuit.add({NetAddr("127.0.0.1", ports[i]).sendMsg('/close')})
-		};
+		nnInputVals = (0!parent.inputControl.numActiveControls).postln;
 
 		//set the system to receive messages from each python instance
 		OSCFunc.new({arg ...msg;
@@ -68,16 +66,16 @@ NN_Synth_Mod : Module_Mod {
 						whichModel = modelNum;
 						5.do{|i|
 							var temp;
-							temp = Array.fill(4, {1.0.rand});
+							temp = Array.fill(parent.inputControl.numActiveControls, {1.0.rand});
 							controlValsList = temp.asList;
 							pythonAddrs[modelNum].sendMsg(*['/predict'].addAll(temp));
 							0.01.wait
 						};
-						pythonAddrs[modelNum].sendMsg(*['/prime'].addAll([0,0,0,0]));
+						pythonAddrs[modelNum].sendMsg(*['/prime'].addAll(nnInputVals));
 						0.1.wait;
 					};
 					whichModel = 0;
-					loadedOSC.free;
+					//loadedOSC.free;
 				}.fork;
 			}
 		}, '/loaded', nil, receivePort);
@@ -86,8 +84,32 @@ NN_Synth_Mod : Module_Mod {
 		this.createWindow;
 	}
 
-	init2 {arg nameIn, parent, otherValsBusses, onOffBus, envOnOffBus;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+	clearTraining {
+		modelFolder = nil;
+		this.killThePythons;
+	}
+
+	killThePythons {
+		"kill the pythons".postln;
+		pythonAddrs.do{|item|item.sendMsg('/close')}
+	}
+
+	loadTraining {|modelFolderIn|
+		{
+			modelFolder = modelFolderIn;
+			this.killThePythons;
+			1.wait;
+			loadedCount = 0;
+			numModels.do{|i|
+				(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+ports[i].asString
+					+"--sendPort"+receivePort.asString+"--num"+i.asString+"&").postln.unixCmd;
+				ServerQuit.add({NetAddr("127.0.0.1", ports[i]).sendMsg('/close')})
+			};
+		}.fork;
+	}
+
+	init2 {arg nameIn, parent, volBus, onOff0, onOff1;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 		this.init_window(parent);
 	}
 
@@ -123,40 +145,19 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	changeModel {|i|
-		allValsList.put(whichModel, valList.addAll(controlValsList.flatten));
+		allValsList.put(whichModel, valList.addAll(controlValsList));
 		whichModel = i;
 		valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
 		this.setSlidersAndSynth(valList, true);
 		//parent.setMultiBalls(allValsList[whichModel].copyRange(sizeOfNN,sizeOfNN+4));
 	}
 
-	doTheZ {|i, val|
-		xyz[i].put(2, val.value);
-		switch(parent.envChoice,
-			0, {parent.onOffBus.set(1); parent.envOnOffBus.set(0)},
-			1, {parent.onOffBus.set(xyz[[xyz[0][2],xyz[1][2]].maxIndex][2]); parent.envOnOffBus.set(0)},
-			2, {parent.onOffBus.set(xyz[[xyz[0][2],xyz[1][2]].maxIndex][2]); parent.envOnOffBus.set(1)}
-		);
-	}
-
-	setEnv {|num|
-		switch(num,
-			0, {parent.onOffBus.set(1); parent.envOnOffBus.set(0)},
-			1, {parent.onOffBus.set(xyz[[xyz[0][2],xyz[1][2]].maxIndex][2]); parent.envOnOffBus.set(0)},
-			2, {parent.onOffBus.set(xyz[[xyz[0][2],xyz[1][2]].maxIndex][2]); parent.envOnOffBus.set(1)}
-		)
-	}
-
 	configure {
-
-		xyz.do{|item,i| controlValsList.put(i, item.copyRange(0,1))};
-
-		if(parent.predictOnOff==1){pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList.flatten))};
+		if(parent.predictOnOff==1){pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList))};
 	}
 
-	setXYZ {|i, vals|
-		//xyz[i].put(0, vals[0]);
-		//xyz[i].put(1, vals[1]);
+	setNNInputVals {|vals|
+		controlValsList = vals;
 		this.configure;
 	}
 
@@ -204,14 +205,13 @@ NN_Synth_Mod : Module_Mod {
 			1.wait;
 			"reload ".post;
 
-			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+path.quote+"--port"+(ports[whichModel]).asString
+			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[whichModel]).asString
 				+"--sendPort"+receivePort.asString+"--num"+whichModel.asString+"&").unixCmd;
 			OSCFunc.new({arg ...msg;
 				"reloaded".postln;
 				{
 					10.do{
-
-						pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(Array.fill(4, {1.0.rand})));
+						pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(Array.fill(parent.inputControl.numActiveControls, {1.0.rand})));
 						0.01.wait;
 					}
 				}.fork
@@ -222,24 +222,24 @@ NN_Synth_Mod : Module_Mod {
 	trainNN {
 		var saveFile, modelFile;
 		{
-			saveFile = (path++"trainingFile"++whichModel++".csv");
+			saveFile = (modelFolder++"/"++"trainingFile"++whichModel++".csv");
 			saveFile = File(saveFile, "w");
-			trainingList.do{arg item;
+			[[valList.size, controlValsList.size]].addAll(trainingList).do{arg item;
 				item.do{|item2, i|
 					if(i!=0){saveFile.write(", ")};
 					item2 = item2.asString;
 					saveFile.write(item2);
-
 				};
 				saveFile.write("\n");
 			};
 			saveFile.close;
 			1.wait;
 
-			saveFile = path++"trainingFile"++whichModel++".csv";
-			modelFile = path++"modelFile"++whichModel++".h5";
-			(pythonPath+pythonFilesPath.quote++"NN_Synth_1_Save.py"+"--numbersFile"+saveFile.quote+"--modelFile"+modelFile.quote+"--sendPort"+receivePort.asString+"--sizeOfNN"+sizeOfNN.asString+"--sizeOfControl"+4.asString+"&").unixCmd;
+			saveFile = modelFolder++"/"++"trainingFile"++whichModel++".csv";
+			modelFile = modelFolder++"/"++"modelFile"++whichModel++".h5";
+			(pythonPath+pythonFilesPath.quote++"NN_Synth_1_Save.py"+"--numbersFile"+saveFile.quote+"--modelFile"+modelFile.quote+"--sendPort"+receivePort.asString+"&").postln.unixCmd;
 		}.fork;
+
 		OSCFunc({
 			this.reloadNN;
 			"trained".postln;
@@ -247,17 +247,25 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	loadPoints {
-		var tempA, tempB;
-		trainingList = CSVFileReader.read(path++"trainingFile"++whichModel++".csv");
-		trainingList = trainingList.collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
-		trainingList.addAll(sizeOfNN-trainingList.size!0);
-		trainingList.size;
-		currentPoint = 0;
+		var tempA, tempB, fileInfo;
 
-		valList = trainingList[currentPoint].copyRange(0,trainingList[currentPoint].size-5);
-		this.setSlidersAndSynth(valList, true);
-		parent.setLemur(valList);
-		parent.setMultiBallsNoAction(trainingList[currentPoint].copyRange(trainingList[currentPoint].size-4,trainingList[currentPoint].size-1));
+		if(modelFolder!=nil){
+
+			trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++whichModel++".csv");
+			fileInfo = trainingList[0].collect{|item| item.asInteger};
+			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
+			//trainingList.addAll(sizeOfNN-trainingList.size!0); //not sure what this would do
+			trainingList.size;
+			currentPoint = 0;
+
+			valList = trainingList[currentPoint].copyRange(0,fileInfo[0]-1);
+			valList.postln;
+
+			this.setSlidersAndSynth(valList, true);
+			parent.setLemur(valList);
+			controlValsList = trainingList[currentPoint].copyRange(fileInfo[0], fileInfo[0]+fileInfo[1]-1);
+			parent.setControlPointsNoAction(controlValsList);
+		}{"no model".postln}
 	}
 
 	newPointsList {
@@ -266,7 +274,8 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	addPoint {
-		trainingList.add(valList.copyRange(0,sizeOfNN-1).addAll(controlValsList.flatten));
+		[valList.size, controlValsList.size].postln;
+		trainingList.add(valList.copyRange(0,sizeOfNN-1).addAll(controlValsList));
 
 	}
 
@@ -275,7 +284,7 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	pastePoint {|point|
-		trainingList.add(point.addAll(controlValsList.flatten));
+		trainingList.add(point.addAll(controlValsList));
 	}
 
 	removePoint {
@@ -286,26 +295,28 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	nextPoint {
-		currentPoint = (currentPoint+1).wrap(0, trainingList.size-1);
+		if(trainingList.size>0){
+			currentPoint = (currentPoint+1).wrap(0, trainingList.size-1);
 
-		valList = trainingList[currentPoint].copyRange(0,trainingList[currentPoint].size-5);
-		valList = valList.addAll((sizeOfNN-valList.size)!0);
-		this.setSlidersAndSynth(valList, true);
-		parent.setLemur(valList);
-		parent.setMultiBallsNoAction(trainingList[currentPoint].copyRange(trainingList[currentPoint].size-4,trainingList[currentPoint].size-1));
+			valList = trainingList[currentPoint].copyRange(0,trainingList[currentPoint].size-(controlValsList.size+1));
+			valList = valList.addAll((sizeOfNN-valList.size)!0); //fill with zeroes if it isn't large enough
+
+			this.setSlidersAndSynth(valList, true);
+			parent.setLemur(valList);
+
+			controlValsList = trainingList[currentPoint].copyRange(valList.size,trainingList[currentPoint].size-1);
+			controlValsList.postln;
+			valList.postln;
+			parent.setControlPointsNoAction(controlValsList);
+		}
 	}
 
 	reloadSynth {
 		"should be overwritten by the synth".postln;
 	}
 
-	getMultiBallPoints {
-		^trainingList[currentPoint].copyRange(sizeOfNN,sizeOfNN+3);
-	}
-
 	killMeSpecial {
-		"kill the pythons".postln;
-		pythonAddrs.do{|i|i.sendMsg('/close')};
+		this.killThePythons;
 	}
 
 	getLabels {

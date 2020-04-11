@@ -2,7 +2,7 @@ Noise0_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("Noise0_NNMod",{
-				var impulseRate, impulseAdd, envs, onOff, sound, filterMod, dust, filterFreqMod, comb;
+				var impulseRate, impulseAdd, envs, onOff, sound, filterMod, dust, filterFreqMod, comb, onOffSwitch;
 
 				//impulseRate = MouseX.kr(200, 20000);
 				//impulseAdd = MouseY.kr(0, 20000);
@@ -32,8 +32,11 @@ Noise0_NNMod : NN_Synth_Mod {
 
 				sound = SoftClipAmp8.ar(sound, \softClipGain.kr(1));
 
-				onOff = Lag.kr(In.kr(\onOffBus.kr), 0.01);
-				Out.ar(\outBus.kr(0), sound.dup*envs*onOff*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1));
+				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
+
+				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
+
+				Out.ar(\outBus.kr(0), sound.dup*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1));
 			}).writeDefFile;
 		}
 	}
