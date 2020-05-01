@@ -34,7 +34,7 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 
 				out = out*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*onOffSwitch;
 
-				filterFreq = \outFilterFreq.kr(20000).clip(20, 20000);
+				filterFreq = \outFilterFreq.kr(20000, 0.05).clip(20, 20000);
 
 				filterFreq = (LFTri.ar(\filtModFreq.kr(0))*(\filtModAmp.kr(0).clip(0,1))).linexp(-1.0, 1.0, (filterFreq/2).clip(20, 20000), (filterFreq*2).clip(20, 20000));
 
@@ -60,8 +60,6 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 		sizeOfNN = 16;
 
 		this.initControlsAndSynths(sizeOfNN);
-
-		//dontLoadControls = (2..9).addAll((26..31)).addAll((33..35));
 
 		dontLoadControls = (0..(sizeOfNN-1));
 

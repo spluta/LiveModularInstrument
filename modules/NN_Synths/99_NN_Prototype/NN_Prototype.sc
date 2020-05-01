@@ -68,6 +68,16 @@ PrototypeElement {
 
 	}
 
+	setElements {arg vals;
+		vals.postln;
+		vals = vals.collect{|item, i| if(i==0){item.asString}{item.asFloat}};
+		[msgBox,lowBox,hiBox,warpBox].do{|item, i| item.valueAction_(vals[i])};
+		try {
+			this.valueAction_(vals[4])
+		};
+		onOffButton.valueAction_(1);
+	}
+
 	asView {^layout}
 
 	exportModel {
@@ -91,7 +101,7 @@ PrototypeElement {
 
 NN_Prototype_NNMod : NN_Synth_Mod {
 	var synthNameBox, reloadSynthButton, synthName;
-	var otherValsBusses, onOffBus, envOnOffBus, numControls, exportButton, sendValsButton;
+	var otherValsBusses, onOffBus, envOnOffBus, numControls, exportButton, sendValsButton, volBus,loadArgsButton;
 
 	setAllVals {
 
@@ -114,13 +124,20 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 	}
 
 	//overriding init2 from NN_Synth_Mod
-	init2 {arg nameIn, parent, otherValsBussesIn, onOffBusIn, envOnOffBusIn;
-		otherValsBusses = otherValsBussesIn;
-		onOffBus = onOffBusIn;
-		envOnOffBus = envOnOffBusIn;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+
+	init2 {arg nameIn, parent, volBusIn, onOff0, onOff1;
+		volBus = volBusIn;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 		this.init_window(parent);
 	}
+
+/*	init2 {arg nameIn, parent, otherValsBussesIn, onOffBusIn, envOnOffBusIn;
+		if(nameIn!=nil){
+		otherValsBusses = otherValsBussesIn;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+		};
+		this.init_window(parent);
+	}*/
 
 	createWindow {
 		synthNameBox = TextField().maxHeight_(15).font_(Font("Helvetica", 10))
@@ -130,19 +147,12 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 		};
 		synthName = "NotAName";
 
-		exportButton = Button()
-		.states_([["export", Color.black, Color.yellow]])
-		.action_{
-			controls.collect{|item|
-				[item.msg, item.controlSpec]}.asCompileString.postln;
-		};
-
 		reloadSynthButton = Button()
 		.states_([["reloadSynth", Color.black, Color.yellow]])
 		.action_{
 			if(synths[0]!=nil, {synths[0].set(\gate, 0)});
 
-			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 		};
 
 		sendValsButton = Button()
@@ -150,6 +160,28 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 		.action_{
 			if(synths[0]!=nil){controls.do{|item| item.doAction}};
 		};
+
+		exportButton = Button()
+		.states_([["export", Color.black, Color.yellow]])
+		.action_{
+			controls.collect{|item|
+				[item.msg, item.controlSpec]}.asCompileString.postln;
+		};
+
+		loadArgsButton = Button()
+		.states_([["load args from file", Color.black, Color.yellow]])
+		.action_{
+			var temp;
+			Dialog.openPanel({ arg path;
+				if(path.contains(".csv")){
+					temp = CSVFileReader.read(path);
+					temp.collect{arg line, i;
+						controls[i].setElements(line)
+					}
+				}
+			})
+		};
+
 
 		numControls.do{arg item, i;
 			controls.add(
@@ -170,7 +202,7 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 				VLayout(*controls.copyRange(0,(controls.size/2-1).asInteger)),
 				VLayout(*controls.copyRange((controls.size/2).asInteger, controls.size-1))
 			),
-			exportButton
+				HLayout(exportButton, loadArgsButton)
 		);
 		win.layout.spacing_(0).margins_(0!4);
 	}
@@ -186,7 +218,6 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 		valList = List.fill(sizeOfNN, {0});
 		allValsList = List.fill(numModels, List.fill(sizeOfNN, {0}));
 	}
-
 
 	save {
 		var saveArray, temp;
@@ -209,8 +240,9 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 		var tempNNSize=0;
 		if(loadArray!=nil,{
 			synthNameBox.valueAction_(loadArray[0].asString);
-			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
+			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 			loadArray[1].do{|item, i|
+				item.postln;
 				if(item[0]!=nil){controls[i].msgBox.valueAction_(item[0].asString)};
 				if(item[1]!=nil){controls[i].lowBox.valueAction_(item[1].asFloat)};
 				if(item[2]!=nil){controls[i].hiBox.valueAction_(item[2].asFloat)};

@@ -1,5 +1,5 @@
 NN_Input_Control_NNMod :  TypeOSCModule_Mod {
-	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton;
+	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton, modControls, controlsCount;
 
 	init {
 
@@ -7,19 +7,24 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 
 		numControls = 10;
 
-		this.initControlsAndSynths(numControls*3);
+		this.initControlsAndSynths(numControls*3+1);
 
 		sliderVals = (0!numControls).asList;
 		sliderOns = (0!numControls).asList;
 
 		texts = Array.fill(numControls, {|i| "slider"+(i+1).asString}).addAll(numControls, {|i| "onOff"+(i+1).asString});
 
+		modControls = 1;
+		controlsCount = 0;
+
 		functions = Array.fill(numControls, {|i|
 			{arg val;
-				sliderVals.put(i, val);
-				if(sliderOns[i]==1){
-					parent.setInputSliders(sliderVals.select{|item, i| sliderOns[i]==1})
-				}
+				controlsCount = (controlsCount+1).wrap(0,10);
+				if(controlsCount%modControls==0){
+					sliderVals.put(i, val);
+					if(sliderOns[i]==1){
+						parent.setInputSliders(sliderVals.select{|item, i| sliderOns[i]==1})
+				}}
 			}
 		});
 
@@ -43,11 +48,13 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 			controls.add(TypeOSCFuncObject(this, oscMsgs, i+(2*numControls), "onOff "++(i+1), func, true));
 		};
 
-		freezeButton = Button().maxHeight_(15)
+/*		freezeButton = Button().maxHeight_(15)
 		.states_([["Input Through", Color.black, Color.green], ["Input Off", Color.black, Color.red]])
 		.action_{|button|
 			numControls.do{|i| controls[i].frozen=button.value.asBoolean}
-		};
+		};*/
+
+		controls.add(QtEZSlider("skip inputs", ControlSpec(1,4,'lin',1), {|slider| modControls = slider.value}, 1, false, 'horz'));
 
 		win.layout_(
 			VLayout(
@@ -56,7 +63,7 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 					VLayout(*controls.copyRange(numControls, 2*numControls-1)),
 					VLayout(*controls.copyRange(2*numControls, 3*numControls-1))
 				),
-				freezeButton
+					controls[3*numControls]
 			)
 		);
 		win.layout.spacing_(1).margins_(1!4);

@@ -175,9 +175,15 @@ MidiOscObject {
 			try { control=controls[i] } { control = nil; };
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not)&&(controlLevel.size<2),{
+				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not))
+				{
 					controls[i].valueAction_(controlLevel);
-				});
+				}{
+					if(controlLevel.size>1){
+						"load a 2zie".postln;
+						controls[i]
+					}
+				}
 			});
 		};
 

@@ -23,6 +23,7 @@ NN_Synth_Mod : Module_Mod {
 
 		parent = parentIn;
 
+		currentPoint = 0;
 		sliderCount = 0;
 
 		onOff0 = 0;
@@ -30,7 +31,10 @@ NN_Synth_Mod : Module_Mod {
 
 		receivePort = NN_Synth_ID.next;
 
+
 		ports = List.fill(numModels, {|i| NN_Synth_ID.next});
+
+		ports.do{|item| ServerQuit.add({NetAddr("127.0.0.1", item).sendMsg('/close')})};
 
 		pythonAddrs = List.fill(numModels, {|i| NetAddr("127.0.0.1", ports[i])});
 
@@ -60,7 +64,7 @@ NN_Synth_Mod : Module_Mod {
 			loadedCount = loadedCount+1;
 			if(loadedCount == numModels){
 				{
-					"loaded".postln;
+					"loaded".post; this.class.postln;
 					0.11.wait;
 					numModels.do{|modelNum|
 						whichModel = modelNum;
@@ -69,7 +73,7 @@ NN_Synth_Mod : Module_Mod {
 							temp = Array.fill(parent.inputControl.numActiveControls, {1.0.rand});
 							controlValsList = temp.asList;
 							pythonAddrs[modelNum].sendMsg(*['/predict'].addAll(temp));
-							0.01.wait
+							0.1.wait
 						};
 						pythonAddrs[modelNum].sendMsg(*['/prime'].addAll(nnInputVals));
 						0.1.wait;
@@ -95,17 +99,26 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	loadTraining {|modelFolderIn|
-		{
-			modelFolder = modelFolderIn;
-			this.killThePythons;
-			1.wait;
-			loadedCount = 0;
-			numModels.do{|i|
-				(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+ports[i].asString
-					+"--sendPort"+receivePort.asString+"--num"+i.asString+"&").postln.unixCmd;
-				ServerQuit.add({NetAddr("127.0.0.1", ports[i]).sendMsg('/close')})
-			};
-		}.fork;
+		modelFolder = modelFolderIn;
+		loadedCount = 0;
+		numModels.do{|i|
+			this.reloadNN(i);
+		};
+
+		/*{
+		this.killThePythons;
+		0.5.wait;
+		loadedCount = 0;
+		numModels.do{|i|
+
+		(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[whichModel]).asString
+		+"--sendPort"+receivePort.asString
+		+"--num"fileInfo[1].asString
+		+"--num"+whichModel.asString+"&").postln.unixCmd;
+		ServerQuit.add({NetAddr("127.0.0.1", ports[i]).sendMsg('/close')});
+		0.2.wait;
+		};
+		}.fork;*/
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1;
@@ -167,6 +180,8 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSlidersAndSynth2 {
+		trainingList.postln;
+		currentPoint.postln;
 		if(trainingList.size>0){
 			this.setSlidersAndSynth(trainingList[currentPoint].copyRange(0,sizeOfNN-1));
 		};
@@ -198,20 +213,28 @@ NN_Synth_Mod : Module_Mod {
 		};
 	}
 
-	reloadNN {
+	reloadNN {arg reloadWhich;
+		var tempFile, fileInfo;
 		{
+			if(reloadWhich==nil){reloadWhich = whichModel};
+			tempFile = modelFolder++"/trainingFile"++reloadWhich++".csv";
+			trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++reloadWhich++".csv");
+			fileInfo = trainingList[0].collect{|item| item.asInteger};
+			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
 			"close".postln;
-			pythonAddrs[whichModel].sendMsg('/close');
+			pythonAddrs[reloadWhich].sendMsg('/close');
 			1.wait;
 			"reload ".post;
 
-			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[whichModel]).asString
-				+"--sendPort"+receivePort.asString+"--num"+whichModel.asString+"&").unixCmd;
+			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[reloadWhich]).asString
+				+"--sendPort"+receivePort.asString
+				+"--numInputs"+fileInfo[1].asString
+				+"--num"+reloadWhich.asString+"&").postln.unixCmd;
 			OSCFunc.new({arg ...msg;
 				"reloaded".postln;
 				{
 					10.do{
-						pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(Array.fill(parent.inputControl.numActiveControls, {1.0.rand})));
+						pythonAddrs[reloadWhich].sendMsg(*['/predict'].addAll(Array.fill(parent.inputControl.numActiveControls, {1.0.rand})));
 						0.01.wait;
 					}
 				}.fork
@@ -254,7 +277,6 @@ NN_Synth_Mod : Module_Mod {
 			trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++whichModel++".csv");
 			fileInfo = trainingList[0].collect{|item| item.asInteger};
 			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
-			//trainingList.addAll(sizeOfNN-trainingList.size!0); //not sure what this would do
 			trainingList.size;
 			currentPoint = 0;
 

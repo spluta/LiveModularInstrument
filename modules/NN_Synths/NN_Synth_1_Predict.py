@@ -19,13 +19,15 @@ def closeProgram(unused_addr, *args: List[Any]):
   os._exit(1)
 
 def predict_handler(unused_addr, *args: List[Any]):
-  jammer = np.array([np.array(args[0:4])])
+  jammer = np.array([np.array(args[0:numInputs])])
   output = model.predict(jammer)
   output = np.append(5000, output[0].astype(float))
+  # print("outputs")
+  # print(output)
   client.send_message("/nnOutputs", output)
 
 def prime_arrays(unused_addr, *args: List[Any]):
-  jammer = np.array([np.array(args[0:4])])
+  jammer = np.array([np.array(args[0:numInputs])])
   output = model.predict(jammer)
   client.send_message("/prime", output[0].astype(float))
 
@@ -39,13 +41,15 @@ if __name__ == "__main__":
   parser.add_argument("--sendPort",
       type=int, default=5006, help="The port to send on")
   parser.add_argument("--path",
-      default="/Users/spluta/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/CrossFeedback1/", help="The path")
+      default="/Users/spluta/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/01_CrossFeedback1/model0/", help="The path")
+  parser.add_argument("--numInputs", type=int, default=4)
   parser.add_argument("--num", type=int, default=0)
   args = parser.parse_args()
 
   print("add")
   string = args.path+"modelFile"+str(args.num)+".h5"
   model = load_model(string)
+  numInputs = args.numInputs
 
 
   #code that deals with the incoming OSC messages

@@ -9,6 +9,9 @@ b = OSCFunc({|msg, time, addr|
 	addr.postln;
 }, '/Container2/Container2/Fader/x').oneShot;
 
+OSCFunc.trace
+NetAddr.langPort;
+
 //get Lemur Ports
 (a = OSCFunc({|msg, time, addr|
 	addr.postln;
@@ -18,7 +21,18 @@ b = OSCFunc({|msg, time, addr|
 }, '/Container2/Switches/x').oneShot;
 )
 
-HID
+(
+HID.findAvailable;
+a = HID.available;
+a.do{|item| if(item.vendorName=="Logitech"){item.postln}}
+)
+
+
+
+(
+//April2020
+LiveModularInstrument.boot(9, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58575]), Joystick_Mod.setPaths(["USB_046d_c215_2100000"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/May2020B");
+)
 
 (
 LiveModularInstrument.boot(9, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/Scores/Konus/SC/testSetup");
@@ -35,14 +49,16 @@ LiveModularInstrument.boot(9, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/Scores/Konus/SC/feedback1c");
 )
 
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN");
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 61759]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"]), Leap_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/nn_TV");
 
 
 LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
 
 
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN3");
 
+
+StartUp.objects.size
 
 
 71.midicps
@@ -112,7 +128,7 @@ Lemur_Mod.setPorts([8000, 8001])
 
 ModularServers.getObjectBusses(ModularServers.servers[\lmi0].server).collect({arg item; item.index}).indexOf(104)+1
 
-/Fader22/x
+
 
 
 ServerOptions.devices

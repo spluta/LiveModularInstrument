@@ -113,11 +113,11 @@ LoopMachine_Mod : Module_Mod {
 		controls[4].valueAction = 1;
 
 		win.layout_(VLayout(
-			HLayout(controls[0].layout, controls[1].layout, controls[2].layout),
-			HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout),
+			HLayout(controls[0], controls[1], controls[2]),
+			HLayout(assignButtons[0], assignButtons[1], assignButtons[2]),
 
 			HLayout(controls[3], controls[4]),
-			HLayout(assignButtons[3].layout, assignButtons[4].layout)
+			HLayout(assignButtons[3], assignButtons[4])
 		));
 		win.layout.spacing = 5;
 		win.layout.margins = [5,5,5,5];

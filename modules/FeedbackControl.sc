@@ -2,7 +2,8 @@ FeedbackControl_Mod : Module_Mod {
 	var volBus, volsBus;
 
 	*initClass {
-		StartUp.add {
+		//will not reload on startup!
+		/*StartUp.add {
 
 			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin;
 				var in, fft, out, volume, envs, pauseEnv, buf, buf2, demand, windowStarts, stream;
@@ -62,8 +63,7 @@ FeedbackControl_Mod : Module_Mod {
 
 				Out.ar(\outBus.kr, sound*volume*envs);
 			}).writeDefFile;
-
-		}
+		}*/
 	}
 
 	init {

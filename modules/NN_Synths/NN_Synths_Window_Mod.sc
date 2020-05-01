@@ -221,7 +221,7 @@ NN_Synths_Mod : Module_Mod {
 					nn_synths.do{|synth| if(synth!=nil){synth.synths[0].set(\switchState, envMode)}};
 				}
 			}),
-		0);
+			0);
 
 
 		zModeButtons = Array.fill(2, {Button()});
@@ -233,7 +233,7 @@ NN_Synths_Mod : Module_Mod {
 					zMode = i;
 				}
 			}),
-		0);
+			0);
 
 		sliderUpdateButton = Button()
 		.states_([["slider update off", Color.red, Color.black],["slider update on", Color.green, Color.black]])
@@ -279,8 +279,8 @@ NN_Synths_Mod : Module_Mod {
 			HLayout(controls[14+numModels], assignButtons[14+numModels], controls[14+numModels+1], assignButtons[14+numModels+1]), //vol slider and predict on
 			nil,
 			HLayout(*controls.copyRange(14+numModels+2, 14+numModels+4)), //on mono poly
-			HLayout(*zModeButtons),
 			HLayout(*assignButtons.copyRange(14+numModels+2, 14+numModels+4)),
+			HLayout(*zModeButtons),
 
 			HLayout(sliderUpdateButton, inputControlButton, sliderControlButton)
 		)
@@ -312,6 +312,8 @@ NN_Synths_Mod : Module_Mod {
 	setInputButton {|num, val|
 		//a button has been pressed
 		var done = false;
+
+		//[num,val].postln;
 
 		nn_synths.do{|synth, i|
 			if(synth!=nil){
@@ -445,40 +447,44 @@ NN_Synths_Mod : Module_Mod {
 	loadExtra {arg loadArray;
 		var loadProto;
 		if(loadArray!=nil){
+			{
+				"forking load".postln;
+				5.wait;
+				loadedSynths = loadArray.copyRange(4,7);
+				controls[4].value_(loadedSynths[0]);
+				chosenModels = loadArray.copyRange(8,11);
+				controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
+				loadArray.copyRange(0,3).do{arg item, i;
+					if (item!="Nil", {
+						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
+						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i]);
+						//here I need to load the models that are saved
+						/*					"here ".post; i.postln;
+						loadedSynths.postln;
+						modelChoices.postln;
+						chosenModels.postln;
+						nn_synthFolders.postln;*/
+						if(chosenModels[i]!=0){nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[i+1][chosenModels[i]]).postln)};
+						2.wait;
+					},{
+						"isNil".postln;
+						nn_synths.put(i, nil);
+					});
+				};
+				try {
+					loadProto = loadArray[22];
+					loadProto.do{|item,i|
+						if(item!=nil){nn_synths[i].load(item)};
+					}
+				};
+				controls[0].valueAction=1;
+				//nn_synths.copyRange(1,3).do{|item| if(item!=nil){item.pause}};
 
-			loadedSynths = loadArray.copyRange(4,7);
-			controls[4].value_(loadedSynths[0]);
-			chosenModels = loadArray.copyRange(8,11);
-			controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
-			loadArray.copyRange(0,3).do{arg item, i;
-				if (item!="Nil", {
-					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
-					nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i]);
-					//here I need to load the models that are saved
-/*					"here ".post; i.postln;
-					loadedSynths.postln;
-					modelChoices.postln;
-					chosenModels.postln;
-					nn_synthFolders.postln;*/
-					if(chosenModels[i]!=0){nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[i+1][chosenModels[i]]).postln)}
-				},{
-					"isNil".postln;
-					nn_synths.put(i, nil);
-				});
-			};
-			try {
-				loadProto = loadArray[22];
-				loadProto.do{|item,i|
-					if(item!=nil){nn_synths[i].load(item)};
-				}
-			};
-			controls[0].valueAction=1;
-			//nn_synths.copyRange(1,3).do{|item| if(item!=nil){item.pause}};
-
-			controls[5].items_(modelChoices[loadedSynths[0]].asArray);
-			controls[5].value_(chosenModels[0]);
-			try {sliderControl.load(loadArray[20])};
-			try {inputControl.load(loadArray[21])};
+				controls[5].items_(modelChoices[loadedSynths[0]].asArray);
+				controls[5].value_(chosenModels[0]);
+				try {sliderControl.load(loadArray[20])};
+				try {inputControl.load(loadArray[21])};
+			}.fork(AppClock);
 		};
 		AppClock.sched(2, {
 			nn_synths.do{|item| if(item!=nil){item.hide}};

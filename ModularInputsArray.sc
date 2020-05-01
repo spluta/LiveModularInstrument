@@ -128,14 +128,13 @@ ModularInputsArray : Module_Mod {
 		numBusses.do{arg i;
 			controls.add(TextField()
 				.action_{arg text;
-					//TouchOSC_Mod.sendOSC(("/n/label"++(i+1).asString).asSymbol, text.value);
 					Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(("/MixerLabel"++(i+1).asString).asSymbol, "@content", text.value)};
 			});
 
 			layouts.add(VLayout(
 				controls[i+numBusses],
 				chanInBoxes[i].maxWidth_(40),
-				HLayout(dispArray[i].rms.maxWidth_(10),controls[i].maxWidth_(30).layout),
+				HLayout(dispArray[i].rms.maxWidth_(10),controls[i].maxWidth_(30)),
 				assignButtons[i].layout.maxWidth_(40)
 			).margins_(1!4).spacing_(1));
 		};
