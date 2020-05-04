@@ -59,33 +59,6 @@ NN_Synth_Mod : Module_Mod {
 			}, '/prime', nil, receivePort);
 		};
 
-
-		//prime the pump
-		//numModels.do{arg modelNum;
-/*		loadedCount = 0;
-		loadedOSC = OSCFunc({arg ...msg;
-			loadedCount = loadedCount+1;
-			if(loadedCount == numModels){
-				{
-					"loaded".post; this.class.postln;
-					0.11.wait;
-					numModels.do{|modelNum|
-						whichModel = modelNum;
-						5.do{|i|
-							var temp;
-							temp = Array.fill(parent.inputControl.numActiveControls, {1.0.rand});
-							controlValsList = temp.asList;
-							pythonAddrs[modelNum].sendMsg(*['/predict'].addAll(temp));
-							0.1.wait
-						};
-						pythonAddrs[modelNum].sendMsg(*['/prime'].addAll(nnInputVals));
-						0.1.wait;
-					};
-					whichModel = 0;
-					//loadedOSC.free;
-				}.fork;
-			}
-		}, '/loaded', nil, receivePort);*/
 		whichModel = 0;
 
 		this.createWindow;
@@ -107,21 +80,6 @@ NN_Synth_Mod : Module_Mod {
 		numModels.do{|i|
 			this.reloadNN(i);
 		};
-
-		/*{
-		this.killThePythons;
-		0.5.wait;
-		loadedCount = 0;
-		numModels.do{|i|
-
-		(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[whichModel]).asString
-		+"--sendPort"+receivePort.asString
-		+"--num"fileInfo[1].asString
-		+"--num"+whichModel.asString+"&").postln.unixCmd;
-		ServerQuit.add({NetAddr("127.0.0.1", ports[i]).sendMsg('/close')});
-		0.2.wait;
-		};
-		}.fork;*/
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1;
