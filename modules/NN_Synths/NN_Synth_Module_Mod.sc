@@ -43,23 +43,26 @@ NN_Synth_Mod : Module_Mod {
 		valList = List.fill(sizeOfNN, {0});
 		allValsList = List.fill(8, {List.fill(sizeOfNN+4, {0})});
 
-		nnInputVals = (0!parent.inputControl.numActiveControls).postln;
+		nnInputVals = (0!parent.inputControl.numActiveControls);
 
 		//set the system to receive messages from each python instance
 		OSCFunc.new({arg ...msg;
+			//msg.postln;
 			this.setSlidersAndSynth(msg[0].copyRange(2,sizeOfNN+1));
 			parent.setLemur(msg[0].copyRange(2,sizeOfNN+1));
 		}, '/nnOutputs', nil, receivePort);
 
 		pythonAddrs.do{arg item, i;
 			OSCFunc.new({arg ...msg;
+				"prime ".post; msg.postln;
 				allValsList.put(whichModel, msg[0].copyRange(1,msg[0].size-1).addAll([0,0,0,0]));
 			}, '/prime', nil, receivePort);
 		};
 
+
 		//prime the pump
 		//numModels.do{arg modelNum;
-		loadedCount = 0;
+/*		loadedCount = 0;
 		loadedOSC = OSCFunc({arg ...msg;
 			loadedCount = loadedCount+1;
 			if(loadedCount == numModels){
@@ -82,7 +85,7 @@ NN_Synth_Mod : Module_Mod {
 					//loadedOSC.free;
 				}.fork;
 			}
-		}, '/loaded', nil, receivePort);
+		}, '/loaded', nil, receivePort);*/
 		whichModel = 0;
 
 		this.createWindow;
@@ -166,7 +169,11 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	configure {
-		if(parent.predictOnOff==1){pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList))};
+		if(parent.predictOnOff==1){
+			//controlValsList.postln;
+			//pythonAddrs[whichModel].postln;
+			pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList))
+		};
 	}
 
 	setNNInputVals {|vals|
@@ -180,8 +187,8 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSlidersAndSynth2 {
-		trainingList.postln;
-		currentPoint.postln;
+		//trainingList.postln;
+		//currentPoint.postln;
 		if(trainingList.size>0){
 			this.setSlidersAndSynth(trainingList[currentPoint].copyRange(0,sizeOfNN-1));
 		};
@@ -223,7 +230,7 @@ NN_Synth_Mod : Module_Mod {
 			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
 			"close".postln;
 			pythonAddrs[reloadWhich].sendMsg('/close');
-			1.wait;
+			0.5.wait;
 			"reload ".post;
 
 			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[reloadWhich]).asString
@@ -231,13 +238,7 @@ NN_Synth_Mod : Module_Mod {
 				+"--numInputs"+fileInfo[1].asString
 				+"--num"+reloadWhich.asString+"&").postln.unixCmd;
 			OSCFunc.new({arg ...msg;
-				"reloaded".postln;
-				{
-					10.do{
-						pythonAddrs[reloadWhich].sendMsg(*['/predict'].addAll(Array.fill(parent.inputControl.numActiveControls, {1.0.rand})));
-						0.01.wait;
-					}
-				}.fork
+				"loaded".postln;
 			}, '/loaded', nil, receivePort).oneShot;
 		}.fork;
 	}

@@ -4,6 +4,7 @@ Neural Net for SC NN Controlled Control Model
 import argparse
 import math
 import os
+import sched, time
 
 from pythonosc import dispatcher
 from pythonosc import osc_server
@@ -26,11 +27,16 @@ def predict_handler(unused_addr, *args: List[Any]):
   # print(output)
   client.send_message("/nnOutputs", output)
 
-def prime_arrays(unused_addr, *args: List[Any]):
-  jammer = np.array([np.array(args[0:numInputs])])
-  output = model.predict(jammer)
-  client.send_message("/prime", output[0].astype(float))
+# def prime_arrays(unused_addr, *args: List[Any]):
+#   jammer = np.array([np.array(args[0:numInputs])])
+#   output = model.predict(jammer)
+#   client.send_message("/prime", output[0].astype(float))
 
+def get_me_going(a=0):
+  temp = np.array([np.random.sample(numInputs)])
+  output = model.predict(temp)
+  # if a == 1:
+  #   client.send_message("/prime", output[0].astype(float))
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -56,13 +62,18 @@ if __name__ == "__main__":
   dispatcher = dispatcher.Dispatcher()
   dispatcher.map("/predict", predict_handler)
   dispatcher.map("/close", closeProgram)
-  dispatcher.map("/prime", prime_arrays)
+  # dispatcher.map("/prime", prime_arrays)
 
   server = osc_server.ThreadingOSCUDPServer(
       (args.ip, args.port), dispatcher)
   client = udp_client.SimpleUDPClient(args.ip, args.sendPort)
 
+  scheduler = sched.scheduler(time.time, time.sleep)
+  for i in range(20):
+      scheduler.enter(i*0.05, 1, get_me_going, (0,))
+  scheduler.enter(21*0.05, 1, get_me_going, (1,))
+  scheduler.run()
+
   client.send_message("/loaded", args.num)
 
-  #print("Serving on {}".format(server.server_address))
   server.serve_forever()

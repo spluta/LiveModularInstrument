@@ -1,18 +1,20 @@
 Maths {
 
-	*ar { |freq=1, width=0.2, logExp = 0.5, loop = 0, trig = 0|
-		var slewUp, slewDown, slewMod, sig;
+	*ar { |freq=1, width=0.2, logExp = 0.5, loop = 1, trig = 0|
+		var slewUp, slewDown, slewMod, sig, edge;
 
 		slewUp = freq/width;
 		slewDown = freq/(1-width);
 
-		sig = Select.ar(loop, [Trig1.ar(trig, (1/freq)*width), LFPulseReset.ar(freq, 0, width, loop)]);
+		sig = Select.ar(loop, [Trig1.ar(trig, (1/freq)*width), LFPulseReset.ar(freq, 0, width, trig)]);
+
+		edge = Trig1.ar(sig, 0.0001);
 
 		slewMod = Slew.ar(sig, slewUp, slewDown);
 
-		slewMod = LinSelectX.kr(logExp*2, [slewMod.explin(0.001, 1, 0, 1), slewMod, slewMod.linexp(0, 1, 0.001, 1)]);
+		slewMod = LinSelectX.ar(logExp*2, [slewMod.explin(0.001, 1, 0, 1), slewMod, slewMod.linexp(0, 1, 0.001, 1)]);
 
-		^slewMod
+		^[slewMod, edge]
 	}
 
 

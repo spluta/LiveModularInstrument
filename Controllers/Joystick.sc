@@ -49,7 +49,7 @@ Joystick_Mod {
 
 				if(sendRequest){
 					if (temp<12){type = \onOff}
-					{type = \slider2D};
+					{type = \continuous};
 
 					MidiOscControl.setController(address.asSymbol, type)
 				};

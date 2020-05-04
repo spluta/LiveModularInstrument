@@ -52,13 +52,10 @@ NN_Synths_Mod : Module_Mod {
 
 		//knowledge of the models is all based on the directory structure
 
-		nn_synthChoices = PathName(path).folders.collect{arg folder;
-			folder.files.select{arg file;
-				file.extension=="sc"
-			};
-		};
-		nn_synthFolders = nn_synthChoices.flatten.collect{arg item; item.pathOnly};
-		nn_synthChoices = ["nil"].addAll(nn_synthChoices.flatten.collect{arg item; item.fileNameWithoutExtension});
+		nn_synthChoices = PathName(path).folders;
+		nn_synthFolders = nn_synthChoices.collect{arg item; item.pathOnly};
+
+		nn_synthChoices = ["nil"].addAll(nn_synthChoices.collect{|item| item = item.folderName; item.copyRange(item.find("_")+1, item.size-1)});
 
 		controls.add(PopUpMenu()
 			.items_(nn_synthChoices)
@@ -374,8 +371,6 @@ NN_Synths_Mod : Module_Mod {
 		};
 		currentSynth = num;
 		if(nn_synths[currentSynth]!=nil){
-			//nn_synths[currentSynth].unpause;
-			//nn_synths[currentSynth];
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 1);
 			this.setSlidersAndMultis;
 			controls[14+nn_synths[currentSynth].whichModel].value_(1);
@@ -384,7 +379,8 @@ NN_Synths_Mod : Module_Mod {
 		};
 		controls[4].value_(loadedSynths[currentSynth]);
 		if(nn_synths[currentSynth]!=nil){
-			controls[5].items_(modelChoices[currentSynth+1].asArray);
+			modelChoices.postln;
+			controls[5].items_(modelChoices[loadedSynths[currentSynth]].asArray.postln);
 			controls[5].value_(chosenModels[currentSynth]);
 		}{controls[5].items_(["nil"])}
 
@@ -448,8 +444,8 @@ NN_Synths_Mod : Module_Mod {
 		var loadProto;
 		if(loadArray!=nil){
 			{
-				"forking load".postln;
-				5.wait;
+				"load Python NN".postln;
+				//5.wait;
 				loadedSynths = loadArray.copyRange(4,7);
 				controls[4].value_(loadedSynths[0]);
 				chosenModels = loadArray.copyRange(8,11);
@@ -458,14 +454,8 @@ NN_Synths_Mod : Module_Mod {
 					if (item!="Nil", {
 						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
 						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i]);
-						//here I need to load the models that are saved
-						/*					"here ".post; i.postln;
-						loadedSynths.postln;
-						modelChoices.postln;
-						chosenModels.postln;
-						nn_synthFolders.postln;*/
 						if(chosenModels[i]!=0){nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[i+1][chosenModels[i]]).postln)};
-						2.wait;
+						1.wait;
 					},{
 						"isNil".postln;
 						nn_synths.put(i, nil);
