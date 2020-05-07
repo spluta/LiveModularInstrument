@@ -31,7 +31,7 @@ a.do{|item| if(item.vendorName=="Logitech"){item.postln}}
 
 (
 //May2020
-LiveModularInstrument.boot(9, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 58575]), Joystick_Mod.setPaths(["USB_046d_c215_2100000"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/May2020B");
+LiveModularInstrument.boot(9, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 54513]), Joystick_Mod.setPaths(["USB_046d_c215_2100000"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/May2020B");
 )
 
 (
@@ -55,7 +55,7 @@ LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts(
 LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN2");
 
 
-LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_2100000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN3");
+LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 55688]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_2100000"])],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/testNN_Perc0");
 
 
 StartUp.objects.size

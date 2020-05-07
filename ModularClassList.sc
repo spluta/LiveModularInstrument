@@ -50,9 +50,9 @@ ModularClassList {
 
 		//Analog Synth Modules
 
-		['Maths','RandoCalrissian','ComplexOscillator','DualADSR','VCA','VCF','Sequencer'].do{arg item;
-			classDictionary.add(item->(("{arg synthGroup, localBusses; "++item++"_AnalogMod(synthGroup, localBusses)}").compile.value));
-		};
+		// ['Maths','RandoCalrissian','ComplexOscillator','DualADSR','VCA','VCF','Sequencer'].do{arg item;
+		// 	classDictionary.add(item->(("{arg synthGroup, localBusses; "++item++"_AnalogMod(synthGroup, localBusses)}").compile.value));
+		// };
 
 		PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
 			folder.postln;

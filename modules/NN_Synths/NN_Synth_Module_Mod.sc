@@ -180,15 +180,15 @@ NN_Synth_Mod : Module_Mod {
 
 	reloadNN {arg reloadWhich;
 		var tempFile, fileInfo;
-		{
-			if(reloadWhich==nil){reloadWhich = whichModel};
-			tempFile = modelFolder++"/trainingFile"++reloadWhich++".csv";
-			trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++reloadWhich++".csv");
+		if(reloadWhich==nil){reloadWhich = whichModel};
+		try {tempFile = modelFolder++"/trainingFile"++reloadWhich++".csv"}{tempFile = nil};
+
+		try{trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++reloadWhich++".csv")}{trainingList = List.newClear(0);};
+		if(trainingList.size>0){
 			fileInfo = trainingList[0].collect{|item| item.asInteger};
 			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
 			"close".postln;
 			pythonAddrs[reloadWhich].sendMsg('/close');
-			0.5.wait;
 			"reload ".post;
 
 			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[reloadWhich]).asString
@@ -198,7 +198,7 @@ NN_Synth_Mod : Module_Mod {
 			OSCFunc.new({arg ...msg;
 				"loaded".postln;
 			}, '/loaded', nil, receivePort).oneShot;
-		}.fork;
+		}
 	}
 
 	trainNN {
