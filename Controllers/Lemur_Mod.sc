@@ -3,12 +3,12 @@ Lemur_Mod {
 	classvar <>sendServerSwitcherRequest = false;
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
-	classvar <>netAddrs, ip;
+	classvar <>netAddrs, ip, <>whichMode=0;
 
 	*initClass {}
 
 	*new {
-		^super.new.init();
+		^super.new.init;
 	}
 
 	*setPorts {|ports|
@@ -30,22 +30,26 @@ Lemur_Mod {
 	}
 
 	*sendOSC {|oscMsg, val|
-
-		//"sendOsc ".post; oscMsg.post; val.postln;
 		netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(oscMsg, val);
+				if(oscMsg.asString.containsStringAt(0, "/Container/")){
+					item.sendMsg(oscMsg.asString.replace("/Container/", "/Container2/"), val)
+				};
+				//{if(oscMsg.containsStringAt(0, "/Container2/")){item.sendMsg(oscMsg.replace("/Container2/", "/Container/"), val)}};
 			});
 		}
 	}
 
 	*sendSwitchOSC{|oscMsg|
+		var oscMsgB;
 		oscMsg = oscMsg.copyRange(2, oscMsg.size-2);
 		oscMsg = oscMsg.split($,);
 		oscMsg = oscMsg.collect{|item, i| if(i==0, {item.asString}, {item.asFloat})};
 		netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(*oscMsg);
+				item.sendMsg(*oscMsg.collect{|item, i| if(i==0){item.replace("/Container/", "/Container2/")}{item}});
 			});
 		}
 	}
@@ -69,24 +73,45 @@ Lemur_Mod {
 		});
 	}
 
-	*addMultToggleResponders {|address, type, addZ|
-		OSCFunc({ |msg|
-			if(msg[1]>0,{
-				MidiOscControl.respond(msg[0], msg[1]);
-				if(sendRequest,{
-					MidiOscControl.setController(address.asSymbol, type);
-				});
-				if(sendTypeRequest,{
-					MidiOscControl.setInstantTypeObject(address)
+	*addRespondersSingleIpad {|address, type, addZ|
+		//"/Container/Fader/x".replace("/Container/", "/Container2/");
+		var address2;
 
-				});
+		try {
+		address2 = address.asString.replace("/Container/", "/Container2/");
+
+		OSCFunc({ |msg|
+			MidiOscControl.respond(msg[0], msg[1]);
+			if(sendRequest,{
+				MidiOscControl.setController(address.asSymbol, type);
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+
 			});
 		}, address.asSymbol);
 
+		OSCFunc({ |msg|
+			try{msg.put(0, msg[0].asString.replace("/Container2/", "/Container/"))};
+			MidiOscControl.respond(msg[0], msg[1]);
+			if(sendRequest,{
+				MidiOscControl.setController(address.asSymbol, type);
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+
+			});
+		}, address2.asSymbol);
+
 		if(addZ,{
 			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
-				(address++"/z").asSymbol)
+				(address.asString.replace("/x", "/z")).asSymbol);
+			OSCFunc({ |msg|
+				try{msg.put(0, msg[0].asString.replace("/Container2/", "/Container/"))};
+				MidiOscControl.respond(msg[0], msg[1])},
+				(address2.asString.replace("/x", "/z")).asSymbol);
 		});
+		}{"nope ".postln; address.postln;}
 	}
 
 	*addSwitches {|address|
@@ -101,82 +126,209 @@ Lemur_Mod {
 		}, address.asSymbol));
 	}
 
+	*addSwitchesSingleIPad {|address|
+		var address2;
+
+		address2 = address.asString.replace("/Container/", "/Container2/");
+
+/*		OSCFunc({ |msg|
+			MidiOscControl.respond(msg.asSymbol, 1);
+			if(sendRequest,{
+				MidiOscControl.setController(msg.asSymbol, \onOff)
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(msg.asSymbol)
+			});
+		}, address.asSymbol);*/
+
+		OSCFunc({ |msg|
+			MidiOscControl.respond(msg.asSymbol, 1);
+			if(sendRequest,{
+				MidiOscControl.setController(msg.asSymbol, \onOff);
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(msg.asSymbol)
+
+			});
+		}, address.asSymbol);
+
+		OSCFunc({ |msg|
+			try{msg = msg.asString.replace("/Container2/", "/Container/")};
+			MidiOscControl.respond(msg.asSymbol, 1);
+			if(sendRequest,{
+				MidiOscControl.setController(msg.asSymbol, \onOff);
+			});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(msg.asSymbol)
+
+			});
+		}, address2.asSymbol);
+	}
+
+	*setMode {|num|
+		switch(num,
+			0, {
+				"1 iPad Mode".postln;
+
+				50.do{arg i;
+
+					//CONTROLS on main page
+					if(i==0,{
+						this.addResponders("/Fader/x", \continuous, true);
+						this.addResponders("/CustomButton/x", \onOff, false);
+						this.addResponders("/MultiBall/x", \slider2D, true);
+						this.addResponders("/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Switches/x");
+					});
+					this.addResponders("/Fader"++i.asString++"/x", \continuous, true);
+					this.addResponders("/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Switches"++i.asString++"/x");
+				};
+
+				200.do{arg i;
+					//CONTROLS from the main tabbed control
+					if(i==0,{
+						this.addRespondersSingleIpad("/Container/Fader/x", \continuous, true);
+						this.addRespondersSingleIpad("/Container/CustomButton/x", \onOff, false);
+						this.addRespondersSingleIpad("/Container/MultiBall/x", \slider2D, true);
+						this.addRespondersSingleIpad("/Container/MultiBall/y", \slider2D, false);
+						this.addSwitchesSingleIPad("/Container/Switches/x");
+					});
+					this.addRespondersSingleIpad("/Container/Fader"++i.asString++"/x", \continuous, true);
+					this.addRespondersSingleIpad("/Container/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addRespondersSingleIpad("/Container/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addRespondersSingleIpad("/Container/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitchesSingleIPad("/Container/Switches"++i.asString++"/x");
+
+				};
+
+				100.do{arg i;
+
+					//CONTROLS for NNSynth
+					if(i==0,{
+						this.addResponders("/Container3/Container/Fader/x", \continuous, true);
+						/*this.addResponders("/Container3/Container/CustomButton/x", \onOff, false);
+						this.addResponders("/Container3/Container/MultiBall/x", \slider2D, true);
+						this.addResponders("/Container3/Container/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Container3/Container/Switches/x");*/
+					});
+					this.addResponders("/Container3/Container/Fader"++i.asString++"/x", \continuous, true);
+					/*this.addResponders("/Container3/Container/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/Container3/Container/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/Container3/Container/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Container3/Container/Switches"++i.asString++"/x");*/
+
+				};
+
+				50.do{arg i;
+
+					//general CONTROLS on right panel
+					if(i==0,{
+						this.addResponders("/Container3/Fader/x", \continuous, true);
+						this.addResponders("/Container3/CustomButton/x", \onOff, false);
+						this.addResponders("/Container3/MultiBall/x", \slider2D, true);
+						this.addResponders("/Container3/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Container3/Switches/x");
+					});
+					this.addResponders("/Container3/Fader"++i.asString++"/x", \continuous, true);
+					this.addResponders("/Container3/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/Container3/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/Container3/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Container3/Switches"++i.asString++"/x");
+
+				};
+
+
+
+			},
+
+			1,{
+				50.do{arg i;
+
+					//CONTROLS on main page
+					if(i==0,{
+						this.addResponders("/Fader/x", \continuous, true);
+						this.addResponders("/CustomButton/x", \onOff, false);
+						this.addResponders("/MultiBall/x", \slider2D, true);
+						this.addResponders("/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Switches/x");
+					});
+					this.addResponders("/Fader"++i.asString++"/x", \continuous, true);
+					this.addResponders("/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Switches"++i.asString++"/x");
+				};
+
+				100.do{arg i;
+
+					//CONTROLS for NNSynth
+					if(i==0,{
+						this.addResponders("/Container2/Container2/Fader/x", \continuous, true);
+						/*this.addResponders("/Container2/Container2/CustomButton/x", \onOff, false);
+						this.addResponders("/Container2/Container2/MultiBall/x", \slider2D, true);
+						this.addResponders("/Container2/Container2/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Container2/Container2/Switches/x");*/
+					});
+					this.addResponders("/Container2/Container2/Fader"++i.asString++"/x", \continuous, true);
+					/*this.addResponders("/Container2/Container2/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Container2/Container2/Switches"++i.asString++"/x");*/
+
+				};
+
+				50.do{arg i;
+
+					//general CONTROLS on right panel
+					if(i==0,{
+						this.addResponders("/Container2/Fader/x", \continuous, true);
+						this.addResponders("/Container2/CustomButton/x", \onOff, false);
+						this.addResponders("/Container2/MultiBall/x", \slider2D, true);
+						this.addResponders("/Container2/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Container2/Switches/x");
+					});
+					this.addResponders("/Container2/Fader"++i.asString++"/x", \continuous, true);
+					this.addResponders("/Container2/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Container2/Switches"++i.asString++"/x");
+
+				};
+
+				200.do{arg i;
+
+					//CONTROLS from the main tabbed control
+					if(i==0,{
+						this.addResponders("/Container/Fader/x", \continuous, true);
+						this.addResponders("/Container/CustomButton/x", \onOff, false);
+						this.addResponders("/Container/MultiBall/x", \slider2D, true);
+						this.addResponders("/Container/MultiBall/y", \slider2D, false);
+						this.addSwitches("/Container/Switches/x");
+					});
+					this.addResponders("/Container/Fader"++i.asString++"/x", \continuous, true);
+					this.addResponders("/Container/CustomButton"++i.asString++"/x", \onOff, false);
+					this.addResponders("/Container/MultiBall"++i.asString++"/x", \slider2D, true);
+					this.addResponders("/Container/MultiBall"++i.asString++"/y", \slider2D, true);
+					this.addSwitches("/Container/Switches"++i.asString++"/x");
+
+				};
+
+			}
+		)
+	}
+
+
+
 	*start {arg ipIn;
 		var address;
 
 		if(responders.size!=0,{responders.do{arg item; item.free}});
 
-		50.do{arg i;
+		this.setMode(whichMode);
 
-			//FADERS
-			if(i==0,{
-				this.addResponders("/Fader/x", \continuous, true);
-				this.addResponders("/CustomButton/x", \onOff, false);
-				this.addResponders("/MultiBall/x", \slider2D, true);
-				this.addResponders("/MultiBall/y", \slider2D, false);
-				this.addSwitches("/Switches/x");
-			});
-			this.addResponders("/Fader"++i.asString++"/x", \continuous, true);
-			this.addResponders("/CustomButton"++i.asString++"/x", \onOff, false);
-			this.addResponders("/MultiBall"++i.asString++"/x", \slider2D, true);
-			this.addResponders("/MultiBall"++i.asString++"/y", \slider2D, true);
-			this.addSwitches("/Switches"++i.asString++"/x");
-
-		};
-
-		100.do{arg i;
-
-			//FADERS
-			if(i==0,{
-				this.addResponders("/Container2/Container2/Fader/x", \continuous, true);
-				this.addResponders("/Container2/Container2/CustomButton/x", \onOff, false);
-				this.addResponders("/Container2/Container2/MultiBall/x", \slider2D, true);
-				this.addResponders("/Container2/Container2/MultiBall/y", \slider2D, false);
-				this.addSwitches("/Container2/Container2/Switches/x");
-			});
-			this.addResponders("/Container2/Container2/Fader"++i.asString++"/x", \continuous, true);
-			this.addResponders("/Container2/Container2/CustomButton"++i.asString++"/x", \onOff, false);
-			this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
-			this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
-			this.addSwitches("/Container2/Container2/Switches"++i.asString++"/x");
-
-		};
-
-		50.do{arg i;
-
-			//FADERS
-			if(i==0,{
-				this.addResponders("/Container2/Fader/x", \continuous, true);
-				this.addResponders("/Container2/CustomButton/x", \onOff, false);
-				this.addResponders("/Container2/MultiBall/x", \slider2D, true);
-				this.addResponders("/Container2/MultiBall/y", \slider2D, false);
-				this.addSwitches("/Container2/Switches/x");
-			});
-			this.addResponders("/Container2/Fader"++i.asString++"/x", \continuous, true);
-			this.addResponders("/Container2/CustomButton"++i.asString++"/x", \onOff, false);
-			this.addResponders("/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
-			this.addResponders("/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
-			this.addSwitches("/Container2/Switches"++i.asString++"/x");
-
-		};
-
-		200.do{arg i;
-
-			//FADERS
-			if(i==0,{
-				this.addResponders("/Container/Fader/x", \continuous, true);
-				this.addResponders("/Container/CustomButton/x", \onOff, false);
-				this.addResponders("/Container/MultiBall/x", \slider2D, true);
-				this.addResponders("/Container/MultiBall/y", \slider2D, false);
-				this.addSwitches("/Container/Switches/x");
-			});
-			this.addResponders("/Container/Fader"++i.asString++"/x", \continuous, true);
-			this.addResponders("/Container/CustomButton"++i.asString++"/x", \onOff, false);
-			this.addResponders("/Container/MultiBall"++i.asString++"/x", \slider2D, true);
-			this.addResponders("/Container/MultiBall"++i.asString++"/y", \slider2D, true);
-			this.addSwitches("/Container/Switches"++i.asString++"/x");
-
-		};
 	}
 
 	*resetOSCAddr {arg ip;
@@ -347,7 +499,7 @@ Lemur_Mod {
 //
 // 			40.do{arg i2;
 //
-// 				//FADERS
+// 				//CONTROLS
 //
 // 				this.addResponders("/"++i.asString++"/fader"++i2.asString, \continuous, true);
 // 				this.addResponders("/"++i.asString++"/toggle"++i2.asString, \onOff, false);

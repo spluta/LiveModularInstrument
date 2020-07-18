@@ -5,7 +5,7 @@ FeedbackControl_Mod : Module_Mod {
 		//will not reload on startup!
 		/*StartUp.add {
 
-			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin;
+			SynthDef("feedbackControl_mod", {arg inBus, outBus, volBus, thresh, mulFactor, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin;
 				var in, fft, out, volume, envs, pauseEnv, buf, buf2, demand, windowStarts, stream;
 
 				buf = LocalBuf(2048, 1);
@@ -25,7 +25,7 @@ FeedbackControl_Mod : Module_Mod {
 				fft = FFT(buf, in);
 				buf2 = PV_Copy(fft, buf2);
 
-				fft = PV_Control2(fft, buf2, thresh, mulFactor, limiter, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin);
+				fft = PV_Control(fft, buf2, thresh, mulFactor, attackReleaseFrames, sustainZeroFrames, waitGoFrames, tripCount, tripBlockFrames, topBin);
 
 				windowStarts = fft > -1;
 
@@ -55,9 +55,12 @@ FeedbackControl_Mod : Module_Mod {
 
 				vols = In.kr(\volsBus.kr, 300);
 
-				300.do{arg i;
+				/*300.do{arg i;
 					sound = MidEQ.ar(sound, (i+1)*(22050/2048), \rq.kr(0.2), vols[i].lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb);
-				};
+				};*/
+
+		sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(0,149).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
+	sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(150,299).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
@@ -76,7 +79,7 @@ FeedbackControl_Mod : Module_Mod {
 
 		volsBus = Bus.control(group.server, 300);
 
-		synths.add(Synth.tail(group, "feedbackControl_mod" ,[\inBus, mixerToSynthBus, \volsBus, volsBus.index, \volBus, volBus.index, \thresh, 0.8, \mulFactor, 0.7, \limiter, 10, \attackReleaseFrames, 200, \sustainZeroFrames, 50, \waitGoFrames, 100, \tripCount, 5,  \tripBlockFrames, 300, \topBin, 400]));
+		synths.add(Synth.tail(group, "feedbackControl_mod" ,[\inBus, mixerToSynthBus, \volsBus, volsBus.index, \volBus, volBus.index, \thresh, 0.8, \mulFactor, 0.7, \attackReleaseFrames, 200, \sustainZeroFrames, 50, \waitGoFrames, 100, \tripCount, 5,  \tripBlockFrames, 300, \topBin, 400]));
 
 		synths.add(Synth.tail(group, "feedbackControlVols_mod" ,[\inBus, mixerToSynthBus, \outBus, outBus, \volsBus, volsBus.index, \volBus, volBus.index]));
 
@@ -97,12 +100,6 @@ FeedbackControl_Mod : Module_Mod {
 				synths[0].set(\mulFactor, v.value);
 		}, 0.7, true, \horz));
 		this.addAssignButton(2,\continuous);
-
-		controls.add(QtEZSlider.new("limiter", ControlSpec(1,100,'linear'),
-			{|v|
-				synths[0].set(\limiter, v.value);
-		}, 100, true, \horz));
-		this.addAssignButton(3,\range);
 
 		controls.add(QtEZSlider.new("attackReleaseFrames", ControlSpec(10,1000,'linear'),
 			{|v|
@@ -153,19 +150,8 @@ FeedbackControl_Mod : Module_Mod {
 		this.addAssignButton(11,\continuous);
 
 		win.layout_(
-			VLayout(
-				HLayout(controls[0], assignButtons[0]),
-				HLayout(controls[1], assignButtons[1]),
-				HLayout(controls[2], assignButtons[2]),
-				HLayout(controls[3], assignButtons[3]),
-				HLayout(controls[4], assignButtons[4]),
-				HLayout(controls[5], assignButtons[5]),
-				HLayout(controls[6], assignButtons[6]),
-				HLayout(controls[7], assignButtons[7]),
-				HLayout(controls[8], assignButtons[8]),
-				HLayout(controls[9], assignButtons[9]),
-				HLayout(controls[10], assignButtons[10]),
-				HLayout(controls[11], assignButtons[11])
+			HLayout(
+				VLayout(*controls), VLayout(*assignButtons)
 			)
 		);
 

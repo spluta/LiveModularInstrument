@@ -36,7 +36,9 @@ Noise0_NNMod : NN_Synth_Mod {
 
 				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
 
-				Out.ar(\outBus.kr(0), sound.dup*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1));
+				sound = sound.dup*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1);
+
+				Out.ar(\outBus.kr(0), sound);
 			}).writeDefFile;
 		}
 	}

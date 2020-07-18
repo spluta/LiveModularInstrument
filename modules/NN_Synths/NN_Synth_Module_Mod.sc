@@ -5,6 +5,14 @@ NN_Synth_ID {
 	*path {this.filenameSymbol.postln}
 }
 
+Kill_The_Pythons {
+	*kill {
+		100.do{|i|
+			NetAddr("127.0.0.1", 5000+i).do{|i|i.sendMsg('/close')};
+		}
+	}
+}
+
 NN_Synth_Mod : Module_Mod {
 	classvar <>pythonPath = "/usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/bin/python3.7";
 	var pythonFilesPath;
@@ -47,7 +55,6 @@ NN_Synth_Mod : Module_Mod {
 
 		//set the system to receive messages from each python instance
 		OSCFunc.new({arg ...msg;
-			//msg.postln;
 			this.setSlidersAndSynth(msg[0].copyRange(2,sizeOfNN+1));
 			parent.setLemur(msg[0].copyRange(2,sizeOfNN+1));
 		}, '/nnOutputs', nil, receivePort);
@@ -82,12 +89,14 @@ NN_Synth_Mod : Module_Mod {
 		};
 	}
 
-	init2 {arg nameIn, parent, volBus, onOff0, onOff1;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
+	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group));
 		this.init_window(parent);
 	}
 
 	createWindow {
+		{
+		nnVals.postln;
 		nnVals.do{arg item, i;
 			controls.add(QtEZSlider(item[0], item[1], {arg val;
 				synths[0].set(item[0], val.value);
@@ -115,21 +124,19 @@ NN_Synth_Mod : Module_Mod {
 		win.layout.spacing_(0).margins_(0!4);
 
 		win.visible_(false);
-
+		}.defer;
 	}
 
 	changeModel {|i|
+		"change model".postln;
 		allValsList.put(whichModel, valList.addAll(controlValsList));
 		whichModel = i;
 		valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
 		this.setSlidersAndSynth(valList, true);
-		//parent.setMultiBalls(allValsList[whichModel].copyRange(sizeOfNN,sizeOfNN+4));
 	}
 
 	configure {
 		if(parent.predictOnOff==1){
-			//controlValsList.postln;
-			//pythonAddrs[whichModel].postln;
 			pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList))
 		};
 	}
@@ -145,10 +152,11 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSlidersAndSynth2 {
-		//trainingList.postln;
-		//currentPoint.postln;
 		if(trainingList.size>0){
-			this.setSlidersAndSynth(trainingList[currentPoint].copyRange(0,sizeOfNN-1));
+			//should not be trainingList
+			valList.postln;
+			valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
+			this.setSlidersAndSynth(valList);
 		};
 	}
 

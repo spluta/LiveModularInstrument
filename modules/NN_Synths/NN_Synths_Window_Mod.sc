@@ -1,15 +1,19 @@
 NN_Synths_Mod : Module_Mod {
 
 	var <>hasControl, <>predictOnOff, zValsOnOff, currentPoint, otherVals, numModels;
-	var predictOnOff, currentPoint, envMode, <>updateSliders, nn_synths, currentSynth, nn_synthChoices, showHideButtons, nn_synths, currentSynth, loadedSynths, sliderControl, sliderControlButton, <>onOffBus, copiedPoint, synthControlCounter, <>inputControl, inputControlButton, modelChoices, chosenModels, nn_synthFolders, <>buttonBusses, trainingButtons, sliderUpdateButton, volBus, numSynths, onOffSwitches, zMode, zModeButtons;
+	var predictOnOff, currentPoint, envMode, <>updateSliders, nn_synths, currentSynth, nn_synthChoices, showHideButtons, nn_synths, currentSynth, loadedSynths, sliderControl, sliderControlButton, <>onOffBus, copiedPoint, synthControlCounter, <>inputControl, inputControlButton, modelChoices, chosenModels, nn_synthFolders, <>buttonBusses, trainingButtons, sliderUpdateButton, volBus, numSynths, onOffSwitches, zMode, zModeButtons, chanVolBusses;
 
 	init {
 
 		this.makeWindow("NN_Synths");
 
-		this.initControlsAndSynths(27);
+		this.initControlsAndSynths(33);
 
-		dontLoadControls = (0..26);
+		//hard coding to 8 models
+		numSynths = 4;
+		numModels = 8;
+
+		dontLoadControls = (0..23);
 
 		updateSliders = false;
 
@@ -25,15 +29,14 @@ NN_Synths_Mod : Module_Mod {
 		chosenModels = List.fill(4, {0});
 
 		volBus = Bus.control(group.server, 1);
+		chanVolBusses = Array.fill(numSynths, {Bus.control(group.server)});
 
 		buttonBusses = Array.fill(10, {Bus.control(group.server, 1)});
 		buttonBusses.do{|item| item.set(1)};
 
 		synthControlCounter = 0;
 
-		//hard coding to 8 models
-		numSynths = 4;
-		numModels = 8;
+
 
 		//synth switcher
 		numSynths.do{|i|
@@ -221,9 +224,9 @@ NN_Synths_Mod : Module_Mod {
 			0);
 
 
-		zModeButtons = Array.fill(2, {Button()});
+		2.do{controls.add(Button())};
 		zMode = 0;
-		RadioButtons(zModeButtons,
+		RadioButtons(controls.copyRange(14+numModels+5, 14+numModels+6),
 			["stay mode", "switch mode"].collect{|item| [[ item, Color.red, Color.black ],[ item, Color.black, Color.red ]]},
 			Array.fill(2, {|i|
 				{
@@ -231,6 +234,13 @@ NN_Synths_Mod : Module_Mod {
 				}
 			}),
 			0);
+
+		numSynths.do{|i|
+			controls.add(Slider().orientation_('horz')
+				.action_{|sl| chanVolBusses[i].set(sl.value)}
+				.valueAction_(1.0)
+			)
+		};
 
 		sliderUpdateButton = Button()
 		.states_([["slider update off", Color.red, Color.black],["slider update on", Color.green, Color.black]])
@@ -266,6 +276,9 @@ NN_Synths_Mod : Module_Mod {
 			HLayout(*(controls.copyRange(6, 9))),
 			HLayout(*(controls.copyRange(10, 13))),
 
+			HLayout(StaticText().string_("LocalVols")),
+			HLayout(*controls.copyRange(14+numModels+7, 14+numModels+10)),
+
 			HLayout(*showHideButtons.add(nil)),
 			nil,
 			HLayout(*controls.copyRange(14, 14+numModels-1)),
@@ -277,7 +290,7 @@ NN_Synths_Mod : Module_Mod {
 			nil,
 			HLayout(*controls.copyRange(14+numModels+2, 14+numModels+4)), //on mono poly
 			HLayout(*assignButtons.copyRange(14+numModels+2, 14+numModels+4)),
-			HLayout(*zModeButtons),
+			HLayout(*controls.copyRange(14+numModels+5, 14+numModels+6)),
 
 			HLayout(sliderUpdateButton, inputControlButton, sliderControlButton)
 		)
@@ -288,7 +301,6 @@ NN_Synths_Mod : Module_Mod {
 	}
 
 	setInputSliders {|vals|
-		//vals.postln;
 		if(envMode<2){
 			if(nn_synths[currentSynth]!=nil){
 				synthControlCounter = synthControlCounter+1;
@@ -310,8 +322,6 @@ NN_Synths_Mod : Module_Mod {
 		//a button has been pressed
 		var done = false;
 
-		//[num,val].postln;
-
 		nn_synths.do{|synth, i|
 			if(synth!=nil){
 				if((zMode==1).and{done.not})
@@ -325,11 +335,13 @@ NN_Synths_Mod : Module_Mod {
 				};
 				if(num==onOffSwitches[0][i]){
 					synth.synths[0].set(\onOff0, val);
+					synth.synths[0].set(\selector, 0);
 					synth.onOff0 = val;
 				};
 				if(num==onOffSwitches[1][i]){
 					synth.onOff1 = val;
-					synth.synths[0].set(\onOff1, val)
+					synth.synths[0].set(\onOff1, val);
+					synth.synths[0].set(\selector, 1);
 				};
 			}
 		}
@@ -355,7 +367,7 @@ NN_Synths_Mod : Module_Mod {
 		if (newSynthName!="nil", {
 			controls[5].items_(modelChoices[num].asArray);
 			nn_synths.put(currentSynth, ModularClassList.initNN_Synth(newSynthName++"_NNMod", group, outBus));
-			nn_synths[currentSynth].init2(newSynthName++"_NNMod", this, volBus, onOffSwitches[0][currentSynth], onOffSwitches[1][currentSynth]);
+			nn_synths[currentSynth].init2(newSynthName++"_NNMod", this, volBus, onOffSwitches[0][currentSynth], onOffSwitches[1][currentSynth], chanVolBusses[currentSynth]);
 			//set the model trainings
 		},{
 			controls[5].items_(modelChoices[0].asArray);
@@ -365,6 +377,10 @@ NN_Synths_Mod : Module_Mod {
 	}
 
 	setNNSynth {|num|
+		"setNNSynth".postln;
+		currentSynth.postln;
+		num.postln;
+		//if(currentSynth!=num){
 		if(nn_synths[currentSynth]!=nil){
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 0);
 			controls[14+nn_synths[currentSynth].whichModel].value_(0);
@@ -379,10 +395,11 @@ NN_Synths_Mod : Module_Mod {
 		};
 		controls[4].value_(loadedSynths[currentSynth]);
 		if(nn_synths[currentSynth]!=nil){
-			modelChoices.postln;
-			controls[5].items_(modelChoices[loadedSynths[currentSynth]].asArray.postln);
+			//modelChoices.postln;
+			controls[5].items_(modelChoices[loadedSynths[currentSynth]].asArray);
 			controls[5].value_(chosenModels[currentSynth]);
 		}{controls[5].items_(["nil"])}
+		//}
 
 	}
 
@@ -392,27 +409,13 @@ NN_Synths_Mod : Module_Mod {
 		};
 	}
 
-	/*	setMultiBalls {|vals|
-	controls[6+numModels+15].valueAction_([vals[0],vals[1]]);
-	controls[6+numModels+16].valueAction_([vals[2],vals[3]]);
-
-	[[0,"/x"],[0,"/y"],[1,"/x"],[1,"/y"]].do{arg item, i;
-	Lemur_Mod.sendOSC((oscMsgs[item[0]].asString.copyRange(0,oscMsgs[item[0]].asString.size-3)++item[1]).asSymbol, vals[i]);
-	}
-	}*/
-
 	setControlPointsNoAction {|vals|
-		/*controls[5+numModels+15].value_([vals[0],vals[1]]);
-		controls[5+numModels+16].value_([vals[2],vals[3]]);*/
-
 		vals.do{|item, i|
 			inputControl.controls[i].setExternal_(item);
 			Lemur_Mod.sendOSC(inputControl.oscMsgs[i].asSymbol, item);
 		};
 
-		/*[[5+numModels+15,"/x"],[5+numModels+15,"/y"],[5+numModels+16,"/x"],[5+numModels+16,"/y"]].do{arg item, i;
-		Lemur_Mod.sendOSC((oscMsgs[item[0]].asString.copyRange(0,oscMsgs[item[0]].asString.size-3)++item[1]).asSymbol, vals[i]);
-		}*/
+
 	}
 
 	saveExtra {arg saveArray;
@@ -453,7 +456,7 @@ NN_Synths_Mod : Module_Mod {
 				loadArray.copyRange(0,3).do{arg item, i;
 					if (item!="Nil", {
 						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
-						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i]);
+						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
 						if(chosenModels[i]!=0){nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[i+1][chosenModels[i]]).postln)};
 						1.wait;
 					},{

@@ -18,7 +18,7 @@ FM7_NNMod : NN_Synth_Mod {
 
 	sig = Normalizer.ar(sig, 0.9);
 
-	sig = Limiter.ar(sig*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1), 0.9);
+	sig = Limiter.ar(sig*envs*onOffSwitch*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1), 0.9);
 
 	Out.ar(\outBus.kr(0), sig);
 

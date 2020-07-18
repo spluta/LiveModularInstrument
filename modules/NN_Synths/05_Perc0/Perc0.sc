@@ -9,18 +9,16 @@ Perc0_NNMod : NN_Synth_Mod {
 				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
 				//maths1Rise = \maths1Dur.kr(1, 0.1).clip(0.01, 10)*\maths1RiseToFall.kr(0.001, 0.1).clip(0.001, 1);
 
-				#maths1, mathsTrig = Maths.ar(\maths1Rise.kr(0.5), \maths1Fall.kr(0.5), \maths1LinExp.kr(1, 0.1), 1, onOffSwitch-0.05);
+				#maths1, mathsTrig = Maths.ar(\maths1Rise.kr(0.5), \maths1Fall.kr(0.5), \maths1LinExp.kr(1, 0.1), onOffSwitch);
 
-				//#maths1, mathsTrig = Maths.ar(maths1Rise, (\maths1Dur.kr-maths1Rise).poll, \maths1LinExp.kr(1, 0.1), 1, onOffSwitch-0.05);
 
-				//#maths1, mathsTrig = Maths.ar(MouseX.kr, MouseY.kr, \maths1LinExp.kr(1, 0.1), 1, onOffSwitch-0.05);
+				onOffSwitch = K2A.ar(onOffSwitch);
+				//trigEnv = (onOffSwitch + Lag.ar(Latch.ar(onOffSwitch, DelayN.ar(Trig1.ar(onOffSwitch, 0.01), 0.01,0.01)+mathsTrig), 0.0015)).clip(0,1);
 
-				trigEnv = (onOffSwitch + Lag.kr(Latch.kr(onOffSwitch, mathsTrig), 0.0015)).clip(0,1);
+				noiseMaths = Maths.ar(\noiseMathsRise.kr(0.01), \noiseMathsFall.kr(0.5), \noiseMathsLinExp.kr(0.5, 0.1),0,1,mathsTrig)[0];
 
-				noiseMaths = Maths.ar(\noiseMathsRise.kr(0.01), \noiseMathsFall.kr(0.5), \noiseMathsLinExp.kr(0.5, 0.1), 0, mathsTrig)[0];
-
-				maths2 = Maths.ar(\maths2Rise.kr(0.01), \maths2Fall.kr(0.01), 0.99, 0, mathsTrig)[0];
-				maths3 = maths2.explin(0.001, 1, 0, 1);//Maths.ar(maths2Rise, \maths2Dur.kr-maths2Rise, 0.5, 0, mathsTrig)[0];
+				maths2 = Maths.ar(\maths2Rise.kr(0.01), \maths2Fall.kr(0.01), 0.99, 0,1, mathsTrig)[0];
+				maths3 = maths2.explin(0.001, 1, 0, 1);
 
 				oscNoise = Lag.ar(LFNoise0.ar([\oscNoiseFreq.kr(1000, 0.1), \oscNoiseFreq.kr], \oscNoiseVol.kr(50, 0.1)), \oscNoiseLag.kr(1/500, 0.1));
 				oscWobble = LFNoise2.ar(\wobbleFreq.kr(20, 0.1), \wobbleMul.kr(10,0.1));
@@ -29,6 +27,8 @@ Perc0_NNMod : NN_Synth_Mod {
 
 				oscNoise = [oscNoise[0], SelectX.ar(\oscNoiseWidth.kr(0, 0.1), [oscNoise[0],oscNoise[1]])];
 				out = [LFTri.ar(maths1.linlin(0,1,\lowGliss.kr(50, 0.1),\hiGliss.kr(2000, 0.1))+oscNoise[0]+oscWobble, 0, 0.25), LFTri.ar(maths1.linlin(0,1,\lowGliss.kr,\hiGliss.kr)+oscNoise[1]+oscWobble, 0, 0.25)]*\outVol.kr(1, 0.1);
+
+				out = out*(maths1.explin(0.0001, 1, 0.0001, 1).explin(0.0001, 1, 0.0001, 1)); //try to use the maths as a vol as well
 
 				noise = LFDNoise1.ar([\noiseFreq.kr(5000, 0.1), \noiseFreq.kr], 2)*\noiseVol.kr(1, 0.1)*noiseMaths;
 
@@ -39,9 +39,9 @@ Perc0_NNMod : NN_Synth_Mod {
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				out = (out+out2+noise)*envs*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*trigEnv;
+				out = (out+out2+noise)*envs*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1);//*trigEnv;
 
-				Out.ar(\outBus.kr, out)
+				Out.ar(\outBus.kr, out*2)
 			}).writeDefFile
 		}
 	}
