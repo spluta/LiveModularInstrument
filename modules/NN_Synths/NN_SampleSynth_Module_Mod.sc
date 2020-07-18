@@ -39,12 +39,8 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	}
 
 	changeModel {|i|
-		//"change model".postln;
-		//allValsList.put(whichModel, valList.addAll(controlValsList));
 		whichModel = i;
 		this.configure;
-		//valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
-		//this.setSlidersAndSynth(valList, true);
 	}
 
 	trainNN {  //using this to save the model settings into a json file
@@ -75,9 +71,6 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		modelFolderIn.postln;
 		modelFolder = modelFolderIn;
 		loadedCount = 0;
-/*		if(tree.synth!=nil){
-			tree.free;
-		};*/
 
 		if(synths[0]!=nil){synths[0].free};
 
