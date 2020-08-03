@@ -3,17 +3,26 @@ FluidFolder {
 
 }
 
+FluidName_ID {
+	classvar <id=1000;
+	*initClass { id = 1000; }
+	*next  { ^id = id + 1; }
+	*path {this.filenameSymbol.postln}
+}
+
 NN_SampleSynth_Mod : NN_Synth_Mod {
-	var loader, tree, folder,dataBuf, dataBufs, task, friends, loader, index, dur, grainEnv, bufIsLoaded=false, ranges, controlVals, uGotTreed, volBus, synthName, chanVolBus;
+	var loader, ds, tree, folder,dataBuf, dataBufs, task, friends, loader, index, dur, grainEnv, bufIsLoaded=false, ranges, controlVals, uGotTreed, volBus, synthName, chanVolBus, treeInBus, treeOutBus, treeInBuffer, treeOutBuffer, addRandomVal;
 
 	killMeSpecial {
 		this.killThePythons;
-		task.stop;
+		//task.stop;
 		tree.free;
+		ds.free;
+		loader.free;
 	}
 
 	pause {
-		task.pause;
+		//task.pause;
 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
 		bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false);
 	}
@@ -21,21 +30,24 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	unpause {
 		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
 		bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1);
-		task.start;
+		//task.start;
 	}
 
 	configure {
-		var startPoint;
-		valList = controlValsList;
+		var startPoint, rando;
+		valsList = controlValsList;
 
 		startPoint = whichModel*3;
 
-		2.do{|i| valList.put(i, nnVals[startPoint+i][1].map(valList[i]))};
-		if(synths[0]!=nil){synths[0].set(\dur, nnVals[startPoint+2][1].map(valList[2]))};
+		2.do{|i| valsList.put(i, nnVals[startPoint+i][1].map(valsList[i]+addRandomVal))};
+
+		treeInBuffer.setn(0, valsList.copyRange(0,2).asArray);
+
+		if(synths[0]!=nil){synths[0].set(\dur, nnVals[startPoint+2][1].map(valsList[2]))};
 	}
 
 	setSynth {|argument, i, val01, val|
-		valList.put(i, val01);
+		valsList.put(i, val01);
 	}
 
 	changeModel {|i|
@@ -46,8 +58,9 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	trainNN {  //using this to save the model settings into a json file
 		var array;
 
-		array = nnVals.collect{|item| item.postln; [item[1].minval, item[1].maxval]};
-		array.writeArchive(folder++"controlVals");
+		array = (nnVals.collect{|item| item.postln; [item[1].minval, item[1].maxval]}).add(addRandomVal);
+		array.postln;
+		array.writeArchive(modelFolder++"controlVals");
 	}
 
 	reloadNN {//calls this when it
@@ -64,10 +77,19 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		modelFolder = nil;
 		if(synths[0]!=nil){synths[0].free};
 		uGotTreed=false;
+		tree.free;
+		ds.free;
+		loader.free;
 	}
 
 	loadTraining {|modelFolderIn|
 		"loading tree".postln;
+
+		ds = FluidDataSet(group.server, FluidName_ID.next.asString);
+
+		tree = FluidKDTree(group.server, 1, lookupDataSet:ds);
+		loader = FluidFolder();
+
 		modelFolderIn.postln;
 		modelFolder = modelFolderIn;
 		loadedCount = 0;
@@ -77,19 +99,26 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		loader.index = Object.readArchive(modelFolder++"/index");
 
 		controlVals = Object.readArchive(modelFolder++"/controlVals");
+		controlVals.postln;
 
-		controlVals.do{|val, i| controls[i].valueAction_(val)};
+		controlVals.copyRange(0, controlVals.size-2).do{|val, i| controls[i].valueAction_(val)};
+
+		controls.last.valueAction_(controlVals.last);
 
 		loader.index.postln;
 
-		tree.read(modelFolder++"/datasetTree.json", {uGotTreed=true});
+		ds.read(modelFolder++"/indices.json", {"dataset read".postln;
+			tree.read(modelFolder++"/datasetTree.json", {
+				tree.postln;
+				tree.inBus_(treeInBus).outBus_(treeOutBus).inBuffer_(treeInBuffer).outBuffer_(treeOutBuffer);
+				loader.buffer = Buffer.read(group.server.postln, modelFolder++"/buffer.wav",action:{|buffer|
+					"Loaded".postln;
+					bufIsLoaded = true;
 
-		loader.buffer = Buffer.read(group.server.postln, modelFolder++"/buffer.wav",action:{|buffer|
-			"Loaded".postln;
-			bufIsLoaded = true;
+					synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \treeInBus, treeInBus.index.postln, \treeOutBus, treeOutBus.index.postln, \treeInBuffer, treeInBuffer, \treeOutBuffer, treeOutBuffer, \onOff0, 0, \onOff1, 0, \buffer, buffer, \grainEnv, grainEnv, \chanVolBus, chanVolBus], group));
 
-			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \onOff0, 0, \onOff1, 0, \buffer, buffer, \grainEnv, grainEnv, \chanVolBus, chanVolBus], group));
-
+				});
+			});
 		});
 
 	}
@@ -106,6 +135,7 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 					}, [ranges[i2][0], ranges[i2][1]], true, 'horz'))
 				};
 			};
+			controls.add(QtEZSlider("add random", ControlSpec(0, 0.01), {|val| addRandomVal=val.value.postln}, 0, true, 'horz'));
 			if(nnVals.size<41){
 				win.layout = VLayout(
 					*controls.collect({arg item, i;
@@ -135,40 +165,47 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		synthName = nameIn;
 		chanVolBus = chanVolBusIn;
 
+		treeInBus = Bus.control(group.server);
+		treeOutBus = Bus.control(group.server);
+		treeInBuffer = Buffer.alloc(group.server,2);
+		treeOutBuffer = Buffer.alloc(group.server,2);
+
+		addRandomVal = 0;
+
 		grainEnv = Buffer.sendCollection(group.server, Env([0, 1, 1, 0], [0.001, 0.998, 0.001]).discretize, 1);
 
 		folder = PathName(this.class.filenameSymbol.asString).pathOnly;//++"model0/";
 		folder.postln;
-
-		tree = FluidKDTree(group.server);
-		loader = FluidFolder();
 
 		synths = List.newClear(1);
 
 		uGotTreed = false;
 
 		dataBuf = Buffer.new(group.server);
-		task = Task{
-			inf.do{
-				//tree.postln;
-				if(uGotTreed){
-					dataBuf.free;
-					dataBuf = Buffer.loadCollection(group.server, valList.copyRange(0,1), 1, {|buf|
-						tree.kNearest(buf,1,{|x|
-							var v;
-							friends = x;
-							if(bufIsLoaded){
-								v = loader.index[friends.asSymbol];
-								if(synths[0]!=nil){synths[0].set(\startFrame, v[\bounds][0], \endFrame, v[\bounds][1])};
-							}
-						})
-					});
-				};
-				0.05.wait;
-			}
-		}.play;
-
-
-			this.init_window(parent);
+		/*		task = Task{
+		inf.do{
+		//tree.postln;
+		if(uGotTreed){
+		dataBuf.free;
+		dataBuf = Buffer.loadCollection(group.server, valsList.copyRange(0,1), 1, {|buf|
+		tree.postln;
+		tree.kNearest(buf,{|x|
+		var v;
+		x.postln;
+		friends = x;
+		friends.postln;
+		if(bufIsLoaded){
+		v = loader.index[friends.asSymbol];
+		if(synths[0]!=nil){synths[0].set(\startFrame, v[\bounds][0], \endFrame, v[\bounds][1])};
 		}
+		})
+		});
+		};
+		0.05.wait;
+		}
+		}.play;*/
+
+
+		this.init_window(parent);
 	}
+}

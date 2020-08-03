@@ -5,6 +5,13 @@ NN_Synth_ID {
 	*path {this.filenameSymbol.postln}
 }
 
+NN_Synth_DataSetID {
+	classvar <id=5000;
+	*initClass { id = 5000; }
+	*next  { ^id = id + 1; }
+	*path {this.filenameSymbol.postln}
+}
+
 Kill_The_Pythons {
 	*kill {
 		100.do{|i|
@@ -14,18 +21,10 @@ Kill_The_Pythons {
 }
 
 NN_Synth_Mod : Module_Mod {
-	classvar <>pythonPath = "/usr/local/Cellar/python/3.7.5/Frameworks/Python.framework/Versions/3.7/bin/python3.7";
-	var pythonFilesPath;
-
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valList, allValsList, nnVals, trainingList, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints;
 
 	init_window {|parentIn|
-
-		pythonFile = "NN_Synth_1_Predict.py";
-
-		pythonFilesPath = PathName(path);
-
-		pythonFilesPath = pythonFilesPath.fullPath.copyRange(0, pythonFilesPath.colonIndices[pythonFilesPath.colonIndices.size-2]);
+		var hiddenArray;
 
 		modelFolder = nil;
 
@@ -33,60 +32,62 @@ NN_Synth_Mod : Module_Mod {
 
 		currentPoint = 0;
 		sliderCount = 0;
+		numPoints = 0;
 
 		onOff0 = 0;
 		onOff1 = 0;
 
-		receivePort = NN_Synth_ID.next;
+		inDataSet = FluidDataSet(group.server,("indata"++NN_Synth_DataSetID.next));
+		outDataSet = FluidDataSet(group.server,("outdata"++NN_Synth_DataSetID.next));
+		inBuf = Buffer(group.server);
+		outBuf = Buffer(group.server);
 
+		copyInBuf = Buffer(group.server);
+		copyOutBuf = Buffer(group.server);
 
-		ports = List.fill(numModels, {|i| NN_Synth_ID.next});
-
-		ports.do{|item| ServerQuit.add({NetAddr("127.0.0.1", item).sendMsg('/close')})};
-
-		pythonAddrs = List.fill(numModels, {|i| NetAddr("127.0.0.1", ports[i])});
-
-		trainingList = List.newClear(0);
 		controlValsList = List.newClear(0);
-		valList = List.fill(sizeOfNN, {0});
+		valsList = List.fill(sizeOfNN, {0});
 		allValsList = List.fill(8, {List.fill(sizeOfNN+4, {0})});
 
 		nnInputVals = (0!parent.inputControl.numActiveControls);
 
-		//set the system to receive messages from each python instance
-		OSCFunc.new({arg ...msg;
-			this.setSlidersAndSynth(msg[0].copyRange(2,sizeOfNN+1));
-			parent.setLemur(msg[0].copyRange(2,sizeOfNN+1));
-		}, '/nnOutputs', nil, receivePort);
-
-		pythonAddrs.do{arg item, i;
-			OSCFunc.new({arg ...msg;
-				"prime ".post; msg.postln;
-				allValsList.put(whichModel, msg[0].copyRange(1,msg[0].size-1).addAll([0,0,0,0]));
-			}, '/prime', nil, receivePort);
-		};
-
 		whichModel = 0;
+
+		//hard coding this to 3, which should be fine...will probably find this in 5 years and wonder wtf
+		hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
+
+		mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,1000,0.1,0,1,0)});
 
 		this.createWindow;
 	}
 
 	clearTraining {
 		modelFolder = nil;
-		this.killThePythons;
+		this.clearMLPs;
 	}
 
-	killThePythons {
-		"kill the pythons".postln;
-		pythonAddrs.do{|item|item.sendMsg('/close')}
+	clearMLPs {
+		"clear MLPs".postln;
+		//pythonAddrs.do{|item|item.sendMsg('/close')}
+		mlps = mlps.do{|item| item.clear};
+		mlps.postln;
 	}
 
 	loadTraining {|modelFolderIn|
-		modelFolder = modelFolderIn;
+		"loading training".postln;
+		modelFolder = modelFolderIn.postln;
 		loadedCount = 0;
+
+		controlValsList = List.fill(File.readAllString(modelFolder++"/inDataSet0.json").parseYAML["cols"].asInteger.postln, {0});
+
+		this.makeInOutBufs;
+
+		//{
 		numModels.do{|i|
 			this.reloadNN(i);
+			//0.2.wait;
 		};
+		//}.fork;
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
@@ -96,68 +97,73 @@ NN_Synth_Mod : Module_Mod {
 
 	createWindow {
 		{
-		nnVals.postln;
-		nnVals.do{arg item, i;
-			controls.add(QtEZSlider(item[0], item[1], {arg val;
-				synths[0].set(item[0], val.value);
-				{valList.put(i, val.slider.value)}.defer;
-			}, allValsList[0][i], true, \horz));
-		};
+			nnVals.postln;
+			nnVals.do{arg item, i;
+				controls.add(QtEZSlider(item[0], item[1], {arg val;
+					synths[0].set(item[0], val.value);
+					{valsList.put(i, val.slider.value)}.defer;
+				}, allValsList[0][i], true, \horz));
+			};
 
-		if(nnVals.size<41){
-			win.layout = VLayout(
-				*controls.collect({arg item, i;
-					HLayout(item)})
-			);
-		}{
-			win.layout = HLayout(
-				VLayout(
-					*controls.copyRange(0,39).collect({arg item, i;
+			if(nnVals.size<41){
+				win.layout = VLayout(
+					*controls.collect({arg item, i;
 						HLayout(item)})
-				),
-				VLayout(
-					*controls.copyRange(40,controls.size-1).collect({arg item, i;
-						HLayout(item)})
+				);
+			}{
+				win.layout = HLayout(
+					VLayout(
+						*controls.copyRange(0,39).collect({arg item, i;
+							HLayout(item)})
+					),
+					VLayout(
+						*controls.copyRange(40,controls.size-1).collect({arg item, i;
+							HLayout(item)})
+					)
 				)
-			)
-		};
-		win.layout.spacing_(0).margins_(0!4);
+			};
+			win.layout.spacing_(0).margins_(0!4);
 
-		win.visible_(false);
+			win.visible_(false);
 		}.defer;
 	}
 
 	changeModel {|i|
 		"change model".postln;
-		allValsList.put(whichModel, valList.addAll(controlValsList));
+		allValsList.put(whichModel, valsList.addAll(controlValsList));
 		whichModel = i;
-		valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
-		this.setSlidersAndSynth(valList, true);
+		valsList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
+		this.setSlidersAndSynth(valsList, true);
 	}
 
-	configure {
+	configure {//"configure".postln;
 		if(parent.predictOnOff==1){
-			pythonAddrs[whichModel].sendMsg(*['/predict'].addAll(controlValsList))
+			//[mlpInBuf,mlpOutBuf].postln;
+			//whichModel.postln;
+			mlps[whichModel].predictPoint(mlpInBuf,mlpOutBuf,{
+				mlpOutBuf.loadToFloatArray(action:{|array|
+					array = array.asArray;
+					this.setSlidersAndSynth(array);
+					parent.setLemur(array);
+				})
+			});
 		};
 	}
 
 	setNNInputVals {|vals|
 		controlValsList = vals;
+		mlpInBuf.setn(0, vals);
 		this.configure;
 	}
 
 	setSynth {|argument, i, val01, val|
-		valList.put(i, val01);
+		valsList.put(i, val01);
 		synths[0].set(argument, val);
 	}
 
 	setSlidersAndSynth2 {
-		if(trainingList.size>0){
-			//should not be trainingList
-			valList.postln;
-			valList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
-			this.setSlidersAndSynth(valList);
-		};
+		valsList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
+		this.setSlidersAndSynth(valsList);
 	}
 
 	setGUISlider {|i, val|
@@ -186,117 +192,194 @@ NN_Synth_Mod : Module_Mod {
 		};
 	}
 
+	makeInOutBufs {
+		"makeInOutBufs".postln;
+		if(mlpInBuf != nil){mlpInBuf.free};
+		if(mlpOutBuf != nil){mlpOutBuf.free};
+
+		mlpInBuf = Buffer.alloc(group.server,controlValsList.size);
+		mlpOutBuf = Buffer.alloc(group.server,valsList.size);
+	}
+
 	reloadNN {arg reloadWhich;
-		var tempFile, fileInfo;
+		var fileInfo, hiddenArray, modelFile;
 		if(reloadWhich==nil){reloadWhich = whichModel};
-		try {tempFile = modelFolder++"/trainingFile"++reloadWhich++".csv"}{tempFile = nil};
-
-		try{trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++reloadWhich++".csv")}{trainingList = List.newClear(0);};
-		if(trainingList.size>0){
-			fileInfo = trainingList[0].collect{|item| item.asInteger};
-			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
-			"close".postln;
-			pythonAddrs[reloadWhich].sendMsg('/close');
+		"clear".postln;
+		mlps[reloadWhich].clear({
 			"reload ".post;
-
-			(pythonPath+pythonFilesPath.quote++pythonFile+"--path"+(modelFolder++"/").quote+"--port"+(ports[reloadWhich]).asString
-				+"--sendPort"+receivePort.asString
-				+"--numInputs"+fileInfo[1].asString
-				+"--num"+reloadWhich.asString+"&").postln.unixCmd;
-			OSCFunc.new({arg ...msg;
-				"loaded".postln;
-			}, '/loaded', nil, receivePort).oneShot;
-		}
+			modelFile = modelFolder++"/"++"modelFile"++reloadWhich++".json";
+			try{
+				File.readAllString(modelFile).parseYAML;
+				mlps[reloadWhich].read(modelFile, {("loaded"+modelFile)});
+			}{"no json file".postln}
+		})
 	}
 
 	trainNN {
-		var saveFile, modelFile;
-		{
-			saveFile = (modelFolder++"/"++"trainingFile"++whichModel++".csv");
-			saveFile = File(saveFile, "w");
-			[[valList.size, controlValsList.size]].addAll(trainingList).do{arg item;
-				item.do{|item2, i|
-					if(i!=0){saveFile.write(", ")};
-					item2 = item2.asString;
-					saveFile.write(item2);
-				};
-				saveFile.write("\n");
-			};
-			saveFile.close;
-			1.wait;
+		var saveFile, modelFile, hiddenArray, controlValsDict, valDict;
 
-			saveFile = modelFolder++"/"++"trainingFile"++whichModel++".csv";
-			modelFile = modelFolder++"/"++"modelFile"++whichModel++".h5";
-			(pythonPath+pythonFilesPath.quote++"NN_Synth_1_Save.py"+"--numbersFile"+saveFile.quote+"--modelFile"+modelFile.quote+"--sendPort"+receivePort.asString+"&").postln.unixCmd;
-		}.fork;
+		this.makeInOutBufs;
 
-		OSCFunc({
-			this.reloadNN;
-			"trained".postln;
-		}, '/trained', nil, receivePort).oneShot;
+		mlps[whichModel].fit(inDataSet,outDataSet,{|x|
+			"trainy trainy trainy".postln;
+			x.postln;
+		});
+
+		mlps[whichModel].write(modelFolder++"/"++"modelFile"++whichModel++".json");
+		inDataSet.write(modelFolder++"/"++"inDataSet"++whichModel++".json");
+		outDataSet.write(modelFolder++"/"++"outDataSet"++whichModel++".json");
 	}
 
 	loadPoints {
 		var tempA, tempB, fileInfo;
+		currentPoint = 0;
 
 		if(modelFolder!=nil){
+			inDataSet.read(modelFolder++"/"++"inDataSet"++whichModel++".json", {
+				outDataSet.read(modelFolder++"/"++"outDataSet"++whichModel++".json", {
 
-			trainingList = CSVFileReader.read(modelFolder++"/"++"trainingFile"++whichModel++".csv");
-			fileInfo = trainingList[0].collect{|item| item.asInteger};
-			trainingList = trainingList.copyRange(1, trainingList.size-1).collect({arg item; item.collect({arg item2; item2.asFloat})}).asList;
-			trainingList.size;
-			currentPoint = 0;
+					inDataSet.size({|val| numPoints = val.asInteger});
 
-			valList = trainingList[currentPoint].copyRange(0,fileInfo[0]-1);
-			valList.postln;
+					inDataSet.print;
+					outDataSet.print;
 
-			this.setSlidersAndSynth(valList, true);
-			parent.setLemur(valList);
-			controlValsList = trainingList[currentPoint].copyRange(fileInfo[0], fileInfo[0]+fileInfo[1]-1);
-			parent.setControlPointsNoAction(controlValsList);
+					inDataSet.getPoint(currentPoint.asString, inBuf, {inBuf.postln; inBuf.loadToFloatArray(action:{|array|
+						array.postln;
+						controlValsList = array.asList;
+						{parent.setControlPointsNoAction(controlValsList)}.defer;
+					})});
+
+					outDataSet.getPoint(currentPoint.asString, outBuf, {outBuf.loadToFloatArray(action:{|array|
+						valsList = array.asList.postln;
+						this.setSlidersAndSynth(valsList, true);
+						{parent.setLemur(valsList)}.defer;
+					})});
+				})
+			})
+
 		}{"no model".postln}
 	}
 
 	newPointsList {
-		trainingList = List.newClear(0);
+		inDataSet.clear;
+		outDataSet.clear;
+
 		currentPoint = 0;
+		numPoints = 0;
 	}
 
 	addPoint {
-		[valList.size, controlValsList.size].postln;
-		trainingList.add(valList.copyRange(0,sizeOfNN-1).addAll(controlValsList));
+		[valsList.size, controlValsList.size].postln;
+		Buffer.loadCollection(group.server, controlValsList.asArray, 1, {|array|
+			inDataSet.addPoint(numPoints.asString, array);
+			inDataSet.print;
+			Buffer.loadCollection(group.server, valsList.asArray, 1, {|array|
+				outDataSet.addPoint(numPoints.asString, array);
+				outDataSet.print;
+				numPoints = numPoints+1;
+			});
+		});
+
+
 
 	}
 
 	copyPoint {
-		^valList.copyRange(0,sizeOfNN-1)
+		"copy point".postln;
+		copyInBuf.copyData(inBuf);
+		copyOutBuf.copyData(outBuf);
 	}
 
 	pastePoint {|point|
-		trainingList.add(point.addAll(controlValsList));
+		inDataSet.addPoint(numPoints.asString, copyInBuf);
+		outDataSet.addPoint(numPoints.asString, copyOutBuf);
+		numPoints = numPoints+1;
+	}
+
+	consoldatePoints {
+		var changed;
+		changed = false;
+
+		numPoints.do{}
 	}
 
 	removePoint {
-		if(trainingList.size>0){
-			trainingList.removeAt(currentPoint);
-			currentPoint = max(currentPoint-1, 0);
-		};
+		var cp = currentPoint;
+
+		inDataSet.print;
+		outDataSet.print;
+
+
+		inDataSet.deletePoint(cp.asString, {
+			outDataSet.deletePoint(cp.asString, {
+				if(cp==(numPoints-1))
+				{"last point removed".postln}
+				{
+					inDataSet.dump({|vals|
+						if(vals["data"][cp.asString]==nil){
+							cp.postln;
+
+							((cp+1)..(numPoints-1)).do{|i2|
+								var temp;
+								i2.postln;
+								vals.postln;
+								temp = vals["data"][i2.asString];
+								vals["data"].removeAt(i2.asString);
+								vals["data"].add((i2-1).asString-> temp);
+						}};
+						inDataSet.load(vals);
+						outDataSet.dump({|vals2|
+							if(vals2["data"][cp.asString]==nil){
+								cp.postln;
+
+								((cp+1)..(numPoints-1)).do{|i2|
+									var temp;
+									i2.postln;
+									vals2.postln;
+									temp = vals2["data"][i2.asString];
+									vals2["data"].removeAt(i2.asString);
+									vals2["data"].add((i2-1).asString-> temp);
+							}};
+							outDataSet.load(vals2);
+							vals["data"].postln;
+							vals2["data"].postln;
+							numPoints = numPoints-1;
+							numPoints.postln;
+						});
+					});
+
+				}
+		})});
 	}
 
 	nextPoint {
-		if(trainingList.size>0){
-			currentPoint = (currentPoint+1).wrap(0, trainingList.size-1);
+		[currentPoint, numPoints].postln;
+		if(numPoints>0){
+			currentPoint = (currentPoint+1).wrap(0, numPoints-1);
+			currentPoint.postln;
+			inDataSet.getPoint(currentPoint.asSymbol, inBuf, {
+				inBuf.loadToFloatArray(action:{|array|
+					array.postln;
 
-			valList = trainingList[currentPoint].copyRange(0,trainingList[currentPoint].size-(controlValsList.size+1));
-			valList = valList.addAll((sizeOfNN-valList.size)!0); //fill with zeroes if it isn't large enough
+					controlValsList = array;
+					controlValsList.postln;
 
-			this.setSlidersAndSynth(valList, true);
-			parent.setLemur(valList);
+					{parent.setControlPointsNoAction(controlValsList)}.defer;
+				})
+			});
 
-			controlValsList = trainingList[currentPoint].copyRange(valList.size,trainingList[currentPoint].size-1);
-			controlValsList.postln;
-			valList.postln;
-			parent.setControlPointsNoAction(controlValsList);
+			outDataSet.getPoint(currentPoint.asSymbol, outBuf, {
+				outBuf.loadToFloatArray(action:{|array|
+					array.postln;
+					valsList = array;
+
+					{this.setSlidersAndSynth(valsList, true)}.defer;
+					parent.setLemur(valsList);
+
+					valsList.postln;
+				})
+			});
+
 		}
 	}
 
@@ -305,7 +388,9 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	killMeSpecial {
-		this.killThePythons;
+		this.clearMLPs;
+		mlpInBuf.free;
+		mlpOutBuf.free;
 	}
 
 	getLabels {

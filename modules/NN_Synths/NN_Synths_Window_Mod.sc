@@ -13,7 +13,7 @@ NN_Synths_Mod : Module_Mod {
 		numSynths = 4;
 		numModels = 8;
 
-		dontLoadControls = (0..23);
+		dontLoadControls = (0..26);
 
 		updateSliders = false;
 
@@ -446,40 +446,56 @@ NN_Synths_Mod : Module_Mod {
 	loadExtra {arg loadArray;
 		var loadProto;
 		if(loadArray!=nil){
-			{
-				"load Python NN".postln;
-				//5.wait;
-				loadedSynths = loadArray.copyRange(4,7);
-				controls[4].value_(loadedSynths[0]);
-				chosenModels = loadArray.copyRange(8,11);
-				controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
-				loadArray.copyRange(0,3).do{arg item, i;
-					if (item!="Nil", {
-						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
-						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
-						if(chosenModels[i]!=0){nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[i+1][chosenModels[i]]).postln)};
-						1.wait;
-					},{
-						"isNil".postln;
-						nn_synths.put(i, nil);
-					});
-				};
-				try {
-					loadProto = loadArray[22];
-					loadProto.do{|item,i|
-						if(item!=nil){nn_synths[i].load(item)};
-					}
-				};
-				controls[0].valueAction=1;
-				//nn_synths.copyRange(1,3).do{|item| if(item!=nil){item.pause}};
+			//{
+			//5.wait;
 
-				controls[5].items_(modelChoices[loadedSynths[0]].asArray);
-				controls[5].value_(chosenModels[0]);
-				try {sliderControl.load(loadArray[20])};
-				try {inputControl.load(loadArray[21])};
-			}.fork(AppClock);
+			try {sliderControl.load(loadArray[20])};
+			try {inputControl.load(loadArray[21])};
+
+			loadedSynths = loadArray.copyRange(4,7);
+			controls[4].value_(loadedSynths[0]);
+			chosenModels = loadArray.copyRange(8,11);
+			controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
+			loadArray.copyRange(0,3).do{arg item, i;
+				if (item!="Nil", {
+					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
+					nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
+					if(chosenModels[i]!=0){
+						//AppClock.sched(1, {
+						//chosenModels.postln;
+						//	modelChoices.postln;
+						//loadedSynths[i].postln;
+						//modelChoices[i+1].postln;
+						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]).postln)
+						//})
+					};
+					//1.wait;
+				},{
+					"isNil".postln;
+					nn_synths.put(i, nil);
+				});
+			};
+			try {
+				loadProto = loadArray[22];
+				loadProto.do{|item,i|
+					if(item!=nil){nn_synths[i].load(item)};
+				}
+			};
+			controls[0].valueAction=1;
+			//nn_synths.copyRange(1,3).do{|item| if(item!=nil){item.pause}};
+
+			controls[5].items_(modelChoices[loadedSynths[0]].asArray);
+			controls[5].value_(chosenModels[0]);
+			"that stuff".postln;
+
+			controls[25].valueAction_(1);
+			//loadArray[1].copyRange(24,26).postln;
+			//if(loadArray[1][25]==1){controls[25].valueAction_(1)};
+			//if(loadArray[1][26]==1){controls[26].valueAction_(1)};
+
+			//}.fork(AppClock);
 		};
-		AppClock.sched(2, {
+		AppClock.sched(2.0, {
 			nn_synths.do{|item| if(item!=nil){item.hide}};
 			sliderControl.hide;
 		});

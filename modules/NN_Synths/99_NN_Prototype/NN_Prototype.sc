@@ -190,7 +190,7 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 				.action_{arg proto;
 					if(i<sizeOfNN){
 						synths[0].set(nnVals[i][0].asSymbol, proto.value);
-						{valList.put(i, proto.controlSpec.unmap(proto.value))}.defer;
+						{valsList.put(i, proto.controlSpec.unmap(proto.value))}.defer;
 					}
 				}
 			)
@@ -209,13 +209,13 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 
 	increaseNNSize {
 		sizeOfNN = sizeOfNN+1;
-		valList = List.fill(sizeOfNN, {0});
+		valsList = List.fill(sizeOfNN, {0});
 		allValsList = List.fill(numModels, List.fill(sizeOfNN, {0}));
 	}
 
 	decreaseNNSize {
 		sizeOfNN = sizeOfNN-1;
-		valList = List.fill(sizeOfNN, {0});
+		valsList = List.fill(sizeOfNN, {0});
 		allValsList = List.fill(numModels, List.fill(sizeOfNN, {0}));
 	}
 
@@ -257,7 +257,7 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 				}
 			};
 			sizeOfNN = tempNNSize;
-			valList = List.fill(sizeOfNN, {0});
+			valsList = List.fill(sizeOfNN, {0});
 			allValsList = List.fill(numModels, List.fill(sizeOfNN, {0}));
 		})
 	}

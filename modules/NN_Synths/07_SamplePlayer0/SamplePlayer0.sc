@@ -1,9 +1,13 @@
 SamplePlayer0_NNMod : NN_SampleSynth_Mod {
 	*initClass {
 		StartUp.add {
-			//{BufRd.ar(v[\numchans],~loader.buffer,Line.ar(v[\bounds][0],v[\bounds][1],dur, doneAction: 2)).dup}.play;
-			SynthDef("SamplePlayer0_NNMod", {|buffer, startFrame=0, endFrame=3000, grainEnv|
-				var envs, out, lilEnvs, players, trig, trigs, onOffSwitch, startFrameFreeze, endFrameFreeze, durFrameFreeze, bufTrig, bufTrig1, realDur, selector;
+			SynthDef("SamplePlayer0_NNMod", {|buffer, treeInBus, treeOutBus, treeInBuffer, treeOutBuffer, grainEnv|
+				var envs, out, lilEnvs, players, trig, trigs, onOffSwitch, startFrameFreeze, endFrameFreeze, durFrameFreeze, bufTrig, bufTrig1, realDur, selector, indices;
+
+				 var treeTrig, point;
+
+
+
 
 				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
@@ -11,16 +15,19 @@ SamplePlayer0_NNMod : NN_SampleSynth_Mod {
 
 				trig = onOffSwitch;
 
-				//lilEnvs = EnvGen.ar(Env([0,1,1,0], [0.001, dur-0.002, 0.001]), trig);
-
-				//players = PlayBuf.ar(1, buffer, 1, trig, startFrameFreeze).dup*lilEnvs;
-
 				bufTrig1 = ImpulseB.kr(1/\dur.kr(0.1, 0.01), trig);
 
 				bufTrig = Select.kr(\selector.kr(1, 0.01), [bufTrig1, trig]);
 
-				startFrameFreeze = Latch.kr(startFrame, bufTrig);
-				endFrameFreeze = Latch.kr(endFrame, bufTrig);
+
+				treeTrig = Impulse.kr(MouseX.kr(0, ControlRate.ir/2));//Impulse.kr((ControlRate.ir/10));
+
+				Out.kr(treeInBus, treeTrig);
+
+				indices = BufRd.kr(1,treeOutBuffer,Array.iota(2));
+
+				startFrameFreeze = Latch.kr(indices[0], bufTrig);
+				endFrameFreeze = Latch.kr(indices[0], bufTrig);
 				durFrameFreeze = endFrameFreeze-startFrameFreeze / SampleRate.ir;
 
 				realDur =Select.kr(\selector.kr, [\dur.kr, durFrameFreeze]);

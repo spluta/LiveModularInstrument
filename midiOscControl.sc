@@ -147,7 +147,6 @@ MidiOscControl {
 	}
 
 	*respond { |key, val|
-		//[key, val].postln;
 		ModularServers.serverSwitcher.currentServers.flatten.asSet.do{arg serverKey;
 			this.doTheGUI(serverKey, key, val);
 		};

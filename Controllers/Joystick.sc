@@ -87,7 +87,7 @@ Joystick_Mod {
 	}
 
 	*logiRespondNCheck {|address, val|
-		[address, val].postln;
+		//[address, val].postln;
 
 		MidiOscControl.respond(address.asSymbol, val);
 		if(sendRequest){
