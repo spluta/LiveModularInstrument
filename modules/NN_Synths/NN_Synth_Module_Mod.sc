@@ -21,7 +21,7 @@ Kill_The_Pythons {
 }
 
 NN_Synth_Mod : Module_Mod {
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys;
 
 	init_window {|parentIn|
 		var hiddenArray;
@@ -33,6 +33,7 @@ NN_Synth_Mod : Module_Mod {
 		currentPoint = 0;
 		sliderCount = 0;
 		numPoints = 0;
+		keys = Set[];
 
 		onOff0 = 0;
 		onOff1 = 0;
@@ -82,12 +83,9 @@ NN_Synth_Mod : Module_Mod {
 
 		this.makeInOutBufs;
 
-		//{
 		numModels.do{|i|
 			this.reloadNN(i);
-			//0.2.wait;
 		};
-		//}.fork;
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
@@ -181,6 +179,7 @@ NN_Synth_Mod : Module_Mod {
 				};
 			});
 		};
+
 		if(parent.updateSliders==true){
 			if((sliderCount%50==0)||isPoint){
 				vals.do{|item, i|
@@ -238,22 +237,30 @@ NN_Synth_Mod : Module_Mod {
 			inDataSet.read(modelFolder++"/"++"inDataSet"++whichModel++".json", {
 				outDataSet.read(modelFolder++"/"++"outDataSet"++whichModel++".json", {
 
-					inDataSet.size({|val| numPoints = val.asInteger});
+					//inDataSet.size({|val| numPoints = val.asInteger});
 
 					inDataSet.print;
 					outDataSet.print;
 
-					inDataSet.getPoint(currentPoint.asString, inBuf, {inBuf.postln; inBuf.loadToFloatArray(action:{|array|
-						array.postln;
-						controlValsList = array.asList;
-						{parent.setControlPointsNoAction(controlValsList)}.defer;
-					})});
+					outDataSet.dump({|vals|
+						var max=0, newPoint;
 
-					outDataSet.getPoint(currentPoint.asString, outBuf, {outBuf.loadToFloatArray(action:{|array|
-						valsList = array.asList.postln;
-						this.setSlidersAndSynth(valsList, true);
-						{parent.setLemur(valsList)}.defer;
-					})});
+						keys = vals["data"].keys.asList;
+
+						//vals["data"].keys.do{|item| if(item.asInteger.postln>max){max=item}};
+
+						inDataSet.getPoint(keys[currentPoint], inBuf, {inBuf.postln; inBuf.loadToFloatArray(action:{|array|
+							array.postln;
+							controlValsList = array.asList;
+							{parent.setControlPointsNoAction(controlValsList)}.defer;
+						})});
+
+						outDataSet.getPoint(keys[currentPoint], outBuf, {outBuf.loadToFloatArray(action:{|array|
+							valsList = array.asList.postln;
+							this.setSlidersAndSynth(valsList, true);
+							{parent.setLemur(valsList)}.defer;
+						})});
+					})
 				})
 			})
 
@@ -263,24 +270,34 @@ NN_Synth_Mod : Module_Mod {
 	newPointsList {
 		inDataSet.clear;
 		outDataSet.clear;
+		keys = List[];
 
 		currentPoint = 0;
-		numPoints = 0;
 	}
 
 	addPoint {
 		[valsList.size, controlValsList.size].postln;
-		Buffer.loadCollection(group.server, controlValsList.asArray, 1, {|array|
-			inDataSet.addPoint(numPoints.asString, array);
-			inDataSet.print;
-			Buffer.loadCollection(group.server, valsList.asArray, 1, {|array|
-				outDataSet.addPoint(numPoints.asString, array);
-				outDataSet.print;
-				numPoints = numPoints+1;
+		outDataSet.dump({|vals|
+			var max=0, newPoint;
+			vals.postln;
+
+			if(vals["data"]!=nil){
+				vals["data"].keys.do{|item| if(item.asInteger.postln>max){max=item}};
+				max.postln;
+				newPoint = max.asInteger+1;
+			}{newPoint = 0};
+
+			Buffer.loadCollection(group.server, controlValsList.asArray, 1, {|array|
+				inDataSet.addPoint(newPoint.asString, array);
+				inDataSet.print;
+				Buffer.loadCollection(group.server, valsList.asArray, 1, {|array|
+					outDataSet.addPoint(newPoint.asString, array);
+					outDataSet.print;
+					numPoints = numPoints+1;
+					keys.add(newPoint.asString);
+				});
 			});
-		});
-
-
+		})
 
 	}
 
@@ -291,96 +308,60 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	pastePoint {|point|
-		inDataSet.addPoint(numPoints.asString, copyInBuf);
-		outDataSet.addPoint(numPoints.asString, copyOutBuf);
-		numPoints = numPoints+1;
-	}
-
-	consoldatePoints {
-		var changed;
-		changed = false;
-
-		numPoints.do{}
+		outDataSet.dump({|vals|
+			var max=0, newPoint;
+			vals["data"].keys.do{|item| if(item.asInteger.postln>max){max=item}};
+			max.postln;
+			newPoint = max+1;
+			inDataSet.addPoint(newPoint.asString, copyInBuf);
+			outDataSet.addPoint(newPoint.asString, copyOutBuf);
+		});
 	}
 
 	removePoint {
-		var cp = currentPoint;
+		var cp = keys[currentPoint];
 
 		inDataSet.print;
 		outDataSet.print;
 
+		inDataSet.deletePoint(cp, {
+			outDataSet.deletePoint(cp, {
+				keys.removeAt(currentPoint);
+				keys.postln;
+				currentPoint = currentPoint.wrap(0, keys.size-1);
 
-		inDataSet.deletePoint(cp.asString, {
-			outDataSet.deletePoint(cp.asString, {
-				if(cp==(numPoints-1))
-				{"last point removed".postln}
-				{
-					inDataSet.dump({|vals|
-						if(vals["data"][cp.asString]==nil){
-							cp.postln;
-
-							((cp+1)..(numPoints-1)).do{|i2|
-								var temp;
-								i2.postln;
-								vals.postln;
-								temp = vals["data"][i2.asString];
-								vals["data"].removeAt(i2.asString);
-								vals["data"].add((i2-1).asString-> temp);
-						}};
-						inDataSet.load(vals);
-						outDataSet.dump({|vals2|
-							if(vals2["data"][cp.asString]==nil){
-								cp.postln;
-
-								((cp+1)..(numPoints-1)).do{|i2|
-									var temp;
-									i2.postln;
-									vals2.postln;
-									temp = vals2["data"][i2.asString];
-									vals2["data"].removeAt(i2.asString);
-									vals2["data"].add((i2-1).asString-> temp);
-							}};
-							outDataSet.load(vals2);
-							vals["data"].postln;
-							vals2["data"].postln;
-							numPoints = numPoints-1;
-							numPoints.postln;
-						});
-					});
-
-				}
 		})});
 	}
 
 	nextPoint {
-		[currentPoint, numPoints].postln;
-		if(numPoints>0){
-			currentPoint = (currentPoint+1).wrap(0, numPoints-1);
+		var key;
+
+		if(keys.size>0){
+			currentPoint = (currentPoint+1).wrap(0, keys.size-1);
 			currentPoint.postln;
-			inDataSet.getPoint(currentPoint.asSymbol, inBuf, {
+			key = keys[currentPoint];
+
+			inDataSet.getPoint(key, inBuf, {
 				inBuf.loadToFloatArray(action:{|array|
 					array.postln;
 
 					controlValsList = array;
 					controlValsList.postln;
-
 					{parent.setControlPointsNoAction(controlValsList)}.defer;
 				})
 			});
 
-			outDataSet.getPoint(currentPoint.asSymbol, outBuf, {
+			outDataSet.getPoint(key, outBuf, {
 				outBuf.loadToFloatArray(action:{|array|
 					array.postln;
 					valsList = array;
 
 					{this.setSlidersAndSynth(valsList, true)}.defer;
 					parent.setLemur(valsList);
-
 					valsList.postln;
 				})
 			});
-
-		}
+		}{"no points loaded".postln}
 	}
 
 	reloadSynth {
