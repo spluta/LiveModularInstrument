@@ -106,7 +106,7 @@
 // 				})
 // 		});
 //
-// 		layout = HLayout(controls[0].layout, controls[1], controls[2], controls[3]);
+// 		layout = HLayout(controls[0], controls[1], controls[2], controls[3]);
 //
 // 		functions = List.fill(8, {|i| {|val| sineWaves[i].set(\vol, val/200)}});
 // 	}
@@ -209,11 +209,11 @@
 // 		this.addAssignButton(0,\continuous);
 //
 // 		win.layout_(VLayout(
-// 			glassSineObjects[3].layout,
-// 			glassSineObjects[2].layout,
-// 			glassSineObjects[1].layout,
-// 			glassSineObjects[0].layout,
-// 			HLayout(controls[0].layout, assignButtons[0].layout)
+// 			glassSineObjects[3],
+// 			glassSineObjects[2],
+// 			glassSineObjects[1],
+// 			glassSineObjects[0],
+// 			HLayout(controls[0], assignButtons[0])
 // 			)
 // 		);
 // 		win.layout.spacing = 0;

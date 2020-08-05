@@ -388,10 +388,10 @@ ShifterFeedback_Mod : Module_Mod {
 			HLayout(topButtons[0], topButtons[1], topButtons[2], topButtons[3]),
 			HLayout(shiftButtons[0], shiftButtons[1], shiftButtons[2], shiftButtons[3]),
 			HLayout(shiftButtons[4], shiftButtons[5], shiftButtons[6]),
-			HLayout(controls[1].layout,assignButtons[1].layout),
-			HLayout(controls[0].layout,assignButtons[0].layout),
-			HLayout(controls[2], assignButtons[2].layout, controls[3], assignButtons[3].layout),
-			HLayout(controls[4].layout,	assignButtons[4].layout)
+			HLayout(controls[1],assignButtons[1]),
+			HLayout(controls[0],assignButtons[0]),
+			HLayout(controls[2], assignButtons[2], controls[3], assignButtons[3]),
+			HLayout(controls[4],	assignButtons[4])
 		));
 		win.layout.spacing = 2;
 		win.layout.margins = [0,0,0,0];
@@ -486,8 +486,8 @@ BitCrusher_Mod : Module_Mod {
 		this.makeWindow("BitCrusher", Rect(0, 0, 200, 200));
 
 		win.layout_(VLayout(
-			HLayout(controls[0].layout, controls[1].layout, controls[2].layout),
-			HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout)
+			HLayout(controls[0], controls[1], controls[2]),
+			HLayout(assignButtons[0], assignButtons[1], assignButtons[2])
 		).spacing_(0).margins_(0!4));
 		win.front;
 
@@ -555,7 +555,7 @@ BitInterrupter_Mod : Module_Mod {
 		controls.add(QtEZSlider.new("bitVol", ControlSpec(0,1,'amp'),
 			{|v|
 				distVolBus.set(v.value);
-			}, 0, layout:\vert));
+			}, 0, orientation:\vert));
 
 		this.addAssignButton(1,\continuous);
 
@@ -563,14 +563,14 @@ BitInterrupter_Mod : Module_Mod {
 			{|v|
 				sr1Bus.set(v.value+100);
 				sr2Bus.set(v.value);
-			}, 0, layout:\vert));
+			}, 0, orientation:\vert));
 		this.addAssignButton(2,\continuous);
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].maxHeight_(15).maxWidth_(40), assignButtons[0].layout),
-				HLayout(controls[1].layout, controls[2].layout),
-				HLayout(assignButtons[1].layout,assignButtons[2].layout)
+				HLayout(controls[0].maxHeight_(15).maxWidth_(40), assignButtons[0]),
+				HLayout(controls[1], controls[2]),
+				HLayout(assignButtons[1],assignButtons[2])
 		));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];

@@ -60,8 +60,8 @@ EQ_Mod : Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, controls[1].layout,controls[2].layout,controls[3]),
-				HLayout(assignButtons[0].layout.maxWidth_(40), assignButtons[1].layout.maxWidth_(40), assignButtons[2].layout.maxWidth_(40), assignButtons[3].layout.maxWidth_(40))
+				HLayout(controls[0], controls[1],controls[2],controls[3]),
+				HLayout(assignButtons[0].maxWidth_(40), assignButtons[1].maxWidth_(40), assignButtons[2].maxWidth_(40), assignButtons[3].maxWidth_(40))
 			)
 		);
 		win.layout.spacing = 0;

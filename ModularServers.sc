@@ -8,7 +8,11 @@ ModularServerObject {
 	init {
 		server.waitForBoot({
 			//set up groups
+			server.sync;
 			mainGroup = Group.tail(server);
+			server.sync;
+			1.wait;
+			"mainGroup: ".post; mainGroup.postln;
 			inGroup = Group.tail(mainGroup);
 			synthGroup = Group.tail(mainGroup);
 			mixerGroup = Group.tail(mainGroup);
@@ -23,7 +27,6 @@ ModularServerObject {
 				inBusses.add(Bus.audio(server,1));
 			};
 
-
 			//create objectBusses and groups in the shape of the dimensions array
 
 			objectBusses = List.new;
@@ -32,9 +35,11 @@ ModularServerObject {
 
 
 			objectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
-
+			server.sync;
 			synthGroups = List.fill((dimensions[0]*dimensions[1]), {Group.tail(synthGroup)});
-
+			server.sync;
+			0.1.wait;
+			synthGroups.postln;
 			//create the Array of ModularObjects
 
 			modularObjects = List.new;
@@ -54,23 +59,6 @@ ModularServerObject {
 			LiveModularInstrument.readyToRoll();
 		})
 	}
-/*
-	newObjectPanel {
-		var newObjectBusses, newModularObjects;
-
-		newObjectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
-
-		newModularObjects = List.newClear(0);
-		(dimensions[0]*dimensions[1]).do{arg i;
-			newModularObjects.add(
-				ModularObjectPanel(server, synthGroups[i], i)
-			);
-		};
-
-		objectBusses.addAll(newObjectBusses);
-
-		^[newObjectBusses, newModularObjects]
-	}*/
 
 	sendGUIVals {
 		modularObjects.do{arg item; item.sendGUIVals};
@@ -144,14 +132,20 @@ ModularServerObject {
 	load {arg loadArray;
 		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
 
+		"load ".post;
+		mainGroup.postln;
 		mainWindow.load(loadArray[0]);
 
 		this.makeBusMap(loadArray.copyRange(1,3));
-
-		loadArray[4].do{arg item, i;
-
-			if(item.size>0, {modularObjects[i].load(item)})
-		};
+		//{
+			loadArray[4].do{arg item, i;
+				if(item.size>0){
+					modularObjects[i].load(item);
+					//server.sync;
+					//0.05.wait;
+				};
+			};
+		//}.fork(AppClock);
 
 		mainMixer.load(loadArray[5]);
 	}
@@ -206,9 +200,12 @@ ModularServers {
 	*boot {arg numServersIn, inBussesIn;
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
+		{
 		numServers.do{arg i;
-			servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new(Server.new("lmi"++(i+1).asString, NetAddr("localhost", 57111+i), Server.local.options)));
-		};
+				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new(Server.new(("lmi"++(i+1).asString).postln, NetAddr("localhost", 57100+i), Server.local.options)));
+				1.wait;
+			}
+		}.fork(AppClock);
 
 	}
 
@@ -253,9 +250,10 @@ ModularServers {
 			modularInputsArray.load(loadArray[0]);
 			numServersInFile = loadArray[2].size;
 
-
+			//{
 			min(numServersInFile, numServers).do{arg i;
-				servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i])
+				servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i]);
+				//1.wait;
 			};
 			//load the serverSwitcher last so that it can update the server windows
 			if(loadArray[1]!=nil,{
@@ -263,9 +261,10 @@ ModularServers {
 				serverSwitcher.load(loadArray[1]);
 			});
 			Window.allWindows.do{arg item; item.front};
+			//}.fork(AppClock);
 
 		}, {
-			servers[serverName.asSymbol].load(loadArray[2][0])
+			AppClock.sched(rrand(1.0,3), {servers[serverName.asSymbol].load(loadArray[2][0])});
 		});
 
 

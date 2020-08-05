@@ -182,10 +182,10 @@ GrainAge_Mod : Module_Mod {
 			HLayout(
 				VLayout(
 					HLayout(controls[0], controls[1], controls[2]),
-					HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout),
-					controls[4].layout, assignButtons[4].layout
+					HLayout(assignButtons[0], assignButtons[1], assignButtons[2]),
+					controls[4], assignButtons[4]
 				),
-				VLayout(controls[3].layout, assignButtons[3].layout)
+				VLayout(controls[3], assignButtons[3])
 			)
 		);
 		}

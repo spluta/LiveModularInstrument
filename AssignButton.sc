@@ -20,6 +20,8 @@ AssignButton {
 		instantButton.bounds_(bounds);
 	}
 
+	maxWidth_{arg max; instantButton.maxWidth_(max)}
+
 	layout {^instantButton}
 
 	asView {^instantButton}

@@ -88,8 +88,8 @@ InterruptDistortion_Mod : Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, assignButtons[0].layout),
-				HLayout(controls[1], assignButtons[1].layout, controls[2])
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1], controls[2])
 			)
 		);
 		win.layout.spacing = 0;

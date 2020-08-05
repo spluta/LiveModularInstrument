@@ -2,19 +2,11 @@ CrossFeedback1_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("CrossFeedback1_NNMod",{
-				var localIn, noise1, out, foldNum, dust, trigEnv, filtMod, filterFreq, envs, onOffSwitch;
-
-				localIn = LocalIn.ar(1);
+				var noise1, out, foldNum, dust, trigEnv, filtMod, filterFreq, envs, onOffSwitch;
 
 				noise1 = RLPF.ar(
 					Latch.ar(WhiteNoise.ar(\noiseVol.kr(0).clip(0, 3000)), Impulse.ar(\impulse.kr(10000).clip(100, 20000))),
 				Lag.kr(\filterFreq.kr(10000), 0.05).clip(200, 20000), Lag.kr(\rq.kr(0.5), 0.05).clip(0.2, 2));
-
-				//osc1 = SinOscFB.ar(\freq1.kr(300, 0.05).clip(2, 10000)+(localIn*\modVol1.kr(1).clip(0, 3000))+noise1, \freq1.kr.linlin(100, 300, 2, 0.0));
-				//osc1 = SelectX.ar(\freq1.kr.linlin(15.0, 25.0, 0.0, 1.0), [osc1.linlin(-1.0,1.0, 0.0, 1.0), osc1]);
-				//osc2 = LFTri.ar(\freq2.kr(500, 0.05).clip(2, 10000)+(osc1*\modVol2.kr(1).clip(0, 3000)));
-				//osc2 = LeakDC.ar(osc2);
-				//LocalOut.ar(osc2);
 
 				out = CrossSineTri.ar(\freq1.ar(300, 0.05).clip(2, 10000), \modVol1.ar(1).clip(0, 3000), \freq2.ar(500, 0.05).clip(2, 10000), \modVol2.ar(1).clip(0, 3000));
 

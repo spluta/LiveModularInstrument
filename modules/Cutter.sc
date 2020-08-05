@@ -134,10 +134,10 @@ Cutter_Mod : Module_Mod {
 			HLayout(
 				VLayout(
 					HLayout(controls[0].maxHeight_(15), controls[1].maxHeight_(15), controls[2].maxHeight_(15), controls[3].maxHeight_(15)),
-					HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout),
-					HLayout(controls[4].layout,assignButtons[4].layout),
-					controls[5].layout,
-					HLayout(controls[6].layout,assignButtons[6].layout)
+					HLayout(assignButtons[0], assignButtons[1], assignButtons[2], assignButtons[3]),
+					HLayout(controls[4],assignButtons[4]),
+					controls[5],
+					HLayout(controls[6],assignButtons[6])
 				)
 			)
 		);
@@ -370,9 +370,9 @@ CutterThrough_Mod : Module_Mod {
 			HLayout(
 				VLayout(
 					HLayout(controls[0], controls[1], controls[2], controls[3]),
-					HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout),
-					HLayout(controls[4].layout,assignButtons[4].layout),
-					controls[5].layout
+					HLayout(assignButtons[0], assignButtons[1], assignButtons[2], assignButtons[3]),
+					HLayout(controls[4],assignButtons[4]),
+					controls[5]
 				)
 			)
 		);

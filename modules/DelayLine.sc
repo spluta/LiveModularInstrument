@@ -98,7 +98,7 @@ DelayLine_Mod : Module_Mod {
 
 		win.layout_(VLayout(
 			text,
-			HLayout(controls[0],assignButtons[0].layout),
+			HLayout(controls[0],assignButtons[0]),
 			*buttons.collect{|x| HLayout(*x)}
 		));
 

@@ -89,7 +89,8 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group));
+		"nn_synth group: ".post;
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group.postln;));
 		this.init_window(parent);
 	}
 
@@ -134,10 +135,8 @@ NN_Synth_Mod : Module_Mod {
 		this.setSlidersAndSynth(valsList, true);
 	}
 
-	configure {//"configure".postln;
+	configure {
 		if(parent.predictOnOff==1){
-			//[mlpInBuf,mlpOutBuf].postln;
-			//whichModel.postln;
 			mlps[whichModel].predictPoint(mlpInBuf,mlpOutBuf,{
 				mlpOutBuf.loadToFloatArray(action:{|array|
 					array = array.asArray;
@@ -369,9 +368,12 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	killMeSpecial {
-		this.clearMLPs;
+		mlps.do{|item| item.free};
 		mlpInBuf.free;
 		mlpOutBuf.free;
+		inDataSet.free;
+		outDataSet.free;
+
 	}
 
 	getLabels {

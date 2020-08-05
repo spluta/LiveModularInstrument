@@ -94,9 +94,9 @@ FilterDelays_Mod : Module_Mod {
 		this.makeWindow("FilterDelays",Rect(718, 758, 380, 98));
 
 		win.layout_(VLayout(
-			HLayout(controls[0].layout,assignButtons[0].layout),
-			HLayout(controls[1].layout,assignButtons[1].layout),
-			HLayout(controls[2].layout, assignButtons[2].layout)
+			HLayout(controls[0],assignButtons[0]),
+			HLayout(controls[1],assignButtons[1]),
+			HLayout(controls[2], assignButtons[2])
 		));
 		win.layout.spacing = 2;
 		win.layout.margins = [0,0,0,0];

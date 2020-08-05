@@ -1,5 +1,5 @@
 NN_Input_Control_NNMod :  TypeOSCModule_Mod {
-	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton, modControls, controlsCount;
+	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton, modControls, controlsCount, changed, changeRout;
 
 	init {
 
@@ -16,17 +16,24 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 
 		modControls = 1;
 		controlsCount = 0;
+		changed = false;
 
 		functions = Array.fill(numControls, {|i|
 			{arg val;
-				controlsCount = (controlsCount+1).wrap(0,10);
-				if(controlsCount%modControls==0){
-					sliderVals.put(i, val);
-					if(sliderOns[i]==1){
-						parent.setInputSliders(sliderVals.select{|item, i| sliderOns[i]==1})
-				}}
+				//controlsCount = (controlsCount+1).wrap(0,10);
+				//if(controlsCount%modControls==0){
+				sliderVals.put(i, val);
+				changed = true;
 			}
 		});
+
+		changeRout = Routine({inf.do{
+			if(changed){
+				parent.setInputSliders(sliderVals.select{|item, i| sliderOns[i]==1});
+				changed = false;
+			};
+			0.01.wait;
+		}}).play;
 
 		onOffFunctions = Array.fill(numControls, {|i|
 			{arg val; parent.setInputButton(i+1, val)}

@@ -296,6 +296,8 @@ ServerSwitcher2 : MidiOscObject {
 		win.front
 	}
 
+	//load {}
+
 	updateCurrentServers {
 		var tempCurrent;
 		if(muteLayer2==1, {tempCurrent=currentServers.first}, {tempCurrent=currentServers});

@@ -103,9 +103,9 @@ ResonDraw_Mod : Module_Mod {
 		win.layout_(
 			VLayout(
 				HLayout(
-					VLayout(controls[0].layout,assignButtons[0].layout),
-					VLayout(controls[1].layout,assignButtons[1].layout),
-					VLayout(controls[2].layout,assignButtons[2].layout)
+					VLayout(controls[0],assignButtons[0]),
+					VLayout(controls[1],assignButtons[1]),
+					VLayout(controls[2],assignButtons[2])
 				)
 			)
 		);

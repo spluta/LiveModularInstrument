@@ -30,81 +30,81 @@ MainProcessingWindow : MidiOscObject {
 		};
 
 		saveButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
-			.states_([["Save", Color.black, Color.green]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
+		.states_([["Save", Color.black, Color.green]])
+		.action_{
+			visibleArray = List.newClear(0);
+			Window.allWindows.do{arg item;
 
-					visibleArray.add(item.visible);
-					item.visible = false
-				};
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
 
-				Dialog.savePanel({ arg path;
-					ModularServers.save(path);
+			Dialog.savePanel({ arg path;
+				ModularServers.save(path);
 
-					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-				});
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+			});
 		};
 
 		saveServerButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
-			.states_([["S Server", Color.black, Color.green]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
+		.states_([["S Server", Color.black, Color.green]])
+		.action_{
+			visibleArray = List.newClear(0);
+			Window.allWindows.do{arg item;
 
-					visibleArray.add(item.visible);
-					item.visible = false
-				};
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
 
-				Dialog.savePanel({ arg path;
-					ModularServers.save(path, group.server);
+			Dialog.savePanel({ arg path;
+				ModularServers.save(path, group.server);
 
-					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
-				});
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
+			});
 		};
 
 		loadButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
-			.states_([["Load", Color.green, Color.black]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
+		.states_([["Load", Color.green, Color.black]])
+		.action_{
+			visibleArray = List.newClear(0);
+			Window.allWindows.do{arg item;
 
-					visibleArray.add(item.visible);
-					item.visible = false
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
+			Dialog.openPanel({ arg path;
+				ModularServers.load(path);
+
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
+				//Window.allWindows.do{arg item, i; item.visible = true};
+
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 				};
-				Dialog.openPanel({ arg path;
-					ModularServers.load(path);
-
-					visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
-					//Window.allWindows.do{arg item, i; item.visible = true};
-
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
-						};
-				});
+			});
 		};
 
 		loadServerButton = Button().font_(Font("Helvetica", 10)).maxWidth_(53)
-			.states_([["L Server", Color.green, Color.black]])
-			.action_{
-				visibleArray = List.newClear(0);
-				Window.allWindows.do{arg item;
+		.states_([["L Server", Color.green, Color.black]])
+		.action_{
+			visibleArray = List.newClear(0);
+			Window.allWindows.do{arg item;
 
-					visibleArray.add(item.visible);
-					item.visible = false
+				visibleArray.add(item.visible);
+				item.visible = false
+			};
+			Dialog.openPanel({ arg path;
+				ModularServers.load(path, group.server);
+
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
+			},{
+				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
 				};
-				Dialog.openPanel({ arg path;
-					ModularServers.load(path, group.server);
-
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
-					},{
-						visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
-						};
-				});
+			});
 		};
 
 		//think about how to do this that is good for all OSC controllers
@@ -120,34 +120,34 @@ MainProcessingWindow : MidiOscObject {
 		listeningPort.string = NetAddr.langPort.asString;
 
 		if(group.server.asString=="lmi1",{
-		lemurPorts = Array.fill(2, {|i|
-			TextField().maxWidth_(60)
-			.string_(Lemur_Mod.netAddrs[i].port)
-			.action_{arg val;
-				Lemur_Mod.setPorts(lemurPorts.collect{|item| item.string.asInteger});
-			}
-		});
+			lemurPorts = Array.fill(2, {|i|
+				TextField().maxWidth_(60)
+				.string_(Lemur_Mod.netAddrs[i].port)
+				.action_{arg val;
+					Lemur_Mod.setPorts(lemurPorts.collect{|item| item.string.asInteger});
+				}
+			});
 
-		tempOSCs = List.newClear(2);
-		lemurPorts.do{|item, i|
-			try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString).postln};
+			tempOSCs = List.newClear(2);
+			lemurPorts.do{|item, i|
+				try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString).postln};
 
-			item.focusGainedAction = {
-				tempOSCs.put(0, OSCFunc({|msg, time, addr|
-					//addr.postln;
-					{item.string = addr.port}.defer;
-					tempOSCs[1].free;
-				}, '/Switches/x').oneShot);
-				tempOSCs.put(1, OSCFunc({|msg, time, addr|
-					//addr.postln;
-					{item.string = addr.port}.defer;
-					tempOSCs[0].free;
-				}, '/Container2/Switches/x').oneShot);
+				item.focusGainedAction = {
+					tempOSCs.put(0, OSCFunc({|msg, time, addr|
+						//addr.postln;
+						{item.string = addr.port}.defer;
+						tempOSCs[1].free;
+					}, '/Switches/x').oneShot);
+					tempOSCs.put(1, OSCFunc({|msg, time, addr|
+						//addr.postln;
+						{item.string = addr.port}.defer;
+						tempOSCs[0].free;
+					}, '/Container2/Switches/x').oneShot);
+				};
+				item.focusLostAction = {
+					tempOSCs.do{|i2| i2.free}
+				}
 			};
-			item.focusLostAction = {
-				tempOSCs.do{|i2| i2.free}
-			}
-		};
 		},{
 			lemurPorts = Array.fill(2, {|i|
 				Button().maxWidth_(60)
@@ -252,7 +252,6 @@ LiveModularInstrument {
 				controllers = [MantaCocoa_Mod, Lemur_Mod, MIDI_Mod];
 			});
 			controllers.do{arg item; item.start};
-			//if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
 			MidiOscControl.new;
 		});
 
@@ -263,17 +262,17 @@ LiveModularInstrument {
 
 			numServers = numServers+1;
 			addingServer = false;
-			},{
-				if(readyToRollCounter==numServers, {
-					Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
+		},{
+			if(readyToRollCounter==numServers, {
+				Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
 
-					ModularServers.addInputsArray(inBusses);
-					ModularServers.updateServerSwitcher;
+				ModularServers.addInputsArray(inBusses);
+				ModularServers.updateServerSwitcher;
 
-					MidiOscControl.createActionDictionary;
+				MidiOscControl.createActionDictionary;
 				if(path!=nil, {ModularServers.load(path)});
-				});
-				Window.allWindows.do{arg item, i; item.front};
+			});
+			Window.allWindows.do{arg item, i; item.front};
 		});
 
 

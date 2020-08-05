@@ -164,16 +164,16 @@ VDelayInline_Mod : Module_Mod {
 
 		win.layout_(
 			HLayout(
-				VLayout(controls[6].maxWidth_(60).maxHeight_(15), assignButtons[6].layout, controls[0].layout,assignButtons[0].layout),
+				VLayout(controls[6].maxWidth_(60).maxHeight_(15), assignButtons[6], controls[0],assignButtons[0]),
 				VLayout(
 					HLayout(controls[1].maxWidth_(60).maxHeight_(15),controls[2].maxWidth_(60).maxHeight_(15)),
-					controls[3].layout,
-					assignButtons[3].layout,
+					controls[3],
+					assignButtons[3],
 					controls[4]
 				),
 				VLayout(
-					controls[5].layout,
-					assignButtons[5].layout
+					controls[5],
+					assignButtons[5]
 				)
 			)
 		);

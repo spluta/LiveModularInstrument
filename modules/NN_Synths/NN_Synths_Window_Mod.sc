@@ -445,9 +445,10 @@ NN_Synths_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 		var loadProto;
+
+		loadArray.postln;
+
 		if(loadArray!=nil){
-			//{
-			//5.wait;
 
 			try {sliderControl.load(loadArray[20])};
 			try {inputControl.load(loadArray[21])};
@@ -461,15 +462,8 @@ NN_Synths_Mod : Module_Mod {
 					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
 					nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
 					if(chosenModels[i]!=0){
-						//AppClock.sched(1, {
-						//chosenModels.postln;
-						//	modelChoices.postln;
-						//loadedSynths[i].postln;
-						//modelChoices[i+1].postln;
-						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]).postln)
-						//})
+						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]).postln);
 					};
-					//1.wait;
 				},{
 					"isNil".postln;
 					nn_synths.put(i, nil);
@@ -482,18 +476,12 @@ NN_Synths_Mod : Module_Mod {
 				}
 			};
 			controls[0].valueAction=1;
-			//nn_synths.copyRange(1,3).do{|item| if(item!=nil){item.pause}};
 
 			controls[5].items_(modelChoices[loadedSynths[0]].asArray);
 			controls[5].value_(chosenModels[0]);
 			"that stuff".postln;
 
 			controls[25].valueAction_(1);
-			//loadArray[1].copyRange(24,26).postln;
-			//if(loadArray[1][25]==1){controls[25].valueAction_(1)};
-			//if(loadArray[1][26]==1){controls[26].valueAction_(1)};
-
-			//}.fork(AppClock);
 		};
 		AppClock.sched(2.0, {
 			nn_synths.do{|item| if(item!=nil){item.hide}};
@@ -501,8 +489,17 @@ NN_Synths_Mod : Module_Mod {
 		});
 	}
 
+	pause {
+		nn_synths.do{|item| if(item!=nil){item.pause}};
+	}
+
+	unpause {
+		nn_synths.do{|item| if(item!=nil){item.unpause}};
+	}
+
 	killMeSpecial {
 		nn_synths.do{|item| if(item!=nil){item.killMe}};
+		inputControl.killMe;// NN_Input_Control_NNMod
 	}
 
 }

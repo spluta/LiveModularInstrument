@@ -186,15 +186,15 @@ Freeze_Mod : Module_Mod {
 			VLayout(
 				HLayout(
 					VLayout(controls[0], controls[1]),
-					VLayout(assignButtons[0].layout, assignButtons[1].layout)
+					VLayout(assignButtons[0], assignButtons[1])
 				),
 				HLayout(
-					VLayout(controls[2].layout, assignButtons[2].layout),
-					VLayout(controls[3].layout, assignButtons[3].layout)
+					VLayout(controls[2], assignButtons[2]),
+					VLayout(controls[3], assignButtons[3])
 				),
 				HLayout(
 					VLayout(controls[4], controls[5], controls[6]),
-				VLayout(assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout)
+				VLayout(assignButtons[4], assignButtons[5], assignButtons[6])
 					)
 			)
 		);
@@ -379,11 +379,11 @@ TFreeze_Mod : Module_Mod {
 			VLayout(
 				HLayout(
 					VLayout(controls[0], controls[1], controls[2]),
-					VLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout)
+					VLayout(assignButtons[0], assignButtons[1], assignButtons[2])
 				),
 				HLayout(
-					VLayout(controls[3].layout, assignButtons[3].layout),
-					VLayout(controls[4].layout, assignButtons[4].layout)
+					VLayout(controls[3], assignButtons[3]),
+					VLayout(controls[4], assignButtons[4])
 				)
 			)
 		);

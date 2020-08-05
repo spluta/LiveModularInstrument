@@ -142,13 +142,13 @@ OverLapSamples_Mod : Module_Mod {
 	win.layout_(
 		HLayout(
 			VLayout(
-				HLayout(controls[0].layout,assignButtons[0].layout),
-				HLayout(controls[1].layout,assignButtons[1].layout),
-				HLayout(controls[2].layout,assignButtons[2].layout),
-				HLayout(controls[3].layout,assignButtons[3].layout),
+				HLayout(controls[0],assignButtons[0]),
+				HLayout(controls[1],assignButtons[1]),
+				HLayout(controls[2],assignButtons[2]),
+				HLayout(controls[3],assignButtons[3]),
 				HLayout(loadFileButton, fileText, controls[6])
 			),
-			VLayout(controls[4].layout, assignButtons[4].layout), controls[5].layout
+			VLayout(controls[4], assignButtons[4]), controls[5]
 		)
 	);
 }
@@ -302,9 +302,9 @@ LoopBuf_Mod : Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout,assignButtons[0].layout),
-				HLayout(controls[1].layout),
-				HLayout(controls[2],assignButtons[2].layout, controls[3],assignButtons[3].layout),
+				HLayout(controls[0],assignButtons[0]),
+				HLayout(controls[1]),
+				HLayout(controls[2],assignButtons[2], controls[3],assignButtons[3]),
 				HLayout(loadFileButton, fileText, controls[4], controls[5])
 			)
 		);
@@ -448,10 +448,10 @@ SampleMashup_Mod : Module_Mod {
 
 		win.layout_(VLayout(
 			HLayout(controls[0], loadFilesButton),
-			HLayout(assignButtons[0].layout, nil),
-			HLayout(controls[1].layout, assignButtons[1].layout),
-			HLayout(controls[2].layout, assignButtons[2].layout),
-			HLayout(controls[3].layout, assignButtons[3].layout)));
+			HLayout(assignButtons[0], nil),
+			HLayout(controls[1], assignButtons[1]),
+			HLayout(controls[2], assignButtons[2]),
+			HLayout(controls[3], assignButtons[3])));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
 		win.bounds = win.bounds.size_(win.minSizeHint);

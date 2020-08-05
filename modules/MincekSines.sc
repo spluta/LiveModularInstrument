@@ -51,11 +51,11 @@ SimpleSound_Mod : Module_Mod {
 		this.addAssignButton(4,\continuous);
 
 		win.layout_(VLayout(
-			HLayout(controls[0], assignButtons[0].layout),
-			HLayout(controls[1].layout, assignButtons[1].layout),
-			HLayout(controls[2].layout, assignButtons[2].layout),
-			HLayout(controls[3].layout, assignButtons[3].layout),
-			HLayout(controls[4].layout, assignButtons[4].layout)
+			HLayout(controls[0], assignButtons[0]),
+			HLayout(controls[1], assignButtons[1]),
+			HLayout(controls[2], assignButtons[2]),
+			HLayout(controls[3], assignButtons[3]),
+			HLayout(controls[4], assignButtons[4])
 		))
 	}
 
@@ -209,12 +209,12 @@ PinkNoise_Mod : SimpleSound_Mod {
 // 		};
 //
 // 		win.layout_(VLayout(
-// 			HLayout(controls[0].layout,assignButtons[0].layout),
+// 			HLayout(controls[0],assignButtons[0]),
 // 			HLayout(controls[1],controls[2],controls[3],controls[4],controls[5],controls[6],controls[7],controls[8],controls[9],controls[10],controls[11]),
 //
-// 			HLayout(assignButtons[1].layout,assignButtons[2].layout,assignButtons[3].layout,assignButtons[4].layout,assignButtons[5].layout,assignButtons[6].layout,assignButtons[7].layout,assignButtons[8].layout,assignButtons[9].layout,assignButtons[10].layout,assignButtons[11].layout),
+// 			HLayout(assignButtons[1],assignButtons[2],assignButtons[3],assignButtons[4],assignButtons[5],assignButtons[6],assignButtons[7],assignButtons[8],assignButtons[9],assignButtons[10],assignButtons[11]),
 // 			HLayout(controls[12],controls[13],controls[14],controls[15],controls[16],controls[17],controls[18],controls[19],controls[20],controls[21],controls[22]),
-// 			HLayout(assignButtons[12].layout,assignButtons[13].layout,assignButtons[14].layout,assignButtons[15].layout,assignButtons[16].layout,assignButtons[17].layout,assignButtons[18].layout,assignButtons[19].layout,assignButtons[20].layout,assignButtons[21].layout,assignButtons[22].layout)
+// 			HLayout(assignButtons[12],assignButtons[13],assignButtons[14],assignButtons[15],assignButtons[16],assignButtons[17],assignButtons[18],assignButtons[19],assignButtons[20],assignButtons[21],assignButtons[22])
 // 		));
 // 	}
 //

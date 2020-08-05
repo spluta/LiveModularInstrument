@@ -73,9 +73,9 @@ AmpMod_Mod : Module_Mod {
 		this.makeWindow("AmpMod", Rect(0, 0, 200, 40));
 
 		win.layout_(VLayout(
-			HLayout(controls[0].maxHeight_(15), controls[1].maxHeight_(15)/*, controls[2].maxHeight_(15)*/),
-			HLayout(assignButtons[0].layout, assignButtons[1].layout/*, assignButtons[2].layout*/),
-			controls[2].layout
+			HLayout(controls[0].maxHeight_(15), controls[1].maxHeight_(15)),
+			HLayout(assignButtons[0], assignButtons[1]),
+			controls[2]
 		));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];

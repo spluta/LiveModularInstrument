@@ -88,7 +88,7 @@ EightDelays2_Mod : Module_Mod {
 
 		win.layout_(
 			HLayout(
-				controls[0].layout, assignButtons[0].layout
+				controls[0], assignButtons[0]
 			)
 		);
 		win.layout.spacing = 0;
@@ -190,8 +190,8 @@ Melter_Mod : Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, assignButtons[0].layout),
-				HLayout(controls[1].layout, assignButtons[1].layout)
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1])
 			)
 		);
 		win.layout.spacing = 0;
@@ -329,10 +329,10 @@ LongDelay_Mod : Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, assignButtons[0].layout),
-				HLayout(controls[1].layout, assignButtons[1].layout),
-				HLayout(controls[2].layout, assignButtons[2].layout),
-				HLayout(controls[3].layout, assignButtons[3].layout),
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1]),
+				HLayout(controls[2], assignButtons[2]),
+				HLayout(controls[3], assignButtons[3]),
 				HLayout(controls[4], nil),
 			)
 		);

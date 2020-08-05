@@ -14,8 +14,6 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	var loader, ds, tree, folder,dataBuf, dataBufs, task, friends, loader, index, dur, grainEnv, bufIsLoaded=false, ranges, controlVals, uGotTreed, volBus, synthName, chanVolBus, treeInBus, treeOutBus, treeInBuffer, treeOutBuffer, addRandomVal;
 
 	killMeSpecial {
-		this.killThePythons;
-		//task.stop;
 		tree.free;
 		ds.free;
 		loader.free;
@@ -182,29 +180,6 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		uGotTreed = false;
 
 		dataBuf = Buffer.new(group.server);
-		/*		task = Task{
-		inf.do{
-		//tree.postln;
-		if(uGotTreed){
-		dataBuf.free;
-		dataBuf = Buffer.loadCollection(group.server, valsList.copyRange(0,1), 1, {|buf|
-		tree.postln;
-		tree.kNearest(buf,{|x|
-		var v;
-		x.postln;
-		friends = x;
-		friends.postln;
-		if(bufIsLoaded){
-		v = loader.index[friends.asSymbol];
-		if(synths[0]!=nil){synths[0].set(\startFrame, v[\bounds][0], \endFrame, v[\bounds][1])};
-		}
-		})
-		});
-		};
-		0.05.wait;
-		}
-		}.play;*/
-
 
 		this.init_window(parent);
 	}

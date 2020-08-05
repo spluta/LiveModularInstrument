@@ -108,13 +108,13 @@ SnareSwitch_Mod : Module_Mod {
 			HLayout(
 				VLayout(
 					HLayout(controls[0], controls[1]),
-					HLayout(assignButtons[0].layout, assignButtons[1].layout),
+					HLayout(assignButtons[0], assignButtons[1]),
 					HLayout(controls[2], controls[3]),
-					HLayout(assignButtons[0].layout, assignButtons[1].layout),
-					controls[4].layout,
-					controls[5].layout,
-					controls[6].layout,
-					controls[7].layout
+					HLayout(assignButtons[0], assignButtons[1]),
+					controls[4],
+					controls[5],
+					controls[6],
+					controls[7]
 				)
 			)
 		);

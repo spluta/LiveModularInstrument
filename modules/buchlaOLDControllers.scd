@@ -111,7 +111,7 @@ numChannels = 8;
 
 win.layout_(
 VLayout(
-HLayout(controls[0].layout, controls[1].layout),
+HLayout(controls[0], controls[1]),
 HLayout(controls[2], controls[3])
 )
 );
@@ -424,7 +424,7 @@ this.loadExtra(loadArray);
 //
 // 		win.layout_(
 // 			VLayout(
-// 				HLayout(controls[0].layout, controls[1].layout),
+// 				HLayout(controls[0], controls[1]),
 // 				HLayout(controls[2], controls[3])
 // 			)
 // 		);
@@ -698,7 +698,7 @@ this.loadExtra(loadArray);
 		);
 		this.addAssignButton(1,\continuous);
 
-		win.layout_(VLayout(controls[0], HLayout(controls[1].layout), assignButtons[1].layout));
+		win.layout_(VLayout(controls[0], HLayout(controls[1]), assignButtons[1]));
 		win.layout.spacing = 0;
 
 		noteOnFunctions = IdentityDictionary.new;

@@ -114,13 +114,13 @@ UpDownSines_Mod : Module_Mod {
 			VLayout(
 				HLayout(
 					VLayout(
-						controls[0].layout, assignButtons[0].layout
+						controls[0], assignButtons[0]
 					),
 					VLayout(
-						controls[1], assignButtons[1].layout, controls[2], assignButtons[2].layout, controls[3], assignButtons[3].layout
+						controls[1], assignButtons[1], controls[2], assignButtons[2], controls[3], assignButtons[3]
 					),
 					VLayout(
-						controls[4].layout
+						controls[4]
 					)
 				),
 				controls[5]

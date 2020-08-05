@@ -47,8 +47,8 @@ AmpFollower_Mod : SignalSwitcher_Mod {
 		win.name_(outBus.index.asString+"AmpFollower");
 		win.layout_(
 			VLayout(
-				HLayout(mixerStrips[0].panel, mixerStrips[1].panel, VLayout(controls[0].layout, assignButtons[0].layout)),
-			HLayout(controls[1], assignButtons[1].layout)
+				HLayout(mixerStrips[0].panel, mixerStrips[1].panel, VLayout(controls[0], assignButtons[0])),
+			HLayout(controls[1], assignButtons[1])
 		).margins_(0!4).spacing_(0));
 	win.front;
 }
@@ -111,8 +111,8 @@ AmpInterrupter_Mod : SignalSwitcher_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(mixerStrips[0].panel, mixerStrips[1].panel, controls[0].layout),
-				HLayout(controls[1], assignButtons[1].layout)
+				HLayout(mixerStrips[0].panel, mixerStrips[1].panel, controls[0]),
+				HLayout(controls[1], assignButtons[1])
 		).margins_(0!4).spacing_(0));
 		win.front;
 	}

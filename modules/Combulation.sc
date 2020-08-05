@@ -41,7 +41,7 @@ Combulation_Mod : Module_Mod {
 		this.addAssignButton(0,\continuous);
 
 		win.layout_(VLayout(
-			controls[0].layout, assignButtons[0].layout
+			controls[0], assignButtons[0]
 			)
 		);
 		win.layout.spacing = 0;

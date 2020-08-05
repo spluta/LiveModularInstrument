@@ -40,8 +40,8 @@ PitchShift_Mod : Module_Mod {
 		this.makeWindow("PitchShift", Rect(0, 0, 200, 40));
 
 		win.layout_(VLayout(
-			HLayout(controls[0].layout, assignButtons[0].layout),
-			HLayout(controls[1].layout, assignButtons[1].layout)
+			HLayout(controls[0], assignButtons[0]),
+			HLayout(controls[1], assignButtons[1])
 		));
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];

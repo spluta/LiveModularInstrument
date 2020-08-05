@@ -331,15 +331,15 @@ GrainFreezeDrums_Mod : Module_Mod {
 		);
 
 		win.layout_(VLayout(
-			HLayout(controls[0].layout,assignButtons[0].layout),
-			HLayout(controls[1].layout,assignButtons[1].layout),
-			HLayout(controls[2].layout, assignButtons[2].layout),
-			HLayout(controls[3], assignButtons[3].layout,
-				controls[4], assignButtons[4].layout,
-				controls[5], assignButtons[5].layout,
-				controls[6], assignButtons[6].layout),
-			HLayout(controls[7], assignButtons[7].layout,
-				controls[8], assignButtons[8].layout,
+			HLayout(controls[0],assignButtons[0]),
+			HLayout(controls[1],assignButtons[1]),
+			HLayout(controls[2], assignButtons[2]),
+			HLayout(controls[3], assignButtons[3],
+				controls[4], assignButtons[4],
+				controls[5], assignButtons[5],
+				controls[6], assignButtons[6]),
+			HLayout(controls[7], assignButtons[7],
+				controls[8], assignButtons[8],
 				trigButton, controls[9])
 			)
 		);

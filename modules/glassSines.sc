@@ -140,9 +140,11 @@ GlassSineObject : Module_Mod {
 				})
 		});
 
-		layout = HLayout(controls[0].layout, controls[1], controls[2], controls[3]);
+		layout = HLayout(controls[0], controls[1], controls[2], controls[3]);
 
 	}
+
+	asView {^layout}
 
 	setFreq {
 		4.do{arg i; sineWaves[i].set(\freq, midiNoteNum.midicps-(i*5))};
@@ -236,11 +238,11 @@ GlassSines_Mod : Module_Mod {
 		this.addAssignButton(0,\continuous);
 
 		win.layout_(VLayout(
-			glassSineObjects[3].layout,
-			glassSineObjects[2].layout,
-			glassSineObjects[1].layout,
-			glassSineObjects[0].layout,
-			HLayout(controls[0].layout, assignButtons[0].layout)
+			glassSineObjects[3],
+			glassSineObjects[2],
+			glassSineObjects[1],
+			glassSineObjects[0],
+			HLayout(controls[0], assignButtons[0])
 			)
 		);
 		win.layout.spacing = 0;

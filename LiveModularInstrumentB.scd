@@ -33,15 +33,19 @@ Joystick_Mod.setPaths(["logitech-extreme-3d-pro"])
 Joystick_Mod.start
 
 
+LiveModularInstrument.boot(10, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod])
+
 
 (
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN3");
+LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN4");
 )
 
 
+ModularServers.servers[\lmi10].server.queryAllNodes
+
 (
 //May2020
-LiveModularInstrument.boot(9, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 51618]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/June2020Jack");
+LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 51618]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/August2020JackL");
 )
 
 
@@ -158,7 +162,7 @@ LiveModularInstrument.boot(1, [0,1,4,5,6,7,2,3], 'normal', [Lemur_Mod, Seaboard,
 OSCFunc.trace
 
 
-ModularServers.servers[\lmi1].server.queryAllNodes
+ModularServers.servers[\lmi4].server.queryAllNodes
 
 ModularServers.servers[\lmi1].server.asString=="lmi1"
 
@@ -216,7 +220,7 @@ LiveModularInstrument.boot(1, 0, 0, 64, 44100, 'neuwirth', [MantaCocoa_Mod.start
 //incorporate Modality into the system
 
 
-ModularServers.servers[\lmi1].server.queryAllNodes
+ModularServers.servers[\lmi10].server.queryAllNodes
 
 
 ModularServers.servers[\lmi0].server.prepareForRecord

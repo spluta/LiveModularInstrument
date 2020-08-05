@@ -255,9 +255,9 @@ controls.add(Button.new()
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout,assignButtons[0].layout),
-				HLayout(controls[1].layout),
-				HLayout(controls[2],assignButtons[2].layout, controls[3],assignButtons[3].layout),
+				HLayout(controls[0],assignButtons[0]),
+				HLayout(controls[1]),
+				HLayout(controls[2],assignButtons[2], controls[3],assignButtons[3]),
 				HLayout(loadFileButton, fileText, controls[4], controls[5])
 			)
 		);

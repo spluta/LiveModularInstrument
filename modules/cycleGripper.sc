@@ -217,7 +217,7 @@ CycleGripper_Mod : Module_Mod {
 		win.layout_(
 			VLayout(
 				HLayout(controls[0], controls[1], controls[2], controls[3], controls[4], controls[5], controls[6], controls[7], controls[8]),
-				HLayout(assignButtons[0].layout, assignButtons[1].layout, assignButtons[2].layout, assignButtons[3].layout, assignButtons[4].layout, assignButtons[5].layout, assignButtons[6].layout, assignButtons[7].layout, assignButtons[8].layout)
+				HLayout(assignButtons[0], assignButtons[1], assignButtons[2], assignButtons[3], assignButtons[4], assignButtons[5], assignButtons[6], assignButtons[7], assignButtons[8])
 			)
 		);
 		win.layout.spacing = 0;

@@ -13,18 +13,15 @@ MidiOscObject {
 		dontLoadControls = List.newClear(0);
 
 		synths = List.newClear(0);
-		bigSynthGroup = Group.new(group);  //this is only in the sampler...not sure why
+		bigSynthGroup = Group.tail(group);  //this is only in the sampler...not sure why
 
 	}
 
 	sendGUIVals {
 		var vals;
-		//"sendGUIVals".postln;
 		controls.do{arg item, i;
 
-			//[item, i].postln;
 			vals = item.value;
-			//vals.postln;
 			if(vals.size<2,{
 				if(vals!=nil,{
 					this.sendOSC(i, vals)
@@ -269,8 +266,6 @@ Module_Mod : MidiOscObject {
 		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
 		win.close;
 		if(synths!=nil,{
-			//synths.postln;
-			//"kill the synths".postln;
 			synths.do{arg item; if(item!=nil,{item.set(\gate, 0)})};
 		});
 		mixerToSynthBus.free;

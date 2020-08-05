@@ -90,8 +90,8 @@ QtModularMixerStrip : Module_Mod {
 		panel.layout_(
 			VLayout(
 				controls[2].maxWidth_(40).maxHeight_(15),
-				HLayout([busAssignSink.panel, align:\top], controls[0].layout, rms).margins_(0!4).spacing_(0),
-				HLayout(20, assignButtons[0].layout.maxWidth_(20), controls[1].maxWidth_(20).maxHeight_(15)).margins_(0!4).spacing_(0)
+				HLayout([busAssignSink.panel, align:\top], controls[0], rms).margins_(0!4).spacing_(0),
+				HLayout(20, assignButtons[0].maxWidth_(20), controls[1].maxWidth_(20).maxHeight_(15)).margins_(0!4).spacing_(0)
 			).margins_(0!4).spacing_(0)
 		)
 	}
@@ -434,10 +434,10 @@ SignalSwitcher_Mod : ModularMainMixer {
 			VLayout(
 				HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0),
 				HLayout(controls[0].maxWidth_(70).maxHeight_(15), controls[1].maxWidth_(70).maxHeight_(15)),
-				HLayout(assignButtons[0].layout, assignButtons[1].layout),
+				HLayout(assignButtons[0], assignButtons[1]),
 				HLayout(controls[2].maxWidth_(70).maxHeight_(15), controls[3].maxWidth_(70).maxHeight_(15)),
-				HLayout(assignButtons[2].layout, assignButtons[3].layout),
-				controls[4].layout
+				HLayout(assignButtons[2], assignButtons[3]),
+				controls[4]
 			).margins_(0!4).spacing_(0)
 		);
 		win.view.bounds_((70*numMixers)@240);

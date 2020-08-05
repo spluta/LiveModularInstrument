@@ -132,13 +132,13 @@ BrynHarrison_Mod : Module_Mod {
 		win.layout_(
 			VLayout(
 				VLayout(
-					HLayout(controls[0].layout,assignButtons[0].layout),
-					HLayout(controls[1].layout,assignButtons[1].layout),
-					HLayout(controls[4].layout)
+					HLayout(controls[0],assignButtons[0]),
+					HLayout(controls[1],assignButtons[1]),
+					HLayout(controls[4])
 				),
 				HLayout(
-					VLayout(controls[2],assignButtons[2].layout),
-					VLayout(controls[3],assignButtons[3].layout)
+					VLayout(controls[2],assignButtons[2]),
+					VLayout(controls[3],assignButtons[3])
 				)
 			)
 		);

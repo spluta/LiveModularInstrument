@@ -340,15 +340,15 @@ Sampler_Mod : Module_Mod {
 					loopTrigButton,
 					panelLoader
 				),
-				VLayout(controls[0],assignButtons[0].layout),
-				VLayout(controls[1],assignButtons[1].layout),
-				VLayout(controls[2],assignButtons[2].layout),
-				VLayout(controls[3],assignButtons[3].layout),
-				VLayout(controls[4],assignButtons[4].layout),
-				VLayout(controls[5],assignButtons[5].layout),
-				VLayout(controls[6],assignButtons[6].layout),
-				VLayout(controls[7],assignButtons[7].layout),
-				VLayout(controls[8],assignButtons[8].layout)
+				VLayout(controls[0],assignButtons[0]),
+				VLayout(controls[1],assignButtons[1]),
+				VLayout(controls[2],assignButtons[2]),
+				VLayout(controls[3],assignButtons[3]),
+				VLayout(controls[4],assignButtons[4]),
+				VLayout(controls[5],assignButtons[5]),
+				VLayout(controls[6],assignButtons[6]),
+				VLayout(controls[7],assignButtons[7]),
+				VLayout(controls[8],assignButtons[8])
 			)
 		);
 		win.bounds = win.bounds.size_(win.minSizeHint);

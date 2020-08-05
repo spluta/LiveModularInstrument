@@ -68,7 +68,7 @@ FeedbackSynth_Mod :  Module_Mod {
 
 		win.layout_(
 			VLayout(
-				HLayout(controls[0].layout, controls[1].layout),
+				HLayout(controls[0], controls[1]),
 				HLayout(controls[2], controls[3])
 			)
 		);
