@@ -69,7 +69,6 @@ PrototypeElement {
 	}
 
 	setElements {arg vals;
-		vals.postln;
 		vals = vals.collect{|item, i| if(i==0){item.asString}{item.asFloat}};
 		[msgBox,lowBox,hiBox,warpBox].do{|item, i| item.valueAction_(vals[i])};
 		try {
@@ -165,7 +164,7 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 		.states_([["export", Color.black, Color.yellow]])
 		.action_{
 			controls.collect{|item|
-				[item.msg, item.controlSpec]}.asCompileString.postln;
+				[item.msg, item.controlSpec]}.asCompileString;
 		};
 
 		loadArgsButton = Button()
@@ -242,7 +241,6 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 			synthNameBox.valueAction_(loadArray[0].asString);
 			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 			loadArray[1].do{|item, i|
-				item.postln;
 				if(item[0]!=nil){controls[i].msgBox.valueAction_(item[0].asString)};
 				if(item[1]!=nil){controls[i].lowBox.valueAction_(item[1].asFloat)};
 				if(item[2]!=nil){controls[i].hiBox.valueAction_(item[2].asFloat)};

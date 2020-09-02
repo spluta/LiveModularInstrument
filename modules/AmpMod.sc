@@ -35,7 +35,7 @@ AmpMod_Mod : Module_Mod {
 			.action_({arg butt;
 				controls[1].value_(0);
 				synths[0].set(\pulseRate0, rrand(pulseRate[0], pulseRate[1]), \onBypass, 1);
-				this.sendOSC(0, butt.value);
+				//this.sendOSC(0, butt.value);
 			})
 		);
 
@@ -44,7 +44,7 @@ AmpMod_Mod : Module_Mod {
 			.action_({arg butt;
 				synths[0].set(\pulseRate0, 0, \pulseRate1, 0, \onBypass, 0);
 				controls[0].value_(0);
-				this.sendOSC(1, butt.value);
+				//this.sendOSC(1, butt.value);
 			})
 		);
 

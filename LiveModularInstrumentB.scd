@@ -1,3 +1,19 @@
+(
+//May2020
+LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 49392]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/August2020JackN");
+)
+
+(
+LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN8");
+)
+
+ModularServers.servers[\lmi3].server.queryAllNodes
+
+(
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+)
+
+
 Seaboard.start;
 Seaboard_Mod.start;
 
@@ -10,17 +26,14 @@ b = OSCFunc({|msg, time, addr|
 }, '/Container3/Fader4/x').oneShot;
 
 OSCFunc.trace(true)
+
 NetAddr.langPort
 
 //get Lemur Ports
 (a = OSCFunc({|msg, time, addr|
 	addr.postln;
 }, '/Switches/x').oneShot;
-b = OSCFunc({|msg, time, addr|
-	addr.postln;
-}, '/Container2/Switches/x').oneShot;
 )
-
 
 (
 HID.findAvailable;
@@ -33,20 +46,19 @@ Joystick_Mod.setPaths(["logitech-extreme-3d-pro"])
 Joystick_Mod.start
 
 
-LiveModularInstrument.boot(10, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod])
+
+
+LiveModularInstrument.boot(2, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testQuit")
 
 
 (
-LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN4");
+LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN7");
 )
 
 
-ModularServers.servers[\lmi10].server.queryAllNodes
 
-(
-//May2020
-LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 51618]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/August2020JackL");
-)
+
+
 
 
 //Feedback TV

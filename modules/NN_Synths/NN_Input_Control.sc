@@ -1,5 +1,5 @@
 NN_Input_Control_NNMod :  TypeOSCModule_Mod {
-	var texts, functions, onOffFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton, modControls, controlsCount, changed, changeRout;
+	var texts, functions, onOffFunctions, <>parent, <>msgsPerSec=100, <>ctrlSteps=128, labels, numControls, button0, button1, button2, loBox, hiBox, sliderVals, sliderOns, freezeButton, changed, changeRout, lastVals, counter = 0;
 
 	init {
 
@@ -7,21 +7,25 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 
 		numControls = 10;
 
-		this.initControlsAndSynths(numControls*3+1);
+		this.initControlsAndSynths(numControls*3+2);
 
 		sliderVals = (0!numControls).asList;
 		sliderOns = (0!numControls).asList;
 
+		lastVals = (0!numControls).asList;
+
 		texts = Array.fill(numControls, {|i| "slider"+(i+1).asString}).addAll(numControls, {|i| "onOff"+(i+1).asString});
 
-		modControls = 1;
-		controlsCount = 0;
 		changed = false;
 
 		functions = Array.fill(numControls, {|i|
 			{arg val;
-				//controlsCount = (controlsCount+1).wrap(0,10);
-				//if(controlsCount%modControls==0){
+				if(ctrlSteps<=4096) {
+					if(lastVals[i]<val)
+					{val = (val-(1/(ctrlSteps)).rand).clip(0.0,1.0);}
+					{val = (val+(1/(ctrlSteps)).rand).clip(0.0,1.0);}
+				};
+				lastVals.put(i, val);
 				sliderVals.put(i, val);
 				changed = true;
 			}
@@ -32,7 +36,7 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 				parent.setInputSliders(sliderVals.select{|item, i| sliderOns[i]==1});
 				changed = false;
 			};
-			0.01.wait;
+			(1/msgsPerSec).wait;
 		}}).play;
 
 		onOffFunctions = Array.fill(numControls, {|i|
@@ -55,13 +59,9 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 			controls.add(TypeOSCFuncObject(this, oscMsgs, i+(2*numControls), "onOff "++(i+1), func, true));
 		};
 
-/*		freezeButton = Button().maxHeight_(15)
-		.states_([["Input Through", Color.black, Color.green], ["Input Off", Color.black, Color.red]])
-		.action_{|button|
-			numControls.do{|i| controls[i].frozen=button.value.asBoolean}
-		};*/
+		controls.add(QtEZSlider("messages per sec", ControlSpec(20,200,'lin',1), {|slider| msgsPerSec = slider.value}, 100, true, 'horz'));
 
-		controls.add(QtEZSlider("skip inputs", ControlSpec(1,4,'lin',1), {|slider| modControls = slider.value}, 1, false, 'horz'));
+		controls.add(QtEZSlider("controller steps", ControlSpec(128, 4096+128,'lin',128), {|slider| ctrlSteps = slider.value}, 100, true, 'horz'));
 
 		win.layout_(
 			VLayout(
@@ -70,7 +70,7 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 					VLayout(*controls.copyRange(numControls, 2*numControls-1)),
 					VLayout(*controls.copyRange(2*numControls, 3*numControls-1))
 				),
-					controls[3*numControls]
+					controls[3*numControls],controls[3*numControls+1]
 			)
 		);
 		win.layout.spacing_(1).margins_(1!4);

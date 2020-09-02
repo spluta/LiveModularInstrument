@@ -9,6 +9,8 @@ NN_Synths_Mod : Module_Mod {
 
 		this.initControlsAndSynths(33);
 
+		this.makeMixerToSynthBus;
+
 		//hard coding to 8 models
 		numSynths = 4;
 		numModels = 8;
@@ -35,8 +37,6 @@ NN_Synths_Mod : Module_Mod {
 		buttonBusses.do{|item| item.set(1)};
 
 		synthControlCounter = 0;
-
-
 
 		//synth switcher
 		numSynths.do{|i|
@@ -303,16 +303,12 @@ NN_Synths_Mod : Module_Mod {
 	setInputSliders {|vals|
 		if(envMode<2){
 			if(nn_synths[currentSynth]!=nil){
-				synthControlCounter = synthControlCounter+1;
-				if(synthControlCounter.odd){nn_synths[currentSynth].setNNInputVals(vals)}//filters out half the messages
+				nn_synths[currentSynth].setNNInputVals(vals);
 			}
 		}{
-			synthControlCounter = synthControlCounter+1;
 			nn_synths.do{|synth, i|
 				if((synth!=nil).and{synth.onOff0+synth.onOff1>0}){
-					if(synthControlCounter.odd){
-						synth.setNNInputVals(vals)
-					}
+					synth.setNNInputVals(vals)
 				}
 			}
 		}
@@ -334,14 +330,11 @@ NN_Synths_Mod : Module_Mod {
 					}
 				};
 				if(num==onOffSwitches[0][i]){
-					synth.synths[0].set(\onOff0, val);
-					synth.synths[0].set(\selector, 0);
-					synth.onOff0 = val;
+					synth.trigger(0, val);
+
 				};
 				if(num==onOffSwitches[1][i]){
-					synth.onOff1 = val;
-					synth.synths[0].set(\onOff1, val);
-					synth.synths[0].set(\selector, 1);
+					synth.trigger(1, val);
 				};
 			}
 		}
@@ -352,8 +345,6 @@ NN_Synths_Mod : Module_Mod {
 	}
 
 	loadTrainingFolder {arg folder;
-		"load training folder ".post;
-		folder.postln;
 		nn_synths[currentSynth].loadTraining(folder.fullPath);
 	}
 
@@ -368,7 +359,6 @@ NN_Synths_Mod : Module_Mod {
 			controls[5].items_(modelChoices[num].asArray);
 			nn_synths.put(currentSynth, ModularClassList.initNN_Synth(newSynthName++"_NNMod", group, outBus));
 			nn_synths[currentSynth].init2(newSynthName++"_NNMod", this, volBus, onOffSwitches[0][currentSynth], onOffSwitches[1][currentSynth], chanVolBusses[currentSynth]);
-			//set the model trainings
 		},{
 			controls[5].items_(modelChoices[0].asArray);
 			nn_synths.put(currentSynth, nil);
@@ -377,10 +367,6 @@ NN_Synths_Mod : Module_Mod {
 	}
 
 	setNNSynth {|num|
-		"setNNSynth".postln;
-		currentSynth.postln;
-		num.postln;
-		//if(currentSynth!=num){
 		if(nn_synths[currentSynth]!=nil){
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 0);
 			controls[14+nn_synths[currentSynth].whichModel].value_(0);
@@ -395,7 +381,6 @@ NN_Synths_Mod : Module_Mod {
 		};
 		controls[4].value_(loadedSynths[currentSynth]);
 		if(nn_synths[currentSynth]!=nil){
-			//modelChoices.postln;
 			controls[5].items_(modelChoices[loadedSynths[currentSynth]].asArray);
 			controls[5].value_(chosenModels[currentSynth]);
 		}{controls[5].items_(["nil"])}
@@ -446,8 +431,6 @@ NN_Synths_Mod : Module_Mod {
 	loadExtra {arg loadArray;
 		var loadProto;
 
-		loadArray.postln;
-
 		if(loadArray!=nil){
 
 			try {sliderControl.load(loadArray[20])};
@@ -462,10 +445,9 @@ NN_Synths_Mod : Module_Mod {
 					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
 					nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
 					if(chosenModels[i]!=0){
-						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]).postln);
+						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]));
 					};
 				},{
-					"isNil".postln;
 					nn_synths.put(i, nil);
 				});
 			};
@@ -479,7 +461,6 @@ NN_Synths_Mod : Module_Mod {
 
 			controls[5].items_(modelChoices[loadedSynths[0]].asArray);
 			controls[5].value_(chosenModels[0]);
-			"that stuff".postln;
 
 			controls[25].valueAction_(1);
 		};

@@ -60,7 +60,6 @@ MainProcessingWindow : MidiOscObject {
 
 			Dialog.savePanel({ arg path;
 				ModularServers.save(path, group.server);
-
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
 			},{
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})};
@@ -80,7 +79,6 @@ MainProcessingWindow : MidiOscObject {
 				ModularServers.load(path);
 
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
-				//Window.allWindows.do{arg item, i; item.visible = true};
 
 			},{
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
@@ -99,7 +97,6 @@ MainProcessingWindow : MidiOscObject {
 			};
 			Dialog.openPanel({ arg path;
 				ModularServers.load(path, group.server);
-
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})}
 			},{
 				visibleArray.do{arg item, i; if(item==true,{Window.allWindows[i].visible = true})
@@ -130,16 +127,14 @@ MainProcessingWindow : MidiOscObject {
 
 			tempOSCs = List.newClear(2);
 			lemurPorts.do{|item, i|
-				try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString).postln};
+				try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString)};
 
 				item.focusGainedAction = {
 					tempOSCs.put(0, OSCFunc({|msg, time, addr|
-						//addr.postln;
 						{item.string = addr.port}.defer;
 						tempOSCs[1].free;
 					}, '/Switches/x').oneShot);
 					tempOSCs.put(1, OSCFunc({|msg, time, addr|
-						//addr.postln;
 						{item.string = addr.port}.defer;
 						tempOSCs[0].free;
 					}, '/Container2/Switches/x').oneShot);
@@ -216,26 +211,30 @@ LiveModularInstrument {
 	}
 
 	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
+		if(NetAddr.langPort.asSymbol!='57120')
+		{
+			"fix LangPort to 57120".postln;
+		}{
+			path = pathIn;
+			numServers=numServersIn;
+			inBusses = List.newClear(8);
 
-		path = pathIn;
-		numServers=numServersIn;
-		inBusses = List.newClear(8);
+			inBusses=List[0,1,2,3,4,5,6,7];
+			inBussesIn.do{arg item, i;
+				if(i<8,{
+					inBusses.put(i, item);
+			})};
 
-		inBusses=List[0,1,2,3,4,5,6,7];
-		inBussesIn.do{arg item, i;
-			if(i<8,{
-				inBusses.put(i, item);
-		})};
+			controllers = controllersIn; whichClassList=whichClassListIn;
 
-		controllers = controllersIn; whichClassList=whichClassListIn;
+			//set up the control devices and control GUI
 
-		//set up the control devices and control GUI
+			if(whichClassList == nil, {whichClassList = 'normal'});
+			ModularClassList.new(whichClassList);
 
-		if(whichClassList == nil, {whichClassList = 'normal'});
-		ModularClassList.new(whichClassList);
-
-		readyToRollCounter = 0;
-		ModularServers.boot(numServers, inBusses); //sends readyToRoll messages once the servers are loaded
+			readyToRollCounter = 0;
+			ModularServers.boot(numServers, inBusses); //sends readyToRoll messages once the servers are loaded
+		}
 	}
 
 	*addServer {
@@ -264,6 +263,7 @@ LiveModularInstrument {
 			addingServer = false;
 		},{
 			if(readyToRollCounter==numServers, {
+				"readyToRoll".postln;
 				Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
 
 				ModularServers.addInputsArray(inBusses);
@@ -271,6 +271,7 @@ LiveModularInstrument {
 
 				MidiOscControl.createActionDictionary;
 				if(path!=nil, {ModularServers.load(path)});
+				MidiOscControl.responding_(true);
 			});
 			Window.allWindows.do{arg item, i; item.front};
 		});

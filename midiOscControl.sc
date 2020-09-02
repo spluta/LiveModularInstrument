@@ -1,6 +1,6 @@
 MidiOscControl {
 	classvar instantRequestModule, <>instantControlObject, instantServer, instantTypeOfController;
-	classvar <>actions;
+	classvar <>actions, <>responding=false;
 
 
 	*new {
@@ -92,21 +92,18 @@ MidiOscControl {
 						this.setFunction(module, controllerKey++"x", function[0], server);
 						this.setFunction(module, controllerKey++"y", function[1], server);
 						this.setFunction(module, controllerKey++"z", function[2], server, false);
-					}/*{
-						if((controllerKey.contains("Slider1"))||(controllerKey.contains("Slider1"))){//Joystick only
-							//I really don't understand why this doesn't work
-							this.setFunction(module, controllerKey.replace("Slider2", "Slider1"), function[0].deepCopy, server);
-							this.setFunction(module, controllerKey.replace("Slider1", "Slider2"), function[1].deepCopy, server);
-						}
-					}*/
+					}
 			});
 		});
 	}
 
 	*setFunction {|module, controllerKey, function, server, setMsg=true|
+		var throttledFunction;
+
+		throttledFunction = SpeedLimit(function, 0.01);
 
 		if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-			actions[server.asSymbol].add(controllerKey.asSymbol->function);
+			actions[server.asSymbol].add(controllerKey.asSymbol->throttledFunction);
 		});
 		if(setMsg,{module.setOscMsg(controllerKey.asSymbol)});
 	}
@@ -147,10 +144,12 @@ MidiOscControl {
 	}
 
 	*respond { |key, val|
-		ModularServers.serverSwitcher.currentServers.flatten.asSet.do{arg serverKey;
-			this.doTheGUI(serverKey, key, val);
-		};
-		this.doTheGUI('global', key, val);
+		if(responding){
+			ModularServers.serverSwitcher.currentServers.flatten.asSet.do{arg serverKey;
+				this.doTheGUI(serverKey, key, val);
+			};
+			this.doTheGUI('global', key, val);
+		}
 	}
 
 	*doTheGUI {arg serverKey, key, val;

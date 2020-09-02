@@ -1,18 +1,31 @@
-ModularServerObject {
-	var <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible;
+ModularServer_ID {
+	classvar <id=57100;
+	*initClass { id = 57100; }
+	*next  { ^id = id + 1; }
+	*path {this.filenameSymbol.postln}
+}
 
-	*new {arg server;
-		^super.new.server_(server).init;
+ModularServerObject {
+	var <>serverName, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id;
+
+	*new {|serverName|
+		^super.new.serverName_(serverName).init;
 	}
 
 	init {
+		id = ModularServer_ID.next;
+
+
+
+		while( {("lsof -i:"++id).unixCmdGetStdOut.size != 0},{id = ModularServer_ID.next});
+		id.postln;
+		server = Server.new(serverName, NetAddr("localhost", id), Server.local.options);
 		server.waitForBoot({
 			//set up groups
 			server.sync;
 			mainGroup = Group.tail(server);
 			server.sync;
 			1.wait;
-			"mainGroup: ".post; mainGroup.postln;
 			inGroup = Group.tail(mainGroup);
 			synthGroup = Group.tail(mainGroup);
 			mixerGroup = Group.tail(mainGroup);
@@ -39,7 +52,6 @@ ModularServerObject {
 			synthGroups = List.fill((dimensions[0]*dimensions[1]), {Group.tail(synthGroup)});
 			server.sync;
 			0.1.wait;
-			synthGroups.postln;
 			//create the Array of ModularObjects
 
 			modularObjects = List.new;
@@ -132,19 +144,17 @@ ModularServerObject {
 	load {arg loadArray;
 		var inBusTemp, stereoInBusTemp, internalBusTemp, flatObjectBus, flatMOPs, mopData;
 
-		"load ".post;
-		mainGroup.postln;
 		mainWindow.load(loadArray[0]);
 
 		this.makeBusMap(loadArray.copyRange(1,3));
 		//{
-			loadArray[4].do{arg item, i;
-				if(item.size>0){
-					modularObjects[i].load(item);
-					//server.sync;
-					//0.05.wait;
-				};
+		loadArray[4].do{arg item, i;
+			if(item.size>0){
+				modularObjects[i].load(item);
+				//server.sync;
+				//0.05.wait;
 			};
+		};
 		//}.fork(AppClock);
 
 		mainMixer.load(loadArray[5]);
@@ -193,6 +203,7 @@ ModularServerObject {
 	}
 }
 
+
 ModularServers {
 	classvar <>numServers, <>inBusses;
 	classvar <>servers, <>modularInputsArray, <>serverSwitcher;
@@ -201,8 +212,8 @@ ModularServers {
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
 		{
-		numServers.do{arg i;
-				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new(Server.new(("lmi"++(i+1).asString).postln, NetAddr("localhost", 57100+i), Server.local.options)));
+			numServers.do{arg i;
+				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1)));
 				1.wait;
 			}
 		}.fork(AppClock);
@@ -245,8 +256,6 @@ ModularServers {
 
 
 		if(serverName==nil,{
-			"modularInputsArray".post;
-			modularInputsArray.postln;
 			modularInputsArray.load(loadArray[0]);
 			numServersInFile = loadArray[2].size;
 
@@ -257,7 +266,6 @@ ModularServers {
 			};
 			//load the serverSwitcher last so that it can update the server windows
 			if(loadArray[1]!=nil,{
-				"load server switcher".postln;
 				serverSwitcher.load(loadArray[1]);
 			});
 			Window.allWindows.do{arg item; item.front};

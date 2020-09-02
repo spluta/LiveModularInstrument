@@ -1,5 +1,5 @@
 MidiOscObject {
-	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons/*, <>needsSequentialMixer=false*/;
+	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
 	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController, path;
 
 	initControlsAndSynths {arg num;
@@ -62,8 +62,6 @@ MidiOscObject {
 	}
 
 	setOscMsg {arg msg;
-		//oscMsgs.postln;
-		//[waitForSetNum, msg].postln;
 		msg = msg.asString;
 		if(msg.contains("/z")){
 			msg = msg.replace("/z", "/x");
@@ -104,7 +102,6 @@ MidiOscObject {
 					},{
 						oscMsg = [oscMsg]
 					});
-					//oscMsg.postln;
 
 					oscMsg.do{|msg|
 						if(isGlobalController==true,{
@@ -177,18 +174,14 @@ MidiOscObject {
 					controls[i].valueAction_(controlLevel);
 				}{
 					if(controlLevel.size>1){
-						"load a 2zie".postln;
 						controls[i]
 					}
 				}
 			});
 		};
 
-		//this.class.postln;
-		//"loadArray2".postln;
 		loadArray[2].do{arg msg, i;
 			var control;
-			//[msg, i].postln;
 			waitForSetNum = i;
 			try { control=controls[i] } { control = nil;};
 			if((msg!=nil)&&(control!=nil),{
@@ -210,7 +203,6 @@ MidiOscObject {
 		this.loadExtra(loadArray[4]);
 
 		this.sendGUIVals;
-		//"doneLoading".postln;
 	}
 }
 
@@ -226,7 +218,6 @@ Module_Mod : MidiOscObject {
 		if(rect!=nil, {win = Window.new(name, rect)},{win = Window.new(name)});
 		win.userCanClose_(false);
 		path = PathName(this.class.filenameSymbol.asString).pathOnly;
-		//win.front;
 		modName = name;
 	}
 
@@ -301,14 +292,9 @@ TypeOSCModule_Mod : Module_Mod {
 
 		//only load the values in the textFields
 
-		//"LoadingTypeOSC".postln;
-
 		loadArray[1].do{arg controlLevel, i;
-			//[controlLevel, i].postln;
 			if(((controls[i]!=nil) and: controls[i].value!=controlLevel) and:(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
-				//oscMsgs.postln;
-
 			});
 		};
 

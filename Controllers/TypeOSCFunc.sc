@@ -3,6 +3,7 @@ TypeOSCFunc_Mod {
 	classvar <>responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar <>netAddrs, ip;
+	classvar <>speedLimiters;
 
 	*initClass {}
 
@@ -14,18 +15,18 @@ TypeOSCFunc_Mod {
 		if(responders.size!=0,{responders.do{arg item; item.free}});
 
 		responders = ();
+		speedLimiters = ();
 	}
 
 	*addResponder {arg path;
-		responders.put(path.asSymbol, OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1]) }, path.asSymbol));
-	}
-
-	*addXYResponder {arg path;
-		responders.put(path.asSymbol, OSCFunc({ |msg| MidiOscControl.respond(msg[0], [msg[1], msg[2]]) }, path.asSymbol));
+		speedLimiters.put(path.asSymbol, SpeedLimit({|msg| MidiOscControl.respond(msg[0], msg[1])},0.02));
+		responders.put(path.asSymbol,
+			OSCFunc({ |msg|
+				speedLimiters[path.asSymbol].value(msg);
+		}, path.asSymbol));
 	}
 
 	*sendOSC {|oscMsg, val|
-		//this really should not be hard coded
 		Lemur_Mod.netAddrs.do{arg item;
 			if(item!=nil,{
 				item.sendMsg(oscMsg, val);
@@ -33,78 +34,18 @@ TypeOSCFunc_Mod {
 		}
 	}
 
-	*sendOSCxy {|oscMsg, val|
-		Lemur_Mod.netAddrs.do{arg item;
-			if(item!=nil,{
-				item.sendMsg(oscMsg, val[1], val[0]);  //x and y are reversed for TouchOSC
-			});
-		}
-	}
-
 	*removeResponder {arg path;
 		responders.removeAt(path.asSymbol);
+		speedLimiters.removeAt(path.asSymbol);
 	}
 
 	*getFunctionFromKey {arg module, controllerKey, object;
 		^nil
 	}
-
-	//
-	// *getFunctionFromKey {arg module, controllerKey, object;
-	// 	var nothing, keyShort, localControlObject, function;
-	//
-	// 	localControlObject = object;
-	//
-	// 	#nothing, keyShort = controllerKey.asString.split;
-	// 	if(keyShort.beginsWith("Button"),{
-	// 		function = {|val| {localControlObject.valueAction_(val)}.defer};
-	// 	});
-	//
-	// 	if(keyShort.beginsWith("PadButton"),{
-	// 		function = {|val|
-	// 			if(val == 1,{
-	// 				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer
-	// 			})
-	// 		};
-	// 	});
-	//
-	// 	if(keyShort.beginsWith("Switches"),{
-	// 		function = {|val|
-	// 		{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
-	// 	});
-	// 	if(keyShort.beginsWith("Fader"),{
-	// 		function =  {|xyz, val|
-	// 			switch(xyz.asSymbol,
-	// 				'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
-	// 				'z',{localControlObject.zAction.value(val)}
-	// 			)
-	// 		};
-	// 	});
-	// 	if(keyShort.beginsWith("MultiBall"),{
-	// 		function = {|xyz, val|
-	// 			switch(xyz.asSymbol,
-	// 				'x', {{localControlObject.activex_(val)}.defer},
-	// 				'y', {{localControlObject.activey_(val)}.defer},
-	// 				'z',{localControlObject.zAction.value(val)}
-	// 			)
-	// 		};
-	// 	});
-	// 	if(keyShort.beginsWith("Range"),{
-	// 		function = {|xyz, val|
-	// 			switch(xyz.asSymbol,
-	// 				'x',{{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer},
-	// 				'z',{localControlObject.zAction.value(val)}
-	// 			)
-	// 		};
-	// 		}
-	// 	);
-	// 	^function
-	// }
-
 }
 
 TypeOSCFuncObject {
-	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction, <>frozen = false;
+	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBoxes, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction, <>frozen = false, speedLimit, speedLimitSend;
 
 	*new {arg mama, oscMsgs, location, text, function, viewNumBox=true, isXY=false, addZAction=false, zLocation, zFunction;
 		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).viewNumBox_(viewNumBox).isXY_(isXY).addZAction_(addZAction).zLocation_(zLocation).zFunction_(zFunction).init;
@@ -118,11 +59,7 @@ TypeOSCFuncObject {
 
 		oscMsg = nil;
 		label = StaticText().font_(Font("Helvetica", 10)).string_(text);
-		if(isXY==true, {
-			numberBoxes = List.fill(2, {NumberBox().maxHeight_(15).maxDecimals_(2).font_(Font("Helvetica", 10)).maxWidth_(50)});
-		},{
-			numberBoxes = [NumberBox().maxHeight_(15).maxDecimals_(2).font_(Font("Helvetica", 10)).maxWidth_(50)];
-		});
+		numberBoxes = [NumberBox().maxHeight_(15).maxDecimals_(2).font_(Font("Helvetica", 10)).maxWidth_(50)];
 		textField = TextField().font_(Font("Helvetica", 10)).maxHeight_(15)
 		.action_{arg field;
 			if(oscMsg!=nil,{
@@ -130,26 +67,18 @@ TypeOSCFuncObject {
 				if(oscMsg_Z!=nil){
 					MidiOscControl.clearController(mama.group.server, oscMsg_Z);
 				};
-				//TypeOSCFunc_Mod.removeResponder(oscMsg);
 			});
-			if(isXY==true, {
-				"add XY responder".postln;
-				//TypeOSCFunc_Mod.addXYResponder(field.value);
-			},{
-				//TypeOSCFunc_Mod.addResponder(field.value);
-			});
+
 			oscMsgs.put(location, field.value.asString);
 			oscMsg = field.value.asString;
 			functions = List[function];
 
+			speedLimit = SpeedLimit({|val| {numberBoxes[0].value_(val)}.defer}, 0.1);
+			speedLimitSend = SpeedLimit({|val| TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)}, 0.1);
+
 			if(viewNumBox,{
-				if(numberBoxes.size<2, {
-					functions.add({arg val; {numberBoxes[0].value_(val)}.defer});
-					functions.add({arg val; TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)});
-				},{
-					functions.add({arg val; val.do{arg item,i; {numberBoxes[i].value_(item)}.defer}});
-					functions.add({arg val; TypeOSCFunc_Mod.sendOSCxy(oscMsgs[location], val)});
-				});
+				functions.add({arg val; speedLimit.value(val)});
+				functions.add({arg val; speedLimitSend.value(val)});
 			});
 
 			MidiOscControl.setControllerNoGui(oscMsg, functions, mama.group.server);

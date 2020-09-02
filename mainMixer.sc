@@ -23,14 +23,10 @@ QtModularMixerStrip : Module_Mod {
 
 	init2 {arg isMainMixer=false;
 
-		//"outBus".postln;
-		//outBus.postln;
-
 		this.initControlsAndSynths(2);
 
 		mixerGroup = Group.head(group);
 		reducerGroup = Group.tail(group);
-
 		transferBus = Bus.audio(group.server, 2);
 
 		inputBusses = List.new;
@@ -62,7 +58,6 @@ QtModularMixerStrip : Module_Mod {
 
 		this.addAssignButton(0, \continuous);
 
-		//outBus.postln;
 		controls.add(NumberBox().clipLo_(1).clipHi_(22)
 			.action_{arg box;
 				parent.setOutBus(location, box.value);
@@ -190,7 +185,6 @@ MainMixer : Module_Mod {
 		numMixers = numMixersIn;
 		isMainMixer = isMainMixerIn;
 
-		//[group, outBus, numMixers, isMainMixer].postln;
 
 		if(isMainMixer==true,{
 			name = group.server.name++" Main Out"
@@ -235,7 +229,6 @@ MainMixer : Module_Mod {
 	}
 
 	sendGUIMixer {
-		//"sendMixerStripsVals".postln;
 		mixerStrips.do{arg item;
 				item.sendGUIVals;
 			}
@@ -268,10 +261,8 @@ MainMixer : Module_Mod {
 	load {arg loadArray;
 		var counter;
 
-		//loadArray.postln;
 
 		win.bounds_(loadArray[1]);
-		//loadArray[2].size.postln;
 		loadArray[2].do{arg item, i;
 			mixerStrips[i].load(item);
 
@@ -320,8 +311,6 @@ ModularMainMixer : MainMixer {
 	}
 
 	show {
-		this.postln;
-		win.postln;
 		win.visible = true;
 		win.front;
 	}

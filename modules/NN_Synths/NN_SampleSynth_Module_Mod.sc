@@ -56,8 +56,7 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	trainNN {  //using this to save the model settings into a json file
 		var array;
 
-		array = (nnVals.collect{|item| item.postln; [item[1].minval, item[1].maxval]}).add(addRandomVal);
-		array.postln;
+		array = (nnVals.collect{|item| item; [item[1].minval, item[1].maxval]}).add(addRandomVal);
 		array.writeArchive(modelFolder++"controlVals");
 	}
 
@@ -81,14 +80,12 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 	}
 
 	loadTraining {|modelFolderIn|
-		"loading tree".postln;
 
 		ds = FluidDataSet(group.server, FluidName_ID.next.asString);
 
 		tree = FluidKDTree(group.server, 1, lookupDataSet:ds);
 		loader = FluidFolder();
 
-		modelFolderIn.postln;
 		modelFolder = modelFolderIn;
 		loadedCount = 0;
 
@@ -97,23 +94,18 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		loader.index = Object.readArchive(modelFolder++"/index");
 
 		controlVals = Object.readArchive(modelFolder++"/controlVals");
-		controlVals.postln;
 
 		controlVals.copyRange(0, controlVals.size-2).do{|val, i| controls[i].valueAction_(val)};
 
 		controls.last.valueAction_(controlVals.last);
 
-		loader.index.postln;
-
-		ds.read(modelFolder++"/indices.json", {"dataset read".postln;
+		ds.read(modelFolder++"/indices.json", {
 			tree.read(modelFolder++"/datasetTree.json", {
-				tree.postln;
 				tree.inBus_(treeInBus).outBus_(treeOutBus).inBuffer_(treeInBuffer).outBuffer_(treeOutBuffer);
-				loader.buffer = Buffer.read(group.server.postln, modelFolder++"/buffer.wav",action:{|buffer|
-					"Loaded".postln;
+				loader.buffer = Buffer.read(group.server, modelFolder++"/buffer.wav",action:{|buffer|
 					bufIsLoaded = true;
 
-					synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \treeInBus, treeInBus.index.postln, \treeOutBus, treeOutBus.index.postln, \treeInBuffer, treeInBuffer, \treeOutBuffer, treeOutBuffer, \onOff0, 0, \onOff1, 0, \buffer, buffer, \grainEnv, grainEnv, \chanVolBus, chanVolBus], group));
+					synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \treeInBus, treeInBus.index, \treeOutBus, treeOutBus.index, \treeInBuffer, treeInBuffer, \treeOutBuffer, treeOutBuffer, \onOff0, 0, \onOff1, 0, \buffer, buffer, \grainEnv, grainEnv, \chanVolBus, chanVolBus], group));
 
 				});
 			});
@@ -123,7 +115,6 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 
 	createWindow {
 		{
-			nnVals.postln;
 			ranges = [[0,1],[0,1],[0.01, 0.2]];
 			8.do{|i|
 				3.do{|i2|
@@ -133,7 +124,7 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 					}, [ranges[i2][0], ranges[i2][1]], true, 'horz'))
 				};
 			};
-			controls.add(QtEZSlider("add random", ControlSpec(0, 0.01), {|val| addRandomVal=val.value.postln}, 0, true, 'horz'));
+			controls.add(QtEZSlider("add random", ControlSpec(0, 0.01), {|val| addRandomVal=val.value}, 0, true, 'horz'));
 			if(nnVals.size<41){
 				win.layout = VLayout(
 					*controls.collect({arg item, i;
@@ -173,7 +164,6 @@ NN_SampleSynth_Mod : NN_Synth_Mod {
 		grainEnv = Buffer.sendCollection(group.server, Env([0, 1, 1, 0], [0.001, 0.998, 0.001]).discretize, 1);
 
 		folder = PathName(this.class.filenameSymbol.asString).pathOnly;//++"model0/";
-		folder.postln;
 
 		synths = List.newClear(1);
 

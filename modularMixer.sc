@@ -112,40 +112,6 @@ ModularMixer {
 		});
 	}
 
-/*	addNNInputMixer {arg inputBusIndex, numBusses;
-		singleMixer = mixers[inputBusIndex.asSymbol];
-		if(singleMixer==nil,{
-			switch(numBusses,
-				2, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer2-2", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index, \panBus, panBus.index], group))});
-		});
-	}
-
-	add1NInputMixer {arg inputBusIndex, numBusses;
-		singleMixer = mixers[inputBusIndex.asSymbol];
-		if(singleMixer==nil,{
-			switch(numBusses,
-				2, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer1-2", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index, \panBus, panBus.index], group))}
-			);
-		});
-	}
-
-	addN1InputMixer {arg inputBusIndex, numBusses;
-		singleMixer = mixers[inputBusIndex.asSymbol];
-		if(singleMixer==nil,{
-			switch(numBusses,
-				2, {	mixers.add(inputBusIndex.asSymbol -> Synth("modularMixer2-1", [\inBus, inputBusIndex, \outBus, outBus.index, \volBus, volBus.index, \muteBus, muteBus.index, \panBus, panBus.index], group))}
-			);
-		});
-	}*/
-
-
-/*	setInputBusses {arg inputBussesIn;
-
-		inputBusses = inputBussesIn;
-
-		mixer.setInputBusses(inputBussesIn);
-	}*/
-
 	setInputBussesSequentially {arg inputBussesIn;
 		//remove the extra mixers
 		inputBusses.do{arg item, i;
@@ -222,7 +188,7 @@ ModularMixer {
 
 		},{
 			busIn=busIn.asInteger;
-			if((busIn>0)&&(busIn<17),{
+			if((busIn>0)&&(busIn<26),{
 				symbol = busIn.asSymbol;
 				busIn = ModularServers.getObjectBusses(group.server).at(busIn-1).index;
 				if(outBus.numChannels == 1,{

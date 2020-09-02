@@ -36,7 +36,6 @@ Lemur_Mod {
 				if(oscMsg.asString.containsStringAt(0, "/Container/")){
 					item.sendMsg(oscMsg.asString.replace("/Container/", "/Container2/"), val)
 				};
-				//{if(oscMsg.containsStringAt(0, "/Container2/")){item.sendMsg(oscMsg.replace("/Container2/", "/Container/"), val)}};
 			});
 		}
 	}
@@ -74,7 +73,6 @@ Lemur_Mod {
 	}
 
 	*addRespondersSingleIpad {|address, type, addZ|
-		//"/Container/Fader/x".replace("/Container/", "/Container2/");
 		var address2;
 
 		try {
@@ -130,16 +128,6 @@ Lemur_Mod {
 		var address2;
 
 		address2 = address.asString.replace("/Container/", "/Container2/");
-
-/*		OSCFunc({ |msg|
-			MidiOscControl.respond(msg.asSymbol, 1);
-			if(sendRequest,{
-				MidiOscControl.setController(msg.asSymbol, \onOff)
-			});
-			if(sendTypeRequest,{
-				MidiOscControl.setInstantTypeObject(msg.asSymbol)
-			});
-		}, address.asSymbol);*/
 
 		OSCFunc({ |msg|
 			MidiOscControl.respond(msg.asSymbol, 1);
@@ -267,17 +255,8 @@ Lemur_Mod {
 					//CONTROLS for NNSynth
 					if(i==0,{
 						this.addResponders("/Container2/Container2/Fader/x", \continuous, true);
-						/*this.addResponders("/Container2/Container2/CustomButton/x", \onOff, false);
-						this.addResponders("/Container2/Container2/MultiBall/x", \slider2D, true);
-						this.addResponders("/Container2/Container2/MultiBall/y", \slider2D, false);
-						this.addSwitches("/Container2/Container2/Switches/x");*/
 					});
 					this.addResponders("/Container2/Container2/Fader"++i.asString++"/x", \continuous, true);
-					/*this.addResponders("/Container2/Container2/CustomButton"++i.asString++"/x", \onOff, false);
-					this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/x", \slider2D, true);
-					this.addResponders("/Container2/Container2/MultiBall"++i.asString++"/y", \slider2D, true);
-					this.addSwitches("/Container2/Container2/Switches"++i.asString++"/x");*/
-
 				};
 
 				50.do{arg i;
@@ -336,7 +315,7 @@ Lemur_Mod {
 	}
 
 	*getFunctionFromKey {arg module, controllerKey, object;
-		var nothing, keyShort, localControlObject, function;
+		var nothing, keyShort, localControlObject, function, speedLimit, speedLimitB;
 
 		localControlObject = object;
 
@@ -356,27 +335,34 @@ Lemur_Mod {
 			};
 		});
 		if(controllerKey.contains("Fader"),{
+			speedLimit = SpeedLimit({|val| this.sendOSC(controllerKey++"x", val)}, 0.05);
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
 			function = [
 				{|val|
 					localControlObject.valueAction_(localControlObject.controlSpec.map(val));
-					this.sendOSC(controllerKey++"x", val);
+					speedLimit.value(val);
+					//this.sendOSC(controllerKey++"x", val);
 				},
 				{|val| localControlObject.zAction.value(val)}]
 		});
 		if(controllerKey.contains("MultiBall"),{
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
+			speedLimit = SpeedLimit({|val| this.sendOSC(controllerKey++"x", val)}, 0.05);
+			speedLimitB = SpeedLimit({|val| this.sendOSC(controllerKey++"y", val)}, 0.05);
 			function = [
 				{|val|
 					localControlObject.activex_(val);
-					this.sendOSC(controllerKey++"x", val);
+					speedLimit.value(val);
+					//this.sendOSC(controllerKey++"x", val);
 				},
 				{|val|
 					localControlObject.activey_(val);
-					this.sendOSC(controllerKey++"y", val);
+					speedLimitB.value(val);
+					//this.sendOSC(controllerKey++"y", val);
 				},
 				{|val| localControlObject.zAction.value(val)}]
 		});
+		//SpeedLimit
 		^function
 	}
 

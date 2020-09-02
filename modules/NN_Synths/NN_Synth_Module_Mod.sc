@@ -21,7 +21,7 @@ Kill_The_Pythons {
 }
 
 NN_Synth_Mod : Module_Mod {
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys, readyToPredict=true, synthArgs, setLemurSpeedLimit;
 
 	init_window {|parentIn|
 		var hiddenArray;
@@ -57,8 +57,9 @@ NN_Synth_Mod : Module_Mod {
 		//hard coding this to 3, which should be fine...will probably find this in 5 years and wonder wtf
 		hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
 
-		mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,1000,0.1,0,1,0)});
+		mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,-1,1000,0.1,0.1,1,0)});
 
+		setLemurSpeedLimit = SpeedLimit({|array| parent.setLemur(array)}, 0.05);
 		this.createWindow;
 	}
 
@@ -89,9 +90,18 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
+		synthArgs = [nameIn, parent, volBus, onOff0, onOff1, chanVolBus];
 		"nn_synth group: ".post;
 		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group.postln;));
 		this.init_window(parent);
+	}
+
+	reloadSynth {
+		{
+			synths.do{|item| item.free};
+			group.server.sync;
+			synths.put(0, Synth(synthArgs[0], [\outBus, outBus, \volBus, synthArgs[2].index, \onOff0, synthArgs[3]-1, \onOff1, synthArgs[4]-1, \chanVolBus, synthArgs[5]], synthGroup));
+		}.fork;
 	}
 
 	createWindow {
@@ -135,16 +145,34 @@ NN_Synth_Mod : Module_Mod {
 		this.setSlidersAndSynth(valsList, true);
 	}
 
+	trigger {|num, val|
+
+		if(num==0){
+			//"trigger0".postln;
+			synths[0].set(\onOff0, val);
+			onOff0 = val;
+		}{
+			//"trigger1".postln;
+			synths[0].set(\onOff1, val);
+			onOff1 = val;
+		};
+		//synths[0].set(\selector, num);
+	}
+
 	configure {
 		if(parent.predictOnOff==1){
-			mlps[whichModel].predictPoint(mlpInBuf,mlpOutBuf,{
-				mlpOutBuf.loadToFloatArray(action:{|array|
-					array = array.asArray;
-					this.setSlidersAndSynth(array);
-					parent.setLemur(array);
+			if(readyToPredict){
+				readyToPredict=false;
+				mlps[whichModel].predictPoint(mlpInBuf,mlpOutBuf,{
+					mlpOutBuf.getn(0, mlpOutBuf.numFrames, {|array|
+						array = array.asArray;
+						this.setSlidersAndSynth(array);
+						setLemurSpeedLimit.value(array);
+						readyToPredict=true;
+					});
 				})
-			});
-		};
+			}
+		}
 	}
 
 	setNNInputVals {|vals|
@@ -363,9 +391,6 @@ NN_Synth_Mod : Module_Mod {
 		}{"no points loaded".postln}
 	}
 
-	reloadSynth {
-		"should be overwritten by the synth".postln;
-	}
 
 	killMeSpecial {
 		mlps.do{|item| item.free};

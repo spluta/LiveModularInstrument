@@ -32,12 +32,7 @@ ModularClassList {
 		);
 
 
-		/*, "LoopVidBuf2", "SnareSwitch", "PedalRouter", "PitchedFeedback", "AmpInterrupter", "StraightLoop2", "HarmonicDoubler, "PrettyChordConv", "SnowDown", "SpaceDelays"*/
-		//classArray = classArray.addFirst("nil");
-
 		classDictionary = IdentityDictionary.new;
-
-		//classArray.add("ModularVolumeRack");
 
 		classArray.do{arg item, i;
 
@@ -47,12 +42,6 @@ ModularClassList {
 				classDictionary.add(item.asSymbol->(("{arg synthGroup, outBus; "++item++"_Mod(synthGroup, outBus)}").compile.value));
 			})
 		};
-
-		//Analog Synth Modules
-
-		// ['Maths','RandoCalrissian','ComplexOscillator','DualADSR','VCA','VCF','Sequencer'].do{arg item;
-		// 	classDictionary.add(item->(("{arg synthGroup, localBusses; "++item++"_AnalogMod(synthGroup, localBusses)}").compile.value));
-		// };
 
 		PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
 			folder.postln;
@@ -70,8 +59,6 @@ ModularClassList {
 		item = classDictionary[className.asSymbol].value(synthGroup, bus);
 		className = className.asString;
 		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower")||(className=="TVFeedback"),{
-			//"initMixterModule".postln;
-			//className.postln;
 			item.init2(2,false)
 		});
 		^item
@@ -80,10 +67,6 @@ ModularClassList {
 	*initAnalogSynthModule {arg className, synthGroup, localBusses;
 		^classDictionary[className.asSymbol].value(synthGroup, localBusses);
 	}
-
-/*	*initNN_Synth{arg className, synthGroup, outBus;
-		^classDictionary[(className.asString++"_NNMod").asSymbol].value(synthGroup, outBus);
-	}*/
 
 	*initNN_Synth{arg className, synthGroup, outBus;
 		^classDictionary[className.asSymbol].value(synthGroup, outBus);
