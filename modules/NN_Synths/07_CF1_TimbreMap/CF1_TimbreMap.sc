@@ -1,13 +1,16 @@
-CF1_TimbreMap_NNMod : TimbreMap_Synth_Mod {
+CF1_TimbreMap_NNMod : TimbreMap2_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("CF1_Listener_NNMod",{|inBus, buf|
-					var source, mfcc;
+				var source, mfcc, novelty;
 
-					source = In.ar(inBus);
-					mfcc = FluidMFCC.kr(source, 20);
+				source = In.ar(inBus);
+				mfcc = FluidMFCC.kr(source, 20);
 
-					mfcc.copyRange(1,19).collect{|point, i| BufWr.kr(point, buf, i)};
+				//novelty = FluidNoveltySlice.ar(source, threshold:0.5);
+				//Out.ar(0, Trig1.ar(novelty)*WhiteNoise.ar(0.1));
+
+				mfcc.copyRange(1,19).collect{|point, i| BufWr.kr(point, buf, i)};
 
 			}).writeDefFile;
 
@@ -35,10 +38,9 @@ CF1_TimbreMap_NNMod : TimbreMap_Synth_Mod {
 				out = RLPF.ar(out, filterFreq, \outFilterRQ.kr(0.5, 0.01).clip(0.1, 1));
 
 
-				onOffSwitch = (\onOff0.kr(0, 0.01)/*+\onOff1.kr(0, 0.01)*/).clip(0,1);
+				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
 				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
-				onOffSwitch.poll(1);
 
 				out = out*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*onOffSwitch*Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1);
 
@@ -46,57 +48,58 @@ CF1_TimbreMap_NNMod : TimbreMap_Synth_Mod {
 
 				Out.ar(\outBus.kr, Pan2.ar(out, 0)*envs);
 			}).writeDefFile;
-			}
 		}
+	}
 
-		makeListeningSynth {
+	makeListeningSynth {
 		[parent.mixerToSynthBus, buf].postln;
-			listeningSynth = Synth("CF1_Listener_NNMod",[\inBus, parent.mixerToSynthBus, \buf, buf], group);
-		}
+		listeningSynth = Synth("CF1_Listener_NNMod",[\inBus, parent.mixerToSynthBus, \buf, buf], group);
+	}
 
-		init {
+	init {
 
-			this.makeWindow("CF1_TimbreMap", Rect(0, 0, 200, 40));
+		this.makeWindow("CF1_TimbreMap", Rect(0, 0, 200, 40));
 
-			numModels = 8;
-			sizeOfNN = 7;
+		numModels = 8;
+		sizeOfNN = 7;
 
-			//this.makeMixerToSynthBus;
+		//this.makeMixerToSynthBus;
 
-			this.initControlsAndSynths(sizeOfNN);
+		this.initControlsAndSynths(sizeOfNN);
 
-			dontLoadControls = (0..(sizeOfNN-1));
+		dontLoadControls = (0..(sizeOfNN-1));
 
-			nnVals = [[\freq1, ControlSpec(20, 10000, \exp)],
-				[\freq2, ControlSpec(20, 10000, \exp)],
-				[\modVol1, ControlSpec(0, 3000)],
-				[\modVol2, ControlSpec(0, 3000)],
-				[\fold, ControlSpec(0.1, 1)],
-				[\outFilterFreq, ControlSpec(300, 20000, \exp)],
-				[\outFilterRQ, ControlSpec(0.1, 2, \exp)]
-			];
-
-			/*		nnVals = [[\freq1, ControlSpec(1, 10000, \exp)],
-			[\freq2, ControlSpec(5, 10000, \exp)],
+		nnVals = [[\freq1, ControlSpec(20, 10000, \exp)],
+			[\freq2, ControlSpec(20, 10000, \exp)],
 			[\modVol1, ControlSpec(0, 3000)],
 			[\modVol2, ControlSpec(0, 3000)],
-			[\noiseVol, ControlSpec(0, 3000)],
-			[\impulse, ControlSpec(100, 20000, \exp)],
-			[\filterFreq, ControlSpec(100, 20000, \exp)],
-			[\rq, ControlSpec(0.1, 2)],
 			[\fold, ControlSpec(0.1, 1)],
-			[\dustRate, ControlSpec(1000, 1)],
-			[\attack, ControlSpec(0.001, 0.01, \exp)],
-			[\release, ControlSpec(0.001, 0.01, \exp)],
-			[\outFilterFreq, ControlSpec(20, 20000, \exp)],
-			[\outFilterRQ, ControlSpec(0.1, 2, \exp)],
-			[\filtModFreq, ControlSpec(0, 30, \lin)],
-			[\filtModAmp, ControlSpec(0, 1, \amp)]
+			[\outFilterFreq, ControlSpec(300, 20000, \exp)],
+			[\outFilterRQ, ControlSpec(0.1, 2, \exp)]/*,
+			[\thresh, ControlSpec(0, 1, \lin)],*/
+		];
 
-			];*/
+		/*		nnVals = [[\freq1, ControlSpec(1, 10000, \exp)],
+		[\freq2, ControlSpec(5, 10000, \exp)],
+		[\modVol1, ControlSpec(0, 3000)],
+		[\modVol2, ControlSpec(0, 3000)],
+		[\noiseVol, ControlSpec(0, 3000)],
+		[\impulse, ControlSpec(100, 20000, \exp)],
+		[\filterFreq, ControlSpec(100, 20000, \exp)],
+		[\rq, ControlSpec(0.1, 2)],
+		[\fold, ControlSpec(0.1, 1)],
+		[\dustRate, ControlSpec(1000, 1)],
+		[\attack, ControlSpec(0.001, 0.01, \exp)],
+		[\release, ControlSpec(0.001, 0.01, \exp)],
+		[\outFilterFreq, ControlSpec(20, 20000, \exp)],
+		[\outFilterRQ, ControlSpec(0.1, 2, \exp)],
+		[\filtModFreq, ControlSpec(0, 30, \lin)],
+		[\filtModAmp, ControlSpec(0, 1, \amp)]
 
-			"initNN_Synth".postln;
+		];*/
 
-		}
+		"initNN_Synth".postln;
 
 	}
+
+}

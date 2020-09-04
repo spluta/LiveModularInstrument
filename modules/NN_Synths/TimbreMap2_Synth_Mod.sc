@@ -1,5 +1,5 @@
-TimbreMap_Synth_Mod : NN_Synth_Mod {
-	var trees, synthData, norm, stand, pca, buf, dest0, dest1, dest2, dest3, readyToGo, constrainSpecs, folder, listeningSynth;
+TimbreMap2_Synth_Mod : NN_Synth_Mod {
+	var tree, synthData, norm, stand, pca, buf, dest0, dest1, dest2, dest3, readyToGo, constrainSpecs, folder, listeningSynth, trigRout, zVal;
 
 	init_window {|parentIn|
 		var hiddenArray;
@@ -24,6 +24,7 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 
 		whichModel = 0;
 		readyToPredict = false;
+		zVal = 0;
 
 
 		setLemurSpeedLimit = SpeedLimit({|array| parent.setLemur(array)}, 0.05);
@@ -32,8 +33,8 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 
 	clearTraining {
 		"clear training".postln;
-		trees.do{|item| item.free};
-		synthData.do{|item| item.free};
+		tree.free;
+		synthData.free;
 		norm.free;
 		stand.free;
 		pca.free;
@@ -53,21 +54,14 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 		"loading training".postln;
 		modelFolder = modelFolderIn.postln;
 		{
-			trees = List.fill(100, {|i| FluidKDTree(group.server, 5)});
-			synthData = List.fill(100, {|i| FluidDataSet(group.server, "ds_synth_"++i)});
+			tree = FluidKDTree(group.server, 5);
+			synthData = FluidDataSet(group.server, "ds_synthData");
 			1.wait;
 			group.server.sync;
 
-			100.do{|i|
-				trees[i].read(modelFolder++"/trees/tree_"++i++".json");
-				group.server.sync;
-			};
-			100.do{|i|
-				synthData[i].read(modelFolder++"/synthData/dset_"++i++".json");
-				group.server.sync;
-			};
+			tree.read(modelFolder++"/tree.json");
+			synthData.read(modelFolder++"/synthData.json");
 
-			trees[100.rand].size;
 			"make norm and stand".postln;
 			norm = FluidNormalize(group.server);
 			stand = FluidStandardize(group.server);
@@ -157,24 +151,20 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 	}
 
 	setNNInputVals {|vals|
+		//vals.postln;
 		if(readyToPredict){
-			controlValsList = vals.collect{|val,i| constrainSpecs[i].map(val)};
+			controlValsList = constrainSpecs.collect{|spec,i| spec.map(vals[i%2])};
+			if(vals.size>2){zVal = vals[2]};
 			this.configure;
 		}
 	}
 
-	trigger {|num, val|
-		if(num==0){
-			if(readyToPredict&&(val==1)){
-				"triggerOn".postln;
-				//buf.loadToFloatArray(0, 19, {|array| array.postln});
-				stand.transformPoint(buf, dest0, {
+	doTheTrigger {|func|
+		stand.transformPoint(buf, dest0, {
 					pca.transformPoint(dest0, dest1, {
 						norm.transformPoint(dest1, dest2, {
-							var num = 100.rand;
-							trees[num].kNearest(dest2, {|ids|
-								synthData[num].getPoint(ids[0], dest3, {|buf| buf.getn(0, 7, {|array|
-									//array.postln;
+							tree.kNearest(dest2, {|ids|
+								synthData.getPoint(ids[0], dest3, {|buf2| buf2.getn(0, 7, {|array|
 									array.do{|item, i|
 										if(i<2){
 											constrainSpecs[i].minval_(item*0.975);
@@ -188,13 +178,42 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 										readyToPredict=true;
 									};
 									this.setSlidersAndSynth(array);
-									synths[0].set(\onOff0, val);
+									func.value;
 				})})})})})});
+	}
+
+	trigger {|num, val|
+		var waitTime;
+		trigRout.stop;
+		if(num==0){
+			if(readyToPredict&&(val==1)){
+				"triggerOn".postln;
+				this.doTheTrigger({synths[0].set(\onOff0, 1);});
+
 			}{
 				"triggerOff".postln;
 				synths[0].set(\onOff0, val);
+				synths[0].set(\onOff1, val);
+			}
+		}{
+			if(readyToPredict&&(val==1)){
+			"triggerOn1".postln;
+				//waitTime = rrand(0.05, 0.4);
+				trigRout = Routine({{
+					"triggy".postln;
+					this.doTheTrigger({
+						synths[0].set(\onOff1, 1);
+					});
+					zVal.linexp(0,1,0.05, 0.5).wait;
+				}.loop}).play
+			}{
+				"triggerOff".postln;
+				trigRout.stop;
+				synths[0].set(\onOff0, val);
+				synths[0].set(\onOff1, val);
 			}
 		}
+
 	}
 
 	setSynth {|argument, i, val01, val|
@@ -276,4 +295,3 @@ TimbreMap_Synth_Mod : NN_Synth_Mod {
 	}
 
 }
-

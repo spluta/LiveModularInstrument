@@ -213,7 +213,10 @@ LiveModularInstrument {
 	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
 		if(NetAddr.langPort.asSymbol!='57120')
 		{
+			5.do{
 			"fix LangPort to 57120".postln;
+			"".postln;
+			}
 		}{
 			path = pathIn;
 			numServers=numServersIn;
