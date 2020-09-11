@@ -185,7 +185,6 @@ MainMixer : Module_Mod {
 		numMixers = numMixersIn;
 		isMainMixer = isMainMixerIn;
 
-
 		if(isMainMixer==true,{
 			name = group.server.name++" Main Out"
 		},{
@@ -275,6 +274,8 @@ MainMixer : Module_Mod {
 		"kill the mixer";
 		mixerStrips.do{arg item; item.killMe};
 		localBusses.do{arg item; item.free};
+		outGroup.free;
+		mixerGroup.free;
 	}
 
 	mute {
@@ -433,16 +434,6 @@ SignalSwitcher_Mod : ModularMainMixer {
 		win.front;
 	}
 
-/*	pause {
-		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
-		mixerStrips.do{|item| item.mute};
-	}
-
-	unpause {
-		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
-		mixerStrips.do{|item| item.unmute};
-	}*/
-
 	saveExtra {arg saveArray;
 		var temp, tempArray;
 
@@ -462,7 +453,6 @@ SignalSwitcher_Mod : ModularMainMixer {
 	loadExtra {arg loadArray;
 
 		loadArray[0].do{arg controlLevel, i;
-			//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
 			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
 			});

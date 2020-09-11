@@ -2,11 +2,14 @@ CF1_TimbreMap_NNMod : TimbreMap2_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("CF1_Listener_NNMod",{|inBus, buf|
-				var source, mfcc, novelty;
+				var source, mfcc, novelty, lastMfcc;
 
-				source = In.ar(inBus);
+				lastMfcc = LocalIn.kr(20);
+
+				source = Normalizer.ar(In.ar(inBus));
 				mfcc = FluidMFCC.kr(source, 20);
 
+				LocalOut.kr(mfcc);
 				//novelty = FluidNoveltySlice.ar(source, threshold:0.5);
 				//Out.ar(0, Trig1.ar(novelty)*WhiteNoise.ar(0.1));
 
@@ -37,12 +40,15 @@ CF1_TimbreMap_NNMod : TimbreMap2_Synth_Mod {
 
 				out = RLPF.ar(out, filterFreq, \outFilterRQ.kr(0.5, 0.01).clip(0.1, 1));
 
+				out = Normalizer.ar(out, 0.8);
 
 				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
 				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
 
 				out = out*Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1)*onOffSwitch*Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1);
+
+
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 

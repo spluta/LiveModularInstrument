@@ -90,6 +90,8 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
+		bigSynthGroup = Group.tail(group);  //this is only in the sampler...not sure why
+
 		synthArgs = [nameIn, parent, volBus, onOff0, onOff1, chanVolBus];
 		"nn_synth group: ".post;
 		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group.postln;));

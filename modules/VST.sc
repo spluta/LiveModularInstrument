@@ -92,13 +92,13 @@ VST_Mod : Module_Mod {
 		var temp;
 
 
-		temp = List.newClear(0); //controller settings
+		temp = List.newClear(0);
 		temp.add(vstPath);
 		temp.add(presetFile);
 
 		temp.postln;
 
-		saveArray.add(temp);  //controller messages
+		saveArray.add(temp);
 
 		^saveArray
 	}

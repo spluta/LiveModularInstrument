@@ -2,7 +2,6 @@ GreatExpectations_Mod : Module_Mod {
 
 	*initClass {
 		StartUp.add {
-
 			SynthDef("greatExpectations_mod", { arg outBus, inBus, verbVol, allpassVol, verbTime, gate = 1, pauseGate = 1;
 				var in, in2, verbSig, env, pauseEnv, out;
 				var shifties, freq, hasFreq, amp, wave, allpass;
@@ -16,15 +15,7 @@ GreatExpectations_Mod : Module_Mod {
 
 				allpass = Splay.ar(allpass);
 
-				//amp = Amplitude.kr(in, 0.1, 0.3);
-
-				/*#freq, hasFreq = Pitch.kr(in, 440, 120, 700);
-
-				wave = LFTri.ar(freq*[0.12495, 0.12505], 0, amp);*/
-
 				in2 = PitchShift.ar(in, 0.2, [0.125,0.25], 0, 0.1);
-
-				//in2 = CombC.ar(shifties, 0.1, [ 0.052898466587067, 0.040793769359589, 0.053465979099274, 0.049592454433441, 0.05687507390976, 0.057903006076813 ], 5);
 
 				verbSig = GVerb.ar(Mix.new(in2), 100, verbTime, 0.5, 1, 15, 0, 0.1, 0.1, 100);
 
@@ -34,7 +25,6 @@ GreatExpectations_Mod : Module_Mod {
 
 				Out.ar(outBus, out*env*pauseEnv);
 			}).writeDefFile;
-			//}).load(ModularServers.servers[\lmi0].server);
 		}
 	}
 

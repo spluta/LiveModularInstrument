@@ -21,6 +21,7 @@ AssignButton {
 	}
 
 	maxWidth_{arg max; instantButton.maxWidth_(max)}
+	maxHeight_{arg max; instantButton.maxHeight_(max)}
 
 	layout {^instantButton}
 

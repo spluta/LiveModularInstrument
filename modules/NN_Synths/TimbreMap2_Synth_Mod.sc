@@ -161,25 +161,26 @@ TimbreMap2_Synth_Mod : NN_Synth_Mod {
 
 	doTheTrigger {|func|
 		stand.transformPoint(buf, dest0, {
-					pca.transformPoint(dest0, dest1, {
-						norm.transformPoint(dest1, dest2, {
-							tree.kNearest(dest2, {|ids|
-								synthData.getPoint(ids[0], dest3, {|buf2| buf2.getn(0, 7, {|array|
-									array.do{|item, i|
-										if(i<2){
-											constrainSpecs[i].minval_(item*0.975);
-											constrainSpecs[i].maxval_(item*1.025);
-											item = item*rrand(0.975, 1.025); //probably should set to current x or y vals
-										}{
-											constrainSpecs[i].minval_(item*0.9);
-											constrainSpecs[i].maxval_(item*1.1);
-											item = item*rrand(0.9, 1.1)
-										};
-										readyToPredict=true;
-									};
-									this.setSlidersAndSynth(array);
-									func.value;
-				})})})})})});
+			pca.transformPoint(dest0, dest1, {
+				norm.transformPoint(dest1, dest2, {
+					tree.kNearest(dest2, {|ids|
+						synthData.getPoint(ids[0], dest3, {|buf2| buf2.getn(0, 7, {|array|
+							array.postln;
+							array.do{|item, i|
+								if(i<2){
+									constrainSpecs[i].minval_(item*0.975);
+									constrainSpecs[i].maxval_(item*1.025);
+									item = item*rrand(0.975, 1.025); //probably should set to current x or y vals
+								}{
+									constrainSpecs[i].minval_(item*0.9);
+									constrainSpecs[i].maxval_(item*1.1);
+									item = item*rrand(0.9, 1.1)
+								};
+								readyToPredict=true;
+							};
+							this.setSlidersAndSynth(array);
+							func.value;
+		})})})})})});
 	}
 
 	trigger {|num, val|
@@ -197,7 +198,7 @@ TimbreMap2_Synth_Mod : NN_Synth_Mod {
 			}
 		}{
 			if(readyToPredict&&(val==1)){
-			"triggerOn1".postln;
+				"triggerOn1".postln;
 				//waitTime = rrand(0.05, 0.4);
 				trigRout = Routine({{
 					"triggy".postln;

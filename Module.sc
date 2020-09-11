@@ -13,7 +13,6 @@ MidiOscObject {
 		dontLoadControls = List.newClear(0);
 
 		synths = List.newClear(0);
-		bigSynthGroup = Group.tail(group);  //this is only in the sampler...not sure why
 
 	}
 
@@ -222,7 +221,7 @@ Module_Mod : MidiOscObject {
 	}
 
 	makeMixerToSynthBus {arg numChannels;
-		if(numChannels==nil, {numChannels = 1});
+		numChannels ?? {numChannels = 1};
 		mixerToSynthBus = Bus.audio(group.server, numChannels);
 	}
 
@@ -232,12 +231,12 @@ Module_Mod : MidiOscObject {
 
 	pause {
 		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
-		bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false);
+		if(bigSynthGroup!=nil){bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false)};
 	}
 
 	unpause {
 		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
-		bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1);
+		if(bigSynthGroup!=nil){bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1)};
 	}
 
 	show {

@@ -29,10 +29,4 @@ RingModStereo_Mod : ModularMainMixer {
 		win.layout_(HLayout(*mixerStrips.collect({arg item; item.panel})).margins_(0!4).spacing_(0));
 		win.front;
 	}
-
-	killMeSpecial {
-		localBusses.do{arg item; item.free};
-		mixerGroup.free;
-		synthGroup.free;
-	}
 }
