@@ -1,3 +1,46 @@
+XY_to_8 {
+	var dists, closest, out, temp, <>points;
+
+	*new {
+		^super.new.init();
+	}
+
+	init {
+		points = [[0,0], [1,0], [0.33, 0.33], [0.66,0.33], [0.33, 0.66], [0.66, 0.66], [0,1], [1,1]];
+	}
+
+	transform {|xyVal|
+
+		xyVal = [xyVal];
+
+		dists = ((points-xyVal).collect{|item| item.collect{|itemB| itemB**2}.sum});
+		closest = dists.order.copyRange(0,2);
+
+		if(dists[closest[0]]<0.01){
+			out = Array.fill(8,{|i| if(i==closest[0]){1}{0}});
+		}{
+			out = Array.fill(8,{|i|
+				if(i==closest[0]){
+					1
+				}{
+					if(i==closest[1]){
+						temp = dists[closest[0]]/dists[closest[1]];
+						if( (dists[closest[2]]/dists[closest[1]]) < 1.25){
+							//"second".postln;
+							temp = temp*(dists[closest[2]]/dists[closest[1]]).linlin(1, 1.25, 0, 1)
+						};
+						temp
+					}{
+						0
+					}
+			}})
+
+
+		};
+		^out.normalizeSum.round(0.001);
+	}
+}
+
 Joystick_Mod {
 
 	classvar <>sendServerSwitcherRequest = false;

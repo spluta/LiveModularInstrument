@@ -6,16 +6,22 @@ ModularServer_ID {
 }
 
 ModularServerObject {
-	var <>serverName, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerTransferBus, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id;
+	var <>serverName, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id, directIns;
 
 	*new {|serverName|
 		^super.new.serverName_(serverName).init;
 	}
 
+	*initClass {
+		StartUp.add {
+			SynthDef("directInputs_mod", {arg outBus;
+				Out.ar(outBus, SoundIn.ar((0..21)));
+			}).writeDefFile;
+		};
+	}
+
 	init {
 		id = ModularServer_ID.next;
-
-
 
 		while( {("lsof -i:"++id).unixCmdGetStdOut.size != 0},{id = ModularServer_ID.next});
 		id.postln;
@@ -32,7 +38,7 @@ ModularServerObject {
 			postMixerGroup = Group.tail(mainGroup);
 
 			mixerDirectInBus = Bus.audio(server, 22);
-			mixerTransferBus = Bus.audio(server, 22);
+			directIns = Synth("directInputs_mod", [\outBus, mixerDirectInBus], inGroup);
 
 			//set up the inputs and outputs
 			inBusses = List.new;
@@ -200,8 +206,10 @@ ModularServerObject {
 	killMe {
 		mainGroup.free;
 		inBusses.free;
+		directIns.free;
 	}
 }
+
 
 
 ModularServers {
@@ -282,6 +290,7 @@ ModularServers {
 	*addInputsArray {arg inBusses;
 		modularInputsArray = ModularInputsArray.new;
 		modularInputsArray.init2(inBusses);
+
 	}
 
 	*updateServerSwitcher {

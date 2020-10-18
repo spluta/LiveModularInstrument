@@ -18,10 +18,6 @@ ModularVolumeObject {
 
 				Out.ar(outBus, in*Lag.kr(vol,0.01));
 			}).writeDefFile;
-
-			SynthDef("directInputs_mod", {arg outBus;
-				Out.ar(outBus, SoundIn.ar((0..21)));
-			}).writeDefFile;
 		};
 	}
 
@@ -38,8 +34,8 @@ ModularVolumeObject {
 	}
 
 	addServer{arg server;
+		"add server".postln;
 		synths.add(Synth("modularInput_mod", [\inBus, inBus, \outBus, server.inBusses[inputNum]], server.inGroup));
-		synths.add(Synth("directInputs_mod", [\outBus, server.mixerDirectInBus], server.inGroup));
 
 		localResponder.free;
 		localResponder = OSCFunc({ |msg|
@@ -81,6 +77,7 @@ ModularInputsArray : Module_Mod {
 
 	var dispArray, win, <>outBusses, run, layouts, chanInBoxes, numBusses;
 
+
 	init {}
 
 	init2 {arg inBusses;
@@ -92,8 +89,6 @@ ModularInputsArray : Module_Mod {
 		this.initControlsAndSynths(16);
 
 		isGlobalController = true;
-
-		synths = List.newClear(0);
 
 		oscMsgs = List.newClear(ModularServers.servers['lmi1'].inBusses.size+5);
 		//controls = List.newClear(0);
@@ -150,7 +145,8 @@ ModularInputsArray : Module_Mod {
 		dispArray.do{arg item;
 			item.addServer(server);
 		};
-		synths.add(Synth("modularOutput_mod", [\inBus, server.mixerTransferBus, \outBus0, outBusses[0], \outBus1, outBusses[1], \outBus2, outBusses[2], \outBus3, outBusses[3], \outBus4, outBusses[4], \outBus5, outBusses[5], \outBus6, outBusses[6], \outBus7, outBusses[7]], server.postMixerGroup));
+
+		//synths.add(Synth("modularOutput_mod", [\inBus, server.mixerTransferBus, \outBus0, outBusses[0], \outBus1, outBusses[1], \outBus2, outBusses[2], \outBus3, outBusses[3], \outBus4, outBusses[4], \outBus5, outBusses[5], \outBus6, outBusses[6], \outBus7, outBusses[7]], server.postMixerGroup));
 	}
 
 
