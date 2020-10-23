@@ -73,7 +73,7 @@ CycleGripper_Mod : Module_Mod {
 		this.makeMixerToSynthBus(2);
 
 		synths = List.newClear(0);
-		4.do{
+		8.do{
 			synths.add(Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2], group));
 		};
 		synths[0].set(\localEnvGate, 1);
@@ -85,7 +85,7 @@ CycleGripper_Mod : Module_Mod {
 		countToPlays = List[0,0,0,0,0];
 		repeatSeq = 0;
 
-		synthCounter = Pseq((0..3),inf).asStream;
+		synthCounter = Pseq((0..7),inf).asStream;
 		currentSynth = synthCounter.next;
 		envMode = 0;
 		buttonState = 0;
@@ -94,94 +94,40 @@ CycleGripper_Mod : Module_Mod {
 			.states_([["allOff", Color.red, Color.black ], ["allOff", Color.black, Color.blue ]])
 			.action_{|v|
 				this.setDaButtons(0);
-				if(envMode==1,{
-					if(buttonState>5,{//in dust or impulse mode
-						synths[currentSynth].set(\localEnvGate, 0, \releaseTime, rrand(0.5, 3));
-						synths.put(currentSynth, Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2], group));
-					}/*,{
-						currentSynth = synthCounter.next;
-						synths[currentSynth].set(\localEnvGate, 1);
-					}*/);
-				});
-				synths[currentSynth.postln].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 2);
+				if(envMode==1){
+					synths[currentSynth].set(\localEnvGate, 0);
+					synths.put(currentSynth, Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2, \localEnvGate, 1], group));
+				}{
+					synths[currentSynth.postln].set(\trigRateDust, 0, \trigRateImpulse, 0, \mode, 2);
+				}
 		});
 		this.addAssignButton(0, \onOff);
 
-		controls.add(Button.new()
-			.states_([["man0", Color.red, Color.black ], ["man0", Color.black, Color.blue ]])
-			.action_{|v|
-				this.setDaButtons(1);
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 1);
-				synths[currentSynth].set(\inDelay, this.getDelay(0));
-				synths[currentSynth].set(\t_trig, 1);
-				this.envMode1;
-		});
-		this.addAssignButton(1, \onOff);
+		5.do{|i|
+			controls.add(Button.new()
+				.states_([["man"++i, Color.red, Color.black ], ["man"++i, Color.black, Color.blue ]])
+				.action_{|v|
 
-		controls.add(Button.new()
-			.states_([["man1", Color.red, Color.black ], ["man1", Color.black, Color.blue ]])
-			.action_{|v|
-				this.setDaButtons(2);
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 1);
-				synths[currentSynth].set(\inDelay, this.getDelay(1));
-				synths[currentSynth].set(\t_trig, 1);
-				this.envMode1;
-		});
-		this.addAssignButton(2, \onOff);
+					if(envMode==1){
+						synths[currentSynth].set(\localEnvGate, 0);
+						synths.put(currentSynth, Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2, \localEnvGate, 0], group));
+						currentSynth = synthCounter.next;
+						envTime = rrand(2, 5.0);
+					}{
+						envTime = 0;
+					};
 
-		controls.add(Button.new()
-			.states_([["man2", Color.red, Color.black ], ["man2", Color.black, Color.blue ]])
-			.action_{|v|
-				this.setDaButtons(3);
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 1);
-				synths[currentSynth].set(\inDelay, this.getDelay(2));
-				synths[currentSynth].set(\t_trig, 1);
-				this.envMode1;
-		});
-		this.addAssignButton(3, \onOff);
-
-		controls.add(Button.new()
-			.states_([["man3", Color.red, Color.black ], ["man3", Color.black, Color.blue ]])
-			.action_{|v|
-				this.setDaButtons(4);
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 1);
-				synths[currentSynth].set(\inDelay, this.getDelay(3));
-				synths[currentSynth].set(\t_trig, 1);
-				this.envMode1;
-		});
-		this.addAssignButton(4, \onOff);
-
-		controls.add(Button.new()
-			.states_([["man4", Color.red, Color.black ], ["man4", Color.black, Color.blue ]])
-			.action_{|v|
-				this.setDaButtons(5);
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\trigRateImpulse, 0);
-				synths[currentSynth].set(\mode, 1);
-				synths[currentSynth].set(\inDelay, this.getDelay(4));
-				synths[currentSynth].set(\t_trig, 1);
-				this.envMode1;
-		});
-		this.addAssignButton(5, \onOff);
+					this.setDaButtons(i+1);
+					synths[currentSynth].set(\trigRateDust, 0, \trigRateImpulse, 0, \mode, 1, \inDelay, this.getDelay(i), \t_trig, 1, \releaseTime, envTime, \localEnvGate, 1);
+			});
+			this.addAssignButton(i+1, \onOff);
+		};
 
 		controls.add(Button.new()
 			.states_([["Dust", Color.red, Color.black ], ["Dust", Color.black, Color.blue ]])
 			.action_{|v|
 				this.setDaButtons(6);
-				synths[currentSynth].set(\localEnvGate, 1);
-				synths[currentSynth].set(\trigRateImpulse, rrand(5,12));
-				synths[currentSynth].set(\trigRateDust,rrand(5,25));
-				synths[currentSynth].set(\mode, 0);
+				synths[currentSynth].set(\localEnvGate, 1, \trigRateImpulse, rrand(5,12), \trigRateDust,rrand(5,25), \mode, 0);
 		});
 		this.addAssignButton(6, \onOff);
 
@@ -189,10 +135,7 @@ CycleGripper_Mod : Module_Mod {
 			.states_([["Impulse", Color.red, Color.black ], ["Impulse", Color.black, Color.blue ]])
 			.action_{|v|
 				this.setDaButtons(7);
-				synths[currentSynth].set(\localEnvGate, 1);
-				synths[currentSynth].set(\trigRateImpulse, rrand(5,25));
-				synths[currentSynth].set(\trigRateDust, 0);
-				synths[currentSynth].set(\mode, 0);
+				synths[currentSynth].set(\localEnvGate, 1, \trigRateImpulse, rrand(5,25), \trigRateDust, 0, \mode, 0);
 		});
 		this.addAssignButton(7, \onOff);
 
@@ -200,16 +143,18 @@ CycleGripper_Mod : Module_Mod {
 			.states_([["Normal", Color.red, Color.black ], ["Env", Color.black, Color.blue ]])
 			.action_{|butt|
 				envMode = butt.value;
-				if(envMode==1,{
+				if(envMode==1) {
 					envTime = rrand(2, 5.0);
-					synths[currentSynth].set(\localEnvGate, 0, \releaseTime, envTime);
-				},{
+					synths[currentSynth].set(\releaseTime, envTime);
+				}{
+					synths[currentSynth].set(\releaseTime, 0);
+				}
+				/*,{
 					if(buttonState<6,{
 						this.setDaButtons(0);
 						synths[currentSynth].set(\localEnvGate, 1);
 					});
-				}
-				)
+				}*/
 		});
 		this.addAssignButton(8, \onOff);
 
@@ -226,20 +171,7 @@ CycleGripper_Mod : Module_Mod {
 		win.front;
 	}
 
-	envMode1 {
-		if(envMode==1,{
-			envTime = rrand(2, 5.0);
-			synths[currentSynth].set(\localEnvGate, 1);
-			SystemClock.sched(0.01,{
-				synths[currentSynth].set(\localEnvGate, 0, \releaseTime, envTime);
-				synths.put(currentSynth, Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2], group));
-				currentSynth = synthCounter.next;
-				nil
-			});
 
-			//synths[currentSynth].set(\localEnvGate, 1);
-		});
-	}
 
 	setDaButtons {arg int;
 		buttonState = int;
