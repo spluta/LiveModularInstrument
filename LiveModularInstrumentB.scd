@@ -1,6 +1,6 @@
 (
 //May2020
-LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 59029]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/Oct2020");
+LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 59029]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/Oct2020B");
 )
 
 
@@ -16,7 +16,7 @@ LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 s.options.outDevice_("ZoomAudioD")
 
 (
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/TestCG");
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/TestRingMod");
 )
 
 ModularServers.servers[\lmi1].server.queryAllNodes
@@ -25,6 +25,9 @@ ModularServers.servers[\lmi1].server.queryAllNodes
 LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 )
 
+
+
+ModularServers.servers[\lmi1].server.queryAllNodes
 
 Seaboard.start;
 Seaboard_Mod.start;
@@ -206,12 +209,6 @@ LiveModularInstrument.boot(1, [0,1,2,3,4,5,6,7], nil, 64, nil, 'normal', [MantaO
 LiveModularInstrument.boot(1, [8,9,10,11,0,5,6,7], nil, 64, nil, 'Matrices', [MantaOSC_Mod, Lemur_Mod, MIDI_Mod]);
 
 LiveModularInstrument.boot(1, [0,1,2,3,4,5,6,7], nil, 64, nil, 'feedback', [MantaOSC_Mod, Lemur_Mod, MIDI_Mod]);[ 52, S 0 ]
-
-ModularServers.servers[\lmi0].server.recChannels_(2)
-ModularServers.servers[\lmi0].server.prepareForRecord
-ModularServers.servers[\lmi0].server.record
-ModularServers.servers[\lmi0].server.stopRecording
-
 
 
 LiveModularInstrument.boot(1, nil, nil, 64, nil, 'wubbels', [MantaCocoa_Mod.start, Lemur_Mod.start("10.0.0.3"), MIDI_Mod.start]);

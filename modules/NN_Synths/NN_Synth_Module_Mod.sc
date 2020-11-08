@@ -21,7 +21,7 @@ Kill_The_Pythons {
 }
 
 NN_Synth_Mod : Module_Mod {
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys, readyToPredict=true, synthArgs, setLemurSpeedLimit;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys, readyToPredict=true, synthArgs, setLemurSpeedLimit, analysisGroup;
 
 	init_window {|parentIn|
 		var hiddenArray;
@@ -55,13 +55,25 @@ NN_Synth_Mod : Module_Mod {
 		whichModel = 0;
 
 		//hard coding this to 3, which should be fine...will probably find this in 5 years and wonder wtf
-		hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
+
+		if(this.class=="RingMod_CF1_NNMod"){
+			hiddenArray = (2, 2+(valsList.size/5)..valsList.size).round.asInteger.copyRange(1,2);
+		}{
+			hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
+		};
+
+		hiddenArray.postln;
 
 		mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,-1,1000,0.1,0.1,1,0)});
 
 		setLemurSpeedLimit = SpeedLimit({|array| parent.setLemur(array)}, 0.05);
+
+		this.initWindow2;
+
 		this.createWindow;
 	}
+
+	initWindow2 {}
 
 	clearTraining {
 		modelFolder = nil;
@@ -90,11 +102,15 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
+		analysisGroup = Group.tail(group);
+		synthGroup = Group.tail(group);
 		bigSynthGroup = Group.tail(group);  //this is only in the sampler...not sure why
+
+
 
 		synthArgs = [nameIn, parent, volBus, onOff0, onOff1, chanVolBus];
 		"nn_synth group: ".post;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], group.postln;));
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], synthGroup));
 		this.init_window(parent);
 	}
 
