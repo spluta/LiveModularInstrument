@@ -4,19 +4,103 @@ FM7Saw_NNMod : NN_Synth_Mod {
 			SynthDef("FM7Saw_NNMod", {
 				var ctls, mods, sig, filt, envs, onOffSwitch;
 
-				ctls = 3.collect{|i|2.collect{|i2| LFSaw.ar(*["frC","mulC","addC"].collect{|name| NamedControl.kr((name++i++i2).asSymbol, 1.5.linrand+0.5, 0.1)}.insert(1,0))}.insert(1,0)}.addAll(0!3!3);
+				var mlpVals = In.kr(\dataInBus.kr, 53);
 
-				mods = 3.collect{|i|3.collect{|i2| LFSaw.ar(*["frM","mulM","addM"].collect{|name| NamedControl.kr((name++i++i2).asSymbol, 1.5.linrand+0.5, 0.1)}.insert(1,0))}.addAll(0!3)}.addAll(0!6!3);
+				var filtFrq = mlpVals[0].linexp(0,1,20,20000);
+				var filtQ = mlpVals[1].linexp(0,1,0.1,0.999).lag(0.1);
+				var filtSat = mlpVals[2].linlin(0,1,0,1).lag(0.1);
+				var filtMode = mlpVals[3].linlin(0,1,0,2).lag(0.1);
+				var filtMix = mlpVals[4].linlin(0,1,0,1).lag(0.1);
+				var distAmp = mlpVals[5].linlin(0,1,0,1);
+				var distSmooth = mlpVals[6].linlin(0,1,0,1);
+				var nothin = mlpVals[7].linexp(0,1,0,1);
+
+				var busCount = 7;
+				ctls = [[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linexp(0,1,0.001,1000),
+						mlpVals[busCount=busCount+1].linexp(0,1,0.1, 15000)),
+					0,
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0.001,20),
+						mlpVals[busCount=busCount+1].linlin(0,1,0, 1))
+				],[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0.001,1000),
+						mlpVals[busCount=busCount+1].linexp(0,1,0.001, 15000.0)),
+					0,
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0.001,20),
+						mlpVals[busCount=busCount+1].linlin(0,1,0, 1))
+				],[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0.001,999),
+						mlpVals[busCount=busCount+1].linexp(0,1,0.001, 15000)),
+					0,
+					LFSaw.ar(mlpVals[busCount=busCount+1].linexp(0,1,0.001, 2000.0),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0.001,20),
+						mlpVals[busCount=busCount+1].linlin(0,1,0, 1))
+				]].addAll(0!3!3);
+
+				mods = [[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+				].addAll(0!3),
+				[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+				].addAll(0!3),
+				[
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+					LFSaw.ar(mlpVals[busCount=busCount+1].linlin(0,1,0, 5),
+						0,
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1),
+						mlpVals[busCount=busCount+1].linlin(0,1,0,1)),
+				].addAll(0!3)
+				].addAll(0!6!3);
 
 				sig = Splay.ar(FM7.ar(ctls, mods).slice([0,1]), 1)*0.5;
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				filt = SelectX.ar( \filtMode.kr(0, 0.1), [
-					BMoog.ar(sig, \filtFrq.kr(500).clip(20, 20000), \filtQ.kr(0.2, 0.1).clip(0.001, 0.999), 0, \filtSat.kr(0.95, 0.1)),
-					BBandPass.ar(sig, \filtFrq.kr, \filtQ.kr)]);
+				filt = SelectX.ar(filtMode, [
+					BMoog.ar(sig, filtFrq, filtQ, 0, filtSat),
+					BBandPass.ar(sig, filtFrq, filtQ)]);
 
-				sig = SelectX.ar(\filtMix.kr(0, 0.1), [sig, filt]);
+				sig = SelectX.ar(filtMix, [sig, filt]);
 
 				sig = Normalizer.ar(sig, 0.9);
 

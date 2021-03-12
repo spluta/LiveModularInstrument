@@ -1,33 +1,57 @@
 NN_Synths_Analysis_Mod : NN_Synth_Mod {
-	var xy2eight, whichMLP8, which2MLPs, ringAnalyzer, analysisBus, analysisSynth, analysisRout, instrAmpBus;
+	var xy2eight, whichMLP8, which2MLPs, ringAnalyzer, analysisBus, analysisSynth, analysisRout, instrAmpBus, minCentroid, maxCentroid, centroid01, centroidsBuf;
 
 	*initClass {
 		StartUp.add {
 			SynthDef("ss_analysis_analysisSynth", {
-				var source;
+				var source, spectralShape, min, max;
 
 				source = In.ar(\inBus.kr);
 				Out.kr(\instrAmpBus.kr, Amplitude.kr(source));
-				Out.kr(\analysisBus.kr, FluidSpectralShape.kr(source));
+				spectralShape = FluidSpectralShape.kr(source);
+				/*RecordBuf.kr(spectralShape[0], \centroidsBuf.kr);
+				min = BufMin.kr(\centroidsBuf.kr);
+				max = BufMax.kr(\centroidsBuf.kr);
+				Out.kr(\analysisBus.kr, [spectralShape[0], min, max]);*/
+				Out.kr(\analysisBus.kr, spectralShape);
 			}).writeDefFile
 		}
 	}
 
-	initWindow2 {
-		instrAmpBus = Bus.control(group.server);
-		analysisBus = Bus.control(group.server);
+	trigger {|num, val|
 
-		xy2eight = XY_to_8.new;
-		whichMLP8 = [1,0,0,0,0,0,0,0];
-		ringAnalyzer = Fluid_Ring_Analyzer(this, analysisGroup, 3, parent.mixerToSynthBus);
-		synths[0].set(\instrAmpBus, instrAmpBus);
-		analysisSynth = Synth("ss_analysis_analysisSynth", [\inBus, parent.mixerToSynthBus, \analysisBus, analysisBus, \instrAmpBus, instrAmpBus], analysisGroup);
+		if(num==0){
+			synths[0].set(\onOff0, val);
+			onOff0 = val;
+		}{
+			synths[0].set(\onOff1, val);
+			onOff1 = val;
+		};
+		if(val==1){ringAnalyzer.pauseTraining}{ringAnalyzer.resumeTraining};
+	}
+
+	initWindow2 {
+		{
+			instrAmpBus = Bus.control(group.server);
+			//analysisBus = Bus.control(group.server, 3);
+
+			analysisBus = Bus.control(group.server, 7);
+			centroidsBuf = Buffer(group.server, group.server.sampleRate/group.server.options.blockSize*3);
+			group.server.sync;
+			minCentroid = 10000;
+			maxCentroid = 0;
+
+			xy2eight = XY_to_8.new;
+			whichMLP8 = [1,0,0,0,0,0,0,0];
+			ringAnalyzer = Fluid_Ring_Analyzer(this, analysisGroup, 3, parent.mixerToSynthBus);
+			synths[0].set(\instrAmpBus, instrAmpBus);
+			analysisSynth = Synth("ss_analysis_analysisSynth", [\inBus, parent.mixerToSynthBus, \analysisBus, analysisBus, \instrAmpBus, instrAmpBus, \centroidsBuf, centroidsBuf], analysisGroup);
+		}.fork;
 	}
 
 	setNNInputVals {|vals|
 		var xy, z;
 		controlValsList = vals;
-		//"vals ".post; vals.postln;
 		if(vals.size>2){whichMLP8 = xy2eight.transform(vals.copyRange(0,1))};
 	}
 
@@ -43,6 +67,10 @@ NN_Synths_Analysis_Mod : NN_Synth_Mod {
 			if(parent.predictOnOff==1){
 				//"doit".postln;
 				analysisBus.getn(7, {|vals|
+/*					if(vals[0]<minCentroid){minCentroid = vals[0]};
+					if(vals[0]>maxCentroid){maxCentroid = vals[0]};
+					centroid01 = vals[0].linlin(minCentroid, maxCentroid, 0.0, 1.0, \minmax).postln;
+					ringAnalyzer.setXYWin(centroid01,0);*/
 					order = whichMLP8.order.reverse;
 					which2MLPs = order.copyRange(0,1);
 					ringAnalyzer.analyzeMe(vals, [mlps[which2MLPs[0]], mlps[which2MLPs[1]]], [whichMLP8[order[0]], whichMLP8[order[1]]]);
@@ -56,11 +84,9 @@ NN_Synths_Analysis_Mod : NN_Synth_Mod {
 	addPoint {
 		outDataSet.dump({|vals|
 			var max=0, newPoint;
-			vals.postln;
 
 			if(vals["data"]!=nil){
-				vals["data"].keys.do{|item| if(item.asInteger.postln>max){max=item}};
-				max.postln;
+				vals["data"].keys.do{|item| if(item.asInteger>max){max=item}};
 				newPoint = max.asInteger+1;
 			}{newPoint = 0};
 
@@ -91,7 +117,7 @@ NN_Synths_Analysis_Mod : NN_Synth_Mod {
 
 
 Fluid_Ring_Analyzer {
-	var <>parent, <>group, <>dur, <>inBus, ssBusIn, synthBuf, synthBuf2, pcaPointNorm, point, pointStand, pcaPoint, recordBuf, ssBuf, loudBuf, ds, inDS, inNorm, inStand, inPCA, outDS, point, norm, stand, pca, trainPCARout, analyze, time, array2, array3, synth;
+	var <>parent, <>group, <>dur, <>inBus, ssBusIn, synthBuf, synthBuf2, pcaPointNorm, point, pointStand, pcaPoint, recordBuf, ssBuf, loudBuf, ds, inDS, inNorm, inStand, inPCA, outDS, point, norm, stand, pca, trainPCATask, analyze, time, array2, array3, synth, xyWin, xySlider;
 
 	*new {arg parent, group, dur, inBus;
 		^super.new.parent_(parent).group_(group).dur_(dur).inBus_(inBus).init;
@@ -105,8 +131,25 @@ Fluid_Ring_Analyzer {
 		}
 	}
 
+	setXYWin {|x=0,y=0|
+		{xySlider.setXY(x,y)}.defer;
+	}
+
+	pauseTraining {
+		"pause".postln;
+		trainPCATask.pause;
+	}
+
+	resumeTraining {
+		"resume".postln;
+		trainPCATask.reset;
+		trainPCATask.play;
+	}
+
 	init {
-		[parent, group, dur, inBus].postln;
+		{xyWin = Window();
+		xySlider = Slider2D(xyWin, Rect(0, 0, 200, 200));
+			xyWin.front}.defer;
 		{
 			recordBuf = Buffer.alloc(group.server, group.server.sampleRate*dur);
 			synth = Synth("ring_recorder", [\recordBuf, recordBuf, \inBus, inBus], group);
@@ -136,7 +179,7 @@ Fluid_Ring_Analyzer {
 
 			1.wait;
 			group.server.sync;
-			trainPCARout = Routine({inf.do{
+			trainPCATask = Task({inf.do{
 				time = Main.elapsedTime;
 				FluidBufSpectralShape.process(group.server, recordBuf, 0, -1, 0, -1, ssBuf, 4096, action:{
 					FluidBufLoudness.process(group.server, recordBuf, features:loudBuf, action:{
@@ -144,18 +187,14 @@ Fluid_Ring_Analyzer {
 
 						ssBuf.loadToFloatArray(action:{|array|
 							array1=array.clump(7);
-							//array1.postln;
 							loudBuf.loadToFloatArray(action:{|arrayB|
 								array2 = arrayB.clump(2);
 								array3 = array1.select{|item, i| array2[i][0]>(-30)};
-								//"array3 ".post; array3 = array3.collect{|item, i| [i.asSymbol, item]}.flatten.postln;
 								if(array3.size>8){
 									inDS.load(Dictionary.newFrom([\cols, 7, \data, Dictionary.newFrom(array3)]), {
 
 										stand.fitTransform(inDS, inStand, {
-											//inStand.print;
 											pca.fitTransform(inStand, inPCA, {
-												//inPCA.print;
 												norm.fit(inPCA, {/*(time - Main.elapsedTime).postln*/})
 											});
 										});
@@ -175,8 +214,6 @@ Fluid_Ring_Analyzer {
 	}
 
 	analyzeMe {|vals, mlps, amountEach|
-		//mlps.postln;
-		//amountEach.postln;
 		point.loadCollection(vals.asArray, action:{
 			//point.postln;
 			stand.transformPoint(point, pointStand, {|buf|
@@ -185,12 +222,12 @@ Fluid_Ring_Analyzer {
 					//pcaPoint.postln;
 					norm.transformPoint(pcaPoint, pcaPointNorm, {
 						//pcaPointNorm.postln;
+						pcaPointNorm.loadToFloatArray(action:{|array| this.setXYWin(array[0], array[1])});
 						mlps[0].predictPoint(pcaPointNorm, synthBuf, {
 							mlps[1].predictPoint(pcaPointNorm, synthBuf2, {
 								synthBuf.loadToFloatArray(action:{|array1|
 									synthBuf2.loadToFloatArray(action:{|array2|
-										parent.configure(array1)
-										//parent.configure((array1*amountEach[0]+(array2*amountEach[1]))/2)
+										parent.configure(array1*amountEach[0]+(array2*amountEach[1]));
 								})})
 							})
 						});

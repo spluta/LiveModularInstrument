@@ -27,18 +27,22 @@ NN_Input_Control_NNMod :  TypeOSCModule_Mod {
 				};
 				lastVals.put(i, val);
 				sliderVals.put(i, val);
-				changed = true;
+
+				sliderVals2 = sliderVals.select{|item, i| sliderOns[i]==1};
+				if(sliderVals2.size>0){parent.setInputSliders(sliderVals2)};
+
+				//changed = true;
 			}
 		});
 
-		changeRout = Routine({inf.do{
+/*		changeRout = Routine({inf.do{
 			if(changed){
 				sliderVals2 = sliderVals.select{|item, i| sliderOns[i]==1};
 				if(sliderVals2.size>0){parent.setInputSliders(sliderVals2)};
 				changed = false;
 			};
 			(1/msgsPerSec).wait;
-		}}).play;
+		}}).play;*/
 
 		onOffFunctions = Array.fill(numControls, {|i|
 			{arg val; parent.setInputButton(i+1, val)}

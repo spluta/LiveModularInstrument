@@ -21,7 +21,7 @@ Kill_The_Pythons {
 }
 
 NN_Synth_Mod : Module_Mod {
-	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, sliderCount, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys, readyToPredict=true, synthArgs, setLemurSpeedLimit, analysisGroup;
+	var numModels, <>sizeOfNN, ports, pythonAddrs, pythonFile, <>whichModel, <>controlValsList, nnInputVals, valsList, allValsList, nnVals, parent, currentPoint, receivePort, loadedCount, loadedOSC, <>modelFolder, <>onOff0, <>onOff1, mlpInBuf, mlpOutBuf, mlps, inDataSet, outDataSet, inBuf, outBuf, copyInBuf, copyOutBuf, numPoints, keys, readyToPredict=true, synthArgs, setSlidersSpeedLimit, setLemurSpeedLimit, analysisGroup, mlpInBusSpeedLimit, mlpInBusses, mlpOutBusses, <>mlpSynths, mlpGroup, controlGroup, <>controlSwitchSynths, controlBusses, updateSlidersRout, <>isCurrentUpdateLemur=0;
 
 	init_window {|parentIn|
 		var hiddenArray;
@@ -31,15 +31,14 @@ NN_Synth_Mod : Module_Mod {
 		parent = parentIn;
 
 		currentPoint = 0;
-		sliderCount = 0;
 		numPoints = 0;
 		keys = Set[];
 
 		onOff0 = 0;
 		onOff1 = 0;
 
-		inDataSet = FluidDataSet(group.server,("indata"++NN_Synth_DataSetID.next));
-		outDataSet = FluidDataSet(group.server,("outdata"++NN_Synth_DataSetID.next));
+		inDataSet = FluidDataSet(group.server);
+		outDataSet = FluidDataSet(group.server);
 		inBuf = Buffer(group.server);
 		outBuf = Buffer(group.server);
 
@@ -47,26 +46,47 @@ NN_Synth_Mod : Module_Mod {
 		copyOutBuf = Buffer(group.server);
 
 		controlValsList = List.newClear(0);
-		valsList = List.fill(sizeOfNN, {0});
-		allValsList = List.fill(8, {List.fill(sizeOfNN+4, {0})});
+		valsList = List.fill(sizeOfNN, {1.0.rand});
+		allValsList = List.fill(8, {|i| List.fill(sizeOfNN+4, {1.0.rand})});
 
 		nnInputVals = (0!parent.inputControl.numActiveControls);
 
-		whichModel = 0;
-
-		//hard coding this to 3, which should be fine...will probably find this in 5 years and wonder wtf
-
-		if(this.class=="RingMod_CF1_NNMod"){
-			hiddenArray = (2, 2+(valsList.size/5)..valsList.size).round.asInteger.copyRange(1,2);
-		}{
+		if(sizeOfNN>0){
 			hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
+			hiddenArray.postln;
+
+			mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,-1,1000,0.1,0.1,1,0)});
+		}{
+			mlps = List.fill(8, {FluidMLPRegressor(group.server,[3,3],2,1,0,-1,1000,0.1,0.1,1,0)});
 		};
 
-		hiddenArray.postln;
-
-		mlps = List.fill(8, {FluidMLPRegressor(group.server,hiddenArray,2,1,0,-1,1000,0.1,0.1,1,0)});
-
 		setLemurSpeedLimit = SpeedLimit({|array| parent.setLemur(array)}, 0.05);
+		setSlidersSpeedLimit = SpeedLimit({|array| this.setSliders(array)}, 0.2);
+		mlpInBusSpeedLimit = SpeedLimit({|array| this.setMLPInBusses(array)}, 0.01);
+
+		updateSlidersRout = Routine({inf.do{
+			if(isCurrentUpdateLemur==1){
+			if(parent.predictOnOff==1){
+				mlpOutBusses[whichModel].getn(sizeOfNN, {|array|
+					valsList = array;
+					if(parent.updateSliders==true){
+						setSlidersSpeedLimit.value(array);
+						setLemurSpeedLimit.value(array);
+					};
+				});
+			}{
+				controlBusses[whichModel].getn(sizeOfNN, {|array|
+					valsList = array;
+
+					setLemurSpeedLimit.value(array);
+					if(parent.updateSliders==true){
+						setSlidersSpeedLimit.value(array);
+					};
+				});
+			}
+			};
+			0.05.wait;
+		}}).play;
 
 		this.initWindow2;
 
@@ -82,7 +102,6 @@ NN_Synth_Mod : Module_Mod {
 
 	clearMLPs {
 		"clear MLPs".postln;
-		//pythonAddrs.do{|item|item.sendMsg('/close')}
 		mlps = mlps.do{|item| item.clear};
 		mlps.postln;
 	}
@@ -93,6 +112,7 @@ NN_Synth_Mod : Module_Mod {
 		loadedCount = 0;
 
 		controlValsList = List.fill(File.readAllString(modelFolder++"/inDataSet0.json").parseYAML["cols"].asInteger.postln, {0});
+		valsList = List.fill(File.readAllString(modelFolder++"/outDataSet0.json").parseYAML["cols"].asInteger.postln, {0});
 
 		this.makeInOutBufs;
 
@@ -103,14 +123,22 @@ NN_Synth_Mod : Module_Mod {
 
 	init2 {arg nameIn, parent, volBus, onOff0, onOff1, chanVolBus;
 		analysisGroup = Group.tail(group);
+		mlpGroup = Group.tail(group);
+		controlGroup = Group.tail(group);
 		synthGroup = Group.tail(group);
 		bigSynthGroup = Group.tail(group);  //this is only in the sampler...not sure why
 
+		mlpSynths = List.newClear(8);
+		controlSwitchSynths = List.newClear(8);
 
+		//hardcoded to 10 and 80, but this could easily change
+		mlpInBusses = List.fill(8, {Bus.control(group.server, 10).set({1.0.rand}!10)});
+		mlpOutBusses = List.fill(8, {Bus.control(group.server, 80).set({1.0.rand}!80)});
+		controlBusses = List.fill(8, {Bus.control(group.server, 80).set({1.0.rand}!80)});
 
-		synthArgs = [nameIn, parent, volBus, onOff0, onOff1, chanVolBus];
-		"nn_synth group: ".post;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus], synthGroup));
+		whichModel = 0;
+
+		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1, \chanVolBus, chanVolBus, \dataInBus, mlpOutBusses[whichModel]], synthGroup));
 		this.init_window(parent);
 	}
 
@@ -118,7 +146,7 @@ NN_Synth_Mod : Module_Mod {
 		{
 			synths.do{|item| item.free};
 			group.server.sync;
-			synths.put(0, Synth(synthArgs[0], [\outBus, outBus, \volBus, synthArgs[2].index, \onOff0, synthArgs[3]-1, \onOff1, synthArgs[4]-1, \chanVolBus, synthArgs[5]], synthGroup));
+			synths.put(0, Synth(synthArgs[0], [\outBus, outBus, \volBus, synthArgs[2].index, \onOff0, synthArgs[3]-1, \onOff1, synthArgs[4]-1, \chanVolBus, synthArgs[5], \dataInBus, mlpOutBusses[whichModel]], synthGroup));
 		}.fork;
 	}
 
@@ -126,9 +154,11 @@ NN_Synth_Mod : Module_Mod {
 		{
 			nnVals.postln;
 			nnVals.do{arg item, i;
-				controls.add(QtEZSlider(item[0], item[1], {arg val;
-					synths[0].set(item[0], val.value);
-					{valsList.put(i, val.slider.value)}.defer;
+				controls.add(QtEZSlider(item[0], ControlSpec(), {arg val;
+					val.value.postln;
+					controlBusses[whichModel].setAt(i, [val.value]);
+
+					valsList.put(i, val.value);
 				}, allValsList[0][i], true, \horz));
 			};
 
@@ -150,7 +180,6 @@ NN_Synth_Mod : Module_Mod {
 				)
 			};
 			win.layout.spacing_(0).margins_(0!4);
-
 			win.visible_(false);
 		}.defer;
 	}
@@ -158,50 +187,43 @@ NN_Synth_Mod : Module_Mod {
 	changeModel {|i|
 		"change model".postln;
 		allValsList.put(whichModel, valsList.addAll(controlValsList));
+		mlpSynths[whichModel].set(\mlpOnOff, 0);
+		mlpSynths[whichModel].run(false);
 		whichModel = i;
+		mlpSynths[whichModel].set(\mlpOnOff, 1);
+		mlpSynths[whichModel].run(true);
+		synths[0].set(\dataInBus, mlpOutBusses[whichModel]);
 		valsList = allValsList[whichModel].copyRange(0,sizeOfNN-1);
-		this.setSlidersAndSynth(valsList, true);
+		this.setSlidersAndSynth(valsList);
 	}
 
 	trigger {|num, val|
 
 		if(num==0){
-			//"trigger0".postln;
 			synths[0].set(\onOff0, val);
 			onOff0 = val;
 		}{
-			//"trigger1".postln;
 			synths[0].set(\onOff1, val);
 			onOff1 = val;
 		};
-		//synths[0].set(\selector, num);
 	}
 
-	configure {
-		if(parent.predictOnOff==1){
-			if(readyToPredict){
-				readyToPredict=false;
-				mlps[whichModel].predictPoint(mlpInBuf,mlpOutBuf,{
-					mlpOutBuf.getn(0, mlpOutBuf.numFrames, {|array|
-						array = array.asArray;
-						this.setSlidersAndSynth(array);
-						setLemurSpeedLimit.value(array);
-						readyToPredict=true;
-					});
-				})
-			}
-		}
+	setMLPInBusses {|vals|
+		mlpInBusses[whichModel].setn(vals);
 	}
 
 	setNNInputVals {|vals|
 		controlValsList = vals;
-		mlpInBuf.setn(0, vals);
-		this.configure;
+		//mlpInBuf.setn(0, vals);
+		//this.configure;
+		if(parent.predictOnOff==1){
+			mlpInBusSpeedLimit.value(vals);
+		}
 	}
 
-	setSynth {|argument, i, val01, val|
-		valsList.put(i, val01);
-		synths[0].set(argument, val);
+	setSynth {|i, val|
+		//[i, val].postln;
+
 	}
 
 	setSlidersAndSynth2 {
@@ -210,33 +232,39 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setGUISlider {|i, val|
-		if(i<sizeOfNN){controls[i].valueAction_(controls[i].controlSpec.map(val))}
+		if(i<sizeOfNN){controls[i].valueAction_(val)}
 	}
 
-	setSlidersAndSynth {|vals, isPoint=false|
-		sliderCount = sliderCount+1;
+	setSliders {|vals|
+		vals.do{|item, i|
+			if(parent.hasControl[i]==0){
+				{controls[i].value_(item)}.defer;
+			}
+		}
+	}
 
+	setSlidersAndSynth {|vals|
+		"setSlidersAndSynth".postln;
+		vals.postln;
 		vals.do{|item, i|
 			if(i<sizeOfNN,{
-				if((parent.hasControl[i]==0)&&(nnVals[i][0].asString!="nil"))
+				if((parent.hasControl[i]==0))
 				{
-					this.setSynth(nnVals[i][0], i, vals[i], controls[i].controlSpec.map(item));
+					//this.setSynth(i, vals[i]);
+					valsList.put(i, item);
+					controlBusses[whichModel].setAt(i, item);
 				};
 			});
 		};
 
 		if(parent.updateSliders==true){
-			if((sliderCount%50==0)||isPoint){
-				vals.do{|item, i|
-					if(parent.hasControl[i]==0){
-						{controls[i].value_(controls[i].controlSpec.map(item))}.defer;
-					}
-				}
-			}
+			setSlidersSpeedLimit.value(vals);
 		};
 	}
 
 	makeInOutBufs {
+		var mlpSynth;
+
 		"makeInOutBufs".postln;
 		if(mlpInBuf != nil){mlpInBuf.free};
 		if(mlpOutBuf != nil){mlpOutBuf.free};
@@ -245,16 +273,90 @@ NN_Synth_Mod : Module_Mod {
 		mlpOutBuf = Buffer.alloc(group.server,valsList.size);
 	}
 
+	makeMLPSynth {|makeWhich|
+		^{
+			var output, input = In.kr(mlpInBusses[makeWhich], controlValsList.size);
+			//var pauseEnv = EnvGen.kr(Env.asr, \isCurrent.kr(1), doneAction:2);
+			var trig = Impulse.kr(50)*\mlpOnOff.kr(0);
+			var trig2 = EnvGen.kr(Env([0,0,1,1,0,0,1,1,0], [0.1,0,0.01,0,0.01,00.01,0]), 1); //initialize the triggering to set the mlp
+			var inputPoint = LocalBuf(controlValsList.size);
+			var outputPoint = LocalBuf(valsList.size);
+
+			EnvGen.kr(Env.asr, \gate.kr(1), doneAction:2);
+
+			input.collect{|p, i| BufWr.kr([p],inputPoint,i)};
+			mlps[makeWhich].kr(trig+trig2,inputPoint,outputPoint,0,-1);
+			output = valsList.size.collect{|i| BufRd.kr(1,outputPoint,i)};
+
+			Out.kr(mlpOutBusses[makeWhich], output); //zap any NaNs that come out of the NN
+		}.play(mlpGroup);
+	}
+
+	makeControlSwitcher{|makeWhich|
+		makeWhich.postln;
+		mlpOutBusses[makeWhich].postln;
+		controlBusses[makeWhich].postln;
+		^{
+			var switch, mlpIn = In.kr(mlpOutBusses[makeWhich], valsList.size);
+			var controlIn = In.kr(controlBusses[makeWhich], valsList.size);
+			\switches.kr({1}!valsList.size, 0);
+			\switches2.kr({0}!valsList.size, 0);
+
+			switch = \switches.kr-\switches2.kr;
+
+			EnvGen.kr(Env.asr, \gate.kr(1), doneAction:2);
+			valsList.size.do{|i|
+				ReplaceOut.kr(mlpOutBusses[makeWhich].index+i, Select.kr(switch[i].clip(0,1), [controlIn[i], mlpIn[i]]).zap);
+			};
+		}.play(controlGroup);
+	}
+
+	switchPredict {|predictVal|
+		"switchPredict".postln;
+		if(predictVal==0){
+			mlpOutBusses[whichModel].getn(valsList.size, {|array|
+				//controlBusses[whichModel].set(array);
+				array.do{|val, i| val.postln; controls[i].valueAction_(val)};
+				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!16)}
+			});
+		}{
+			/*controlBusses[whichModel].getn(valsList.size, {|array|
+				mlpOutBusses[whichModel].set(array);*/
+				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!16)}
+			//});
+		}
+	}
+
 	reloadNN {arg reloadWhich;
 		var fileInfo, hiddenArray, modelFile;
 		if(reloadWhich==nil){reloadWhich = whichModel};
 		"clear".postln;
 		mlps[reloadWhich].clear({
 			"reload ".post;
+			if(sizeOfNN>0){
+				hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
+				hiddenArray.postln;
+
+				mlps[reloadWhich].hidden = hiddenArray;
+			}{
+				mlps[reloadWhich].hidden = [3,3];
+			};
+			mlps[reloadWhich].hidden.postln;
+
 			modelFile = modelFolder++"/"++"modelFile"++reloadWhich++".json";
 			try{
 				File.readAllString(modelFile).parseYAML;
-				mlps[reloadWhich].read(modelFile, {("loaded"+modelFile)});
+				mlps[reloadWhich].read(modelFile, {
+					("loaded"+modelFile).postln;
+					{
+						if(mlpSynths[reloadWhich]!=nil){mlpSynths[reloadWhich].set(\gate, 0)};
+						if(controlSwitchSynths[reloadWhich]!=nil){controlSwitchSynths[reloadWhich].set(\gate, 0)};
+						group.server.sync;
+						mlpSynths.put(reloadWhich, this.makeMLPSynth(reloadWhich));
+						controlSwitchSynths.put(reloadWhich, this.makeControlSwitcher(reloadWhich));
+						if(reloadWhich==whichModel){mlpSynths[whichModel].set(\mlpOnOff, 1, \isCurrent, 1)};
+					}.fork
+				});
 			}{"no json file".postln}
 		})
 	}
@@ -266,12 +368,20 @@ NN_Synth_Mod : Module_Mod {
 
 		mlps[whichModel].fit(inDataSet,outDataSet,{|x|
 			"trainy trainy trainy".postln;
-			x.postln;
+			(modelFolder++"/"++"modelFile"++whichModel++".json").postln;
+			mlps[whichModel].write(modelFolder++"/"++"modelFile"++whichModel++".json");
+			inDataSet.write(modelFolder++"/"++"inDataSet"++whichModel++".json");
+			outDataSet.write(modelFolder++"/"++"outDataSet"++whichModel++".json");
+
+			this.reloadNN(whichModel);
+/*			mlpSynths[whichModel].set(\gate, 0);
+			mlpSynths.put(whichModel, this.makeMLPSynth(whichModel));
+
+			controlSwitchSynths[whichModel].set(\gate, 0);
+			controlSwitchSynths.put(whichModel, this.makeControlSwitcher(whichModel));*/
 		});
 
-		mlps[whichModel].write(modelFolder++"/"++"modelFile"++whichModel++".json");
-		inDataSet.write(modelFolder++"/"++"inDataSet"++whichModel++".json");
-		outDataSet.write(modelFolder++"/"++"outDataSet"++whichModel++".json");
+
 	}
 
 	loadPoints {
@@ -282,8 +392,6 @@ NN_Synth_Mod : Module_Mod {
 			inDataSet.read(modelFolder++"/"++"inDataSet"++whichModel++".json", {
 				outDataSet.read(modelFolder++"/"++"outDataSet"++whichModel++".json", {
 
-					//inDataSet.size({|val| numPoints = val.asInteger});
-
 					inDataSet.print;
 					outDataSet.print;
 
@@ -292,8 +400,6 @@ NN_Synth_Mod : Module_Mod {
 
 						keys = vals["data"].keys.asList;
 
-						//vals["data"].keys.do{|item| if(item.asInteger.postln>max){max=item}};
-
 						inDataSet.getPoint(keys[currentPoint], inBuf, {inBuf.postln; inBuf.loadToFloatArray(action:{|array|
 							array.postln;
 							controlValsList = array.asList;
@@ -301,9 +407,9 @@ NN_Synth_Mod : Module_Mod {
 						})});
 
 						outDataSet.getPoint(keys[currentPoint], outBuf, {outBuf.loadToFloatArray(action:{|array|
-							valsList = array.asList.postln;
-							this.setSlidersAndSynth(valsList, true);
-							{parent.setLemur(valsList)}.defer;
+							//valsList = array.asList.postln;
+							//this.setSlidersAndSynth(valsList);
+							controlBusses[whichModel].setn(array);
 						})});
 					})
 				})
@@ -369,12 +475,13 @@ NN_Synth_Mod : Module_Mod {
 		inDataSet.print;
 		outDataSet.print;
 
-		inDataSet.deletePoint(cp, {
-			outDataSet.deletePoint(cp, {
+		inDataSet.deletePoint(cp, nil, {
+			inDataSet.print;
+			outDataSet.deletePoint(cp, nil, {
+				outDataSet.print;
 				keys.removeAt(currentPoint);
 				keys.postln;
 				currentPoint = currentPoint.wrap(0, keys.size-1);
-
 		})});
 	}
 
@@ -398,24 +505,42 @@ NN_Synth_Mod : Module_Mod {
 
 			outDataSet.getPoint(key, outBuf, {
 				outBuf.loadToFloatArray(action:{|array|
+					"getPoint".postln;
 					array.postln;
-					valsList = array;
+					//valsList = array;
 
-					{this.setSlidersAndSynth(valsList, true)}.defer;
-					parent.setLemur(valsList);
-					valsList.postln;
+					//array.do{|val, i| valsList.put(i, val)};
+					controlBusses[whichModel].setn(array);
+					//{parent.setLemur(valsList)}.defer;
+					//valsList.postln;
 				})
 			});
+
 		}{"no points loaded".postln}
 	}
 
 
 	killMeSpecial {
-		mlps.do{|item| item.free};
-		mlpInBuf.free;
-		mlpOutBuf.free;
-		inDataSet.free;
-		outDataSet.free;
+		"killMeSpecial".postln;
+		{
+			mlpSynths.do{|item| item.set(\gate, 0)};
+			controlSwitchSynths.do{|item| item.set(\gate, 0)};
+
+			updateSlidersRout.stop;
+			group.server.sync;
+			1.wait;
+
+			mlpInBuf.free;
+			mlpOutBuf.free;
+			inDataSet.free;
+			outDataSet.free;
+
+			mlpInBusses.do{|item| item.free};
+			mlpOutBusses.do{|item| item.free};
+			controlBusses.do{|item| item.free};
+
+			mlps.do{|item| item.free};
+		}.fork;
 
 	}
 

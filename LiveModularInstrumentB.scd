@@ -1,31 +1,34 @@
 (
 //May2020
-LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 59029]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/Oct2020B");
-)
-
-
-(
-LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testNN8");
-)
-
-
-(
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/testSpace2");
+LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 59725]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Mar2021");
 )
 
 s.options.outDevice_("ZoomAudioD")
 
-(
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod],"/Users/spluta 1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/1 ipad/TestRingMod");
-)
 
 ModularServers.servers[\lmi1].server.queryAllNodes
 
+FluidMLPRegressor
+
+remove point is broken
+
+ServerOptions.devices;
+s.options.device = "ZoomAudioD"
+
+
+//when switching to predict==0, get the vals from the bus and write them to the other bus
 (
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 61846]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 51824]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/NN_Again6");
 )
 
 
+(
+LiveModularInstrument.boot(2, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 59001]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+)
+
+a = NetAddr("127.0.0.1", 57921)
+
+a.sendMsg('/Container3/Fader4/x', 0.5)
 
 ModularServers.servers[\lmi1].server.queryAllNodes
 
@@ -36,11 +39,10 @@ SystemOverwrites
 
 ModularVolumeObject
 
-b = OSCFunc({|msg, time, addr|
-	addr.postln;
-}, '/Container3/Fader4/x').oneShot;
+b = OSCFunc({|msg, time, addr| addr.postln;}, '/Container3/Fader4/x').oneShot;
 
 OSCFunc.trace(true)
+OSCFunc.trace(false)
 
 NetAddr.langPort
 

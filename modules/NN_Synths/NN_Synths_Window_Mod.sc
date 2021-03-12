@@ -202,6 +202,10 @@ NN_Synths_Mod : Module_Mod {
 			.states_([["predictOff", Color.red, Color.black],["predictOn", Color.green, Color.black]])
 			.action_{|button|
 				predictOnOff = button.value;
+				if(nn_synths[currentSynth]!=nil){
+					"setSwitchPredict".postln;
+					nn_synths[currentSynth].switchPredict(button.value)
+				}
 		});
 		this.addAssignButton(14+numModels+1, \onOff);
 
@@ -369,13 +373,21 @@ NN_Synths_Mod : Module_Mod {
 	setNNSynth {|num|
 		if(nn_synths[currentSynth]!=nil){
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 0);
+			nn_synths[currentSynth].mlpSynths.do{|mlpS| if(mlpS!=nil){mlpS.run(false)}; mlpS.set(\isCurrent, 0)};
+			//nn_synths[currentSynth].controlSwitchSynths.do{|cSS| if(cSS!=nil){cSS.run(false)}; cSS.set(\isCurrent, 0)};
+			nn_synths[currentSynth].isCurrentUpdateLemur_(0);
 			controls[14+nn_synths[currentSynth].whichModel].value_(0);
 		};
 		currentSynth = num;
 		if(nn_synths[currentSynth]!=nil){
+			var temp = nn_synths[currentSynth].mlpSynths[nn_synths[currentSynth].whichModel];
+
+			if(temp!=nil){temp.run(true); temp.set(\isCurrent, 1)};
+
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 1);
+			nn_synths[currentSynth].isCurrentUpdateLemur_(1);
 			this.setSlidersAndMultis;
-			controls[14+nn_synths[currentSynth].whichModel].value_(1);
+			controls[14+nn_synths[currentSynth].whichModel.postln].value_(1);
 			Lemur_Mod.sendSwitchOSC(oscMsgs[14+nn_synths[currentSynth].whichModel].asString);
 			sliderControl.setLabels(nn_synths[currentSynth].getLabels);
 		};
@@ -426,6 +438,8 @@ NN_Synths_Mod : Module_Mod {
 
 	setGUIzVal{|i, val|
 		hasControl.put(i, val);
+		hasControl.postln;
+		nn_synths[currentSynth].controlSwitchSynths.do{|cSS| cSS.set(\switches2, hasControl.copyRange(0,nn_synths[currentSynth].sizeOfNN-1))};
 	}
 
 	loadExtra {arg loadArray;
@@ -440,34 +454,45 @@ NN_Synths_Mod : Module_Mod {
 			controls[4].value_(loadedSynths[0]);
 			chosenModels = loadArray.copyRange(8,11);
 			controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
-			loadArray.copyRange(0,3).do{arg item, i;
-				if (item!="Nil", {
-					nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
-					nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
-					if(chosenModels[i]!=0){
-						nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]));
-					};
-				},{
-					nn_synths.put(i, nil);
-				});
-			};
-			try {
-				loadProto = loadArray[22];
-				loadProto.do{|item,i|
-					if(item!=nil){nn_synths[i].load(item)};
-				}
-			};
-			controls[0].valueAction=1;
+			{
+				loadArray.copyRange(0,3).do{arg item, i;
+					if (item!="Nil", {
+						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
+						nn_synths[i].init2(item, this, volBus, onOffSwitches[0][i], onOffSwitches[1][i], chanVolBusses[i]);
+						rrand(0.5, 1.5).wait;
+						if(chosenModels[i]!=0){
+							nn_synths[i].loadTraining((nn_synthFolders[loadedSynths[i]-1]++modelChoices[loadedSynths[i]][chosenModels[i]]));
+							0.5.wait;
+							nn_synths[i].mlpSynths.do{|mlpS| if(mlpS!=nil){
+								mlpS.run(false)}; mlpS.set(\isCurrent, 0)};
+						};
+					},{
+						nn_synths.put(i, nil);
+					});
+					rrand(0.5, 1.5).wait;
+				};
 
-			controls[5].items_(modelChoices[loadedSynths[0]].asArray);
-			controls[5].value_(chosenModels[0]);
+				if(nn_synths[0].mlpSynths[0]!=nil){
+					nn_synths[0].mlpSynths[0].run(true);
+					nn_synths[0].mlpSynths[0].set(\isCurrent, 1)
+				};
+				try {
+					loadProto = loadArray[22];
+					loadProto.do{|item,i|
+						if(item!=nil){nn_synths[i].load(item)};
+					}
+				};
+				controls[0].valueAction=1;
 
-			controls[25].valueAction_(1);
-		};
-		AppClock.sched(2.0, {
-			nn_synths.do{|item| if(item!=nil){item.hide}};
-			sliderControl.hide;
-		});
+				controls[5].items_(modelChoices[loadedSynths[0]].asArray);
+				controls[5].value_(chosenModels[0]);
+
+				controls[25].valueAction_(1);
+				2.wait;
+				nn_synths.do{|item| if(item!=nil){item.hide}};
+				sliderControl.hide;
+			}.fork(AppClock);
+		}
 	}
 
 	pause {
@@ -481,6 +506,7 @@ NN_Synths_Mod : Module_Mod {
 	killMeSpecial {
 		nn_synths.do{|item| if(item!=nil){item.killMe}};
 		inputControl.killMe;// NN_Input_Control_NNMod
+
 	}
 
 }

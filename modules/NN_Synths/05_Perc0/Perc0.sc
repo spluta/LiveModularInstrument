@@ -2,39 +2,66 @@ Perc0_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("Perc0_NNMod",{
-				var maths1, maths1Rise, mathsTrig, endOfCycle, maths2, maths2Rise, maths3, noiseMaths, noiseMathsRise, oscNoise, noise, out, out2, env, envB, oscWobble, onOffSwitch, envs, trigEnv;
+				var maths1, mathsTrig, endOfCycle, maths2, maths3, noiseMaths, oscNoise, noise, out, out2, env, envB, oscWobble, onOffSwitch, envs, trigEnv;
+
+				var mlpVals = In.kr(\dataInBus.kr, 26);
+
+				var maths1Rise = mlpVals[0].linexp(0,1,0.001,5.0);
+				var maths1Fall = mlpVals[1].linexp(0,1,0.001,5.0);
+				var maths1LinExp = mlpVals[2].linlin(0,1,0.0,1.0).lag(0.1);
+				var hiGliss = mlpVals[3].linexp(0,1,300.0,8000.0).lag(0.1);
+				var lowGliss = mlpVals[4].linexp(0,1,20.0,3000.0).lag(0.1);
+				var outVol = mlpVals[5].linlin(0,1,0.0,1.0).lag(0.1);
+				var oscNoiseFreq = mlpVals[6].linexp(0,1,500.0,10000.0).lag(0.1);
+				var oscNoiseVol = mlpVals[7].linlin(0,1,0.0,200.0).lag(0.1);
+				var oscNoiseLag = mlpVals[8].linexp(0,1,0.002,0.1).lag(0.1);
+				var oscNoiseWidth = mlpVals[9].linlin(0,1,0.0,1.0).lag(0.1);
+				var wobbleFreq = mlpVals[10].linlin(0,1,1.0,30.0).lag(0.1);
+				var wobbleMul = mlpVals[11].linlin(0,1,1.0,30.0).lag(0.1);
+				var maths2Rise = mlpVals[12].linexp(0,1,0.001,5.0);
+				var maths2Fall = mlpVals[13].linexp(0,1,0.001,5.0);
+				var hiGliss2 = mlpVals[14].linexp(0,1,300.0,8000.0).lag(0.1);
+				var lowGliss2 = mlpVals[15].linlin(0,1,20.0,3000.0).lag(0.1);
+				var out2Vol = mlpVals[16].linlin(0,1,0.0,1.0).lag(0.1);
+				var noiseMathsRise = mlpVals[17].linexp(0,1,0.001,5.0);
+				var noiseMathsFall = mlpVals[18].linexp(0,1,0.001,5.0);
+				var noiseMathsLinExp = mlpVals[19].linlin(0,1,0.0,1.0).lag(0.1);
+				var noiseFreq = mlpVals[20].linexp(0,1,1000.0,20000.0).lag(0.1);
+				var noiseVol = mlpVals[21].linlin(0,1,0.0,1.0).lag(0.1);
+				var noiseWidth = mlpVals[22].linlin(0,1,0.0,1.0).lag(0.1);
+				var noiseFiltFreq = mlpVals[23].linexp(0,1,30.0,20000.0).lag(0.1);
+				var noiseFiltMult = mlpVals[24].linlin(0,1,0.0,1.0).lag(0.1);
+				var noiseFiltGain = mlpVals[25].linlin(0,1,0.0,4.0).lag(0.1);
 
 				onOffSwitch = (\onOff0.kr(1, 0.01)+\onOff1.kr(1, 0.01)).clip(0,1);
 
 				onOffSwitch = Select.kr(\switchState.kr(0), [\isCurrent.kr(0, 0.01), \isCurrent.kr*onOffSwitch, onOffSwitch]);
-				//maths1Rise = \maths1Dur.kr(1, 0.1).clip(0.01, 10)*\maths1RiseToFall.kr(0.001, 0.1).clip(0.001, 1);
 
-				#maths1, mathsTrig = Maths.ar(\maths1Rise.kr(0.5), \maths1Fall.kr(0.5), \maths1LinExp.kr(1, 0.1), onOffSwitch);
+				#maths1, mathsTrig = Maths.ar(maths1Rise, maths1Fall, maths1LinExp, onOffSwitch);
 
 
 				onOffSwitch = K2A.ar(onOffSwitch);
-				//trigEnv = (onOffSwitch + Lag.ar(Latch.ar(onOffSwitch, DelayN.ar(Trig1.ar(onOffSwitch, 0.01), 0.01,0.01)+mathsTrig), 0.0015)).clip(0,1);
 
-				noiseMaths = Maths.ar(\noiseMathsRise.kr(0.01), \noiseMathsFall.kr(0.5), \noiseMathsLinExp.kr(0.5, 0.1),0,1,mathsTrig)[0];
+				noiseMaths = Maths.ar(noiseMathsRise, noiseMathsFall, noiseMathsLinExp,0,1,mathsTrig)[0];
 
-				maths2 = Maths.ar(\maths2Rise.kr(0.01), \maths2Fall.kr(0.01), 0.99, 0,1, mathsTrig)[0];
+				maths2 = Maths.ar(maths2Rise, maths2Fall, 0.99, 0,1, mathsTrig)[0];
 				maths3 = maths2.explin(0.001, 1, 0, 1);
 
-				oscNoise = Lag.ar(LFNoise0.ar([\oscNoiseFreq.kr(1000, 0.1), \oscNoiseFreq.kr], \oscNoiseVol.kr(50, 0.1)), \oscNoiseLag.kr(1/500, 0.1));
-				oscWobble = LFNoise2.ar(\wobbleFreq.kr(20, 0.1), \wobbleMul.kr(10,0.1));
+				oscNoise = Lag.ar(LFNoise0.ar([oscNoiseFreq, oscNoiseFreq], oscNoiseVol), oscNoiseLag);
+				oscWobble = LFNoise2.ar(wobbleFreq, wobbleMul);
 
-				out2 = LFTri.ar(maths2.linlin(0,1,[\lowGliss2.kr(40, 0.1), \lowGliss2.kr*9/8],\hiGliss2.kr(4000, 0.1)), 0, 0.5)*maths3*\out2Vol.kr(1, 0.1);
+				out2 = LFTri.ar(maths2.linlin(0,1,[lowGliss2, lowGliss2*9/8],hiGliss2), 0, 0.5)*maths3*out2Vol;
 
-				oscNoise = [oscNoise[0], SelectX.ar(\oscNoiseWidth.kr(0, 0.1), [oscNoise[0],oscNoise[1]])];
-				out = [LFTri.ar(maths1.linlin(0,1,\lowGliss.kr(50, 0.1),\hiGliss.kr(2000, 0.1))+oscNoise[0]+oscWobble, 0, 0.25), LFTri.ar(maths1.linlin(0,1,\lowGliss.kr,\hiGliss.kr)+oscNoise[1]+oscWobble, 0, 0.25)]*\outVol.kr(1, 0.1);
+				oscNoise = [oscNoise[0], SelectX.ar(oscNoiseWidth, [oscNoise[0],oscNoise[1]])];
+				out = [LFTri.ar(maths1.linlin(0,1,lowGliss,hiGliss)+oscNoise[0]+oscWobble, 0, 0.25), LFTri.ar(maths1.linlin(0,1,lowGliss,hiGliss)+oscNoise[1]+oscWobble, 0, 0.25)]*outVol;
 
 				out = out*(maths1.explin(0.0001, 1, 0.0001, 1).explin(0.0001, 1, 0.0001, 1)); //try to use the maths as a vol as well
 
-				noise = LFDNoise1.ar([\noiseFreq.kr(5000, 0.1), \noiseFreq.kr], 2)*\noiseVol.kr(1, 0.1)*noiseMaths;
+				noise = LFDNoise1.ar([noiseFreq, noiseFreq], 2)*noiseVol*noiseMaths;
 
-				noise = SelectX.ar(\noiseWidth.kr(0, 0.1), [noise[0].dup, noise]);
+				noise = SelectX.ar(noiseWidth, [noise[0].dup, noise]);
 
-				noise = MoogFF.ar(noise, \noiseFiltFreq.kr(10000, 0.1)*(SelectX.ar(\noiseFiltMult.kr(0, 0.1), [K2A.ar(1), noiseMaths])), \noiseFiltGain.kr(1, 0.1));
+				noise = MoogFF.ar(noise, noiseFiltFreq*(SelectX.ar(noiseFiltMult, [K2A.ar(1), noiseMaths])), noiseFiltGain);
 
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));

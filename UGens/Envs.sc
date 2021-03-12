@@ -11,3 +11,16 @@ Envs {
 	}
 
 }
+
+OnOffStuff {
+
+	*ar {|in, onOffSwitch=0, switchState=0, isCurrent=0, vol=0, chanVol=0|
+
+		var out, switch;
+
+		switch = Select.kr(switchState, [isCurrent, isCurrent*onOffSwitch, onOffSwitch]);
+		out = in*switch*vol*chanVol;
+
+		^out
+	}
+}

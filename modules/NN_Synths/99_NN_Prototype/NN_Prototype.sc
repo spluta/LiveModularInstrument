@@ -8,7 +8,7 @@ PrototypeElement {
 
 	init {
 
-		controlSpec = ControlSpec();
+		//controlSpec = ControlSpec();
 
 		msgBox = TextField();
 		msgBox.string = 'msg';
@@ -17,7 +17,7 @@ PrototypeElement {
 			msg = val.value.asSymbol;
 			nnVals.put(location, [msg.asString, nil]);
 		};
-
+/*
 		lowBox = NumberBox().decimals_(3);
 		lowBox.value_(0);
 		lowBox.maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10));
@@ -36,8 +36,8 @@ PrototypeElement {
 				controlSpec.maxval_(val.value);
 				high = val.value;
 			}
-		};
-
+		};*/
+/*
 		warpBox = PopUpMenu().maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10))
 		.items_(["lin", "exp", "amp"])
 		.action_{|pop|
@@ -51,7 +51,7 @@ PrototypeElement {
 		valBox = NumberBox().maxHeight_(15).maxWidth_(120).font_(Font("Helvetica", 10))
 		.decimals_(3)
 		.value_(0);
-		value = 0;
+		value = 0;*/
 
 		onOffButton = Button().maxHeight_(15).maxWidth_(20)
 		.states_([["Off", Color.black, Color.red], ["On", Color.black, Color.green]])
@@ -64,7 +64,7 @@ PrototypeElement {
 			this.valueAction_(controlSpec.map(slider.value));
 		};
 
-		layout = HLayout(msgBox, lowBox, hiBox, warpBox, valBox, onOffButton, slider);
+		layout = HLayout(msgBox, onOffButton, slider);
 
 	}
 
@@ -126,17 +126,9 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 
 	init2 {arg nameIn, parent, volBusIn, onOff0, onOff1;
 		volBus = volBusIn;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
+		//synths.add(Synth(nameIn, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 		this.init_window(parent);
 	}
-
-/*	init2 {arg nameIn, parent, otherValsBussesIn, onOffBusIn, envOnOffBusIn;
-		if(nameIn!=nil){
-		otherValsBusses = otherValsBussesIn;
-		synths.add(Synth(nameIn, [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
-		};
-		this.init_window(parent);
-	}*/
 
 	createWindow {
 		synthNameBox = TextField().maxHeight_(15).font_(Font("Helvetica", 10))
@@ -180,7 +172,6 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 				}
 			})
 		};
-
 
 		numControls.do{arg item, i;
 			controls.add(
@@ -227,7 +218,7 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 
 		temp = List.newClear(0); //controller settings
 		controls.do{arg item;
-			temp.add([item.msg, item.low, item.high, item.warp, item.onOffButton.value])
+			temp.add([item.msg, item.onOffButton.value])
 		};
 
 		saveArray.add(temp);
@@ -242,15 +233,15 @@ NN_Prototype_NNMod : NN_Synth_Mod {
 			synths.put(0, Synth(synthName, [\outBus, outBus, \volBus, volBus.index, \onOff0, onOff0-1, \onOff1, onOff1-1], group));
 			loadArray[1].do{|item, i|
 				if(item[0]!=nil){controls[i].msgBox.valueAction_(item[0].asString)};
-				if(item[1]!=nil){controls[i].lowBox.valueAction_(item[1].asFloat)};
+/*				if(item[1]!=nil){controls[i].lowBox.valueAction_(item[1].asFloat)};
 				if(item[2]!=nil){controls[i].hiBox.valueAction_(item[2].asFloat)};
 				try {
 					if(item[3]!=nil){controls[i].warpBox.valueAction_(item[3].asInteger)};
-				};
+				};*/
 				try {
-					if(item[4]!=nil){
-						controls[i].onOffButton.value_(item[4].asInteger);
-						if(item[4]==1, {tempNNSize=tempNNSize+1});
+					if(item[1]!=nil){
+						controls[i].onOffButton.value_(item[1].asInteger);
+						if(item[1]==1, {tempNNSize=tempNNSize+1});
 					};
 				}
 			};

@@ -92,7 +92,6 @@ NN_Synth_Control_NNMod :  TypeOSCModule_Mod {
 		);
 		win.layout.spacing_(1).margins_(1!4);
 		win.view.maxHeight_(numControls/2*17);
-		//win.front;
 		win.visible_(false);
 
 	}

@@ -2,35 +2,45 @@ Noise0_NNMod : NN_Synth_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("Noise0_NNMod",{
-				var impulseRate, impulseAdd, envs, onOff, sound, filterMod, dust, filterFreqMod, comb, onOffSwitch;
+				var envs, onOff, sound, filterMod, dust, filterFreqMod, comb, onOffSwitch;
 
-				//impulseRate = MouseX.kr(200, 20000);
-				//impulseAdd = MouseY.kr(0, 20000);
+				var mlpVals = In.kr(\dataInBus.kr, 14);
 
-				sound = Lag.ar(Latch.ar(WhiteNoise.ar(1), Impulse.ar(\impulseRate.kr(200))), 1/(\impulseRate.kr+\impulseAdd.kr(0)));
+				var impulseRate = mlpVals[0].linexp(0, 1, 19, 20000);
+				var impulseAdd = mlpVals[1].linlin(0, 1, 0, 20000);
+				var filterFreq = mlpVals[2].linexp(0, 1, 20, 20001);
+				var moogGain = mlpVals[3].lincurve(0, 1, 1, 4, 1);
+				var ffm_Freq = mlpVals[4].linexp(0, 1, 0.1, 30).lag(0.05);
+				var ffm_Amp = mlpVals[5].linlin(0, 1, 0, 1);
+				var ffm_Which = mlpVals[6].linlin(0, 1, 0, 1);
+				var dustDensity = mlpVals[7].linexp(0, 1, 1, 3000);
+				var combDelayLo = mlpVals[8].linexp(0, 1, 0.001, 2).lag(0.1);
+				var combDelayHi = mlpVals[9].linexp(0, 1, 0.001, 2).lag(0.1);
+				var combRandRate = mlpVals[10].linlin(0, 1, 1, 5);
+				var combDecay = mlpVals[11].linexp(0, 1, 0.001, 5).lag(0.1);
+				var combVol = mlpVals[12].linlin(0, 1, 0, 1);
+				var softClipGain = mlpVals[13].linlin(0, 1, 1, 20);
+
+				sound = Lag.ar(Latch.ar(WhiteNoise.ar(1), Impulse.ar(impulseRate)), 1/(impulseRate+impulseAdd));
 				filterMod = LinExp.kr(LFCub.kr(0.1, 0.5*pi)-1, 1, 180, 8500);
 
 
+				filterFreqMod = SelectX.ar(ffm_Which, [SinOsc.ar(ffm_Freq), LFNoise2.ar(ffm_Freq*5)])
+				*(ffm_Amp*filterFreq);
 
-				//SelectX.ar(\ffm_Select.kr, [SinOsc.ar(\ffm_Freq.kr(0.1)), LFNoise2.ar(\ffm_Freq.kr)
-
-				filterFreqMod = //Maths.ar(\ffm_Freq.kr(1), \ffm_Width.kr(0.5), 0.3, 1)[2].linlin(0,1,-1,1)
-				SelectX.ar(\ffm_Which.kr(0), [SinOsc.ar(\ffm_Freq.kr(1)), LFNoise2.ar(\ffm_Freq.kr*5)])
-				*(\ffm_Amp.kr(0)*\filterFreq.kr(10000, 0.05));
-
-				sound = MoogFF.ar(sound, (\filterFreq.kr+filterFreqMod).clip(20, 20000), \moogGain.kr(1.5));
+				sound = MoogFF.ar(sound, (filterFreq+filterFreqMod).clip(20, 20000), moogGain);
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				dust = Select.ar(\dustDensity.kr(3000)>2000, [LagUD.ar(Trig1.ar(Dust.ar(\dustDensity.kr), 0.001), 0.0005, 0.0005), K2A.ar(1)]);
+				dust = Select.ar(dustDensity>2000, [LagUD.ar(Trig1.ar(Dust.ar(dustDensity), 0.001), 0.0005, 0.0005), K2A.ar(1)]);
 
 				sound = sound*dust;
 
-				comb = CombC.ar(sound, 2, TRand.kr(\combDelayLo.kr(1, 0.1), \combDelayHi.kr(1, 0.1), Impulse.kr(\combRandRate.kr(0))).lag(1/\combRandRate.kr), \combDecay.kr(1, 0.1));
+				comb = CombC.ar(sound, 2, TRand.kr(combDelayLo, combDelayHi, Impulse.kr(combRandRate)).lag(1/combRandRate), combDecay);
 
 				sound = sound+(comb*\combVol.kr(0, 0.1));
 
-				sound = SoftClipAmp8.ar(sound, \softClipGain.kr(1));
+				sound = SoftClipAmp8.ar(sound, softClipGain);
 
 				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
 
