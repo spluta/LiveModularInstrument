@@ -11,7 +11,11 @@ QtModularMixerStrip : Module_Mod {
 
 				SendPeakRMS.kr(Mix(signal), 10.0, 3, "/stripVol", transferBus);
 
-				signal = Pan2.ar(signal[0], pan.linlin(-1,1,-3,1).clip(-1, 1))+Pan2.ar(signal[1], pan.linlin(-1,1,-1,3).clip(-1, 1));
+				//signal = Pan2.ar(signal[0], pan.linlin(-1,1,-3,1).clip(-1, 1))+Pan2.ar(signal[1], pan.linlin(-1,1,-1,3).clip(-1, 1));
+
+				signal = (Pan2.ar(signal[0], pan.linlin(-1,1,-3,1).clip(-1, 1))*pan.linlin(-1,1, 2, 0).clip(0, 1))
+				+
+				(Pan2.ar(signal[1], pan.linlin(-1,1,-1,3).clip(-1, 1))*pan.linlin(-1,1, 0, 2).clip(0, 1));
 
 				Out.ar(outBus, signal);
 

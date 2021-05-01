@@ -1,13 +1,15 @@
 MakeNNTrainings
 
-a = FluidDataSet(s);
-
+TimeStretc
 //make random datasets
 (
+
+a = FluidDataSet(s);
 ~numIns = 4;
-~numPoints = 15;
-~folder = "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/07_MathsTrigger/model0/";
+~numPoints = 33;
+~folder = "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/09_LotkaB/00_xy_model_0/";
 fork{
+
 	8.do{|num|
 		var ins = FluidDataSet(s);
 		var outs = FluidDataSet(s);

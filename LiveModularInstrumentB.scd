@@ -1,9 +1,29 @@
+a = OSCFunc({|msg, time, addr| addr.postln;}, '/Switches/x').oneShot;
+b = OSCFunc({|msg, time, addr| addr.postln;}, '/Container3/Fader4/x').oneShot;
+
+b = OSCFunc({|msg, time, addr| addr.postln;}, '/Fader/x').oneShot;
+NetAddr.langPort
+
 (
 //May2020
-LiveModularInstrument.boot(10, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 59725]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Mar2021");
+LiveModularInstrument.boot(11, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 61628]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Mar2021D");
 )
 
-s.options.outDevice_("ZoomAudioD")
+sendCollection
+
+s.options.outDevice_("ZoomAudioD");
+s.options.inDevice_("ZoomAudioD");
+
+
+//Konus
+(
+LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Documents/Scores/binary_momentary IV/SC/feedback2021C");
+)
+
+
+(
+LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+)
 
 
 ModularServers.servers[\lmi1].server.queryAllNodes
@@ -18,17 +38,20 @@ s.options.device = "ZoomAudioD"
 
 //when switching to predict==0, get the vals from the bus and write them to the other bus
 (
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 51824]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/NN_Again6");
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 52936]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/NN_Again7");
 )
+
+
+
 
 
 (
-LiveModularInstrument.boot(2, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 59001]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 59001]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
 )
 
-a = NetAddr("127.0.0.1", 57921)
+a = NetAddr("127.0.0.1", 8000)
 
-a.sendMsg('/Container3/Fader4/x', 0.5)
+a.sendMsg('/Container/Fader/x', 1.0.rand)
 
 ModularServers.servers[\lmi1].server.queryAllNodes
 
@@ -39,7 +62,7 @@ SystemOverwrites
 
 ModularVolumeObject
 
-b = OSCFunc({|msg, time, addr| addr.postln;}, '/Container3/Fader4/x').oneShot;
+
 
 OSCFunc.trace(true)
 OSCFunc.trace(false)
@@ -47,9 +70,7 @@ OSCFunc.trace(false)
 NetAddr.langPort
 
 //get Lemur Ports
-(a = OSCFunc({|msg, time, addr|
-	addr.postln;
-}, '/Switches/x').oneShot;
+(
 )
 
 (
@@ -76,7 +97,7 @@ LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 
 
 
-
+"/Users/spluta1/Documents/Scores/binary_momentary IV/SC/"
 
 //Feedback TV
 (
@@ -86,8 +107,10 @@ LiveModularInstrument.boot(3, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([
 
 //Konus
 (
-LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta/Documents/Scores/Konus/SC/feedback1c");
+LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Documents/Scores/binary_momentary IV/SC/feedback2021B");
 )
+
+
 
 LiveModularInstrument.boot(1, [1,2,3,4,7, 8,7,8], 'normal', [Lemur_Mod.setPorts([8000, 61759]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, Joystick_Mod.setPaths(["USB_046d_c215_14410000"]), Leap_Mod],"/Users/spluta/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/nn_TV");
 

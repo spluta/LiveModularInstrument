@@ -23,8 +23,8 @@ ModularServerObject {
 	init {
 		id = ModularServer_ID.next;
 
-		while( {("lsof -i:"++id).unixCmdGetStdOut.size != 0},{id = ModularServer_ID.next});
-		id.postln;
+		while( {("lsof -i:"++id).unixCmdGetStdOut.size > 0},{id = ModularServer_ID.next});
+		"id ".post;id.postln;
 		server = Server.new(serverName, NetAddr("localhost", id), Server.local.options);
 		server.waitForBoot({
 			//set up groups
@@ -267,17 +267,18 @@ ModularServers {
 			modularInputsArray.load(loadArray[0]);
 			numServersInFile = loadArray[2].size;
 
-			//{
-			min(numServersInFile, numServers).do{arg i;
-				servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i]);
-				//1.wait;
-			};
-			//load the serverSwitcher last so that it can update the server windows
-			if(loadArray[1]!=nil,{
-				serverSwitcher.load(loadArray[1]);
-			});
-			Window.allWindows.do{arg item; item.front};
-			//}.fork(AppClock);
+			{
+				1.wait;
+				min(numServersInFile, numServers).do{arg i;
+					servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i]);
+					1.wait;
+				};
+				//load the serverSwitcher last so that it can update the server windows
+				if(loadArray[1]!=nil,{
+					serverSwitcher.load(loadArray[1]);
+				});
+				Window.allWindows.do{arg item; item.front};
+			}.fork(AppClock);
 
 		}, {
 			AppClock.sched(rrand(1.0,3), {servers[serverName.asSymbol].load(loadArray[2][0])});

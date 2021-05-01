@@ -17,41 +17,6 @@ PrototypeElement {
 			msg = val.value.asSymbol;
 			nnVals.put(location, [msg.asString, nil]);
 		};
-/*
-		lowBox = NumberBox().decimals_(3);
-		lowBox.value_(0);
-		lowBox.maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10));
-		lowBox.action = {arg val;
-			try {
-				controlSpec.minval_(val.value);
-				low = val.value;
-			}
-		};
-
-		hiBox = NumberBox().decimals_(3);
-		hiBox.value_(1);
-		hiBox.maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10));
-		hiBox.action = {arg val;
-			try {
-				controlSpec.maxval_(val.value);
-				high = val.value;
-			}
-		};*/
-/*
-		warpBox = PopUpMenu().maxHeight_(15).maxWidth_(60).font_(Font("Helvetica", 10))
-		.items_(["lin", "exp", "amp"])
-		.action_{|pop|
-			warp = pop.value;
-			switch(pop.value,
-				0, {controlSpec.warp_('lin')},
-				1, {controlSpec.warp_('exp')},
-				2, {controlSpec.warp_('amp')});
-		};
-
-		valBox = NumberBox().maxHeight_(15).maxWidth_(120).font_(Font("Helvetica", 10))
-		.decimals_(3)
-		.value_(0);
-		value = 0;*/
 
 		onOffButton = Button().maxHeight_(15).maxWidth_(20)
 		.states_([["Off", Color.black, Color.red], ["On", Color.black, Color.green]])
@@ -84,7 +49,7 @@ PrototypeElement {
 	}
 
 	value_ { arg val;
-		value = controlSpec.constrain(val);
+		value = val; //controlSpec.constrain(val);
 		{
 			valBox.value = value.round(0.001);
 		}.defer;

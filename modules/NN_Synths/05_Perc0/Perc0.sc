@@ -31,7 +31,7 @@ Perc0_NNMod : NN_Synth_Mod {
 				var noiseWidth = mlpVals[22].linlin(0,1,0.0,1.0).lag(0.1);
 				var noiseFiltFreq = mlpVals[23].linexp(0,1,30.0,20000.0).lag(0.1);
 				var noiseFiltMult = mlpVals[24].linlin(0,1,0.0,1.0).lag(0.1);
-				var noiseFiltGain = mlpVals[25].linlin(0,1,0.0,4.0).lag(0.1);
+				var noiseFiltGain = mlpVals[25].linlin(0,1,0.0,3.5).lag(0.1);
 
 				onOffSwitch = (\onOff0.kr(1, 0.01)+\onOff1.kr(1, 0.01)).clip(0,1);
 

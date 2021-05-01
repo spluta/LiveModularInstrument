@@ -203,7 +203,6 @@ NN_Synths_Mod : Module_Mod {
 			.action_{|button|
 				predictOnOff = button.value;
 				if(nn_synths[currentSynth]!=nil){
-					"setSwitchPredict".postln;
 					nn_synths[currentSynth].switchPredict(button.value)
 				}
 		});
@@ -387,7 +386,7 @@ NN_Synths_Mod : Module_Mod {
 			nn_synths[currentSynth].synths[0].set(\isCurrent, 1);
 			nn_synths[currentSynth].isCurrentUpdateLemur_(1);
 			this.setSlidersAndMultis;
-			controls[14+nn_synths[currentSynth].whichModel.postln].value_(1);
+			controls[14+nn_synths[currentSynth].whichModel].value_(1);
 			Lemur_Mod.sendSwitchOSC(oscMsgs[14+nn_synths[currentSynth].whichModel].asString);
 			sliderControl.setLabels(nn_synths[currentSynth].getLabels);
 		};
@@ -438,7 +437,6 @@ NN_Synths_Mod : Module_Mod {
 
 	setGUIzVal{|i, val|
 		hasControl.put(i, val);
-		hasControl.postln;
 		nn_synths[currentSynth].controlSwitchSynths.do{|cSS| cSS.set(\switches2, hasControl.copyRange(0,nn_synths[currentSynth].sizeOfNN-1))};
 	}
 

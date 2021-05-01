@@ -55,16 +55,16 @@ FeedbackControl_Mod : Module_Mod {
 
 				vols = In.kr(\volsBus.kr, 300);
 
-				/*300.do{arg i;
+				300.do{arg i;
 					sound = MidEQ.ar(sound, (i+1)*(22050/2048), \rq.kr(0.2), vols[i].lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb);
-				};*/
+				};
 
-		sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(0,149).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
-	sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(150,299).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
+				// sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(0,149).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
+				// sound = FaustFilterBank150.ar(*[sound, K2A.ar(20), K2A.ar(SampleRate.ir/2/2048)].addAll(vols.copyRange(150,299).collect{|item| K2A.ar(item.lincurve(0,1,\ampMin.kr(0.5),1,-4).ampdb)}));
 
 				envs = Envs.kr(\muteGate.kr(1), \pauseGate.kr(1), \gate.kr(1));
 
-				Out.ar(\outBus.kr, sound*volume*envs);
+				Out.ar(\outBus.kr, sound.dup*volume*envs);
 			}).writeDefFile;
 		}*/
 	}
