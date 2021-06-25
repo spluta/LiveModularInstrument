@@ -488,6 +488,7 @@ NN_Synths_Mod : Module_Mod {
 				controls[25].valueAction_(1);
 				2.wait;
 				nn_synths.do{|item| if(item!=nil){item.hide}};
+				inputControl.hide;
 				sliderControl.hide;
 			}.fork(AppClock);
 		}

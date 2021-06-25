@@ -6,14 +6,20 @@ NetAddr.langPort
 
 (
 //May2020
-LiveModularInstrument.boot(11, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 61628]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Mar2021D");
+LiveModularInstrument.boot(11, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 54167]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/June21_A");
 )
+
+Server.killAll
 
 sendCollection
 
 s.options.outDevice_("ZoomAudioD");
-s.options.inDevice_("ZoomAudioD");
+s.options.inDevice_("MacBook Pro Microphone");
 
+LotkaVolterraC
+
+s.reboot
+{SoundIn.ar(0)}.play
 
 //Konus
 (
@@ -22,7 +28,7 @@ LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPort
 
 
 (
-LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod]);
+LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/test");
 )
 
 

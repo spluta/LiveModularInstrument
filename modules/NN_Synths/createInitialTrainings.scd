@@ -5,9 +5,9 @@ TimeStretc
 (
 
 a = FluidDataSet(s);
-~numIns = 4;
-~numPoints = 33;
-~folder = "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/09_LotkaB/00_xy_model_0/";
+~numIns = 3;
+~numPoints = 22;
+~folder = "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/LiveModularInstrument/modules/NN_Synths/10_SuperMathsSaw/00_stick_model_0/";
 fork{
 
 	8.do{|num|

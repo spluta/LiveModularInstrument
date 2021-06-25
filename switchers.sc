@@ -175,17 +175,7 @@ ServerSwitcher : MidiOscObject {
 		});
 	}
 
-/*	load {arg loadArray;
-		loadArray[2].do{arg msg, i;
-			waitForSetNum = i;
-			if(msg!=nil,{
-				if(i<controls.size,{
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, \global, nil);
-					assignButtons[i].instantButton.value_(1);
-				});
-			})
-		};
-	}*/
+
 
 	reset {
 		this.clearMidiOsc;
@@ -195,7 +185,7 @@ ServerSwitcher : MidiOscObject {
 }
 
 ServerSwitcher2 : MidiOscObject {
-	var numServers, numButtons, numIPads, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, radioButtons, muteLayer2, server2MuteGrid;
+	var numServers, numIPads, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, radioButtons, muteLayer2, server2MuteGrid;
 
 	*new {
 		^super.new.init;
@@ -211,22 +201,18 @@ ServerSwitcher2 : MidiOscObject {
 
 		numIPads = Lemur_Mod.netAddrs.size;
 
-		numButtons = 2*numServers;
-		this.initControlsAndSynths(numButtons);
-		oscMsgs = List.newClear(numButtons*2+1);
+		this.initControlsAndSynths(numServers*3+1);
 
 		radioButtons = List.newClear(0);
 
-		controls = List.fill(numButtons*2, {Button.new().maxWidth_(60).maxHeight_(15)});
+		controls = List.fill(numServers*3, {Button.new().maxWidth_(60).maxHeight_(15)});
 		controlGrid = controls.clump(numServers);
-		(controlGrid.size/2).do{arg i;
+		2.do{arg i;
 			controlTexts = List.fill(numServers, {arg i2;
 				[["LMI "++(i2+1).asString, Color.red, Color.black ], [ "LMI "++(i2+1).asString, Color.green, Color.black ]]});
 
 			actions = List.fill(numServers, {arg i2;
 				{arg button;
-					//button.value.postln;
-					//(i2+1).postln;
 					currentServers.put(i, radioButtons[i].onButtons.collect({|item| ("lmi"++(item+1).asString).asSymbol}));
 					ModularServers.servers[("lmi"++(i2+1).asString).asSymbol].showAndPlay(true);
 					this.updateCurrentServers;
@@ -235,12 +221,12 @@ ServerSwitcher2 : MidiOscObject {
 			radioButtons.add(RadioButtons(controlGrid[i], controlTexts, actions, 0, false));
 		};
 
-		numButtons.do{arg i;
+		(2*numServers).do{arg i;
 			this.addAssignButton(i,\onOff);
 		};
 
 		(numServers).do{arg i;
-			controls[numButtons+i]
+			controls[2*numServers+i]
 			.states_([["Rotate", Color.red, Color.black ], [ "Keep Open", Color.green, Color.black ]])
 			.action_{|butt|
 				if(butt.value==0,{
@@ -253,7 +239,7 @@ ServerSwitcher2 : MidiOscObject {
 			}
 		};
 
-		assignGrid = assignButtons.collect{|button| button.layout}.clump(numServers);
+		assignGrid = assignButtons.collect{|button| button}.clump(numServers);
 
 		numIPads.do{|i|
 			controls[numServers*i].valueAction=1;
@@ -264,12 +250,16 @@ ServerSwitcher2 : MidiOscObject {
 			grid.add(controlGrid[i]);
 			grid.add(assignGrid[i]);
 			if(i==0,{
-				grid.add(controlGrid[i+numButtons]);
+				grid.add(controlGrid[i+(2*numServers)]);
 			});
 		};
 
+		//grid.do{|item| item.postln};
+
+		//controls.size.post; controls.postln;
+		//assignButtons.size.post; assignButtons.postln;
+
 		muteLayer2 = 0;
-		assignButtons = assignButtons.addAll(List.fill(numButtons+1, {nil}));
 		controls.add(Button()
 			.states_([["Pass Layer 2", Color.black, Color.red], ["Mute Layer 2", Color.black, Color.green]])
 			.action_{arg butt;
@@ -279,9 +269,10 @@ ServerSwitcher2 : MidiOscObject {
 				});
 				this.updateCurrentServers;
 		});
-		//assignButtons.add(nil);
-		this.addAssignButton(numButtons*2, \onOff);
-		server2MuteGrid = [controls[numButtons*2], assignButtons.last.layout];
+		this.addAssignButton((3*numServers), \onOff);
+
+
+		server2MuteGrid = [controls[(3*numServers)], assignButtons[(3*numServers)]];
 		grid.add(server2MuteGrid);
 
 		win = Window("Server Switcher");
@@ -295,8 +286,6 @@ ServerSwitcher2 : MidiOscObject {
 
 		win.front
 	}
-
-	//load {}
 
 	updateCurrentServers {
 		var tempCurrent;

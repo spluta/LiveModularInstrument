@@ -100,9 +100,6 @@ LotkaA_NNMod : NN_Synth_Mod {
 		this.initControlsAndSynths(sizeOfNN);
 
 		dontLoadControls = (0..(sizeOfNN-1));
-
-		"initNN_Synth".postln;
-
 	}
 
 }

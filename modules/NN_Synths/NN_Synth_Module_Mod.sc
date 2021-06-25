@@ -107,11 +107,11 @@ NN_Synth_Mod : Module_Mod {
 
 	loadTraining {|modelFolderIn|
 		"loading training".postln;
-		modelFolder = modelFolderIn.postln;
+		modelFolder = modelFolderIn;
 		loadedCount = 0;
 
-		controlValsList = List.fill(File.readAllString(modelFolder++"/inDataSet0.json").parseYAML["cols"].asInteger.postln, {0});
-		valsList = List.fill(File.readAllString(modelFolder++"/outDataSet0.json").parseYAML["cols"].asInteger.postln, {0});
+		controlValsList = List.fill(File.readAllString(modelFolder++"/inDataSet0.json").parseYAML["cols"].asInteger, {0});
+		valsList = List.fill(File.readAllString(modelFolder++"/outDataSet0.json").parseYAML["cols"].asInteger, {0});
 
 		this.makeInOutBufs;
 
@@ -240,8 +240,6 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSlidersAndSynth {|vals|
-		//"setSlidersAndSynth".postln;
-		//vals.postln;
 		vals.do{|item, i|
 			if(i<sizeOfNN,{
 				if((parent.hasControl[i]==0))
@@ -297,12 +295,12 @@ NN_Synth_Mod : Module_Mod {
 			mlpOutBusses[whichModel].getn(valsList.size, {|array|
 				//controlBusses[whichModel].set(array);
 				array.do{|val, i| controls[i].valueAction_(val)};
-				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!16)}
+				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!valsList.size)}
 			});
 		}{
 			/*controlBusses[whichModel].getn(valsList.size, {|array|
 				mlpOutBusses[whichModel].set(array);*/
-				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!16)}
+				controlSwitchSynths.do{|cSS| cSS.set(\switches, predictVal!valsList.size)}
 			//});
 		}
 	}
@@ -310,9 +308,7 @@ NN_Synth_Mod : Module_Mod {
 	reloadNN {arg reloadWhich;
 		var fileInfo, hiddenArray, modelFile;
 		if(reloadWhich==nil){reloadWhich = whichModel};
-		"clear".postln;
 		mlps[reloadWhich].clear({
-			"reload ".post;
 			if(sizeOfNN>0){
 				hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
 

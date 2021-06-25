@@ -89,8 +89,5 @@ CrossFeedback0_NNMod : NN_Synth_Mod {
 			[\filtModAmp, ControlSpec(0, 1, \amp)]
 
 		];
-
-		"initNN_Synth".postln;
-
 	}
 }

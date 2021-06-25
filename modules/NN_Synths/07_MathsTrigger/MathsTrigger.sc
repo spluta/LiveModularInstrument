@@ -28,13 +28,7 @@ MathsTrigger_NNMod : NN_Synth_Mod {
 				var out = CrossSquareSine.ar(freq1, mod1, freq2+maths[0].linlin(0,1,lowMathsFreq,hiMathsFreq), mod2, lfMult)*maths[0];
 
 				out = Resonz.ar(out, [resFreq-1,resFreq+1], bwr);
-				out = out.fold(foldNum.neg, foldNum)*2;
-
-/*				out = OnOffStuff.ar(out,
-					(\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1),
-					\switchState.kr(0), \isCurrent.kr(0, 0.01),
-					Lag.kr(In.kr(\volBus.kr), 0.05).clip(0,1),
-					Lag.kr(In.kr(\chanVolBus.kr), 0.05).clip(0,1));*/
+				out = out.fold(foldNum.neg, foldNum)*3;
 
 				//in every synth
 				onOffSwitch = (\onOff0.kr(0, 0.01)+\onOff1.kr(0, 0.01)).clip(0,1);
@@ -77,11 +71,6 @@ MathsTrigger_NNMod : NN_Synth_Mod {
 		this.initControlsAndSynths(sizeOfNN);
 
 		dontLoadControls = (0..(sizeOfNN-1));
-
-
-
-		"initNN_Synth".postln;
-
 	}
 
 }

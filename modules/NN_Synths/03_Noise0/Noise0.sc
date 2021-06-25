@@ -86,15 +86,8 @@ Noise0_NNMod : NN_Synth_Mod {
 		//dontLoadControls = (2..9).addAll((26..31)).addAll((33..35));
 
 		dontLoadControls = (0..(sizeOfNN-1));
-
-		"initNN_Synth".postln;
-
 	}
 
-	/*init2 {arg parent, otherValsBusses, onOffBus, envOnOffBus;
-		synths.add(Synth("NN_Synth_Noise0", [\outBus, outBus, \volBus, otherValsBusses[0].index, \envRiseBus, otherValsBusses[1].index, \envFallBus, otherValsBusses[2].index, \onOffBus, onOffBus, \envOnOffBus, envOnOffBus], group));
-		this.init_window(parent);
-	}*/
 }
 
 

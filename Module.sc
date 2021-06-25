@@ -190,7 +190,9 @@ MidiOscObject {
 				},{
 					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
 				});
-				{assignButtons[i].instantButton.value_(1)}.defer;
+				if(assignButtons[i]!=nil){
+					{assignButtons[i].instantButton.value_(1)}.defer;
+				}{("no instant button"++i).postln}
 			})
 		};
 
