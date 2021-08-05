@@ -166,8 +166,6 @@ ModularServerObject {
 		mainMixer.load(loadArray[5]);
 	}
 
-
-
 	makeVisible {arg val;
 		isVisible = val;
 
@@ -210,8 +208,6 @@ ModularServerObject {
 	}
 }
 
-
-
 ModularServers {
 	classvar <>numServers, <>inBusses;
 	classvar <>servers, <>modularInputsArray, <>serverSwitcher;
@@ -222,7 +218,7 @@ ModularServers {
 		{
 			numServers.do{arg i;
 				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1)));
-				1.wait;
+				0.5.wait;
 			}
 		}.fork(AppClock);
 
@@ -271,13 +267,13 @@ ModularServers {
 				1.wait;
 				min(numServersInFile, numServers).do{arg i;
 					servers[("lmi"++(i+1)).asSymbol].load(loadArray[2][i]);
-					1.wait;
+					0.5.wait;
 				};
 				//load the serverSwitcher last so that it can update the server windows
 				if(loadArray[1]!=nil,{
 					serverSwitcher.load(loadArray[1]);
 				});
-				Window.allWindows.do{arg item; item.front};
+				//Window.allWindows.do{arg item; item.front};
 			}.fork(AppClock);
 
 		}, {

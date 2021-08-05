@@ -1,4 +1,4 @@
-NN_Synth_Control_NNMod :  TypeOSCModule_Mod {
+NN_Synth_Control_NNMod :  Module_Mod {
 	var texts, functions, zFunctions, <>parent, labels, numControls, button0, button1, button2, loBox, hiBox;
 
 	init {

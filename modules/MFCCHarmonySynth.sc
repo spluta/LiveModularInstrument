@@ -1,4 +1,4 @@
-MFCCHarmonySynth_Mod :  TypeOSCModule_Mod {
+MFCCHarmonySynth_Mod :  Module_Mod {
 	var texts, functions, goalGroup, matchGroup, ccfBus, mfccBus, match, buf, vol0, vol1, trigVol, matchNodes, goalNode, synthGates, mainFolderField, playGroup, volBus, matchFunc;
 
 	*initClass {

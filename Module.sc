@@ -26,7 +26,8 @@ MidiOscObject {
 					this.sendOSC(i, vals)
 				});
 			},{
-				try {this.sendOSC(i, [item.x, item.y])}
+				//this means it is a TypeOSCFuncObject
+				try {this.sendOSC(i, vals[1])}
 			})
 		};
 		if(this.isKindOf(MainMixer),{
@@ -36,6 +37,8 @@ MidiOscObject {
 
 	sendOSC {|num, val|
 		var unmapped;
+
+		[num, val].postln;
 		if(oscMsgs[num]!=nil, {
 			if(oscMsgs[num].asString.contains("/Switches"), {
 				if(controls[num].value==1,{
@@ -46,19 +49,19 @@ MidiOscObject {
 				if(val.size<2,{
 					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
 					Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
-				},{
+				}/*,{
 					Lemur_Mod.sendOSC(oscMsgs[num][0], controls[num].x);
 					Lemur_Mod.sendOSC(oscMsgs[num][1], controls[num].y);
-				});
+				}*/);
 			});
 		})
 	}
 
-	sendXYOsc {|num, val|
+/*	sendXYOsc {|num, val|
 		if(oscMsgs[num]!=nil, {
 			TouchOSC_Mod.sendOSC(oscMsgs[num], controls[num].controlSpec.unmap(val));
 		})
-	}
+	}*/
 
 	setOscMsg {arg msg;
 		msg = msg.asString;
@@ -164,16 +167,19 @@ MidiOscObject {
 
 		loadArray[1].do{arg controlLevel, i;
 			var control;
-
 			try { control=controls[i] } { control = nil; };
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not))
-				{
-					controls[i].valueAction_(controlLevel);
+				if(dontLoadControls.includes(i).not){
+					if(controls[i].value!=controlLevel)
+					{
+						controls[i].valueAction_(controlLevel);
+					}
 				}{
-					if(controlLevel.size>1){
-						controls[i]
+					if(controls[i].class==TypeOSCFuncObject)
+					{
+						//if we aren't loading the value of a TypeOSCFuncObject, still load the label
+						controls[i].valueAction_(controlLevel[0]);
 					}
 				}
 			});
@@ -270,34 +276,44 @@ Module_Mod : MidiOscObject {
 }
 
 TypeOSCModule_Mod : Module_Mod {
-	//really need to fix this
-	//this makes them not send the data back to the controller, which isn't ideal
-
-	sendGUIVals {
-		/*		var vals;
-		controls.do{arg item, i;
-		vals = item.value;
-		if(vals.size<2,{
-		if(vals!=nil,{
-		this.sendOSC(i, vals)
-		});
-		},{
-		if((vals[0]!=nil)&&(vals[1]!=nil),{
-		this.sendOSC(i, vals)
-		});
-		})
-		}*/
-	}
-
 	load {arg loadArray;
 
-		//only load the values in the textFields
-
 		loadArray[1].do{arg controlLevel, i;
-			if(((controls[i]!=nil) and: controls[i].value!=controlLevel) and:(dontLoadControls.includes(i).not),{
-				controls[i].valueAction_(controlLevel);
+			var control;
+			try { control=controls[i] } { control = nil; };
+			if(control!=nil,{
+				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+				if(dontLoadControls.includes(i).not){
+					if(controls[i].value!=controlLevel)
+					{
+						controls[i].valueAction_(controlLevel);
+					}
+				}{
+					if(controls[i].class==TypeOSCFuncObject)
+					{
+						//if we aren't loading the value of a TypeOSCFuncObject, still load the label
+						controls[i].valueAction_(controlLevel[0]);
+					}
+				}
 			});
 		};
+
+/*		loadArray[2].do{arg msg, i;
+			var control;
+			waitForSetNum = i;
+			try { control=controls[i] } { control = nil;};
+			if((msg!=nil)&&(control!=nil),{
+				if(isGlobalController==true,{
+					//this is only true for the server switcher and Modular Inputs Array
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
+				},{
+					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+				});
+				if(assignButtons[i]!=nil){
+					{assignButtons[i].instantButton.value_(1)}.defer;
+				}{("no instant button"++i).postln}
+			})
+		};*/
 
 		if(win!=nil,{
 			win.bounds_(loadArray[3]);
@@ -306,5 +322,6 @@ TypeOSCModule_Mod : Module_Mod {
 
 		this.loadExtra(loadArray[4]);
 
+		this.sendGUIVals;
 	}
 }

@@ -1,12 +1,18 @@
+//TypeOSCFunc - need to fix set sendOSC
+
+
 a = OSCFunc({|msg, time, addr| addr.postln;}, '/Switches/x').oneShot;
 b = OSCFunc({|msg, time, addr| addr.postln;}, '/Container3/Fader4/x').oneShot;
 
 b = OSCFunc({|msg, time, addr| addr.postln;}, '/Fader/x').oneShot;
 NetAddr.langPort
 
+LotkaB_NNMod
+
+s.options
 (
 //May2020
-LiveModularInstrument.boot(11, [3,4,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 54167]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/June21_A");
+LiveModularInstrument.boot(11, [1,2,3,4,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 55163]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/TimeSpans_A");
 )
 
 Server.killAll
@@ -26,6 +32,7 @@ s.reboot
 LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Documents/Scores/binary_momentary IV/SC/feedback2021C");
 )
 
+62.midicps/2
 
 (
 LiveModularInstrument.boot(2, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 63278]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/test");
@@ -44,11 +51,13 @@ s.options.device = "ZoomAudioD"
 
 //when switching to predict==0, get the vals from the bus and write them to the other bus
 (
-LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 52936]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/NN_Again7");
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 55163]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/tinyLoops");
 )
 
 
-
+(
+LiveModularInstrument.boot(1, [1,2,5,6,4,4,3,3], 'normal', [Lemur_Mod.setPorts([8000, 55163]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/fb_test");
+)
 
 
 (
