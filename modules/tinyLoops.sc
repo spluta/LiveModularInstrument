@@ -41,7 +41,7 @@ TinyLoops_Mod :  Module_Mod {
 
 				var out = (sound0*env0+(sound1*env1))*Lag.kr(rec_play, 0.01);
 				var vol = In.kr(\vol_bus.kr);
-				Out.ar(\outBus.kr, out*vol);
+				Out.ar(\out_bus.kr, out*vol);
 			}).writeDefFile;
 		}
 	}
@@ -109,7 +109,7 @@ TinyLoops_Mod :  Module_Mod {
 
 		win.layout_(
 			VLayout(
-				VLayout(*controls.collect({arg item; item.view}))
+				VLayout(*controls.collect({arg item; item}))
 			)
 		);
 		win.layout.spacing_(1).margins_(1!4);

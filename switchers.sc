@@ -104,7 +104,7 @@ objectsDict[currentSetup.asSymbol].resume;
 // 	}
 // }
 
-ServerSwitcher : MidiOscObject {
+/*ServerSwitcher : MidiOscObject {
 	var numServers, numButtons, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, hideServerButtons;
 
 	*new {
@@ -182,7 +182,7 @@ ServerSwitcher : MidiOscObject {
 		if(win!=nil, {win.close; win = nil});
 		this.init;
 	}
-}
+}*/
 
 ServerSwitcher2 : MidiOscObject {
 	var numServers, numIPads, controlTexts, actions, controlGrid, assignGrid, grid, <>currentServers, radioButtons, muteLayer2, server2MuteGrid;
@@ -254,11 +254,6 @@ ServerSwitcher2 : MidiOscObject {
 			});
 		};
 
-		//grid.do{|item| item.postln};
-
-		//controls.size.post; controls.postln;
-		//assignButtons.size.post; assignButtons.postln;
-
 		muteLayer2 = 0;
 		controls.add(Button()
 			.states_([["Pass Layer 2", Color.black, Color.red], ["Mute Layer 2", Color.black, Color.green]])
@@ -296,6 +291,10 @@ ServerSwitcher2 : MidiOscObject {
 				ModularServers.servers[key.asSymbol].showAndPlay(false)
 			})
 		}
+	}
+
+	loadExtra {
+		win.front;
 	}
 
 	reset {

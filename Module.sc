@@ -36,32 +36,24 @@ MidiOscObject {
 	}
 
 	sendOSC {|num, val|
-		var unmapped;
+		var unmapped, temp;
 
-		[num, val].postln;
-		if(oscMsgs[num]!=nil, {
-			if(oscMsgs[num].asString.contains("/Switches"), {
+		if(oscMsgs[num]!=nil) {
+/*			if(oscMsgs[num].asString.contains("/Switches")) {
 				if(controls[num].value==1,{
 					Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
 				});
-			},{
+			}{*/
 
-				if(val.size<2,{
+				if(val.size<2){
 					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
 					Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
-				}/*,{
-					Lemur_Mod.sendOSC(oscMsgs[num][0], controls[num].x);
-					Lemur_Mod.sendOSC(oscMsgs[num][1], controls[num].y);
-				}*/);
-			});
-		})
+					temp = oscMsgs[num].asString;
+					OSCReceiver_Mod.sendOSC(temp.copyRange(0, temp.size-3), unmapped);
+				}
+			//}
+		}
 	}
-
-/*	sendXYOsc {|num, val|
-		if(oscMsgs[num]!=nil, {
-			TouchOSC_Mod.sendOSC(oscMsgs[num], controls[num].controlSpec.unmap(val));
-		})
-	}*/
 
 	setOscMsg {arg msg;
 		msg = msg.asString;
@@ -167,14 +159,20 @@ MidiOscObject {
 
 		loadArray[1].do{arg controlLevel, i;
 			var control;
-			try { control=controls[i] } { control = nil; };
+			//[controlLevel, i].postln;
+			try { control=controls[i] } { control = nil };
+			//control=controls[i];
+			//control.postln;
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+				//controls[i].valueAction_(controlLevel);
 				if(dontLoadControls.includes(i).not){
+					try {
 					if(controls[i].value!=controlLevel)
 					{
 						controls[i].valueAction_(controlLevel);
 					}
+					}{i.postln;}
 				}{
 					if(controls[i].class==TypeOSCFuncObject)
 					{
@@ -198,7 +196,7 @@ MidiOscObject {
 				});
 				if(assignButtons[i]!=nil){
 					{assignButtons[i].instantButton.value_(1)}.defer;
-				}{("no instant button"++i).postln}
+				}
 			})
 		};
 
@@ -297,23 +295,6 @@ TypeOSCModule_Mod : Module_Mod {
 				}
 			});
 		};
-
-/*		loadArray[2].do{arg msg, i;
-			var control;
-			waitForSetNum = i;
-			try { control=controls[i] } { control = nil;};
-			if((msg!=nil)&&(control!=nil),{
-				if(isGlobalController==true,{
-					//this is only true for the server switcher and Modular Inputs Array
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
-				},{
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
-				});
-				if(assignButtons[i]!=nil){
-					{assignButtons[i].instantButton.value_(1)}.defer;
-				}{("no instant button"++i).postln}
-			})
-		};*/
 
 		if(win!=nil,{
 			win.bounds_(loadArray[3]);

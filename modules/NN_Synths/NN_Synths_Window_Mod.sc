@@ -387,7 +387,20 @@ NN_Synths_Mod : Module_Mod {
 			nn_synths[currentSynth].isCurrentUpdateLemur_(1);
 			this.setSlidersAndMultis;
 			controls[14+nn_synths[currentSynth].whichModel].value_(1);
-			Lemur_Mod.sendSwitchOSC(oscMsgs[14+nn_synths[currentSynth].whichModel].asString);
+
+			temp = oscMsgs[14+nn_synths[currentSynth].whichModel];
+
+			if(temp!=nil){
+				temp = temp.asString;
+
+				Lemur_Mod.sendSwitchOSC(temp);
+
+				OSCReceiver_Mod.sendOSC(
+					temp.copyRange(0, temp.size-3),
+					temp.copyRange(temp.findAll("/").last+1, temp.size-1).asInteger
+				);
+			};
+
 			sliderControl.setLabels(nn_synths[currentSynth].getLabels);
 		};
 		controls[4].value_(loadedSynths[currentSynth]);
@@ -395,7 +408,6 @@ NN_Synths_Mod : Module_Mod {
 			controls[5].items_(modelChoices[loadedSynths[currentSynth]].asArray);
 			controls[5].value_(chosenModels[currentSynth]);
 		}{controls[5].items_(["nil"])}
-		//}
 
 	}
 
@@ -407,8 +419,11 @@ NN_Synths_Mod : Module_Mod {
 
 	setControlPointsNoAction {|vals|
 		vals.do{|item, i|
+			var temp;
 			inputControl.controls[i].setExternal_(item);
-			Lemur_Mod.sendOSC(inputControl.oscMsgs[i].asSymbol, item);
+			temp = inputControl.oscMsgs[i];
+			Lemur_Mod.sendOSC(temp.asSymbol, item);
+			OSCReceiver_Mod.sendOSC(temp.copyRange(0, temp.size-3), item);
 		};
 
 
@@ -445,14 +460,12 @@ NN_Synths_Mod : Module_Mod {
 
 		if(loadArray!=nil){
 
-			try {sliderControl.load(loadArray[20])};
-			try {inputControl.load(loadArray[21])};
-
 			loadedSynths = loadArray.copyRange(4,7);
 			controls[4].value_(loadedSynths[0]);
 			chosenModels = loadArray.copyRange(8,11);
 			controls.copyRange(6, 13).do{|item, i| item.valueAction_(loadArray[12+i])};
 			{
+				0.5.wait;
 				loadArray.copyRange(0,3).do{arg item, i;
 					if (item!="Nil", {
 						nn_synths.put(i, ModularClassList.initNN_Synth(item, group, outBus));
@@ -487,6 +500,8 @@ NN_Synths_Mod : Module_Mod {
 
 				controls[25].valueAction_(1);
 				2.wait;
+				try {sliderControl.load(loadArray[20])};
+				try {inputControl.load(loadArray[21])};
 				nn_synths.do{|item| if(item!=nil){item.hide}};
 				inputControl.hide;
 				sliderControl.hide;

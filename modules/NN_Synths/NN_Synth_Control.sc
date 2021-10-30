@@ -24,44 +24,38 @@ NN_Synth_Control_NNMod :  Module_Mod {
 		functions.do{arg func, i;
 			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false, true, i+functions.size, zFunctions[i]));
 		};
+		"NNSynth ".post; controls.postln;
 
 		labels = Array.fill(numControls, {|i|
 			var field;
 			field = TextField().font_(Font("Helvetica", 10)).maxHeight_(15);
-			if(i==0){field.string_("/Container2/Container2/Text")}{field.string_("/Container2/Container2/Text"++(i+1).asString)}
+			field.string_("/nn_faders/label"++(i+1))
 		});
 
 		button0 = Button()
-		.states_([["set sliders from 1"]])
+		.states_([["set sliders from 1 (no num)"]])
 		.action_({arg butt;
-			var temp, num, first, divs;
+			var temp, num, first, divs, text;
 
 			temp = controls[0].textField.value.asString;
-			divs = temp.findAll("/");
-			if(divs[divs.size-1]-divs[divs.size-2]==6){first = 1};
-			if(divs.last-divs[divs.size-2]==7){first = temp[divs.last-1].asString.asInteger};
-			if(divs.last-divs[divs.size-2]==8){first = temp.copyRange(divs.last-2, divs.last-1).asInteger};
-			(1..numControls-1).do{|i|
-				temp = temp.copyRange(0, divs[divs.size-2]+5)++(first+i)++"/x";
-				controls[i].textField.valueAction_(temp);
+			temp = temp.copyRange(0,temp.size-4);
+			numControls.do{|item, i|
+				text = temp++(i+1)++"/x";
+				controls[i].valueAction_(text);
 			};
 		});
 
 		button1 = Button()
-		.states_([["set texts from 1"]])
+		.states_([["set texts from 1 (no num)"]])
 		.action_({arg butt;
-			var temp, num, first, divs;
+			var temp, num, first, divs, text;
 
 			temp = labels[0].value.asString;
-			divs = temp.findAll("/");
+			temp = temp.copyRange(0,temp.size-2);
 
-			if(temp.size-divs.last==5){first = 1};
-			if(temp.size-divs.last==6){first = temp.last.asString.asInteger};
-			if(temp.size-divs.last==7){first = temp.copyRange(temp.size-2, temp.size-1).asInteger};
-
-			(1..numControls-1).do{|i|
-				temp = temp.copyRange(0, divs.last+4)++(first+i);
-				labels[i].valueAction_(temp);
+			numControls.do{|item, i|
+				text = temp++(i+1);
+				labels[i].valueAction_(text);
 			};
 		});
 
@@ -98,17 +92,23 @@ NN_Synth_Control_NNMod :  Module_Mod {
 
 	setLabels {arg labelsIn;
 		labelsIn.do{arg item, i;
-			Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(labels[i].string.asSymbol, "@content", item)};
+			//Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(labels[i].string.asSymbol, "@content", item)};
+			OSCReceiver_Mod.netAddrs.do{arg addr;
+				addr.sendMsg(labels[i].string.asSymbol, item);
+
+			};
 		};
 	}
 
 	setLemurRange{|i, val|
-		Lemur_Mod.sendOSC(oscMsgs[i], val);
+		OSCReceiver_Mod.sendOSC(oscMsgs[i].asString.copyRange(0, oscMsgs[i].size-3), val);
+		//Lemur_Mod.sendOSC(oscMsgs[i], val);
 	}
 
 	setLemur{|vals|
 		vals.do{|item,i|
-			Lemur_Mod.sendOSC(oscMsgs[i], item);
+			OSCReceiver_Mod.sendOSC(oscMsgs[i].asString.copyRange(0, oscMsgs[i].size-3), item);
+			//Lemur_Mod.sendOSC(oscMsgs[i], item);
 		};
 	}
 
@@ -118,6 +118,12 @@ NN_Synth_Control_NNMod :  Module_Mod {
 
 	loadExtra {|loadArray|
 		loadArray.do{|item, i| labels[i].string = item.asString};
+
+		//I should not have to do this, but for some reason this is not running on load
+		controls.do{|item, i|
+			var temp = controls[i].textField.value.asString;
+			item.textField.valueAction_(temp);
+		};
 		win.visible_(false);
 	}
 

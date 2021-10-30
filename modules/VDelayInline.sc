@@ -132,8 +132,13 @@ VDelayInline_Mod : Module_Mod {
 		this.addAssignButton(3,\slider2D);
 
 
+		controls.add(TypeOSCFuncObject(this, oscMsgs, 4, "zAction",
+			{arg val;
+				if(val==1,{this.turnOn},{this.turnOff})
+			}, true));
 
-		controls.add(Button()
+
+/*		controls.add(Button()
 			.states_([ [ "NoZActions", Color.red, Color.black ],  [ "ZActions!", Color.blue, Color.black ]])
 			.action_{|v|
 				if(v.value==1,{
@@ -145,7 +150,7 @@ VDelayInline_Mod : Module_Mod {
 				}
 				);
 			};
-		);
+		);*/
 
 
 		controls.add(QtEZSlider.new("fback%", ControlSpec(0,0.95),

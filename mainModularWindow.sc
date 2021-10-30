@@ -116,7 +116,7 @@ MainProcessingWindow : MidiOscObject {
 		listeningPort = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		listeningPort.string = NetAddr.langPort.asString;
 
-		if(group.server.asString=="lmi1",{
+/*		if(group.server.asString=="lmi1",{
 			lemurPorts = Array.fill(2, {|i|
 				TextField().maxWidth_(60)
 				.string_(Lemur_Mod.netAddrs[i].port)
@@ -147,7 +147,7 @@ MainProcessingWindow : MidiOscObject {
 			lemurPorts = Array.fill(2, {|i|
 				Button().maxWidth_(60)
 			})
-		});
+		});*/
 
 
 
@@ -171,7 +171,7 @@ MainProcessingWindow : MidiOscObject {
 
 		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(modularObjects.size.sqrt)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
-		infoView.layout_(HLayout(listeningPort,lemurPorts[0], lemurPorts[1], sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
+		infoView.layout_(HLayout(listeningPort,/*lemurPorts[0], lemurPorts[1], */sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
 
 		win.layout_(VLayout(buttonView, objectView, infoView).margins_(0!4).spacing_(0));
 
@@ -211,13 +211,24 @@ LiveModularInstrument {
 	}
 
 	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
-		if(NetAddr.langPort.asSymbol!='57120')
+		/*if(NetAddr.langPort.asSymbol!='57120')
 		{
 			5.do{
 			"fix LangPort to 57120".postln;
 			"".postln;
 			}
-		}{
+		}*/
+		if(
+			(controllersIn.indexOf(OSCReceiver_Mod)!=nil)
+			and:(OSCReceiver_Mod.inPorts.collect{|item| thisProcess.openUDPPort(item).asInteger}.sum!=OSCReceiver_Mod.inPorts.size)
+		)
+		{
+			5.do{
+			"OSC port issue".postln;
+			"".postln;
+			}
+		}
+		{
 			path = pathIn;
 			numServers=numServersIn;
 			inBusses = List.newClear(8);
@@ -276,7 +287,8 @@ LiveModularInstrument {
 				if(path!=nil, {ModularServers.load(path)});
 				MidiOscControl.responding_(true);
 			});
-			Window.allWindows.do{arg item, i; item.front};
+			//Window.allWindows.do{arg item, i; item.front};
+
 		});
 
 

@@ -176,7 +176,7 @@ LoopMachineOverLap_Mod : Module_Mod {
 
 				Out.ar(outBus, in*vol*env*pauseEnv);
 			}).writeDefFile;
-			SynthDef("loopMachineOverLapSamplePlayer_mod", {arg bufnum, outBus, playRate=1, numGrains = 1, startPos, startPos0, dur, phasorBus, t_trig=0, vol=0, onOff = 0, z1OnOff = 0, z2OnOff = 0, pauseGate = 1, gate = 1;
+			SynthDef("loopMachineOverLapSamplePlayer_mod", {arg bufnum, outBus, playRate=1, numGrains = 1, startPos, startPos0, dur, phasorBus, t_trig=0, vol=0, onOff = 0, zOnOff = 0, pauseGate = 1, gate = 1;
 				var env, pauseEnv, onOffEnv, impulse, out, pan, fade, trigRate, trigRateA, duration, envs;
 				var playBuf, toggle, counter, phaseStart, onOffTotal;
 
@@ -208,7 +208,7 @@ LoopMachineOverLap_Mod : Module_Mod {
 
 				out = Mix(playBuf);
 
-				onOffTotal = Lag.kr((onOff+z1OnOff+z2OnOff).clip(0,1), 0.05);
+				onOffTotal = Lag.kr((onOff+zOnOff).clip(0,1), 0.05);
 
 				XOut.ar(outBus, onOffTotal, out*env*pauseEnv*vol);
 
@@ -311,8 +311,14 @@ LoopMachineOverLap_Mod : Module_Mod {
 				yRange = v.value;
 		}, 1, true, \vert));
 
+		controls.add(TypeOSCFuncObject(this, oscMsgs, 9, "zAction",
+			{arg val;
+				synths[1].set(\zOnOff, val);
+				synths[0].set(\smallGate0, val);
+			}, true));
 
-		controls.add(Button()
+
+		/*controls.add(Button()
 			.states_([ [ "NoZActions", Color.red, Color.black ],  [ "ZActions!", Color.blue, Color.black ]])
 			.action_{|v|
 				if(v.value==1,{
@@ -325,20 +331,20 @@ LoopMachineOverLap_Mod : Module_Mod {
 				}
 				);
 			};
-		);
+		);*/
 
 		win.layout_(
 			HLayout(
 				VLayout(
-					HLayout(controls[0].layout,assignButtons[0].layout),
-					HLayout(controls[1].layout,assignButtons[1].layout),
-					HLayout(controls[2].layout,assignButtons[2].layout),
-					HLayout(controls[3].layout,assignButtons[3].layout),
-					HLayout(controls[4].layout,assignButtons[4].layout),
+					HLayout(controls[0],assignButtons[0]),
+					HLayout(controls[1],assignButtons[1]),
+					HLayout(controls[2],assignButtons[2]),
+					HLayout(controls[3],assignButtons[3]),
+					HLayout(controls[4],assignButtons[4]),
 					HLayout(controls[5], controls[6]),
 					HLayout(assignButtons[5].layout, assignButtons[6].layout),
 				),
-				VLayout(controls[7].layout, assignButtons[7].layout, controls[9]), controls[8].layout
+				VLayout(controls[7], assignButtons[7], controls[9]), controls[8]
 			)
 		);
 	}

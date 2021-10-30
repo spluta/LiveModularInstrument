@@ -55,7 +55,7 @@ NN_Input_Control_NNMod :  Module_Mod {
 
 		controls.add(QtEZSlider("messages per sec", ControlSpec(20,200,'lin',1), {|slider| msgsPerSec = slider.value}, 100, true, 'horz'));
 
-		controls.add(QtEZSlider("controller steps", ControlSpec(128, 4096+128,'lin',128), {|slider| ctrlSteps = slider.value}, 100, true, 'horz'));
+/*		controls.add(QtEZSlider("controller steps", ControlSpec(128, 4096+128,'lin',128), {|slider| ctrlSteps = slider.value}, 100, true, 'horz'));*/
 
 		win.layout_(
 			VLayout(
@@ -64,7 +64,7 @@ NN_Input_Control_NNMod :  Module_Mod {
 					VLayout(*controls.copyRange(numControls, 2*numControls-1)),
 					VLayout(*controls.copyRange(2*numControls, 3*numControls-1))
 				),
-					controls[3*numControls],controls[3*numControls+1]
+					controls[3*numControls]/*,controls[3*numControls+1]*/
 			)
 		);
 		win.layout.spacing_(1).margins_(1!4);

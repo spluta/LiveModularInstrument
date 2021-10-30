@@ -153,7 +153,7 @@ SpaceInterruption_Mod : SignalSwitcher_Mod {
 		controls.add(QtEZSlider("vol", ControlSpec(0, 2, 'amp'), {|val| volBus.set(val.value)}, 0, true, 'horz'));
 		this.addAssignButton(2, \continuous);
 
-		controls.add(QtEZRanger(\decay, ControlSpec(0.75,1.5), {|val|
+		controls.add(QtEZRanger(\decay, ControlSpec(0.75,1.1), {|val|
 			decayRange = val.value;
 		}, [0.8, 0.9], true, 'horz'));
 
@@ -171,41 +171,6 @@ SpaceInterruption_Mod : SignalSwitcher_Mod {
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
 	}
-
-	//load {}
-
-/*	doAction {|num|
-		var decay = rrand(decayRange[0], decayRange[1]);
-		"doAction".postln; num.postln;
-		switch(num,
-			0, {
-				var temp;
-
-				if(buttonVal!=0){
-					temp = currentSynth;
-					synths[temp].set(\outMul, 0, \inVol, 1, \delaysMul, 0, \delaysMulLag, 0, \impulseOn, 0, \decay, 0.1, \damping, rrand(0.4,0.7));
-					SystemClock.sched(0.2, {synths[temp].set(\decay, 0.7)});
-				};
-				buttonVal = 0;
-			},
-			1, {
-				if(buttonVal!=1){
-					synths[currentSynth].set(\inVol, 1, \isCurrent, 0);
-					currentSynth = synthSeq.next;
-					synths[currentSynth].set(\outMul, 1, \inVol, 0, \impulseOn, 0, \isCurrent, 1, \decay, decay);
-				};
-				buttonVal = 1;
-			},
-			2, {
-				if(buttonVal!=2){
-					synths[currentSynth].set(\inVol, 1, \isCurrent, 0);
-					currentSynth = synthSeq.next;
-					synths[currentSynth].set(\outMul, 1, \inVol, 0, \impulseOn, 1, \impulseSpeed, rrand(5,20), \isCurrent, 1, \decay, decay);
-				};
-				buttonVal = 2;
-			}
-		)
-	}*/
 
 	killMeSpecial {
 		volBus.free;

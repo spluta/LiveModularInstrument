@@ -27,11 +27,8 @@ TypeOSCFunc_Mod {
 	}
 
 	*sendOSC {|oscMsg, val|
-		Lemur_Mod.netAddrs.do{arg item;
-			if(item!=nil,{
-				item.sendMsg(oscMsg, val);
-			});
-		}
+		//need to take out z action
+		Lemur_Mod.sendOSC(oscMsg, val)
 	}
 
 	*removeResponder {arg path;
@@ -41,6 +38,16 @@ TypeOSCFunc_Mod {
 
 	*getFunctionFromKey {arg module, controllerKey, object;
 		^nil
+	}
+}
+
+MyTextView : TextView {
+	valueAction_ {arg string;
+		this.string = string;
+	}
+
+	value {
+		^this.string;
 	}
 }
 
@@ -58,7 +65,6 @@ TypeOSCFuncObject {
 		oscMsg = nil;
 		label = StaticText().font_(Font("Helvetica", 10)).string_(text);
 		numberBox = NumberBox().maxHeight_(15).maxDecimals_(2).font_(Font("Helvetica", 10)).maxWidth_(50).action_{|val|
-			"numberBox".postln;
 			function.value(val.value);
 		};
 		textField = TextField().font_(Font("Helvetica", 10)).maxHeight_(15)
@@ -109,11 +115,10 @@ TypeOSCFuncObject {
 	}
 
 	valueAction_ { arg val;
-		val.postln;
 		if(val.size==2)
 		{
-			textField.valueAction_(val[0]);
-			numberBox.valueAction_(val[1]);
+			textField.valueAction_(val[0].asString);
+			numberBox.valueAction_(val[1].asFloat);
 		}{textField.valueAction_(val)};
 	}
 

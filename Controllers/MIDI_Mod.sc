@@ -18,21 +18,40 @@ MIDI_Mod {
 		responders = List.newClear[0];
 
 		responders.add(MIDIFunc.cc({|val, num, chan, src|
-			MidiOscControl.respond("/cc/"++num.asString++"/"++chan.asString++"/", val/127);
+			var address = "/cc/"++num.asString++"/"++chan.asString++"/";
+			MidiOscControl.respond(address, val/127);
 			if(sendRequest, {
-				MidiOscControl.setController("/cc/"++num.asString++"/"++chan.asString++"/", \continuous);
-				MidiOscControl.setController("/cc/"++num.asString++"/"++chan.asString++"/", \onOff)
-		})}, nil));
+				MidiOscControl.setController(address, \continuous);
+				MidiOscControl.setController(address, \onOff)
+		});
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+			});
+
+		}, nil));
 
 		responders.add(MIDIFunc.noteOn({|val, num, chan, src|
-			MidiOscControl.respond("/noteOn/"++num.asString++"/"++chan.asString++"/", 1);
+
+			var address = "/note/"++num.asString++"/"++chan.asString++"/";
+
+			MidiOscControl.respond(address, 1);
+
 			if(sendRequest, {
-				MidiOscControl.setController("/noteOn/"++num.asString++"/"++chan.asString++"/", \onOff);
-				MidiOscControl.setController("/noteOff/"++num.asString++"/"++chan.asString++"/", \onOff)
-		})}, nil));
+				MidiOscControl.setController(address, \onOff);
+				/*MidiOscControl.setController("/noteOff/"++num.asString++"/"++chan.asString++"/", \onOff)*/
+		});
+
+			//need to fix noteOn/noteOff to work
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address);
+
+			});
+
+		}, nil));
 
 		responders.add(MIDIFunc.noteOff({ |val, num, chan, src|
-			MidiOscControl.respond("/noteOff/"++num.asString++"/"++chan.asString++"/", 0);
+			var address = "/note/"++num.asString++"/"++chan.asString++"/";
+			MidiOscControl.respond(address, 0);
 		}, nil));
 
 	}

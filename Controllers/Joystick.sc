@@ -122,15 +122,16 @@ Joystick_Mod {
 	}
 
 	*logiRespondNCheck {|address, val|
-
-		MidiOscControl.respond(address.asSymbol, val);
-		if(sendRequest){
-			type = \onOff;
-			MidiOscControl.setController(address.asSymbol, type);
-		};
-		if(sendTypeRequest,{
-			MidiOscControl.setInstantTypeObject(address)
-		});
+		if(running){
+			MidiOscControl.respond(address.asSymbol, val);
+			if(sendRequest){
+				type = \onOff;
+				MidiOscControl.setController(address.asSymbol, type);
+			};
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address)
+			});
+		}
 	}
 
 	*start {

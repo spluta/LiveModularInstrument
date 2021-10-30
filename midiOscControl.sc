@@ -29,6 +29,7 @@ MidiOscControl {
 		//this sets all controllers to look for moving sliders/buttons
 
 		LiveModularInstrument.controllers.do{arg item;
+			//item.postln;
 			item.sendRequest=true;
 		};
 	}
@@ -44,6 +45,7 @@ MidiOscControl {
 
 		//this sets all controllers to look for moving sliders/buttons
 
+		LiveModularInstrument.controllers.postln;
 		//this should probably be all OSC controllers
 		LiveModularInstrument.controllers.do{arg item;
 			item.sendTypeRequest=true;
@@ -88,7 +90,7 @@ MidiOscControl {
 				3, {
 					controllerKey = controllerKey.asString;
 					controllerKey = controllerKey.copyRange(0, controllerKey.size-2);
-					if(controllerKey.contains("Ball")){//Lemur Multiball should go here
+					if(controllerKey.contains("Ball")||controllerKey.contains("xy")){//Lemur Multiball should go here
 						this.setFunction(module, controllerKey++"x", function[0], server);
 						this.setFunction(module, controllerKey++"y", function[1], server);
 						this.setFunction(module, controllerKey++"z", function[2], server, false);
@@ -119,8 +121,10 @@ MidiOscControl {
 
 
 	*setController {arg controllerKey, typeOfController;
+
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
+		[controllerKey, typeOfController].postln;
 		if((typeOfController==instantTypeOfController),{
 
 			localControlObject = instantControlObject;

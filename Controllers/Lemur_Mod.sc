@@ -76,39 +76,39 @@ Lemur_Mod {
 		var address2;
 
 		try {
-		address2 = address.asString.replace("/Container/", "/Container2/");
+			address2 = address.asString.replace("/Container/", "/Container2/");
 
-		OSCFunc({ |msg|
-			MidiOscControl.respond(msg[0], msg[1]);
-			if(sendRequest,{
-				MidiOscControl.setController(address.asSymbol, type);
-			});
-			if(sendTypeRequest,{
-				MidiOscControl.setInstantTypeObject(address)
+			OSCFunc({ |msg|
+				MidiOscControl.respond(msg[0], msg[1]);
+				if(sendRequest,{
+					MidiOscControl.setController(address.asSymbol, type);
+				});
+				if(sendTypeRequest,{
+					MidiOscControl.setInstantTypeObject(address)
 
-			});
-		}, address.asSymbol);
+				});
+			}, address.asSymbol);
 
-		OSCFunc({ |msg|
-			try{msg.put(0, msg[0].asString.replace("/Container2/", "/Container/"))};
-			MidiOscControl.respond(msg[0], msg[1]);
-			if(sendRequest,{
-				MidiOscControl.setController(address.asSymbol, type);
-			});
-			if(sendTypeRequest,{
-				MidiOscControl.setInstantTypeObject(address)
-
-			});
-		}, address2.asSymbol);
-
-		if(addZ,{
-			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
-				(address.asString.replace("/x", "/z")).asSymbol);
 			OSCFunc({ |msg|
 				try{msg.put(0, msg[0].asString.replace("/Container2/", "/Container/"))};
-				MidiOscControl.respond(msg[0], msg[1])},
+				MidiOscControl.respond(msg[0], msg[1]);
+				if(sendRequest,{
+					MidiOscControl.setController(address.asSymbol, type);
+				});
+				if(sendTypeRequest,{
+					MidiOscControl.setInstantTypeObject(address)
+
+				});
+			}, address2.asSymbol);
+
+			if(addZ,{
+				OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
+					(address.asString.replace("/x", "/z")).asSymbol);
+				OSCFunc({ |msg|
+					try{msg.put(0, msg[0].asString.replace("/Container2/", "/Container/"))};
+					MidiOscControl.respond(msg[0], msg[1])},
 				(address2.asString.replace("/x", "/z")).asSymbol);
-		});
+			});
 		}{"nope ".postln; address.postln;}
 	}
 
@@ -299,8 +299,6 @@ Lemur_Mod {
 		)
 	}
 
-
-
 	*start {arg ipIn;
 		var address;
 
@@ -397,10 +395,20 @@ Lemur_Mod {
 
 // TouchOSC_Mod : Lemur_Mod {
 //
+// 	*setPorts {|ports|
+// 		var netAddr;
+//
+// 		netAddrs = List.newClear(0);
+// 		ports.do{arg port;
+// 			try {netAddr = NetAddr("127.0.0.1", port)}{netAddr = nil};
+// 			netAddrs.add(netAddr);
+// 		}
+// 	}
+//
 // 	*sendOSCxy {|oscMsg, val|
 // 		netAddrs.do{arg item;
 // 			if(item!=nil,{
-// 				item.sendMsg(oscMsg, val[1], val[0]);  //x and y are reversed for TouchOSC
+// 				item.sendMsg(oscMsg, val[0], val[1]);  //x and y are reversed for TouchOSC
 // 			});
 // 		}
 // 	}
@@ -447,106 +455,115 @@ Lemur_Mod {
 // 	*addXYResponders {|address, type, addZ|
 //
 // 		OSCFunc({ |msg|
-// 			MidiOscControl.respond(msg[0], [msg[1], msg[2]]);
-// 			if(sendRequest,{
-// 				MidiOscControl.setController(address.asSymbol, type)
-// 			});
-// 			if(sendTypeRequest,{
-// 				MidiOscControl.setInstantTypeObject(address)
-//
-// 			});
-// 		}, address.asSymbol);
-//
-// 		if(addZ,{
-// 			OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
-// 			(address++"/z").asSymbol)
-// 		});
-// 	}
-//
-// 	*start {arg ipIn;
-// 		var address;
-//
-// 		if(responders.size!=0,{responders.do{arg item; item.free}});
-//
-// 		//the responder to switch out the servers
-// 		(1..8).do{arg i;
-// 			OSCFunc({ |...msg|
-// 				MidiOscControl.respond((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, 1);
-// 				if(sendRequest,{
-// 					MidiOscControl.setController((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, \onOff);
-// 				});
-// 			}, ("/"++i.asString).asSymbol);
-// 		};
-//
-//
-//
-//
-// 		["n"].addAll((1..8)).do{arg i;
-//
-// 			40.do{arg i2;
-//
-// 				//CONTROLS
-//
-// 				this.addResponders("/"++i.asString++"/fader"++i2.asString, \continuous, true);
-// 				this.addResponders("/"++i.asString++"/toggle"++i2.asString, \onOff, false);
-//
-// 				(1..2).do{arg row;
-// 					(1..10).do{arg column;
-// 						this.addMultToggleResponders("/"++i.asString++"/multitoggle"++i2.asString++"/"++row.asString++"/"++column.asString, \onOff, false);
-// 					}
+// 			3.do{|i|
+// 				if (a[i]!=msg[i+1]){
+// 					a[i] = msg[i+1];
+// 					i.post; a[i].postln;
 // 				};
+// 			};
 //
-// 				this.addXYResponders("/"++i.asString++"/xy"++i2.asString, \slider2D, true);
-// 			}
+// 		}, \xy1, nil, 7000)
+//
+// 		MidiOscControl.respond(msg[0], [msg[1], msg[2]]);
+// 		if(sendRequest,{
+// 			MidiOscControl.setController(address.asSymbol, type)
+// 		});
+// 		if(sendTypeRequest,{
+// 			MidiOscControl.setInstantTypeObject(address)
+//
+// 		});
+// }, address.asSymbol);
+//
+// if(addZ,{
+// 	OSCFunc({ |msg| MidiOscControl.respond(msg[0], msg[1])},
+// 	(address++"/z").asSymbol)
+// });
+// }
+//
+// *start {arg ipIn;
+// 	var address;
+//
+// 	if(responders.size!=0,{responders.do{arg item; item.free}});
+//
+// 	//the responder to switch out the servers
+// 	(1..8).do{arg i;
+// 		OSCFunc({ |...msg|
+// 			MidiOscControl.respond((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, 1);
+// 			if(sendRequest,{
+// 				MidiOscControl.setController((msg[0][0].asString++"/"++msg[2].port.asString).asSymbol, \onOff);
+// 			});
+// 		}, ("/"++i.asString).asSymbol);
+// 	};
+//
+//
+//
+//
+// 	["n"].addAll((1..8)).do{arg i;
+//
+// 		40.do{arg i2;
+//
+// 			//CONTROLS
+//
+// 			this.addResponders("/"++i.asString++"/fader"++i2.asString, \continuous, true);
+// 			this.addResponders("/"++i.asString++"/toggle"++i2.asString, \onOff, false);
+//
+// 			(1..2).do{arg row;
+// 				(1..10).do{arg column;
+// 					this.addMultToggleResponders("/"++i.asString++"/multitoggle"++i2.asString++"/"++row.asString++"/"++column.asString, \onOff, false);
+// 				}
+// 			};
+//
+// 			this.addXYResponders("/"++i.asString++"/xy"++i2.asString, \slider2D, true);
 // 		}
 // 	}
+// }
 //
-// 	*resetOSCAddr {arg ip;
+// *resetOSCAddr {arg ip;
 //
-// 	}
+// }
 //
-// 	*getFunctionFromKey {arg module, controllerKey, object;
-// 		var nothing, keyShort, localControlObject, function;
+// *getFunctionFromKey {arg module, controllerKey, object;
+// 	var nothing, keyShort, localControlObject, function;
 //
-// 		localControlObject = object;
+// 	localControlObject = object;
 //
-// 		controllerKey = controllerKey.asString;
+// 	controllerKey = controllerKey.asString;
 //
-// 		if(controllerKey.contains("/800"),{
-// 			function = {|val|
-// 				{localControlObject.valueAction_(1)}.defer
-// 			};
-// 		});
+// 	if(controllerKey.contains("/800"),{
+// 		function = {|val|
+// 			{localControlObject.valueAction_(1)}.defer
+// 		};
+// 	});
 //
-// 		if(controllerKey.contains("toggle"),{
-// 			function = {|val|
-// 				{localControlObject.valueAction_(val)}.defer;
-// 				this.sendOSC(controllerKey, val);
-// 			};
-// 		});
+// 	if(controllerKey.contains("toggle"),{
+// 		function = {|val|
+// 			{localControlObject.valueAction_(val)}.defer;
+// 			this.sendOSC(controllerKey, val);
+// 		};
+// 	});
 //
-// 		if(controllerKey.contains("multitoggle"),{
-// 			function = {|val|
-// 				{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer;
-// 				this.sendOSC(controllerKey, val);
-// 			};
-// 		});
-// 		if(controllerKey.contains("fader"),{
-// 			function =  {|val|
-// 				{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer;
-// 				this.sendOSC(controllerKey, val);
-// 			};
-// 		});
-// 		if(controllerKey.contains("xy"),{
-// 			function = [{|val|
-// 				{
-// 					localControlObject.activex_(val[0]);
-// 					localControlObject.activey_(val[1]);
-// 					this.sendOSCxy(controllerKey, val);
-// 			}.defer}, {|val| localControlObject.zAction.value(val)}]
-// 		});
-// 		^function
-// 	}
+// 	if(controllerKey.contains("multitoggle"),{
+// 		function = {|val|
+// 			{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer;
+// 			this.sendOSC(controllerKey, val);
+// 		};
+// 	});
+// 	if(controllerKey.contains("fader"),{
+// 		function =  {|val|
+// 			{localControlObject.valueAction_(localControlObject.controlSpec.map(val))}.defer;
+// 			this.sendOSC(controllerKey, val);
+// 		};
+// 	});
+// 	if(controllerKey.contains("xy"),{
+// 		function = [{|val|
+// 			{
+// 				localControlObject.activex_(val[0]);
+// 				localControlObject.activey_(val[1]);
+// 				this.sendOSCxy(controllerKey, val);
+// 		}.defer}, {|val| localControlObject.zAction.value(val)}]
+// 	});
+// 	^function
+// }
 // }
 //
 //
