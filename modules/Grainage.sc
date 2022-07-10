@@ -35,59 +35,8 @@ GrainAge_Mod : Module_Mod {
 
 				Out.ar(outBus, smallEnv*env*out*vol*pauseEnv);
 			}).writeDefFile;
-
-			//not updated to use direct vol or 2DSlider
-
-			//
-			// SynthDef("grainage4_mod", {arg outBus, bufnum, select, volBus, smallGate=0, gate = 1, pauseGate=1;
-			// 	var trate, dur, out, env, smallEnv, vol, length, place, pan, pauseEnv;
-			//
-			// 	length = BufDur.kr(bufnum);
-			//
-			// 	trate = MouseY.kr(2,200,1);
-			// 	dur = 4 / trate;
-			//
-			// 	place = Select.kr(select, [MouseX.kr(0,length), LFNoise0.kr(10).range(0, length)]);
-			//
-			// 	pan = Select.kr(select, [MouseX.kr(-0.75,0.75), LFNoise0.kr(10).range(-1, 1)]);
-			//
-			// 	out = TGrains.ar(4, Impulse.ar(trate), bufnum, 1, place, dur, pan, 1, 2);
-			//
-			// 	vol = In.kr(volBus);
-			//
-			// 	smallEnv = EnvGen.ar(Env.asr(0.001, 1, 0.001, 'linear'),smallGate);
-			// 	env = EnvGen.ar(Env.asr(0.1, 1, 0.1, 'linear'),gate,doneAction: 2);
-			// 	pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			//
-			// 	Out.ar(outBus, [out[0],out[1],out[3],out[2]]*smallEnv*env*vol*pauseEnv);
-			// }).writeDefFile;
-			//
-			// SynthDef("grainage8_mod", {arg outBus, bufnum, select, volBus, smallGate=0, gate = 1, pauseGate=1;
-			// 	var trate, dur, out, env, smallEnv, vol, length, place, pan, pauseEnv;
-			//
-			// 	length = BufDur.kr(bufnum);
-			//
-			// 	trate = MouseY.kr(2,200,1);
-			// 	dur = 4 / trate;
-			//
-			// 	place = Select.kr(select, [MouseX.kr(0,length), LFNoise0.kr(10).range(0, length)]);
-			//
-			// 	pan = Select.kr(select, [MouseX.kr(-0.5,0.5), LFNoise0.kr(10).range(-1, 1)]);
-			//
-			// 	out = TGrains.ar(8, Impulse.ar(trate), bufnum, 1, place, dur, pan, 1, 2);
-			//
-			// 	vol = In.kr(volBus);
-			//
-			// 	smallEnv = EnvGen.ar(Env.asr(0.001, 1, 0.001, 'linear'),smallGate);
-			// 	env = EnvGen.ar(Env.asr(0.1, 1, 0.1, 'linear'),gate,doneAction: 2);
-			// 	pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			//
-			// 	Out.ar(outBus, [out[0],out[1],out[7],out[2],out[6],out[3],out[5],out[4]]*smallEnv*env*vol*pauseEnv);
-			// }).writeDefFile;
 		}
 	}
-
-/*	load {}*/
 
 	init {
 		this.makeWindow("GrainAge", Rect(500, 500, 250, 250));
@@ -126,12 +75,12 @@ GrainAge_Mod : Module_Mod {
 		this.addAssignButton(1,\onOff);
 
 		controls.add(Button()
-			.states_([["mouse", Color.red, Color.black],["rand", Color.red, Color.black]])
+			.states_([["rand", Color.red, Color.black],["mouse", Color.red, Color.black]])
 			.action_{arg butt;
 				if(butt.value==1,{
-					synths[1].set(\select, 1);
+					synths[1].set(\select, 0);
 					},{
-						synths[1].set(\select, 0);
+						synths[1].set(\select, 1);
 				})
 		});
 		this.addAssignButton(2,\onOff);
@@ -150,32 +99,6 @@ GrainAge_Mod : Module_Mod {
 			}
 		));
 		this.addAssignButton(4,\slider2D);
-
-		//multichannel button
-
-/*		numChannels = 2;
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("grainage2_mod", [\outBus, outBus, \bufnum, buffer.bufnum, \select, 0], playGroup));
-					},
-					1, {
-						numChannels = 4;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("grainage4_mod", [\outBus, outBus, \bufnum, buffer.bufnum, \select, 0], playGroup));
-					},
-					2, {
-						numChannels = 8;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("grainage8_mod", [\outBus, outBus, \bufnum, buffer.bufnum, \select, 0], playGroup));
-					}
-				)
-			};
-		);*/
 
 
 		win.layout_(

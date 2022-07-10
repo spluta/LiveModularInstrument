@@ -86,30 +86,5 @@ DistortMono_Mod : Module_Mod {
 		);
 		this.addAssignButton(2,\continuous,Rect(125, 200, 60, 20));
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button(win,Rect(10, 225, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| synths[i+1].set(\gate, 0)};
-					},
-					1, {
-						synths.put(1, Synth("distortMonoB_mod",[\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \compThreshBus, compThreshBus, \gainBus, gainBus, \limitBus, limitBus, \delayMult, 1.25], group));
-						numChannels = 4;
-					},
-					2, {
-						if(numChannels==2,{
-							synths.put(1, "distortMonoB_mod",[\inBus, mixerToSynthBus.index, \outBus, outBus.index+2, \compThreshBus, compThreshBus, \gainBus, gainBus, \limitBus, limitBus, \delayMult, 1.25], group);
-						});
-						synths.put(2, Synth("distortMonoB_mod",[\inBus, mixerToSynthBus.index, \outBus, outBus.index+4, \compThreshBus, compThreshBus, \gainBus, gainBus, \limitBus, limitBus, \delayMult, 0.75], group));
-						synths.put(3, Synth("distortMonoA_mod",[\inBus, mixerToSynthBus.index, \outBus, outBus.index+6, \compThreshBus, compThreshBus, \gainBus, gainBus, \limitBus, limitBus, \delayMult, 1.4], group));
-						numChannels = 8;
-					}
-				)
-			};
-		);
 	}
 }

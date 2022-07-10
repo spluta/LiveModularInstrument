@@ -1,15 +1,20 @@
 ProtoType_Mod :  Module_Mod {
-	var goButton, controlsBus, exportButton, withTextView = true, numControls = 10;
+	var goButton, controlsBus, exportButton, withTextView = true, numControls = 10, exportName, textList, startingAt;
 
 	init {
+		textList = Array.fill(numControls, {"text"});
 		this.init2;
 	}
+
+	init3 {}
 
 	init2 {
 		this.initControlsAndSynths(numControls+2);
 		this.makeMixerToSynthBus(2);
 
 		controlsBus = Bus.control(group.server, numControls);
+
+		this.init3;
 
 		goButton = Button()
 		.states_([["go", Color.grey, Color.white]])
@@ -30,35 +35,52 @@ ProtoType_Mod :  Module_Mod {
 			}
 		};
 
+		startingAt = 0;
 		if(withTextView){
+			startingAt = 1;
 			controls.add(MyTextView().string_(""));
 		};
 
 		numControls.do{arg func, i;
-			controls.add(TypeOSCFuncObject(this, oscMsgs, i+1, "text",
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i+startingAt, textList[i],
 				{arg val; controlsBus.setAt(i, val)},
-				true, false));
+				true));
 		};
 
-		exportName = TextField();
+		exportName = TextField().string_("Temp_Mod");
 
 		exportButton = Button()
 		.states_([["export", Color.blue, Color.white]])
 		.action_{arg butt;
+			var numControls = controls.copyRange(1,10).select{|item| item.textField.string!=""}.size;
 			var text = exportName.value++" : ProtoType_Mod {
 
-*initClass {
-StartUp.add {
-SynthDef("++($\\)++exportName.copyRange(0,exportName.size-5)",{arg inBus, controlsBus, outBus;"
-			++controls[0].string++"}).writeDefFile;
+	*initClass {
+		StartUp.add {
+			SynthDef("++($\\)++exportName.value.toLower++",{arg inBus, controlsBus, outBus;
+"++controls[0].string++"
+}).writeDefFile;
 
-
-init {
-withTextView = false;
-this.init2;
+	}
 }
-"
-			var file = File.new(Document.current.dir++exportName++".sc", "w");
+
+loadExtra {
+	}
+
+	init {
+numControls = "++numControls++";
+textList = Array.fill(numControls, {"++($")++"text"++($")++"});
+		withTextView = false;
+		this.init2;
+	}
+
+init3 {
+synths.add(Synth("++($")++exportName.value.toLower++($")++", ['inBus', mixerToSynthBus, 'controlsBus', controlsBus, 'outBus', outBus], group));
+}
+}";
+			var file = (PathName(this.class.filenameSymbol.asString).pathOnly++exportName.value++".sc");
+
+			file = File.new(file, "w");
 			file.write(text);
 			file.close;
 		};
@@ -78,7 +100,7 @@ this.init2;
 			VLayout(
 				goButton,controls[0],
 				VLayout(*controls.copyRange(1,numControls).collect({arg item; item})),
-				exportButton
+				exportName, exportButton
 			)
 		);
 			win.layout.spacing_(1).margins_(1!4);
@@ -99,5 +121,9 @@ this.init2;
 
 	loadExtra {
 		goButton.valueAction_(1);
+	}
+
+	killMeSpecial {
+		group.free;
 	}
 }

@@ -104,17 +104,17 @@ GSObject2 : GlassSineObject {
 	}
 
 	setBlocks {
-		var key;
+		var key, lowNote = 48;
 
 		8.do{|i|
-			key = "/SeaboardPressure/"++((blocksRow*8)+i).asString;
+			key = "/SeaboardPressure/"++((blocksRow*8)+i+lowNote).asString;
 
 			oscMsgs.put(i, key);
 			MidiOscControl.setControllerNoGui(oscMsgs[i], {|val|
 				sineWaves[i][currentWaves[i]].set(\vol, val)
 			}, group.server);
 
-			key = "/SeaboardNote/"++((blocksRow*8)+i).asString;
+			key = "/SeaboardNote/"++((blocksRow*8)+i+lowNote).asString;
 
 			oscMsgs.put(i, key);  //this seems messed up
 
@@ -543,7 +543,7 @@ GlassSineObject : Module_Mod {
 		loadArray.do{arg controlLevel, i;
 			try {
 				controls[i].valueAction_(controlLevel);
-			} {"nope".postln};
+			} {};
 		};
 	}
 

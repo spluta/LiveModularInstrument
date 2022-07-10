@@ -143,14 +143,10 @@ MFCCHarmonySynth_Mod :  Module_Mod {
 		if(synthGates[2]==1){synths[2].set(\gate, 0)};
 		synthGates.put(2,0);
 		match = goalNode.getMFCCMatch;
-		//match.postln;
 		buf = matchNodes[match[0]].monoBufs[match[1].asInteger];
-		//buf[0].bufnum.postln;
 	}
 
 	loadFile {arg mainFolder;
-		"load the samples".postln;
-		mainFolder.postln;
 
 		try {
 			mainFolder = PathName(mainFolder);
@@ -163,18 +159,15 @@ MFCCHarmonySynth_Mod :  Module_Mod {
 					this.makeMatchNodes(mainFolder);
 					group.server.sync;
 					1.0.wait;
-					//"loading goalNode".postln;
-					"set goalNode with matchNodes".postln;
 					goalNode.matchNodes_(matchNodes);
 					matchNodes.do{|item| /*item.makeCCFAnalysisSynth; */item.makeMFCCAnalysisSynth};
-					"play the func".postln;
 					matchFunc.play;
 
 					//goalNode = FluidMatchAndPlay(group.server, goalGroup, inBus, matchNodes, ccfBus, mfccBus);
 				}.fork;
-			}{"not a folder".postln; controls[7].textField.value_("");}
+			}{controls[7].textField.value_("");}
 		}{
-			"try failed".postln;
+
 			controls[7].textField.value_("");
 		}
 	}
@@ -184,7 +177,7 @@ MFCCHarmonySynth_Mod :  Module_Mod {
 						var file;
 
 						file = folder.fullPath++folder.folderName++".wav";
-						//file.postln;
+
 						matchNodes.add(FluidAnalysisNode(group.server, matchGroup, file, ccfBus, mfccBus).loadSegments.loadAnalysis);
 						group.server.sync;
 						//1.wait;
@@ -196,7 +189,6 @@ MFCCHarmonySynth_Mod :  Module_Mod {
 	}
 
 	loadExtra {arg extra;
-		extra.postln;
 		{
 			5.wait;
 			mainFolderField.valueAction_(extra);

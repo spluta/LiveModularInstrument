@@ -39,7 +39,7 @@ Seaboard_Mod {
 
 Seaboard {
 
-	classvar <>netAddr, <>ip, <>mode, <>lowNote, <>keyboardWidth, <>triggerBoardDimensions, responders, keys, freshKeys, key, freshKey, xyVal;
+	classvar <>netAddr, <>ip, <>mode, <>lowNote, <>keyboardWidth, <>triggerBoardDimensions, <>channel = 9, responders, keys, freshKeys, key, freshKey, xyVal;
 
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 
@@ -75,7 +75,7 @@ Seaboard {
 					0, {netAddr.sendMsg("/SeaboardNote/"++num.asString, 1, vel)},
 					1,  {netAddr.sendMsg("/SeaboardNote", num.asString, 1, vel)},
 				);
-		}));
+		}, nil, channel));
 		responders.add(
 			MIDIFunc.noteOff({arg vel, num, chan, src;
 				keys.put((chan.asString++"/"++src.asString).asSymbol, nil);
@@ -84,7 +84,7 @@ Seaboard {
 					0, {netAddr.sendMsg("/SeaboardNote/"++num.asString, 0, vel)},
 					1,  {netAddr.sendMsg("/SeaboardNote", num.asString, 0, vel)}
 				);
-		}));
+		}, nil, channel));
 
 		responders.add(
 			MIDIFunc.cc({arg val, num, chan, src;
@@ -105,7 +105,7 @@ Seaboard {
 						1, {netAddr.sendMsg("/SeaboardY", key.asString, val/127)}
 					);
 				})
-		}));
+		}, nil, channel));
 
 		responders.add(
 			MIDIFunc.bend({ arg val, chan, src;
@@ -116,7 +116,7 @@ Seaboard {
 							1, {netAddr.sendMsg("/SeaboardX", key.asString, val/(2**14))}
 					);
 				})
-		}));
+		}, channel));
 
 		responders.add(
 			MIDIFunc.touch({ arg val, chan, src;
@@ -127,7 +127,7 @@ Seaboard {
 								1, {netAddr.sendMsg("/SeaboardPressure", key.asString, val/127)}
 					)
 				})
-		}));
+		}, channel));
 
 	}
 

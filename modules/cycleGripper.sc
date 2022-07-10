@@ -98,7 +98,7 @@ CycleGripper_Mod : Module_Mod {
 					synths[currentSynth].set(\localEnvGate, 0);
 					synths.put(currentSynth, Synth("cycleGripper_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \trigRateDust, 0, \trigRateImpulse, 0, \mode, 2, \localEnvGate, 1], group));
 				}{
-					synths[currentSynth.postln].set(\trigRateDust, 0, \trigRateImpulse, 0, \mode, 2);
+					synths[currentSynth].set(\trigRateDust, 0, \trigRateImpulse, 0, \mode, 2);
 				}
 		});
 		this.addAssignButton(0, \onOff);

@@ -39,6 +39,5 @@ DJMixer_Mod : SignalSwitcher_Mod {
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
 		win.front;
-		win.postln;
 	}
 }

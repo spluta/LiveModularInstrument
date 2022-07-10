@@ -17,7 +17,6 @@ PitchShift_Mod : Module_Mod {
 	}
 
 	init {
-		"initPitchshift".postln;
 		this.initControlsAndSynths(2);
 
 		this.makeMixerToSynthBus;
@@ -27,7 +26,7 @@ PitchShift_Mod : Module_Mod {
 
 		controls.add(QtEZSlider.new("shift", ControlSpec(-1, 1),
 			{|v|
-				synths[0].set(\shift, v.value.midiratio.postln)
+				synths[0].set(\shift, v.value.midiratio)
 			}, 0.0, true, \horz));
 		this.addAssignButton(0, \continuous);
 

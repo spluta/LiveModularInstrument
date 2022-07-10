@@ -24,7 +24,7 @@ ModularServerObject {
 		id = ModularServer_ID.next;
 
 		while( {("lsof -i:"++id).unixCmdGetStdOut.size > 0},{id = ModularServer_ID.next});
-		"id ".post;id.postln;
+
 		server = Server.new(serverName, NetAddr("localhost", id), Server.local.options);
 		server.waitForBoot({
 			//set up groups

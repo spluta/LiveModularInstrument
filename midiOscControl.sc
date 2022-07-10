@@ -29,7 +29,6 @@ MidiOscControl {
 		//this sets all controllers to look for moving sliders/buttons
 
 		LiveModularInstrument.controllers.do{arg item;
-			//item.postln;
 			item.sendRequest=true;
 		};
 	}
@@ -45,7 +44,6 @@ MidiOscControl {
 
 		//this sets all controllers to look for moving sliders/buttons
 
-		LiveModularInstrument.controllers.postln;
 		//this should probably be all OSC controllers
 		LiveModularInstrument.controllers.do{arg item;
 			item.sendTypeRequest=true;
@@ -124,7 +122,6 @@ MidiOscControl {
 
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
-		[controllerKey, typeOfController].postln;
 		if((typeOfController==instantTypeOfController),{
 
 			localControlObject = instantControlObject;

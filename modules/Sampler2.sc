@@ -33,10 +33,7 @@ SamplerSet {
 
 	loadBufferAgain {arg buf;
 		buffer = buf;
-		//buffer.postln;
 		scMir = SCMIRAudioFile.newFromZ(buffer.path.removeExtension++".scmirZ");
-		//scMir.extractFeatures();
-		//scMir.extractOnsets();
 		scMirData.put(0, scMir.onsetdata());
 		this.calculateDurs;
 	}
@@ -170,7 +167,6 @@ Sampler_Mod : Module_Mod {
 			{
 				onSets = ["0"];
 				onSetsText.string = "0";
-				"no!".postln;
 			};
 			samplerSettings[currentPanel].onSets = onSets;
 		};
@@ -184,7 +180,6 @@ Sampler_Mod : Module_Mod {
 			{
 				durs = ["1"];
 				dursText.string = "1";
-				"no!".postln;
 			};
 			samplerSettings[currentPanel].durs = durs;
 		};
@@ -227,7 +222,6 @@ Sampler_Mod : Module_Mod {
 		panelLoader = PopUpMenu().items_((0..7))
 		.action_{|pop|
 			currentPanel = pop.value;
-			//currentPanel.postln;
 			this.setOnsetsAndDurs;
 			varianceSlider.value = samplerSettings[currentPanel].variance;
 			volSlider.value=samplerSettings[currentPanel].volume;
@@ -388,22 +382,16 @@ Sampler_Mod : Module_Mod {
 
 			#start, dur = this.getStartAndDur(num, buffer);
 
-			//[start, dur, num, buffer,buffer.numChannels].postln;
-
 			if(buffer.numChannels==1,{
 				if(samplerSettings[num].loopTrig==0,{
-					//"samplerPlayerMono_mod".postln;
 					Synth("samplerPlayerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
-					//"samplerTriggerMono_mod".postln;
 					Synth("samplerTriggerMono_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			},{
 				if(samplerSettings[num].loopTrig==0,{
-					//"samplerPlayerStereo_mod".postln;
 					Synth("samplerPlayerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start], loopGroup);
 				},{
-					//"samplerTriggerStereo_mod".postln;
 					Synth("samplerTriggerStereo_mod", [\bufnum, buffer, \outBus, outBus, \volBus, samplerSettings[num].volBus,\startPos, start, \dur, dur], trigGroup);
 				})
 			})
@@ -453,7 +441,6 @@ Sampler_Mod : Module_Mod {
 
 
 		Buffer.read(group.server, path, action: {arg buf;
-			//"lockedAndLoaded".postln;
 			{fileText.string_(path.split.pop)}.defer;
 			samplerSettings[currentPanel].fileText = path.split.pop;
 			samplerSettings[currentPanel].loadBuffer(buf);
@@ -462,13 +449,9 @@ Sampler_Mod : Module_Mod {
 
 	loadFilesOnLoad {arg path, num;
 
-		//path.postln;
 		Buffer.read(group.server, path, action: {arg buf;
 			samplerSettings[num].fileText = path.split.pop;
 			samplerSettings[num].loadBufferAgain(buf);
-			//fileNames.put(currentPanel, path);
-			//scMir = SCMIRAudioFile.newFromZ(path.removeExtension++".scmirZ");
-			//samplerSettings[num]
 		});
 	}
 

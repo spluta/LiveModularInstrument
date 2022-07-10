@@ -39,7 +39,6 @@ Cutter_Mod : Module_Mod {
 				pauseEnv = EnvGen.kr(Env.asr(0.1,1,0.1), pauseGate, doneAction:1);
 
 				Out.ar(outBus, TGrains.ar(2, clk, bufnum, 1.0, point, dur, TRand.kr(-1, 1, clk), 1, 4)*vol*env*pauseEnv);
-				//Out.ar(outBus, TGrains3.ar(2, clk, bufnum, 1.0, point, dur, TRand.kr(-1, 1, clk), 1, 0.01, 0.01, 4)*vol*env*pauseEnv);
 			}).writeDefFile;
 		}
 	}
@@ -52,9 +51,6 @@ Cutter_Mod : Module_Mod {
 
 		volBus = Bus.control(group.server);
 		buffer = Buffer.alloc(group.server, group.server.sampleRate*60, 1, {|buffer|
-
-			buffer.postln;
-			group.server.sync;
 
 			synths.add(Synth("cutter2_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \bufnum, buffer.bufnum, \pointClkFreeze, 0, \latchPoint, 0, \lowRate, 3, \highRate, 17, \vol, 1, \onOff, 1, \volBus, volBus], group));
 

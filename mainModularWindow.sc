@@ -211,13 +211,6 @@ LiveModularInstrument {
 	}
 
 	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
-		/*if(NetAddr.langPort.asSymbol!='57120')
-		{
-			5.do{
-			"fix LangPort to 57120".postln;
-			"".postln;
-			}
-		}*/
 		if(
 			(controllersIn.indexOf(OSCReceiver_Mod)!=nil)
 			and:(OSCReceiver_Mod.inPorts.collect{|item| thisProcess.openUDPPort(item).asInteger}.sum!=OSCReceiver_Mod.inPorts.size)
@@ -286,6 +279,7 @@ LiveModularInstrument {
 				MidiOscControl.createActionDictionary;
 				if(path!=nil, {ModularServers.load(path)});
 				MidiOscControl.responding_(true);
+				ModularServers.modularInputsArray.front;
 			});
 			//Window.allWindows.do{arg item, i; item.front};
 

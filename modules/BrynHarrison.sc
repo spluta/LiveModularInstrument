@@ -79,7 +79,7 @@ BrynHarrison_Mod : Module_Mod {
 
 		recSynths = List.newClear(0);
 
-		OSCFunc({arg msg; msg.postln; lastPhase = msg[3]}, '/phaseStart');
+		OSCFunc({arg msg; lastPhase = msg[3]}, '/phaseStart');
 
 		1.do{|i|
 			recSynths.add(Synth("brynRec_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBusses[0].index, \bufnum, buffers[0].bufnum], recordGroup));
@@ -102,7 +102,6 @@ BrynHarrison_Mod : Module_Mod {
 			controls.add(Button()
 				.states_([["Go", Color.black, Color.red],["Go", Color.black, Color.red]])
 				.action_{
-					"go".postln;
 					length = rrand(lengthRange[0],lengthRange[1]);
 				dur = length*(rrand(numLoops,numLoops+1).round);
 
@@ -115,7 +114,6 @@ BrynHarrison_Mod : Module_Mod {
 		controls.add(Button()
 				.states_([["Go", Color.black, Color.red],["Go", Color.black, Color.red]])
 				.action_{
-					"go same".postln;
 					//length = rrand(lengthRange[0],lengthRange[1]);
 					//dur = rrand(2.0,4.0);
 					Synth("brynPlay_mod", [\outBus, outBus, \phaseBus, phaseBusses[0].index, \lastPhase, lastPhase, \whichPhase, 1, \bufnum, buffers[0].bufnum, \loopDur, length, \volBus, volBus.index, \dur, dur], playGroup);

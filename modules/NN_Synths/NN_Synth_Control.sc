@@ -24,7 +24,6 @@ NN_Synth_Control_NNMod :  Module_Mod {
 		functions.do{arg func, i;
 			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false, true, i+functions.size, zFunctions[i]));
 		};
-		"NNSynth ".post; controls.postln;
 
 		labels = Array.fill(numControls, {|i|
 			var field;
@@ -106,10 +105,11 @@ NN_Synth_Control_NNMod :  Module_Mod {
 	}
 
 	setLemur{|vals|
-		vals.do{|item,i|
-			OSCReceiver_Mod.sendOSC(oscMsgs[i].asString.copyRange(0, oscMsgs[i].size-3), item);
+		//currently disabled - too cpu inefficient
+/*		vals.do{|item,i|
+			//OSCReceiver_Mod.sendOSC(oscMsgs[i].asString.copyRange(0, oscMsgs[i].size-3), item);
 			//Lemur_Mod.sendOSC(oscMsgs[i], item);
-		};
+		};*/
 	}
 
 	saveExtra {|saveArray|

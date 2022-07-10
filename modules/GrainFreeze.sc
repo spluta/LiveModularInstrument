@@ -25,23 +25,10 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 				phase = In.kr(phaseBus);
 
-				//				amp = Amplitude.kr(sound)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate);
-				//
-				//				trig = Trig1.kr((amp>thresh),0.05);
-
-				//chain = FFT(fftBuf, sound);
-
-				//trig = Impulse.kr(1);
-
-				//trig = Trig1.kr((Onsets.kr(chain, thresh, mingap:LFNoise2.kr(0.3).range(100, 300))*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate)),0.01);
 
 				trig = Trig1.kr((Coyote.kr(sound, thresh: thresh)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate)),0.01);
 
 				SendTrig.kr(trig,0, 1);
-
-				//trig = PulseDivider.kr(trig, 4, 0);
-
-				//PulseCount.kr(trig).poll;
 
 				shiftTrig = Trig1.kr(t_trigShifter, shiftTime);
 
@@ -82,119 +69,6 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 			}).writeDefFile;
 
-			/*SynthDef(\gfdPlay4_mod, { arg inBus, phaseBus, outBus = 0, bufnum = 0, volBus, thresh = 0.1, trigDiv = 2, addPulse = 2, whichTrig=0, useOnOff = 0, offDensity = 0, impDust=0, t_trigShifter=0, t_trigShiftStay=0, shiftTime = 3, lockGate = 1, muteGate = 1, gate = 1, pauseGate = 1;
-			var sound, impulse, trig, trig1, trig2, phase, impRate, out, latchPhase = 0, amp, toggleEnv, shiftTrig, shiftEnv, shiftStay, shift, vol, env, pauseEnv, muteEnv, onOffSwitch, phaseOffset;
-
-			sound = In.ar(inBus);
-
-			phase = In.kr(phaseBus);
-
-			//				amp = Amplitude.kr(sound)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate);
-			//
-			//				trig = Trig1.kr((amp>thresh),0.05);
-
-			buf = LocalBuf(512, 1);
-			chain = FFT(buf, sound);
-
-			trig = Trig1.kr((Onsets.kr(buf, thresh)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate)),0.01);
-
-			PulseCount.kr(trig).poll;
-
-			shiftTrig = Trig1.kr(t_trigShifter, shiftTime);
-
-			shift = TExpRand.kr(0.25,4,t_trigShifter+t_trigShiftStay)-1;
-			shiftEnv = EnvGen.kr(Env.new([0, shift, shift, 0],[0, shiftTime, 0]), shiftTrig);
-			shiftStay = EnvGen.kr(Env.asr(0, shift, 0), ToggleFF.kr(t_trigShiftStay));
-
-			//trig = Select.kr(shiftTrig, [trig, 0]);
-
-			trig1 = PulseDivider.kr(trig, trigDiv, 0);
-			trig2 = PulseDivider.kr(trig, trigDiv, addPulse);
-
-			latchPhase = Latch.kr(phase, trig1);
-
-			trig = Select.kr(whichTrig, [trig, trig1]);
-
-			toggleEnv = Select.kr(whichTrig, [1, Lag.kr(SetResetFF.kr(trig1, trig2), 0.01)]);
-
-			impRate = TExpRand.kr(5, 100, trig);
-
-			impulse = Impulse.kr(impRate);
-
-			impulse = Select.kr(impDust, [impulse, TChoose.kr(impulse, [impulse, 0], [0.95, 0.05])]);
-
-			onOffSwitch = Select.kr(useOnOff, [1, Lag.kr(TChoose.kr(trig, [1,0], [1-offDensity, offDensity].normalizeSum), 0.01)]);
-
-			phaseOffset = (LagUD.kr(1-trig, TRand.kr(2, 4, trig), 0)*TExpRand.kr(0.001, 0.025, trig));
-
-			out = TGrains.ar(4, impulse, bufnum, (1+shiftEnv+shiftStay), ((latchPhase-512)/44100)/*+phaseOffset*/, TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
-
-			vol = In.kr(volBus);
-
-			env = EnvGen.kr(Env.asr(0.02,1,0.02), gate, doneAction: 2);
-			pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			muteEnv = EnvGen.kr(Env.asr(0,1,0), muteGate, doneAction:0);
-
-			Out.ar(outBus, [out[0],out[1],out[3],out[2]]*0.1*toggleEnv*env*pauseEnv*muteEnv*vol*onOffSwitch);
-
-			}).writeDefFile;
-
-			SynthDef(\gfdPlay8_mod, { arg inBus, phaseBus, outBus = 0, bufnum = 0, volBus, thresh = 0.1, trigDiv = 2, addPulse = 2, whichTrig=0, useOnOff = 0, offDensity = 0, impDust=0, t_trigShifter=0, t_trigShiftStay=0, shiftTime = 3, lockGate = 1, muteGate = 1, gate = 1, pauseGate = 1;
-			var sound, impulse, trig, trig1, trig2, phase, impRate, out, latchPhase = 0, amp, toggleEnv, shiftTrig, shiftEnv, shiftStay, shift, vol, env, pauseEnv, muteEnv, onOffSwitch, phaseOffset;
-
-			sound = In.ar(inBus);
-
-			phase = In.kr(phaseBus);
-
-			//				amp = Amplitude.kr(sound)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate);
-			//
-			//				trig = Trig1.kr((amp>thresh),0.05);
-
-			buf = LocalBuf(512, 1);
-			chain = FFT(buf, sound);
-
-			trig = Trig1.kr((Onsets.kr(buf, thresh)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate)),0.01);
-
-			PulseCount.kr(trig).poll;
-
-			shiftTrig = Trig1.kr(t_trigShifter, shiftTime);
-
-			shift = TExpRand.kr(0.25,4,t_trigShifter+t_trigShiftStay)-1;
-			shiftEnv = EnvGen.kr(Env.new([0, shift, shift, 0],[0, shiftTime, 0]), shiftTrig);
-			shiftStay = EnvGen.kr(Env.asr(0, shift, 0), ToggleFF.kr(t_trigShiftStay));
-
-			//trig = Select.kr(shiftTrig, [trig, 0]);
-
-			trig1 = PulseDivider.kr(trig, trigDiv, 0);
-			trig2 = PulseDivider.kr(trig, trigDiv, addPulse);
-
-			latchPhase = Latch.kr(phase, trig1);
-
-			trig = Select.kr(whichTrig, [trig, trig1]);
-
-			toggleEnv = Select.kr(whichTrig, [1, Lag.kr(SetResetFF.kr(trig1, trig2), 0.01)]);
-
-			impRate = TExpRand.kr(5, 100, trig);
-
-			impulse = Impulse.kr(impRate);
-
-			impulse = Select.kr(impDust, [impulse, TChoose.kr(impulse, [impulse, 0], [0.95, 0.05])]);
-
-			onOffSwitch = Select.kr(useOnOff, [1, Lag.kr(TChoose.kr(trig, [1,0], [1-offDensity, offDensity].normalizeSum), 0.01)]);
-
-			phaseOffset = (LagUD.kr(1-trig, TRand.kr(2, 4, trig), 0)*TExpRand.kr(0.001, 0.025, trig));
-
-			out = TGrains.ar(8, impulse, bufnum, (1+shiftEnv+shiftStay), ((latchPhase-512)/44100)/*+phaseOffset*/, TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
-
-			vol = In.kr(volBus);
-
-			env = EnvGen.kr(Env.asr(0.02,1,0.02), gate, doneAction: 2);
-			pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-			muteEnv = EnvGen.kr(Env.asr(0,1,0), muteGate, doneAction:0);
-
-			Out.ar(outBus, [out[0],out[1],out[7],out[2],out[6],out[3],out[5],out[4]]*0.1*toggleEnv*env*pauseEnv*muteEnv*vol*onOffSwitch);
-
-			}).writeDefFile;*/
 		}.defer(1);
 	}
 
@@ -204,8 +78,6 @@ GrainFreezeDrums_Mod : Module_Mod {
 		this.makeMixerToSynthBus;
 
 		buffer = Buffer.alloc(group.server, group.server.sampleRate*120, 1);
-
-		//fftBuf = Buffer.alloc(group.server, 512, 1);
 
 		volBus = Bus.control(group.server);
 		phaseBus = Bus.control(group.server);
@@ -236,12 +108,12 @@ GrainFreezeDrums_Mod : Module_Mod {
 		this.addAssignButton(2,\continuous);
 
 		controls.add(Button.new()
-			.states_([["play", Color.green, Color.black],["mute", Color.red, Color.black]])
+			.states_([["mute", Color.green, Color.black],["play", Color.red, Color.black]])
 			.action_{arg butt;
 				if(butt.value==1,{
-					synths[1].set(\muteGate, 0);
+					synths[1].set(\muteGate, 1);
 					},{
-						synths[1].set(\muteGate, 1);
+						synths[1].set(\muteGate, 0);
 				})
 		});
 		this.addAssignButton(3,\onOff);

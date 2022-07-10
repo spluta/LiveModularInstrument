@@ -2,31 +2,26 @@ OSCReceiver_Mod {
 	classvar <>sendServerSwitcherRequest = false;
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
-	classvar <>netAddrs, ip, <>whichMode=0;
+	classvar <>netAddrs, <>ips, <>whichMode=0;
 	classvar <>oscDict, <>oscFunc, <>sendMirrorMsgs;
 	classvar <>inPorts, <>outPorts;
 
 	*initClass {
 		oscDict = ();
+		ips=["127.0.0.1"];
 		inPorts=[6000, 6001]; outPorts=[7000, 7001]; sendMirrorMsgs=[true, false];
 	}
 
 	*new {
 		^super.new.init;
 	}
-
 	*setPorts {
 		var netAddr;
 
 		netAddrs = List.newClear(0);
-/*		inPorts.do{|port|
-			try {
-				postf("open port %", port);
-				thisProcess.openUDPPort(port);
-			} {"bad UDP port".postln}
-		};*/
-		outPorts.do{arg port;
-			try {netAddr = NetAddr("127.0.0.1", port)}{netAddr = nil};
+
+		outPorts.do{arg port, i;
+			try {netAddr = NetAddr(ips[i%ips.size], port)}{netAddr = nil};
 			netAddrs.add(netAddr);
 		};
 	}
@@ -42,7 +37,6 @@ OSCReceiver_Mod {
 				localPort = portKeyList[1].asInteger;
 
 				netAddrs.do{arg item, i;
-
 					if(item.port==(localPort+1000)){
 						localKey = "/";
 						portKeyList.copyRange(2, portKeyList.size).do{|item|
@@ -53,6 +47,14 @@ OSCReceiver_Mod {
 
 				}
 			}
+		}
+	}
+
+	*sendOSCTypeOSC {|controllerKey, val|
+		if(controllerKey.asString.contains("xy")){
+			this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol])
+		}{
+			this.sendOSC(controllerKey, val)
 		}
 	}
 
@@ -138,8 +140,6 @@ OSCReceiver_Mod {
 	*getFunctionFromKey {arg module, controllerKey, object;
 		var nothing, keyShort, localControlObject, function, speedLimit, speedLimitB;
 
-		//[module, controllerKey, object].postln;
-
 		controllerKey = controllerKey.asString;
 
 		localControlObject = object;
@@ -186,11 +186,13 @@ OSCReceiver_Mod {
 			speedLimit = SpeedLimit({this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol])}, 0.05);
 			function = [
 				{|val|
-					localControlObject.activex_(val);
+					if(localControlObject.isKindOf(QtEZSlider2D)){
+					localControlObject.activex_(val);};
 					speedLimit.value;
 				},
 				{|val|
-					localControlObject.activey_(val);
+					if(localControlObject.isKindOf(QtEZSlider2D)){
+					localControlObject.activey_(val);};
 					speedLimit.value;
 				},
 				{|val| localControlObject.zAction.value(val)}]

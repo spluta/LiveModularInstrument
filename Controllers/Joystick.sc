@@ -26,7 +26,6 @@ XY_to_8 {
 					if(i==closest[1]){
 						temp = dists[closest[0]]/dists[closest[1]];
 						if( (dists[closest[2]]/dists[closest[1]]) < 1.25){
-							//"second".postln;
 							temp = temp*(dists[closest[2]]/dists[closest[1]]).linlin(1, 1.25, 0, 1)
 						};
 						temp
@@ -135,8 +134,6 @@ Joystick_Mod {
 	}
 
 	*start {
-
-
 		devices.do{|item|
 			if(item.name.asString.containsStringAt(0,"nint")){
 
@@ -210,7 +207,7 @@ Joystick_Mod {
 					{|val|
 						localControlObject.activey_(val);
 					},
-					{|val| "do nothing".postln}]
+					{|val| }]
 			}{
 				function = {|val|
 					localControlObject.valueAction_(localControlObject.controlSpec.map(val));

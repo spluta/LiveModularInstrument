@@ -336,7 +336,6 @@ LoopBuf_Mod : Module_Mod {
 	}
 
 	saveExtra {arg saveArray;
-		savePath.postln;
 		saveArray.add(savePath.asString);
 	}
 

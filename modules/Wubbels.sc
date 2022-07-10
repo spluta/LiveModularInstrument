@@ -237,7 +237,7 @@ WubbelsSine2_Mod : Module_Mod {
 		controls.add(Button(win, Rect(5, 5, 205, 20))
 			.states_([["go", Color.red, Color.black],["kill", Color.black, Color.green],["reset", Color.red, Color.green]])
 			.action_{|butt|
-				switch(butt.value.postln,
+				switch(butt.value,
 					0, {
 						synths.put(0, Synth("wubSine2_mod", [\outBus, outBus], group));
 					},

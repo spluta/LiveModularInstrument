@@ -324,37 +324,19 @@ QtEZSlider2D {
 		action.value([controlSpecX.map(vals[0]), controlSpecY.map(vals[1])]);
 	}
 
-/*	x_ { |val|
-		x = controlSpecX.constrain(val);
-		slider.x_(controlSpecX.unmap(x));
-	}
-
-	y_ { |val|
-		y = controlSpecY.constrain(val);
-		slider.y_(controlSpecY.unmap(y));
-	}*/
-
-
-
 	activex_ { |val|
 		{slider.x_(val)}.defer;
 		x = val;
-		//[x,y].postln;
 		action.value([controlSpecX.map(x), controlSpecY.map(y)]);
-		//slider.activex_(val);
 	}
 
 	activey_ { |val|
 		{slider.y_(val)}.defer;
 		y = val;
-		//[x,y].postln;
 		action.value([controlSpecX.map(x), controlSpecY.map(y)]);
-		//slider.activex_(val);
 	}
 
-/*	onClose{controlSpecX.removeDependant(this);controlSpecY.removeDependant(this);}*/
 
-	//doAction { action.value(this) }
 }
 
 // QtEZLists : EZGui{  // an abstract class

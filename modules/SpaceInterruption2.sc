@@ -128,9 +128,9 @@ SpaceInterruption_Mod : SignalSwitcher_Mod {
 						var temp = currentSynth[num];
 						synths[temp].set(\outMul, 0, \inVol, 1, \delaysMul, 0, \delaysMulLag, 0, \impulseOn, 0, \decay, 0.1, \damping, rrand(0.4,0.7));
 						SystemClock.sched(0.2, {synths[temp].set(\decay, 0.7)});
-						if(controls.copyRange(0,1).collect{|item| item.value}.sum==0){synths[6].set(\thruMute, 1); "tM1".postln};
+						if(controls.copyRange(0,1).collect{|item| item.value}.sum==0){synths[6].set(\thruMute, 1);};
 					}{
-						synths[6].set(\thruMute, 0);"tM0".postln;
+						synths[6].set(\thruMute, 0);
 						if(num==0){
 							if(controls[1].value==1){
 								controls[1].valueAction_(0)

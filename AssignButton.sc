@@ -46,7 +46,7 @@ TypeOSCAssignButton {
 		});
 	}
 
-	layout {^instantButton}
+	asView {^instantButton}
 
 	setInstBut {arg val; instantButton.value = val}
 }

@@ -12,7 +12,7 @@ ModularClassList {
 
 		switch(whichArray,
 			'normal', {
-				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop"/*, "CutterThrough"*/, "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise", "MFCCHarmonySynth", "Gain", "MFCCTimbreSynth", "MFCCTimbreSynth2", "BrynHarrison", "StraightLoop2", "PitchShift", "NN_Synths", "KlankFilter", "SpaceInterruption", "DJMixer", "TinyLoops", "ProtoType"].sort;
+				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop"/*, "CutterThrough"*/, "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise", "MFCCHarmonySynth", "Gain", "MFCCTimbreSynth", "MFCCTimbreSynth2", "BrynHarrison", "StraightLoop2", "PitchShift", "NN_Synths", "KlankFilter", "SpaceInterruption", "DJMixer", "TinyLoops", "ProtoType", "RingMod2", "LPFInterupter", "AmpMod2", "NessStretchRT"].sort;
 			},
 			'feedback', {classArray = ["Convolution", "CombFilter", "KlankFilter", "KlankFilter2","OscilMidBump", "Compander", "DistortMono", "PinkNoise", "LoopBuf", "AnalysisFilters", "SignalSwitcher", "TVFeedback", "Mixer", "RingModStereo", "LongDelay", "FeedbackControl"].sort},
 
@@ -44,7 +44,6 @@ ModularClassList {
 		};
 
 		PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
-			folder.postln;
 			folder.files.select{arg file;
 				file.extension=="sc"
 			}
@@ -55,10 +54,9 @@ ModularClassList {
 
 	*initModule {arg className, synthGroup, bus;
 		var item;
-		//"init module".postln;
 		item = classDictionary[className.asSymbol].value(synthGroup, bus);
 		className = className.asString;
-		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower")||(className=="TVFeedback")||(className=="DJMixer")||(className=="SpaceInterruption"),{
+		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower")||(className=="TVFeedback")||(className=="DJMixer")||(className=="SpaceInterruption")||(className=="NessStretchRT"),{
 			item.init2(2,false)
 		});
 		^item

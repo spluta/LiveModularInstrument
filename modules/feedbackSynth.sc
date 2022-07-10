@@ -1,6 +1,6 @@
 //with the roli
 
-FeedbackSynth_Mod :  TypeOSCModule_Mod {
+FeedbackSynth_Mod :  Module_Mod {
 	var texts, functions;
 
 	*initClass {
@@ -68,8 +68,6 @@ FeedbackSynth_Mod :  TypeOSCModule_Mod {
 
  		synths.add(Synth("feedbackSynth_mod", [\outBus, outBus], group));
 
-		texts = List.newClear(0);
-
 		texts = ["fbMult", "onOff", "lpHPSelect", "xFreezeShift", "yFreezeShift", "freezeGate", "zOnOff", "noiseSelect", "straightNoiseFreq", "ampModOn", "ampModRate", "pulseOn", "vol"];
 
 		functions = [
@@ -93,8 +91,7 @@ FeedbackSynth_Mod :  TypeOSCModule_Mod {
 		];
 
 		functions.do{arg func, i;
-			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func, true, false));
-
+			controls.add(TypeOSCFuncObject(this, oscMsgs, i, texts[i], func));
 		};
 
 		win.layout_(
@@ -107,4 +104,5 @@ FeedbackSynth_Mod :  TypeOSCModule_Mod {
  		win.view.resizeTo(13*17,13*17);
  		win.front;
 	}
+
 }

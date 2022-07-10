@@ -109,7 +109,7 @@ Lemur_Mod {
 					MidiOscControl.respond(msg[0], msg[1])},
 				(address2.asString.replace("/x", "/z")).asSymbol);
 			});
-		}{"nope ".postln; address.postln;}
+		}
 	}
 
 	*addSwitches {|address|
@@ -156,7 +156,6 @@ Lemur_Mod {
 	*setMode {|num|
 		switch(num,
 			0, {
-				"1 iPad Mode".postln;
 
 				50.do{arg i;
 
@@ -458,7 +457,6 @@ Lemur_Mod {
 // 			3.do{|i|
 // 				if (a[i]!=msg[i+1]){
 // 					a[i] = msg[i+1];
-// 					i.post; a[i].postln;
 // 				};
 // 			};
 //

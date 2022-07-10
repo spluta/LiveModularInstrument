@@ -47,7 +47,7 @@ MidiOscObject {
 
 				if(val.size<2){
 					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
-					Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
+					//Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
 					temp = oscMsgs[num].asString;
 					OSCReceiver_Mod.sendOSC(temp.copyRange(0, temp.size-3), unmapped);
 				}
@@ -159,10 +159,8 @@ MidiOscObject {
 
 		loadArray[1].do{arg controlLevel, i;
 			var control;
-			//[controlLevel, i].postln;
 			try { control=controls[i] } { control = nil };
-			//control=controls[i];
-			//control.postln;
+
 			if(control!=nil,{
 				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
 				//controls[i].valueAction_(controlLevel);
@@ -172,7 +170,7 @@ MidiOscObject {
 					{
 						controls[i].valueAction_(controlLevel);
 					}
-					}{i.postln;}
+					}{}
 				}{
 					if(controls[i].class==TypeOSCFuncObject)
 					{
@@ -187,7 +185,7 @@ MidiOscObject {
 			var control;
 			waitForSetNum = i;
 			try { control=controls[i] } { control = nil;};
-			if((msg!=nil)&&(control!=nil),{
+			if((msg!=nil)&&(control!=nil)&&(control.class!=TypeOSCFuncObject),{
 				if(isGlobalController==true,{
 					//this is only true for the server switcher and Modular Inputs Array
 					MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
@@ -272,6 +270,7 @@ Module_Mod : MidiOscObject {
 
 	}
 }
+
 
 TypeOSCModule_Mod : Module_Mod {
 	load {arg loadArray;

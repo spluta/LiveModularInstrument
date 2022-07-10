@@ -100,13 +100,10 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	clearMLPs {
-		//"clear MLPs".postln;
 		mlps = mlps.do{|item| item.clear};
-		//mlps.postln;
 	}
 
 	loadTraining {|modelFolderIn|
-		"loading training".postln;
 		modelFolder = modelFolderIn;
 		loadedCount = 0;
 
@@ -218,7 +215,7 @@ NN_Synth_Mod : Module_Mod {
 	}
 
 	setSynth {|i, val|
-		//[i, val].postln;
+
 
 	}
 
@@ -321,7 +318,6 @@ NN_Synth_Mod : Module_Mod {
 			try{
 				File.readAllString(modelFile).parseYAML;
 				mlps[reloadWhich].read(modelFile, {
-					("loaded"+modelFile).postln;
 					{
 						if(mlpSynths[reloadWhich]!=nil){mlpSynths[reloadWhich].set(\gate, 0)};
 						if(controlSwitchSynths[reloadWhich]!=nil){controlSwitchSynths[reloadWhich].set(\gate, 0)};
@@ -338,7 +334,6 @@ NN_Synth_Mod : Module_Mod {
 	makeInOutBufs {
 		var mlpSynth;
 
-		//"makeInOutBufs".postln;
 		if(mlpInBuf != nil){mlpInBuf.free};
 		if(mlpOutBuf != nil){mlpOutBuf.free};
 
@@ -492,7 +487,6 @@ NN_Synth_Mod : Module_Mod {
 
 
 	killMeSpecial {
-		"killMeSpecial".postln;
 		{
 			mlpSynths.do{|item| item.set(\gate, 0)};
 			controlSwitchSynths.do{|item| item.set(\gate, 0)};

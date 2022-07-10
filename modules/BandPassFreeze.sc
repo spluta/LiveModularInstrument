@@ -99,8 +99,6 @@ BandPassFreeze_Mod : Module_Mod {
 
 		count = 0;
 		this.goForIt;
-		/*buffers = List.newClear(0);
-		4.do{buffers.add(Buffer.alloc(group.server, 2048, 1, {arg buf; count = count+1; count.postln; buffers.postln; if(count==4){this.goForIt(buffers.add(buf))}}))};*/
 
 		levelBus = Bus.control(group.server, 1);
 
@@ -109,14 +107,13 @@ BandPassFreeze_Mod : Module_Mod {
 	}
 
 	goForIt {
-		"goForIt".postln;
 
 		synths.put(0, Synth("bandPassFreeze2_mod", [\audioInBus, mixerToSynthBus.index, \transferBus, transferBus/*, \buffer, buffers[0].bufnum, \buf0, buffers[1].bufnum, \buf1, buffers[2].bufnum, \buf2, buffers[3].bufnum*/, \thresh, 1], soundGroup));
 
 		synths.put(1, Synth("bpfPan2_mod", [\transferBus, transferBus, \audioOutBus, outBus, \vol, 0], panGroup));
 
 
-		controls.add(QtEZSlider("Amp", ControlSpec(0.001, 2, \amp),
+		controls.add(QtEZSlider("Amp", ControlSpec(0.001, 4, \amp),
 			{arg slider;
 				synths[1].set(\vol, slider.value);
 		}, 0, true, orientation:\horz));
@@ -171,7 +168,6 @@ BandPassFreeze_Mod : Module_Mod {
 		);
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		win.drawFunc = {win.bounds.postln};
 
 
 		win.front;
@@ -209,7 +205,6 @@ BandPassFreeze_Mod : Module_Mod {
 
 	this.loadExtra(loadArray);
 	routB.stop;
-	"stopping".postln;
 	})
 	}
 	});

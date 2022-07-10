@@ -88,7 +88,6 @@ ResonDraw_Mod : Module_Mod {
 		this.addAssignButton(2,\slider2D);
 
 		controls[2].zAction = {|val|
-			"Zs nuts".postln;
 			synths[0].set(\rq, rrand(0.1, 0.5));
 		};
 

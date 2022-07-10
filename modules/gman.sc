@@ -100,7 +100,7 @@ GingerMan_Mod : Module_Mod {
 
 		oscMsgs.put(counter, "/SeaboardNote/30");
 		MidiOscControl.setControllerNoGui(oscMsgs[counter],
-			{|val| if(val==1, {synths[0].set(\onOff, 1); "on".postln})}, group.server);
+			{|val| if(val==1, {synths[0].set(\onOff, 1)})}, group.server);
 
 	}
 
@@ -109,7 +109,6 @@ GingerMan_Mod : Module_Mod {
 			6.do{arg sinCount;
 				noteOnFunctions.put(((gmanCount*8)+(sinCount)), {|val|
 					if(val==1,{
-						((gmanCount*8)+(sinCount)).postln;
 						this.getSin(sinCount);
 						this.getGman(gmanCount);
 						synths[0].set(\sinFreq0, sinTemp0, \sinFreq1, sinTemp1, \gmanFreq0, gmanTemp0, \gmanFreq1, gmanTemp1);

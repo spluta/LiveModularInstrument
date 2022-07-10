@@ -1,5 +1,5 @@
 BuchlaFilter_Mod {
-	var <>group, <>type, <>freq, <>rqMax, <>inBus, <>outBus, <>pan, <>outGroup, slider, filter, randDB, randQ;
+	var <>group, <>type, <>freq, <>rqMax, <>inBus, <>outBus, <>pan, <>outGroup, slider, filter;
 
 	*new {arg group, type, freq, rqMax, inBus, outBus, pan, outGroup;
 		^super.newCopyArgs(group, type, freq, rqMax, inBus, outBus, pan, outGroup).init;
@@ -15,7 +15,7 @@ BuchlaFilter_Mod {
 
 				in  = In.ar(inBus, 2);
 
-				out = BLowShelf.ar(in,freq,1,Lag.kr(db, lagTime)+LFNoise1.kr(0.1));
+				out = BLowShelf.ar(in,freq,1,Lag.kr(db, lagTime)/*+LFNoise1.kr(0.1)*/);
 
 				ReplaceOut.ar(inBus, out*env*pauseEnv);
 			}).writeDefFile;
@@ -25,9 +25,9 @@ BuchlaFilter_Mod {
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 
-				in  = In.ar(inBus);
+				in  = In.ar(inBus, 2);
 
-				out = MidEQ.ar(in,freq, Lag.kr(rq, lagTime), Lag.kr(db, lagTime)+LFNoise1.kr(0.1));
+				out = MidEQ.ar(in,freq, Lag.kr(rq, lagTime), Lag.kr(db, lagTime)*[-1,1]);
 
 				ReplaceOut.ar(inBus, out*env*pauseEnv);
 			}).writeDefFile;
@@ -39,21 +39,11 @@ BuchlaFilter_Mod {
 
 				in  = In.ar(inBus, 2);
 
-				out = BHiShelf.ar(in,freq,1 ,Lag.kr(db, lagTime)+LFNoise1.kr(0.1));
+				out = BHiShelf.ar(in,freq,1 ,Lag.kr(db, lagTime));
 
 				ReplaceOut.ar(inBus, out*env*pauseEnv);
 			}).writeDefFile;
 			SynthDef("buchlaOut1_mod", {arg inBus, outBus, gate = 1, pauseGate = 1;
-				var in, out, env, pauseEnv;
-
-				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
-				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
-
-				in  = In.ar(inBus, 2);
-
-				Out.ar(outBus, in*env*pauseEnv);
-			}).writeDefFile;
-			SynthDef("buchlaOut2_mod", {arg inBus, outBus, gate = 1, pauseGate = 1;
 				var in, out, env, pauseEnv;
 
 				env = EnvGen.kr(Env.asr(0,1,0), gate, doneAction:2);
@@ -77,8 +67,7 @@ BuchlaFilter_Mod {
 				})
 			},
 			2,{filter = Synth("buchlaHighFilter_mod",[\inBus, inBus, \freq, freq, \db, 0], group)},
-			3,{filter = Synth("buchlaOut1_mod",[\inBus, inBus, \outBus, outBus], outGroup)},
-			4,{filter = Synth("buchlaOut2_mod",[\inBus, inBus, \outBus, outBus], outGroup)}
+			3,{filter = Synth("buchlaOut1_mod",[\inBus, inBus, \outBus, outBus], group)}
 		);
 	}
 
@@ -95,12 +84,17 @@ BuchlaFilter_Mod {
 		filter.run(true);
 	}
 
-	trigger {arg lowDb, highDb;
+	trigger {arg lowDb, highDb, rqVal=1;
+		var randDB, qSet;
+
 		randDB = rrand(lowDb, highDb);
-		randQ = rqMax.rand;
-		filter.set(\db, randDB, \rq, randQ, \lagTime, 0.05);
-		//filter.set();
-		^[randDB, randQ]
+		if(rqVal<0){
+			qSet = 1;
+		}{
+			qSet = rqMax.rand;
+		};
+		filter.set(\db, randDB, \rq, qSet, \lagTime, 0.05);
+		^[randDB, qSet]
 	}
 
 	killMe {
@@ -118,33 +112,26 @@ BuchlaFiltersSynths_Mod {
 
 	init {
 		inGroup = Group.before(group);
+		//group is in the middle (where the mid-eqs go)
 		outGroup = Group.after(group);
 		filterList = List.new;
 		freqs = [100,150,250,350,500,630,800,1000,1300,1600,2600,3500,5000,8000,10000];
 
 		//mix the input signal into the output bus first, the filter the audio
-		transferModule = BuchlaFilter_Mod(group, 4, nil, nil, inBus, outBus, 0, inGroup);
+		transferModule = BuchlaFilter_Mod(inGroup, 3, nil, nil, inBus, outBus, 0);
 
-		filterList.add(BuchlaFilter_Mod(group, 0, freqs[0], 1, outBus, outBus, 0, outGroup));
+		filterList.add(BuchlaFilter_Mod(group, 0, freqs[0], 1, outBus, outBus, 0));
 
 		13.do{arg i;
 			rqMax = ((freqs[i+1]-freqs[i]).abs+((freqs[i+1]-freqs[i+2]).abs))/freqs[i+1];
-			if(i.even, {pan = 1.neg},{pan = 1});
-			filterList.add(BuchlaFilter_Mod(group, 1, freqs[i+1], rqMax, outBus, outBus, pan, outGroup));
-		};
-
-		negativeFilterList = List.new;
-		13.do{arg i;
-			rqMax = ((freqs[i+1]-freqs[i]).abs+((freqs[i+1]-freqs[i+2]).abs))/freqs[i+1];
-			if(i.even, {pan = 1},{pan = 1.neg});
-			negativeFilterList.add(BuchlaFilter_Mod(group, 1, freqs[i+1], rqMax, outBus, outBus, pan, outGroup));
-			negativeFilterList[i].set(-12, rqMax, 0);
+			filterList.add(BuchlaFilter_Mod(group, 1, freqs[i+1], rqMax, outBus, outBus, 0, outGroup));
 		};
 
 		filterList.add(BuchlaFilter_Mod(group, 2, freqs[14], 1, outBus, outBus, 0, outGroup));
-		//filterList.add(BuchlaFilter_Mod(group, 4, nil, nil, inBus, outBus, 0, outGroup));
+
 		filterSettingArray = List.newClear(15);
 		filterSettingArray.fill([0,0.1]);
+		this.clear;
 	}
 
 	pause {
@@ -157,13 +144,13 @@ BuchlaFiltersSynths_Mod {
 
 	trigger {arg num;
 		if(num==nil, {num = 6});
-		15.do{arg i; filterSettingArray.put(i, filterList[i].trigger(num.neg,num))};
-		negativeFilterList.do{arg item; item.trigger(num.neg,num)};
+		filterList.do{arg item; item.trigger(num.neg,num, 1)};
 		^filterSettingArray
 	}
 
 	clear {
-		15.do{arg i; filterSettingArray.put(i, filterList[i].trigger(0,0))};
+		filterList.do{arg item; item.trigger(0,0, -1)};
+		//15.do{arg i; filterSettingArray.put(i, filterList[i].trigger(0,0), 1)};
 	}
 
 	setVals {arg filterSettings;
@@ -203,9 +190,11 @@ BuchlaFilters_Mod : Module_Mod {
 	init {
 		this.makeWindow("BuchlaFilters",Rect(946, 618, 185, 75));
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
-		this.initControlsAndSynths(2);
+		this.initControlsAndSynths(3);
+
+		dontLoadControls = [0,1];
 
 		controls.add(Button.new(win,Rect(5, 5, 80, 20))
 			.states_([ [ "Trigger", Color.red, Color.black ] ,[ "Trigger", Color.black, Color.red ] ])
@@ -225,31 +214,7 @@ BuchlaFilters_Mod : Module_Mod {
 		controls.add(EZSlider.new(win,Rect(5, 50, 160, 20), "trigVal", ControlSpec(1,12,'lin',1),
 			{|v|
 				trigVal = v.value;
-			}, 6, layout:\horz));
-
-		controls.add(Button(win,Rect(10, 75, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| buchlaFilters[i+1].killMe};
-					},
-					1, {
-						numChannels = 4;
-						buchlaFilters.put(1,BuchlaFiltersSynths_Mod(group, mixerToSynthBus.index+2, outBus.index+2));
-					},
-					2, {
-						if(numChannels==2,{
-							3.do{|i| buchlaFilters.put(i+1,BuchlaFiltersSynths_Mod(group, mixerToSynthBus.index+(2*i), outBus.index+(2*(i+1))))};
-						},{
-							2.do{|i| buchlaFilters.put(i+2,BuchlaFiltersSynths_Mod(group, mixerToSynthBus.index+(4*i), outBus.index+(2*(i+2))))};
-						});
-						numChannels = 8;
-
-					}
-				)
-			};
+			}, 6, layout:\horz)
 		);
 
 		buchlaFilters = List.newClear(4);

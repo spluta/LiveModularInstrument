@@ -183,17 +183,17 @@ HarmonicDoubler2_Mod : Module_Mod {
 			(waitVar + (0.35.rand)).wait;
 		}.loop});
 
-		controls.add(EZSlider.new(win,Rect(10, 10, 60, 220), "vol", ControlSpec(0,8,'amp'),
+		controls.add(QtEZSlider.new("vol", ControlSpec(0,8,'amp'),
 			{|v|
 				volume.set(v.value);
-			}, 0, layout:\vert));
-		this.addAssignButton(0,\continuous, Rect(10, 230, 60, 20));
+			}, 0, true, \horz));
+		this.addAssignButton(0,\continuous);
 
-		controls.add(EZKnob.new(win,Rect(80, 10, 60, 100), "wait", ControlSpec(1.0,3.0,'linear'),
+		controls.add(QtEZSlider.new("wait", ControlSpec(1.0,3.0,'linear'),
 			{|v|
 				waitVar = v.value;
-			}, 1.5, true));
-		this.addAssignButton(1,\continuous, Rect(80, 110, 60, 20));
+			}, 1.5, true, \horz));
+		this.addAssignButton(1,\continuous);
 
 		controls.add(Button(win,Rect(80, 130, 60, 50))
 			.states_([["Off",Color.black,Color.red],["On",Color.black,Color.green]])
@@ -204,24 +204,14 @@ HarmonicDoubler2_Mod : Module_Mod {
 					addDelays = false;
 				});
 			});
-		this.addAssignButton(2,\onOff, Rect(80, 180, 60, 20));
+		this.addAssignButton(2,\onOff);
 
-		//multichannel button
-		controls.add(Button(win,Rect(10, 255, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-					},
-					1, {
-						numChannels = 4;
-					},
-					2, {
-						numChannels = 8;
-					}
-				)
-			};
+		win.layout_(
+			VLayout(
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1]),
+				controls[2], assignButtons[2]
+			)
 		);
 
 		addDelays = false;

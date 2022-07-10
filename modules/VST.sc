@@ -96,8 +96,6 @@ VST_Mod : Module_Mod {
 		temp.add(vstPath);
 		temp.add(presetFile);
 
-		temp.postln;
-
 		saveArray.add(temp);
 
 		^saveArray
@@ -105,20 +103,16 @@ VST_Mod : Module_Mod {
 
 	loadExtra {arg loadArray;
 
-		loadArray.postln;
-
 		if(loadArray[0]!=nil, {
 			vst.open(loadArray[0], editor: true);
 			vstPath = loadArray[0];
 			fork {
-				"waiting".postln;
 				rrand(3.0,4.0).wait;
 				group.server.sync;
-				"loading".postln;
 				{vstName.string = vst.info.name}.defer;
 				if(loadArray[1]!=nil, {
 					vst.readProgram(loadArray[1]);
-					presetFile = loadArray[1].postln;
+					presetFile = loadArray[1];
 				});
 			}
 		});

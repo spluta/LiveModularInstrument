@@ -34,7 +34,6 @@ ModularVolumeObject {
 	}
 
 	addServer{arg server;
-		"add server".postln;
 		synths.add(Synth("modularInput_mod", [\inBus, inBus, \outBus, server.inBusses[inputNum]], server.inGroup));
 
 		localResponder.free;
@@ -85,7 +84,6 @@ ModularInputsArray : Module_Mod {
 		run = true;
 
 		modName = "ModularVolumeRack";
-		//"loadVolumeRack".postln;
 		this.initControlsAndSynths(16);
 
 		isGlobalController = true;
@@ -123,7 +121,10 @@ ModularInputsArray : Module_Mod {
 		numBusses.do{arg i;
 			controls.add(TextField()
 				.action_{arg text;
-					Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(("/Container3/MixerLabel"++(i+1).asString).asSymbol, "@content", text.value)};
+					//Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(("/Container3/MixerLabel"++(i+1).asString).asSymbol, "@content", text.value)};
+					OSCReceiver_Mod.netAddrs.do{arg addr;
+						addr.sendMsg(("in_fader_label"++(i+1).asString).asSymbol, text.value)
+					};
 			});
 
 			layouts.add(VLayout(
@@ -140,6 +141,8 @@ ModularInputsArray : Module_Mod {
 		win.userCanClose_(false);
 		win.front;
 	}
+
+	front {win.front}
 
 	addServer{arg server;
 		dispArray.do{arg item;

@@ -287,7 +287,6 @@ ServerSwitcher2 : MidiOscObject {
 		if(muteLayer2==1, {tempCurrent=currentServers.first}, {tempCurrent=currentServers});
 		ModularServers.servers.keys.asList.do{arg key;
 			if(tempCurrent.flatten.indexOf(key.asSymbol)==nil, {
-				//"hide me ".post; key.postln;
 				ModularServers.servers[key.asSymbol].showAndPlay(false)
 			})
 		}

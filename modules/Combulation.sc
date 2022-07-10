@@ -17,6 +17,8 @@ Combulation_Mod : Module_Mod {
 
 				out = CombC.ar(in, 0.01, TRand.kr(lowRand, hiRand, Impulse.kr(LFNoise2.kr(2, 5, 20))), 0.2);
 
+				out = HPF.ar(out, 150);
+
 				Out.ar(outBus, Pan2.ar(out*env*vol*pauseEnv, SinOsc.kr(Rand(0.5,0.25))));
 			}).writeDefFile;
 		}

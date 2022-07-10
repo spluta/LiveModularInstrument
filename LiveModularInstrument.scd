@@ -4,38 +4,52 @@
 Pause Joystick during
 Buy Keyboard
 
-a = OSCFunc({|msg, time, addr| addr.postln;}, '/Switches/x').oneShot;
-b = OSCFunc({|msg, time, addr| addr.postln;}, '/Container3/Fader4/x').oneShot;
-
-b = OSCFunc({|msg, time, addr| addr.postln;}, '/Fader/x').oneShot;
 NetAddr.langPort
-700
+
+b = NetAddr.new("127.0.0.1", 7001);    // create the NetAddr
+b.sendMsg("/fader34", 1.0.rand);
+
+b = NetAddr.new("127.0.0.1", 7000);    // create the NetAddr
+b.sendMsg("/fader4", 1.0.rand);
+
+c = NetAddr.new("10.0.0.3", 7001);    // create the NetAddr
+c.sendMsg('/fader1', 1.0.rand);
+
+
+Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"])
 
 Joystick_Mod.running=false
 Joystick_Mod.running=true
 
+thisProcess.openUDPPort(6000)
+OSCFunc.trace
+OSCFunc.trace(false)
+
+OSCReceiver_Mod.netAddrs[0].sendMsg('/2/fader12', 1.0.rand)
+OSCReceiver_Mod.netAddrs[1].sendMsg('/fader16', 1.0.rand)
+
 (
-//May2020
-LiveModularInstrument.boot(11, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Oct_21_A");
+//June2020
+LiveModularInstrument.boot(7, [1,2,3,4,5, 6,7,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/July_8_22_A");
 )
 
 
 (
-//May2020
-LiveModularInstrument.boot(11, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]);
+//Nothing
+LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/NessTest");
 )
 
 
 
 (
-LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/fb_test"));
+LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/fb_test"));
 )
 
 
 
 (
 //May2020
-LiveModularInstrument.boot(11, [1,2,5,6,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 56151]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/TimeSpans_N");
+LiveModularInstrument.boot(11, [1,2,5,6,7, 8,9,8], 'normal', [Lemur_Mod.setPorts([8000, 56151]), Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/TimeSpans_N");
 )
 
 
@@ -43,6 +57,8 @@ LiveModularInstrument.boot(11, [1,2,5,6,7, 8,9,8], 'normal', [Lemur_Mod.setPorts
 LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [Lemur_Mod.setPorts([8000, 55488]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/Mincek_08_21_I");
 )
 
+
+"RingMod".toLower
 
 MIDIFunc.trace(true)
 

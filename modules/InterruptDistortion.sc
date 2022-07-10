@@ -4,9 +4,9 @@ InterruptDistortion_Mod : Module_Mod {
 	*initClass {
 		StartUp.add {
 			SynthDef("interruptDistortion_mod", {arg inBus, outBus, sinRate=1, volBus, distortBus, distortSwitch=0, gate = 1, pauseGate = 1;
-				var in, out, chan1, chan2, delayTime, pan, pauseEnv, env, muteEnv, vol;
+				var in, out, chan1, chan2, delayTime, pan, pauseEnv, env, muteEnv, mix;
 
-				vol = In.kr(volBus);
+				mix = In.kr(volBus);
 				//distortSwitch = In.kr(distortBus);
 
 				env = EnvGen.kr(Env.asr(0.01, 1, 0.01), gate, doneAction:2);
@@ -23,7 +23,9 @@ InterruptDistortion_Mod : Module_Mod {
 				out = Pan2.ar(chan1, pan) + Pan2.ar(chan2, pan.neg);
 
 
-				out = (Lag.kr(1-distortSwitch, 0.05)*in)+(Lag.kr(distortSwitch, 0.05)*out*vol);
+				//out = (Lag.kr(1-distortSwitch, 0.05)*in)+(Lag.kr(distortSwitch, 0.05)*out*vol);
+
+				out = (Lag.kr(1-distortSwitch, 0.05)*in)+(Lag.kr(distortSwitch, 0.05)*out*mix)+(Lag.kr(distortSwitch, 0.05)*in*(1-(mix.clip(0,1))));
 
 				Out.ar(outBus, out);
 			}).writeDefFile;
@@ -46,7 +48,7 @@ InterruptDistortion_Mod : Module_Mod {
 
 		synths.put(0, Synth("interruptDistortion_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus, \sinRate, 3, \volBus, volBus, \distortBus, distortBus], group));
 
-		controls.add(QtEZSlider.new("vol", ControlSpec(0,2,'amp'),
+		controls.add(QtEZSlider.new("mix", ControlSpec(0,2,'amp'),
 			{|v|
 				volBus.set(v.value);
 			}, 0, true, orientation:\horz));
@@ -60,36 +62,10 @@ InterruptDistortion_Mod : Module_Mod {
 			}));
 		this.addAssignButton(1,\onOff);
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						3.do{|i| synths[i+1].set(\gate, 0)};
-					},
-					1, {
-						synths.put(1, Synth("interruptDistortion_mod", [\inBus, mixerToSynthBus.index+2, \outBus, outBus.index+2, \sinRate, 3, \volBus, volBus, \distortBus, distortBus], group));
-						numChannels = 4;
-					},
-					2, {
-						if(numChannels==2,{
-							synths.put(1, Synth("interruptDistortion_mod", [\inBus, mixerToSynthBus.index+2, \outBus, outBus.index+2, \sinRate, 3, \volBus, volBus, \distortBus, distortBus], group));
-						});
-						synths.put(2, Synth("interruptDistortion_mod", [\inBus, mixerToSynthBus.index+4, \outBus, outBus.index+4, \sinRate, 3, \volBus, volBus, \distortBus, distortBus], group));
-						synths.put(3, Synth("interruptDistortion_mod", [\inBus, mixerToSynthBus.index+6, \outBus, outBus.index+6, \sinRate, 3, \volBus, volBus, \distortBus, distortBus], group));
-						numChannels = 8;
-					}
-				)
-			};
-		);
-
 		win.layout_(
 			VLayout(
 				HLayout(controls[0], assignButtons[0]),
-				HLayout(controls[1], assignButtons[1], controls[2])
+				HLayout(controls[1], assignButtons[1])
 			)
 		);
 		win.layout.spacing = 0;

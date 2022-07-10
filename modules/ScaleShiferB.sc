@@ -4,6 +4,10 @@ ScaleShifterB_Mod : Module_Mod {
 	*initClass {
 		StartUp.add {
 
+			SynthDef("scaleShifterLimiter_mod", {arg inBus, outBus, limit=0.9;
+				Out.ar(outBus, Limiter.ar(In.ar(inBus), limit))
+			}).writeDefFile;
+
 			SynthDef("scaleShifterB2_mod", {arg inBusNum, outBus, inVolBus, outVolBus, largeEnvBusNum, length, gate0=0, ratio0=1, smallLength;
 				var in, in2, env, env0, sig0, out, largeEnv, bigEnv, inVol, outVol, xStart, xEnd, delTime;
 
@@ -38,7 +42,7 @@ ScaleShifterB_Mod : Module_Mod {
 
 	init {
 		this.makeWindow("ScaleShifterB",Rect(318, 645, 150, 270));
-		this.initControlsAndSynths(5);
+		this.initControlsAndSynths(4);
 
 		this.makeMixerToSynthBus;
 
@@ -49,7 +53,8 @@ ScaleShifterB_Mod : Module_Mod {
 		largeEnvBus = Bus.control(group.server);
 		inVolBus = Bus.control(group.server);
 		outVolBus = Bus.control(group.server);
-		limitBus = Bus.audio(group.server, 8);
+		limitBus = Bus.audio(group.server, 2);
+
 
 		inVolBus.set(0);outVolBus.set(0);
 
@@ -57,7 +62,7 @@ ScaleShifterB_Mod : Module_Mod {
 
 		synths.put(0, Synth("largeEnvFilt_mod", [\outBusNum, largeEnvBus.index, \gate, 1.0], envGroup));
 
-		synths.put(1, Synth("limiter_mod", [\inBus, limitBus, \outBus, outBus, \limit, 0.9], limitGroup));
+		synths.put(1, Synth("scaleShifterLimiter_mod", [\inBus, limitBus, \outBus, outBus, \limit, 0.9], limitGroup));
 
 		bigScale = [4/5,7/8,8/9,10/11,8/11,7/9];
 
@@ -71,60 +76,45 @@ ScaleShifterB_Mod : Module_Mod {
 			ratio0 = bigScale.choose;
 			if(0.5.coin,{ratio0 = 1/ratio0});
 
-			switch(numChannels,
-				2,{outBusLocal = limitBus.index},
-				4,{outBusLocal = limitBus.index+[0,2].choose},
-				8,{outBusLocal = limitBus.index+[0,2,4,6].choose}
-			);
-
-			Synth("scaleShifterB2_mod", [\inBusNum, mixerToSynthBus.index, \outBus, outBusLocal, \inVolBus, inVolBus.index, \outVolBus, outVolBus.index, \largeEnvBusNum, largeEnvBus.index, \length, localLength, \smallLength, smallLength, \ratio0, ratio0], synthGroup);
+			Synth("scaleShifterB2_mod", [\inBusNum, mixerToSynthBus.index, \outBus, limitBus, \inVolBus, inVolBus.index, \outVolBus, outVolBus.index, \largeEnvBusNum, largeEnvBus.index, \length, localLength, \smallLength, smallLength, \ratio0, ratio0], synthGroup);
 
 			(rrand(localLength/5, localLength/3)).wait;
 		}.loop});
 
-		controls.add(EZSlider.new(win,Rect(10, 10, 60, 220), "invol", ControlSpec(0,8,'amp'),
+		controls.add(QtEZSlider.new("invol", ControlSpec(0,8,'amp'),
 			{|v|
 				inVolBus.set(v.value);
-			}, 0, layout:\vert));
-		this.addAssignButton(0,\continuous, Rect(10, 230, 60, 20));
+			}, 0, true, \horz));
+		this.addAssignButton(0,\continuous);
 
-		controls.add(EZSlider.new(win,Rect(70, 10, 60, 220), "outvol", ControlSpec(0,8,'amp'),
+		controls.add(QtEZSlider.new("outvol", ControlSpec(0,8,'amp'),
 			{|v|
 				outVolBus.set(v.value);
-			}, 0, layout:\vert));
-		this.addAssignButton(1,\continuous, Rect(70, 230, 60, 20));
+			}, 0, true, \horz));
+		this.addAssignButton(1,\continuous);
 
-		controls.add(EZKnob.new(win,Rect(130, 10, 60, 100), "length", ControlSpec(1,7,'linear'),
+		controls.add(QtEZSlider.new("length", ControlSpec(1,7,'linear'),
 			{|v|
 				length = v.value;
-			}, 2, true));
-		this.addAssignButton(2,\continuous, Rect(130, 110, 60, 20));
+			}, 0, true, \horz));
+		this.addAssignButton(2,\continuous);
 
-		controls.add(EZKnob.new(win,Rect(130, 130, 60, 100), "notes", ControlSpec(2,24,'linear',1),
+		controls.add(QtEZSlider.new("notes", ControlSpec(2,24,'linear',1),
 			{|v|
 				numNotes = v.value;
-			}, 2, true));
-		this.addAssignButton(3,\continuous, Rect(130, 230, 60, 20));
+			}, 0, true, \horz));
+		this.addAssignButton(3,\continuous);
 
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button(win,Rect(10, 275, 60, 20))
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-					},
-					1, {
-						numChannels = 4;
-					},
-					2, {
-						numChannels = 8;
-					}
-				)
-			};
+		win.layout_(
+			VLayout(
+				HLayout(controls[0], assignButtons[0]),
+				HLayout(controls[1], assignButtons[1]),
+				HLayout(controls[2], assignButtons[2]),
+				HLayout(controls[3], assignButtons[3])
+			)
 		);
-
+		win.layout.spacing = 0;
+		win.layout.margins = [0,0,0,0];
 
 		SystemClock.play(localRout);
 	}

@@ -262,9 +262,6 @@ MainMixer : Module_Mod {
 	}
 
 	load {arg loadArray;
-		var counter;
-
-
 		win.bounds_(loadArray[1]);
 		loadArray[2].do{arg item, i;
 			mixerStrips[i].load(item);
@@ -456,15 +453,35 @@ SignalSwitcher_Mod : ModularMainMixer {
 
 	loadExtra {arg loadArray;
 
-		loadArray[0].do{arg controlLevel, i;
+/*		loadArray[0].do{arg controlLevel, i;
 			if((controls[i].value!=controlLevel)&&(dontLoadControls.includes(i).not),{
 				controls[i].valueAction_(controlLevel);
+			});
+		};*/
+
+		loadArray[0].do{arg controlLevel, i;
+			var control;
+			try { control=controls[i] } { control = nil; };
+			if(control!=nil,{
+				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+				if(dontLoadControls.includes(i).not){
+					if(controls[i].value!=controlLevel)
+					{
+						controls[i].valueAction_(controlLevel);
+					}
+				}{
+					if(controls[i].class==TypeOSCFuncObject)
+					{
+						//if we aren't loading the value of a TypeOSCFuncObject, still load the label
+						controls[i].valueAction_(controlLevel[0]);
+					}
+				}
 			});
 		};
 
 		loadArray[1].do{arg msg, i;
 			waitForSetNum = i;
-			if(msg!=nil,{
+			if((msg!=nil)&&(controls[i].class.asString!="TypeOSCFuncObject"),{ //TypeOSCFuncObject doesn't have an instandButton
 				MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
 				assignButtons[i].instantButton.value_(1);
 			})

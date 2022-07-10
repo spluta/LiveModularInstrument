@@ -94,7 +94,7 @@ TinyLoops_Mod :  Module_Mod {
 				current_synth = current_stream.next;
 
 				synths[current_synth].set(\play_rec, 0);
-				synths[current_synth+4].set(\play_rec, 0, \loop_dur, rrand(dur-(dur*deviation), dur+(dur*deviation)).clip(0.02,9.5).postln);
+				synths[current_synth+4].set(\play_rec, 0, \loop_dur, rrand(dur-(dur*deviation), dur+(dur*deviation)).clip(0.02,9.5));
 				}
 			},
 

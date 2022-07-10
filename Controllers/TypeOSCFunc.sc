@@ -28,7 +28,11 @@ TypeOSCFunc_Mod {
 
 	*sendOSC {|oscMsg, val|
 		//need to take out z action
-		Lemur_Mod.sendOSC(oscMsg, val)
+		oscMsg = oscMsg.asString;
+		if(oscMsg.last!=($z)){
+			OSCReceiver_Mod.sendOSCTypeOSC(oscMsg.copyRange(0,oscMsg.size-3), val);
+		};
+		//Lemur_Mod.sendOSC(oscMsg, val)
 	}
 
 	*removeResponder {arg path;
@@ -52,15 +56,13 @@ MyTextView : TextView {
 }
 
 TypeOSCFuncObject {
-	var <>mama, <>oscMsgs, <>location, <>text, <>function, <>viewNumBox, <>isXY, <>addZAction, <>zLocation, <>zFunction, oscMsgs, <>view, <>textField, <>numberBox, label, oscMsg, oscMsg_Z, oscFunc, typeAssignButton, functions, <>zAction, <>frozen = false, speedLimit, speedLimitSend;
+	var <>mama, <>oscMsgs, <>location, <>text, <>function, oscMsgs, <>view, <>textField, <>numberBox, label, oscMsg, oscFunc, typeAssignButton, functions, <>frozen = false, speedLimit, speedLimitSend;
 
-	*new {arg mama, oscMsgs, location, text, function, viewNumBox=true, isXY=false, addZAction=false, zLocation, zFunction;
-		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).viewNumBox_(viewNumBox).isXY_(isXY).addZAction_(addZAction).zLocation_(zLocation).zFunction_(zFunction).init;
+	*new {arg mama, oscMsgs, location, text, function;
+		^super.new.mama_(mama).oscMsgs_(oscMsgs).location_(location).text_(text).function_(function).init;
 	}
 
 	init {
-
-		zAction = {};
 
 		oscMsg = nil;
 		label = StaticText().font_(Font("Helvetica", 10)).string_(text);
@@ -71,9 +73,6 @@ TypeOSCFuncObject {
 		.action_{arg field;
 			if(oscMsg!=nil,{
 				MidiOscControl.clearController(mama.group.server, oscMsg);
-				if(oscMsg_Z!=nil){
-					MidiOscControl.clearController(mama.group.server, oscMsg_Z);
-				};
 			});
 
 			oscMsgs.put(location, field.value.asString);
@@ -81,31 +80,19 @@ TypeOSCFuncObject {
 			functions = List[function];
 
 			speedLimit = SpeedLimit({|val| {numberBox.value_(val)}.defer}, 0.1);
-			speedLimitSend = SpeedLimit({|val| TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)}, 0.1);
+			speedLimitSend = SpeedLimit({|val|
+				TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)}, 0.1);
 
-			if(viewNumBox,{
-				functions.add({arg val; speedLimit.value(val)});
-				functions.add({arg val; speedLimitSend.value(val)});
-			});
+			functions.add({|val| speedLimit.value(val)});
+			functions.add({|val| speedLimitSend.value(val)});
 
 			MidiOscControl.setControllerNoGui(oscMsg, functions, mama.group.server);
-
-			if(addZAction,{this.makeZAction(zLocation, oscMsg.copyRange(0, oscMsg.size-3)++"/z", zFunction)});
 		};
 		typeAssignButton = mama.addTypeOSCAssignButton(location);
 
 		view = CompositeView();
-		if(viewNumBox,{
-			view.layout_(HLayout(label, textField, numberBox, typeAssignButton.layout).spacing_(0).margins_([0,0,0,0])).maxHeight_(15);
-		},{
-		view.layout_(HLayout(label, textField, typeAssignButton.layout).spacing_(0).margins_([0,0,0,0])).maxHeight_(15);
-		});
-	}
+		view.layout_(HLayout(label, textField, numberBox, typeAssignButton).spacing_(0).margins_([0,0,0,0])).maxHeight_(15);
 
-	makeZAction {|location, msg, function|
-		oscMsgs.put(location, msg);
-		MidiOscControl.setControllerNoGui(msg, List[function], mama.group.server);
-		oscMsg_Z = msg;
 	}
 
 	asView {^view}
@@ -119,7 +106,7 @@ TypeOSCFuncObject {
 		{
 			textField.valueAction_(val[0].asString);
 			numberBox.valueAction_(val[1].asFloat);
-		}{textField.valueAction_(val)};
+		}{textField.valueAction_(val.asString)};
 	}
 
 	setExternal_ { arg val;

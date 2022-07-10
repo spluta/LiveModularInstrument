@@ -127,7 +127,6 @@ BuchlaModelSolo_Mod :  Module_Mod {
 
 		padFunctions.keys.do{arg key;
 			oscMsgs.put(counter, "/SeaboardPressure/"++key.asString);
-			//oscMsgs.postln;
 			MidiOscControl.setControllerNoGui(oscMsgs[counter], padFunctions[key], group.server);
 			counter=counter+1;
 		};
@@ -173,14 +172,12 @@ BuchlaModelSolo_Mod :  Module_Mod {
 		});
 		noteOnFunctions.put(17, {arg val;
 			if(val==1,{specs.put(5, ControlSpec(rrand(600,950), rrand(1800, 10000), 'exponential'))});
-			"zamp4".post;val.postln;
 			synths[0].set(\zamp4, val);
 		});
 
 		noteOnFunctions.put(25, {arg val;
 			synths[0].set(\noise2Select, 2.rand);
 			synths[0].set(\zamp5, val);
-			"zamp5".post;val.postln;
 		});
 
 		noteOnFunctions.put(24, {arg val; buchlaFilters.do{|item| if(item!=nil,{item.trigger(trigVal)})}});
@@ -207,11 +204,9 @@ BuchlaModelSolo_Mod :  Module_Mod {
 		padFunctions.put(8, {arg val;  synths[0].set(\freq1, specs[4].map(val))});
 
 		padFunctions.put(17, {arg val;
-			"amp4".post;val.postln;
 			synths[0].set(\amp4, fmAmpSpec.map(val))});
 
 		padFunctions.put(25, {arg val;
-			"amp5".post;val.postln;
 			synths[0].set(\amp5, fmAmpSpec.map(val))});
 
 
@@ -315,7 +310,7 @@ BuchlaModelSolo_Mod :  Module_Mod {
 
 		//continuousButtons = [3,  2, 6, 7,  1, 5, 9, 10,  0,4,8,  13,14,15]
 
-		padFunctions.put(3, {arg val; val.postln; val = val+baseVol; synths[0].set(\volume, ampSpec.map(max(val-0.1,0)))});
+		padFunctions.put(3, {arg val; val = val+baseVol; synths[0].set(\volume, ampSpec.map(max(val-0.1,0)))});
 
 		padFunctions.put(2, {arg val;
 				synths[0].set(\freq0, specs[0].map(val))});

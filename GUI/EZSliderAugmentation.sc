@@ -1,4 +1,4 @@
-+ EZSlider {
+/*+ EZSlider {
 
 zAction {
 	}
@@ -12,4 +12,4 @@ value_ { arg val;
 		}.defer;
 	}
 
-}
+}*/

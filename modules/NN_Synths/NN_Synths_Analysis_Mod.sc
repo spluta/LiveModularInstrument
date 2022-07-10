@@ -56,13 +56,11 @@ NN_Synths_Analysis_Mod : NN_Synth_Mod {
 	}
 
 	configure {|vals|
-		//vals.postln;
 		this.setSlidersAndSynth(vals);
 	}
 
 	startAnalysis {
 		var order;
-		"startAnalysis".postln;
 		analysisRout = Routine({{
 			if(parent.predictOnOff==1){
 				//"doit".postln;
@@ -195,7 +193,7 @@ Fluid_Ring_Analyzer {
 
 										stand.fitTransform(inDS, inStand, {
 											pca.fitTransform(inStand, inPCA, {
-												norm.fit(inPCA, {/*(time - Main.elapsedTime).postln*/})
+												norm.fit(inPCA, {})
 											});
 										});
 									});
@@ -215,13 +213,9 @@ Fluid_Ring_Analyzer {
 
 	analyzeMe {|vals, mlps, amountEach|
 		point.loadCollection(vals.asArray, action:{
-			//point.postln;
 			stand.transformPoint(point, pointStand, {|buf|
-				//pointStand.postln;
 				pca.transformPoint(pointStand, pcaPoint, {
-					//pcaPoint.postln;
 					norm.transformPoint(pcaPoint, pcaPointNorm, {
-						//pcaPointNorm.postln;
 						pcaPointNorm.loadToFloatArray(action:{|array| this.setXYWin(array[0], array[1])});
 						mlps[0].predictPoint(pcaPointNorm, synthBuf, {
 							mlps[1].predictPoint(pcaPointNorm, synthBuf2, {
