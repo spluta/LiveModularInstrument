@@ -5,7 +5,7 @@ NessyObject_Mod {
 		StartUp.add {
 			SynthDef("play_nessie_mod", {|outBus, buf0a, buf0b, buf1a, buf1b, volBus, speedBus, rate=1, gate=1, pauseGate=1, muteGate=1|
 
-				var env = EnvGen.kr(Env.asr(0.01, 1, 2), gate, doneAction:2);
+				var env = EnvGen.kr(Env.asr(0.01, 1, 4), gate, doneAction:2);
 				var sound, pauseEnv, muteEnv;
 
 				var speed = In.kr(speedBus);
@@ -44,12 +44,12 @@ NessyObject_Mod {
 	makeAndPlayLoop {
 		var inTempText, tempText, oneNDone, twoNDone, shortFileA, shortFileB;
 
-		tempText  = "ns_temp"++"_"++group.server.asString++"_"++group.nodeID.asString;
+		tempText  = "ns_temp"++"_"++group.server.asString++"_"++group.nodeID.asString++"_"++num;
 
-		shortFileA = (Platform.defaultTempDir++tempText++"A.wav").quote;
-		shortFileB = (Platform.defaultTempDir++tempText++"B.wav").quote;
-		outFileA = (Platform.defaultTempDir++tempText++"_"++"_100A.wav").quote;
-		outFileB = (Platform.defaultTempDir++tempText++"_"++"_100B.wav").quote;
+		shortFileA = (Platform.defaultTempDir++tempText++"A.wav");
+		shortFileB = (Platform.defaultTempDir++tempText++"B.wav");
+		outFileA = (Platform.defaultTempDir++tempText++"_"++"_100A.wav");
+		outFileB = (Platform.defaultTempDir++tempText++"_"++"_100B.wav");
 
 		if(synth!=nil){
 			synth.set(\gate, 0);
@@ -59,22 +59,23 @@ NessyObject_Mod {
 
 		oneNDone = 0;
 		twoNDone = 0;
+		parent.lastBuffers[0].postln;
 		parent.lastBuffers[0].write(shortFileA, "wav", completionMessage:{oneNDone = 1});
 		parent.lastBuffers[1].write(shortFileB, "wav", completionMessage:{
 			{
-				while(oneNDone==0){"waiting".postln; 0.025.wait};
+				while({oneNDone==0}, {"waiting".postln; 0.025.wait});
 
-				("/Users/spluta1/Documents/rust/ness_stretch/target/release/ness_stretch -m 100 -v 0 -s 4 -c 1 -f "++shortFileB+"-o"+outFileB).unixCmd(action:{twoNDone=1});
+				("/Users/spluta1/Library/Application Support/SuperCollider/Extensions/MyPlugins/TimeStretch/rust/target/release/ness_stretch".quote+"-m 100 -v 0 -s 4 -c 1 -f "++shortFileB.quote+"-o"+outFileB.quote).unixCmd(action:{twoNDone=1});
 
-				("/Users/spluta1/Documents/rust/ness_stretch/target/release/ness_stretch -m 100 -v 0 -s 9 -c 1 -f "++shortFileA+"-o"+outFileA).unixCmd(
+				("/Users/spluta1/Library/Application Support/SuperCollider/Extensions/MyPlugins/TimeStretch/rust/target/release/ness_stretch".quote+"-m 100 -v 0 -s 9 -c 1 -f "++shortFileA.quote+"-o"+outFileA.quote).unixCmd(
 					action:{|msg|
 						{
 
 
-							while(twoNDone==0){"waiting".postln; 0.025.wait};
+							while({twoNDone==0}, {"waiting".postln; 0.025.wait});
 
-							("rm"+shortFileA).unixCmd;
-							("rm"+shortFileB).unixCmd;
+							("rm"+shortFileA.quote).unixCmd;
+							("rm"+shortFileB.quote).unixCmd;
 
 							bufs = [
 								Buffer.readChannel(group.server, outFileA, channels:[0]),
@@ -85,8 +86,8 @@ NessyObject_Mod {
 
 							group.server.sync;
 							0.05.wait;
-							("rm "++outFileA).unixCmd;
-							("rm "++outFileB).unixCmd;
+							("rm "++outFileA.quote).unixCmd;
+							("rm "++outFileB.quote).unixCmd;
 							synth = Synth("play_nessie_mod", [\buf0a, bufs[0], \buf0b, bufs[1], \buf1a, bufs[2], \buf1b, bufs[3], \outBus, outBus, \volBus, volBus, \speedBus, speedBus], group);
 							(bufs[0].duration-2/speed).wait;
 						}.fork;

@@ -29,8 +29,8 @@ OSCReceiver_Mod.netAddrs[0].sendMsg('/2/fader12', 1.0.rand)
 OSCReceiver_Mod.netAddrs[1].sendMsg('/fader16', 1.0.rand)
 
 (
-//June2020
-LiveModularInstrument.boot(7, [1,2,3,4,5, 6,7,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/July_8_22_A");
+//July2022
+LiveModularInstrument.boot(7, [1,2,3,4,5, 6,7,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/July_10_22_A");
 )
 
 
