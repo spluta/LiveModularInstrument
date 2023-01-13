@@ -9,7 +9,7 @@ FeedbackSynth_Mod :  Module_Mod {
 
 				var fb;
 				var noise, noiseFreq, out;
-				var lastFilterFreq, lastRq, fbFilterFreq, straightNoise, ampMod, impulse, pulse, env, pauseEnv;
+				var lastFilterFreq, lastFilterFreqLow, lastRq, fbFilterFreq, straightNoise, ampMod, impulse, pulse, env, pauseEnv;
 
 				noiseFreq = Gate.kr(LFNoise1.kr(1).range(500, 12000)!2, freezeGate);
 
@@ -21,22 +21,30 @@ FeedbackSynth_Mod :  Module_Mod {
 				fbFilterFreq = Gate.kr((1000+(fb*fbMult)), freezeGate)*xFreezeShift;
 
 				fb = RLPF.ar(noise, fbFilterFreq);
+
+				//CheckBadValues.ar(fb, 0, 2).poll;
+
+				fb = ReplaceBadValues.ar(fb, LFNoise2.kr*65536, 0, 0);
+
 				LocalOut.ar(fb);
 
 
-				lastFilterFreq = Gate.kr(LFNoise0.kr(LFNoise0.kr(0.5).range(0.5,10)).exprange(10,
+				lastFilterFreq = Gate.kr(LFNoise0.kr(LFNoise0.kr(0.5).range(0.5,10)).exprange(40,
 					LFNoise0.kr(LFNoise0.kr(1).range(0.5,3)).range(40, 2000)), freezeGate)*yFreezeShift;
+
+				lastFilterFreqLow = Gate.kr(LFNoise0.kr(LFNoise0.kr(0.5).range(0.5,10)).exprange(200,
+					LFNoise0.kr(LFNoise0.kr(1).range(0.5,3)).range(200, 16000)), freezeGate)*yFreezeShift;
 
 				lastRq = Gate.kr(LFNoise0.kr(10).range(0.5,2), freezeGate)*xFreezeShift;
 
 				//freq of last RLPF - no control at all
 				out = Select.ar(lpHPSelect, [RLPF.ar(
-					fb,
-					lastFilterFreq,
+					fb.clip(-1.0,1.0),
+					lastFilterFreqLow,
 					lastRq
 				),
 				RHPF.ar(
-					fb,
+					fb.clip(-1.0,1.0),
 					lastFilterFreq,
 					lastRq
 				)]);

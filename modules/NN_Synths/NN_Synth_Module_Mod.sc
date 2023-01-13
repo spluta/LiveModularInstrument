@@ -309,9 +309,9 @@ NN_Synth_Mod : Module_Mod {
 			if(sizeOfNN>0){
 				hiddenArray = (3, 3+(valsList.size/5)..valsList.size).floor.asInteger.copyRange(1,3);
 
-				mlps[reloadWhich].hidden = hiddenArray;
+				mlps[reloadWhich].hiddenLayers = hiddenArray;
 			}{
-				mlps[reloadWhich].hidden = [3,3];
+				mlps[reloadWhich].hiddenLayers = [3,3];
 			};
 
 			modelFile = modelFolder++"/"++"modelFile"++reloadWhich++".json";

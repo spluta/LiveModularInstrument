@@ -100,7 +100,7 @@ ModularInputsArray : Module_Mod {
 
 			dispArray = dispArray.add(ModularVolumeObject(inBusses[i]-1, i));  //this is sending the inBus that SoundIn uses in the MVO
 
-			chanInBoxes.add(NumberBox().clipLo_(1).clipHi_(22)
+			chanInBoxes.add(NumberBox().clipLo_(1).clipHi_(56)
 				.action_{arg num;
 					dispArray[i].setInputChannel(num.value-1);
 				}
@@ -121,7 +121,6 @@ ModularInputsArray : Module_Mod {
 		numBusses.do{arg i;
 			controls.add(TextField()
 				.action_{arg text;
-					//Lemur_Mod.netAddrs.do{arg addr; addr.sendMsg(("/Container3/MixerLabel"++(i+1).asString).asSymbol, "@content", text.value)};
 					OSCReceiver_Mod.netAddrs.do{arg addr;
 						addr.sendMsg(("in_fader_label"++(i+1).asString).asSymbol, text.value)
 					};
@@ -135,7 +134,7 @@ ModularInputsArray : Module_Mod {
 			).margins_(1!4).spacing_(1));
 		};
 
-		win = Window("Inputs").layout_(GridLayout.rows(layouts).margins_(1!4).spacing_(1));
+		win = Window("Inputs"+ModularServers.device).layout_(GridLayout.rows(layouts).margins_(1!4).spacing_(1));
 
 		win.bounds_(Rect(786, 610, 412, 140));
 		win.userCanClose_(false);

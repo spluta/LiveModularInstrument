@@ -1,9 +1,9 @@
 NessyObject_Mod {
-	var <>group, <>outBus, <>parent, <>num, <>volBus, <>synth, bufs, zVal, lockVal, speed, speedBus, running, outFileA, outFileB;
+	var <>group, <>outBus, <>parent, <>num, <>volBus, synths, bufs, bufsSeq, currentBufs, zVal, lockVal, speed, speedBus, running, outFileA, outFileB, synthSeq, synthSwitch;
 
 	*initClass {
 		StartUp.add {
-			SynthDef("play_nessie_mod", {|outBus, buf0a, buf0b, buf1a, buf1b, volBus, speedBus, rate=1, gate=1, pauseGate=1, muteGate=1|
+			SynthDef("play_nessie_mod", {|outBus, buf0a, buf0b, /*buf1a, buf1b, */volBus, speedBus, rate=1, gate=1, pauseGate=1, muteGate=1|
 
 				var env = EnvGen.kr(Env.asr(0.01, 1, 4), gate, doneAction:2);
 				var sound, pauseEnv, muteEnv;
@@ -13,9 +13,7 @@ NessyObject_Mod {
 				var vol = In.kr(volBus).lag(0.2);
 
 				sound = [TGrains2.ar(1, imp, buf0a, speed, BufDur.kr(buf0a)/2, BufDur.kr(buf0a)/speed, 0, 1, 2, 2),
-					TGrains2.ar(1, imp, buf0b, speed, BufDur.kr(buf0a)/2, BufDur.kr(buf0a)/speed, 0, 1, 2, 2)]+
-				[TGrains2.ar(1, imp, buf1a, speed, BufDur.kr(buf1a)/2, BufDur.kr(buf1a)/speed, 0, 1, 2, 2),
-					TGrains2.ar(1, imp, buf1b, speed, BufDur.kr(buf1a)/2, BufDur.kr(buf1a)/speed, 0, 1, 2, 2)];
+					TGrains2.ar(1, imp, buf0b, speed, BufDur.kr(buf0a)/2, BufDur.kr(buf0a)/speed, 0, 1, 2, 2)];
 
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 				muteEnv = EnvGen.kr(Env.asr(0,1,0), muteGate, doneAction:0);
@@ -37,59 +35,63 @@ NessyObject_Mod {
 		running = false;
 		zVal = 0;
 		lockVal = 0;
-
+		bufsSeq = Pseq([0,1], inf).asStream;
+		bufs = List.newClear(2);
+		synths = List.newClear(4);
+		synthSeq = Pseq((0..3), inf).asStream;
+		synthSwitch = List[0,0,0,0];
 	}
 
 
 	makeAndPlayLoop {
-		var inTempText, tempText, oneNDone, twoNDone, shortFileA, shortFileB;
+		var inTempText, tempText, oneNDone, twoNDone, shortFileA, shortFileB, nextSynth;
 
 		tempText  = "ns_temp"++"_"++group.server.asString++"_"++group.nodeID.asString++"_"++num;
 
 		shortFileA = (Platform.defaultTempDir++tempText++"A.wav");
-		shortFileB = (Platform.defaultTempDir++tempText++"B.wav");
 		outFileA = (Platform.defaultTempDir++tempText++"_"++"_100A.wav");
-		outFileB = (Platform.defaultTempDir++tempText++"_"++"_100B.wav");
 
-		if(synth!=nil){
-			synth.set(\gate, 0);
+		nextSynth = synthSeq.next;
+		//make sure all the other synths are dead
+		(0..3).reject({|item| item==nextSynth}).do{|num|
+			if(synths[num]!=nil){
+				synths[num].set(\gate, 0);
+				synths[num] = nil;
+			};
 		};
 
-		bufs.do{|buf| if(buf!=nil){buf.free}};
+		synthSwitch[nextSynth] = 1;
+
+		currentBufs = bufsSeq.next;
+
+		bufs[currentBufs].do{|buf| if(buf!=nil){buf.free}};
 
 		oneNDone = 0;
 		twoNDone = 0;
-		parent.lastBuffers[0].postln;
-		parent.lastBuffers[0].write(shortFileA, "wav", completionMessage:{oneNDone = 1});
-		parent.lastBuffers[1].write(shortFileB, "wav", completionMessage:{
+		parent.lastBuffer.postln;
+		parent.lastBuffer.write(shortFileA, "wav", completionMessage:{
 			{
-				while({oneNDone==0}, {"waiting".postln; 0.025.wait});
 
-				("/Users/spluta1/Library/Application Support/SuperCollider/Extensions/MyPlugins/TimeStretch/rust/target/release/ness_stretch".quote+"-m 100 -v 0 -s 4 -c 1 -f "++shortFileB.quote+"-o"+outFileB.quote).unixCmd(action:{twoNDone=1});
 
-				("/Users/spluta1/Library/Application Support/SuperCollider/Extensions/MyPlugins/TimeStretch/rust/target/release/ness_stretch".quote+"-m 100 -v 0 -s 9 -c 1 -f "++shortFileA.quote+"-o"+outFileA.quote).unixCmd(
+				("/Users/spluta1/Library/Application Support/SuperCollider/Extensions/MyPlugins/TimeStretch/rust/target/release/ness_stretch".quote+"-m 100 -v 0 -s 8 -c 1 -f "++shortFileA.quote+"-o"+outFileA.quote).unixCmd(
 					action:{|msg|
 						{
 
-
-							while({twoNDone==0}, {"waiting".postln; 0.025.wait});
-
 							("rm"+shortFileA.quote).unixCmd;
-							("rm"+shortFileB.quote).unixCmd;
 
-							bufs = [
+							bufs.put(currentBufs, [
 								Buffer.readChannel(group.server, outFileA, channels:[0]),
-								Buffer.readChannel(group.server, outFileA, channels:[1]),
-								Buffer.readChannel(group.server, outFileB, channels:[0]),
-								Buffer.readChannel(group.server, outFileB, channels:[1])
-							];
+								Buffer.readChannel(group.server, outFileA, channels:[1])
+							]);
 
 							group.server.sync;
-							0.05.wait;
 							("rm "++outFileA.quote).unixCmd;
-							("rm "++outFileB.quote).unixCmd;
-							synth = Synth("play_nessie_mod", [\buf0a, bufs[0], \buf0b, bufs[1], \buf1a, bufs[2], \buf1b, bufs[3], \outBus, outBus, \volBus, volBus, \speedBus, speedBus], group);
-							(bufs[0].duration-2/speed).wait;
+							synths[nextSynth] = Synth("play_nessie_mod", [\buf0a, bufs[currentBufs][0], \buf0b, bufs[currentBufs][1], \outBus, outBus, \volBus, volBus, \speedBus, speedBus], group);
+							synthSwitch.postln;
+							if (synthSwitch[nextSynth] == 0){
+								synths[nextSynth].set(\gate, 0);
+								synths[nextSynth]=nil;
+							};
 						}.fork;
 				});
 			}.fork;
@@ -106,9 +108,17 @@ NessyObject_Mod {
 				this.makeAndPlayLoop;
 			}
 		}{
+			"zval 0".postln;
 			if(lockVal==0){
+				"gate 0".postln;
 				running = false;
-				synth.set(\gate, 0);
+				(0..3).do{|num|
+					if(synths[num]!=nil){
+						synths[num].set(\gate, 0);
+						synths[num] = nil;
+					};
+				};
+				synthSwitch = [0,0,0,0];
 			}
 		}
 	}
@@ -128,7 +138,13 @@ NessyObject_Mod {
 		}{
 			if(zVal==0){
 				running = false;
-				synth.set(\gate, 0);
+				(0..3).do{|num|
+					if(synths[num]!=nil){
+						synths[num].set(\gate, 0);
+						synths[num] = nil;
+					};
+				};
+				synthSwitch = [0,0,0,0];
 			}
 		}
 	}
@@ -139,7 +155,7 @@ NessyObject_Mod {
 }
 
 NessStretchRT_Mod : SignalSwitcher_Mod {
-	var texts, functions, transferBus, numBufs, durs, recBufs, recBufSeq, currentBuf, recSynth, hpssGroup, recGroup, bufSeq, bufs, osc, lastRecordedBuffer, routNum, recordTask, <>bufNum, nessyObjects, <>lastBuffers;
+	var texts, functions, transferBus, numBufs, durs, recBufs, recBufSeq, currentBuf, recSynth, hpssGroup, recGroup, bufSeq, bufs, osc, lastRecordedBuffer, routNum, recordTask, <>bufNum, nessyObjects, <>lastBuffer;
 
 	*initClass {
 		StartUp.add {
@@ -147,21 +163,20 @@ NessStretchRT_Mod : SignalSwitcher_Mod {
 				var sound;
 				var pauseEnv, muteEnv, env;
 				var sum = SelectX.ar(whichInBus, [In.ar(inBus0, 2), In.ar(inBus1, 2)]);
-				sound = FluidHPSS.ar(sum);
-				sound = sound.flatten;
-				sound = [sound[0], sound[3], sound[1], sound[4]];
+				//sound = FluidHPSS.ar(sum);
+				//sound = sound.flatten;
+				//sound = [sound[0], sound[3], sound[1], sound[4]];
 
 				env = EnvGen.kr(Env.asr(0.01, 1, 0.01), gate);
 				pauseEnv = EnvGen.kr(Env.asr(0,1,0), pauseGate, doneAction:1);
 				muteEnv = EnvGen.kr(Env.asr(0,1,0), muteGate, doneAction:0);
-				Out.ar(transferBus, sound*pauseEnv*muteEnv*gate);
+				Out.ar(transferBus, sum/*sound*/*pauseEnv*muteEnv*gate);
 			}).writeDefFile;
 
 			SynthDef("record_lilnessies_mod", {|transferBus, dur, buf, currentBufNum|
 				var env = EnvGen.kr(Env([0,1,1,0,0], [0.01, dur-0.002, 0.001, 0.001]), doneAction:2);
-				var in = In.ar(transferBus, 4);
-				RecordBuf.ar([in[0], in[1]]*env, buf, loop:0);
-				RecordBuf.ar([in[2], in[3]]*env, buf, loop:0);
+				var in = In.ar(transferBus, 2);
+				RecordBuf.ar(in*env, buf, loop:0);
 				SendTrig.kr(Env([0,0,1], [1/8, 0.001]).kr, currentBufNum, 0.9);
 			}).writeDefFile;
 
@@ -187,14 +202,18 @@ NessStretchRT_Mod : SignalSwitcher_Mod {
 
 		nessyObjects = Array.fill(4, {|i| NessyObject_Mod(group, outBus, this, i)});
 
-		transferBus = Bus.audio(group.server, 4);
+		transferBus = Bus.audio(group.server, 2);
 
 		synths.add(Synth("ness_in_mod", [\inBus0, localBusses[0], \inBus1, localBusses[1], \whichInBus, 0, \transferBus, transferBus], hpssGroup));
 		4.do{synths.add(nil)};
 
 		//this part records the temporary buffers
 		durs = Array.fill(numBufs, {rrand(1/12,1/5)});
-		recBufs = Array.fill(numBufs, {|i| Array.fill(2, {Buffer.alloc(group.server, group.server.sampleRate*durs[i], 2)})});
+		/*recBufs = Array.fill(numBufs, {|i|
+			Array.fill(2, {Buffer.alloc(group.server, group.server.sampleRate*durs[i], 2)}
+		)});*/
+		recBufs = Array.fill(numBufs, {|i| Buffer.alloc(group.server, group.server.sampleRate*durs[i], 2)});
+
 		recBufSeq = Pseq((0..(numBufs-1)), inf).asStream;
 
 		recordTask = Task({inf.do{
@@ -203,8 +222,7 @@ NessStretchRT_Mod : SignalSwitcher_Mod {
 			(1/16).wait;
 		}}).play;
 
-
-		//this part writes the temporary buffers to disk
+		//keeps track of the last recorded buffer
 		bufSeq = Pseq((0..(numBufs-1)), inf).asStream;
 		bufs = List.newClear(numBufs);
 		osc = OSCFunc({ arg msg, time;
@@ -212,11 +230,8 @@ NessStretchRT_Mod : SignalSwitcher_Mod {
 
 			lastRecordedBuffer = msg[2];
 
-			recBufs[lastRecordedBuffer].collect{|item| item.normalize};
-			lastBuffers = recBufs[lastRecordedBuffer];
-
-			//recBufs[lastRecordedBuffer][0].write(Platform.defaultTempDir++tempText++"A.wav", "wav");
-			//recBufs[lastRecordedBuffer][1].write(Platform.defaultTempDir++tempText++"B.wav", "wav");
+			recBufs[lastRecordedBuffer].normalize;//.collect{|item| item.normalize};
+			lastBuffer = recBufs[lastRecordedBuffer];
 
 		},'/tr', group.server.addr);
 

@@ -19,6 +19,7 @@ MIDI_Mod {
 
 		responders.add(MIDIFunc.cc({|val, num, chan, src|
 			var address = "/cc/"++num.asString++"/"++chan.asString++"/";
+
 			MidiOscControl.respond(address, val/127);
 			if(sendRequest, {
 				MidiOscControl.setController(address, \continuous);
@@ -61,6 +62,7 @@ MIDI_Mod {
 
 	*getFunctionFromKey {arg module, controllerKey, object;
 		var function, localControlObject, nothing, keyShort;
+
 		//here you are. hope this works!
 		localControlObject = object;
 
@@ -74,7 +76,7 @@ MIDI_Mod {
 					function = {|val| {localControlObject.valueAction_(val.round)}.defer};
 				});
 			},
-			'noteOn', {
+			'note', {
 				function = {|val|
 					{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
 			}

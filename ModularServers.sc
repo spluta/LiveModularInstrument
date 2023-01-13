@@ -6,10 +6,10 @@ ModularServer_ID {
 }
 
 ModularServerObject {
-	var <>serverName, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id, directIns;
+	var <>serverName, <>blockSize, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id, directIns;
 
-	*new {|serverName|
-		^super.new.serverName_(serverName).init;
+	*new {|serverName, blockSize|
+		^super.new.serverName_(serverName).blockSize_(blockSize).init;
 	}
 
 	*initClass {
@@ -24,6 +24,13 @@ ModularServerObject {
 		id = ModularServer_ID.next;
 
 		while( {("lsof -i:"++id).unixCmdGetStdOut.size > 0},{id = ModularServer_ID.next});
+
+		blockSize ?? {"set blockSize".postln; blockSize = 128};
+
+		Server.local.options.blockSize_(blockSize);
+
+		Server.local.options.blockSize.postln;
+		Server.local.options.device.postln;
 
 		server = Server.new(serverName, NetAddr("localhost", id), Server.local.options);
 		server.waitForBoot({
@@ -157,11 +164,8 @@ ModularServerObject {
 		loadArray[4].do{arg item, i;
 			if(item.size>0){
 				modularObjects[i].load(item);
-				//server.sync;
-				//0.05.wait;
 			};
 		};
-		//}.fork(AppClock);
 
 		mainMixer.load(loadArray[5]);
 	}
@@ -210,14 +214,14 @@ ModularServerObject {
 
 ModularServers {
 	classvar <>numServers, <>inBusses;
-	classvar <>servers, <>modularInputsArray, <>serverSwitcher;
+	classvar <>servers, <>modularInputsArray, <>serverSwitcher, <>device;
 
-	*boot {arg numServersIn, inBussesIn;
+	*boot {arg numServersIn, inBussesIn, blockSizesIn;
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
 		{
 			numServers.do{arg i;
-				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1)));
+				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1), blockSizesIn[i]));
 				0.5.wait;
 			}
 		}.fork(AppClock);

@@ -3,7 +3,7 @@ Mute_Mod : Module_Mod {
 
 	*initClass {
 		StartUp.add {
-			SynthDef("mute_mod", {arg inBus, outBus, mute=1, ramp=0.01, gate=1, pauseGate=1;
+			SynthDef("mute_mod", {arg inBus, outBus, mute=0, ramp=0.01, gate=1, pauseGate=1;
 				var env, out, pauseEnv, muteEnv;
 
 				muteEnv = EnvGen.kr(Env.asr(ramp, 1, ramp), mute, doneAction:0);
@@ -20,7 +20,7 @@ Mute_Mod : Module_Mod {
 
 		this.initControlsAndSynths(2);
 
-		this.makeMixerToSynthBus(8);
+		this.makeMixerToSynthBus(2);
 
 		synths.add(Synth("mute_mod", [\inBus, mixerToSynthBus.index, \outBus, outBus], group));
 
@@ -31,7 +31,8 @@ Mute_Mod : Module_Mod {
 		controls.add(Button(win, Rect(5, 5, 280, 20))
 			.states_([["mute", Color.blue, Color.black],["on", Color.black, Color.blue]])
 			.action_({arg butt;
-				synths[0].set(\mute, (butt.value).abs)
+				"mute".post;
+				synths[0].set(\mute, (butt.value).abs.postln)
 			})
 		);
 

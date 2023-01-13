@@ -154,13 +154,11 @@ MainProcessingWindow : MidiOscObject {
 		cpuUsage0 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		cpuUsage1 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 
-		//waitRand = rrand(4.9,2.1);
 		cpuUsageRout = Routine({inf.do{
 			cpuUsage0.string = group.server.avgCPU.round(0.01).asString;
 			0.2.wait;
 		}});
 
-		//waitRandA = rrand(1.9,2.1);
 		cpuUsageRoutA = Routine({inf.do{
 			cpuUsage1.string = group.server.peakCPU.round(0.01).asString;
 			0.2.wait;
@@ -202,15 +200,15 @@ MainProcessingWindow : MidiOscObject {
 
 
 LiveModularInstrument {
-	classvar <>numServers, <>inBusses, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers, path;
-	classvar numServers, windows;
+	classvar <>numServers, <>inBusses, <>blockSizes, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers, path;
+	classvar numServers, windows, driverWin, device, sampleRate;
 	classvar readyToRollCounter, addingServer=false;
 
 	*new {
 		^super.new.init;
 	}
 
-	*boot {arg numServersIn=1, inBussesIn, whichClassListIn, controllersIn, pathIn=nil;
+	*boot {arg numServersIn=1, inBussesIn, blockSizesIn, whichClassListIn, controllersIn, pathIn=nil;
 		if(
 			(controllersIn.indexOf(OSCReceiver_Mod)!=nil)
 			and:(OSCReceiver_Mod.inPorts.collect{|item| thisProcess.openUDPPort(item).asInteger}.sum!=OSCReceiver_Mod.inPorts.size)
@@ -232,6 +230,12 @@ LiveModularInstrument {
 					inBusses.put(i, item);
 			})};
 
+			blockSizes=128!numServers;
+			blockSizesIn.do{arg item, i;
+				if(i<numServers,{
+					blockSizes.put(i, item);
+			})};
+
 			controllers = controllersIn; whichClassList=whichClassListIn;
 
 			//set up the control devices and control GUI
@@ -240,7 +244,31 @@ LiveModularInstrument {
 			ModularClassList.new(whichClassList);
 
 			readyToRollCounter = 0;
-			ModularServers.boot(numServers, inBusses); //sends readyToRoll messages once the servers are loaded
+
+			device = "BlackMac";
+			sampleRate = 88200;
+
+			driverWin = Window("Which Interface?", Rect(500, 500, 200, 100)).layout_(
+				VLayout(
+					PopUpMenu().items_(ServerOptions.devices).value_(ServerOptions.devices.indexOfEqual("BlackMac"))
+					.action_{|menu| device = menu.item.asString},
+					PopUpMenu().items_(["44100", "48000", "88200", "96000"]).value_(2)
+					.action_{|menu| sampleRate = menu.item.asInteger; Server.local.options.sampleRate_(sampleRate)},
+					Button().states_([["GO", Color.green, Color.black]])
+					.action_{|butt|
+						device.postln;
+						Server.local.options.device = device;
+						if(device=="MacBook Pro Speakers"){Server.local.options.inDevice="MacBook Pro Microphone"};
+						if(device=="MacBook Pro Microphone"){Server.local.options.outDevice="MacBook Pro Speakers"};
+						ModularServers.device_(device);
+						ModularServers.boot(numServers, inBusses, blockSizes); //sends readyToRoll messages once the servers are loaded
+						driverWin.close;
+					}
+				)
+			);
+			driverWin.front;
+
+
 		}
 	}
 
@@ -264,7 +292,7 @@ LiveModularInstrument {
 		readyToRollCounter = readyToRollCounter+1;
 		if(addingServer,{
 
-			ModularServers.modularInputsArray.addServer( ModularServers.servers[("lmi"++(numServers).asString).asSymbol]);
+			ModularServers.modularInputsArray.addServer(ModularServers.servers[("lmi"++(numServers).asString).asSymbol]);
 
 			numServers = numServers+1;
 			addingServer = false;
@@ -273,7 +301,7 @@ LiveModularInstrument {
 				"readyToRoll".postln;
 				Window.allWindows.do{arg item; if(item.visible==true,{item.front})};
 
-				ModularServers.addInputsArray(inBusses);
+				ModularServers.addInputsArray(inBusses, device);
 				ModularServers.updateServerSwitcher;
 
 				MidiOscControl.createActionDictionary;

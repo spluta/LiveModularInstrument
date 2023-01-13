@@ -119,7 +119,6 @@ MidiOscControl {
 
 
 	*setController {arg controllerKey, typeOfController;
-
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
 		if((typeOfController==instantTypeOfController),{

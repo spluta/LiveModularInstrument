@@ -1,48 +1,56 @@
 
-//TypeOSCFunc - need to fix set sendOSC
+Get Feedback control working
 
-Pause Joystick during
-Buy Keyboard
+NN control of eq.
 
-NetAddr.langPort
+Server.local.options.sampleRate_(88200)
 
-b = NetAddr.new("127.0.0.1", 7001);    // create the NetAddr
-b.sendMsg("/fader34", 1.0.rand);
+ModularServers.modularInputsArray.front
 
-b = NetAddr.new("127.0.0.1", 7000);    // create the NetAddr
-b.sendMsg("/fader4", 1.0.rand);
+Joystick_Mod.running
 
-c = NetAddr.new("10.0.0.3", 7001);    // create the NetAddr
-c.sendMsg('/fader1', 1.0.rand);
+(
+var blackChans = 16;
+var analogChans = 0;
+var micChans = 0;
+var aesADAT = 0;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+//July2022
+LiveModularInstrument.boot(8, startChan+[1,2,3,4,5,6,7,8], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/Jan_10_23B");
+)
 
 
-Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"])
+Seaboard_Mod.trace
 
-Joystick_Mod.running=false
-Joystick_Mod.running=true
-
-thisProcess.openUDPPort(6000)
-OSCFunc.trace
-OSCFunc.trace(false)
-
-OSCReceiver_Mod.netAddrs[0].sendMsg('/2/fader12', 1.0.rand)
-OSCReceiver_Mod.netAddrs[1].sendMsg('/fader16', 1.0.rand)
 
 (
 //July2022
-LiveModularInstrument.boot(7, [1,2,3,4,5, 6,7,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/July_10_22_A");
+LiveModularInstrument.boot(8, [17,18,21, 22,23,24, 19,20], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]);
 )
+
+AtkTests
+
+Quarks.install("https://github.com/ambisonictoolkit/atk-sc3.git");
+
+Atk.downloadKernels;
+Atk.downloadMatrices;
+Atk.downloadSounds;
+Quarks.install("https://github.com/JamesWenlock/AmbiVerbSC")
 
 
 (
 //Nothing
-LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/NessTest");
+LiveModularInstrument.boot(1, [17,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/feedback_1_7_23B");
+)
+teapotFeedback_1_8_23
+(
+//Nothing
+LiveModularInstrument.boot(1, [17,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/teapotFeedback_1_12_23");
 )
 
 
-
 (
-LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/Extensions/saved LMI Sessions/fb_test"));
+LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]));
 )
 
 
@@ -93,7 +101,7 @@ LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [OSCReceiver_Mod, 
 
 
 
-ModularServers.servers[\lmi1].server.queryAllNodes
+ModularServers.servers[\lmi8].server.queryAllNodes
 
 FluidMLPRegressor
 
@@ -124,7 +132,8 @@ a = NetAddr("127.0.0.1", 8000)
 
 a.sendMsg('/Container/Fader/x', 1.0.rand)
 
-ModularServers.servers[\lmi1].server.queryAllNodes
+a = ModularServers.servers[\lmi1].server.asString;
+b = a.copyRange(3,a.size-1)
 
 Seaboard.start;
 Seaboard_Mod.start;

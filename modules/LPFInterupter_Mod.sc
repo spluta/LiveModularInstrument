@@ -10,7 +10,7 @@ LPFInterupter_Mod : ProtoType_Mod {
 
 				width = Lag.kr(1-ctlIn[4], 0.2);
 
-				oscFreq = Lag.kr(ctlIn[5].linexp(0,1,0.1,5));
+				oscFreq = Lag.kr(ctlIn[5].linexp(0,1,0.025,20));
 
 				z2Lag = LagUD.kr(ctlIn[3], 0.01, 2);
 
@@ -20,15 +20,14 @@ LPFInterupter_Mod : ProtoType_Mod {
 
 				filtFreq = Lag.kr(SelectX.kr(ctlIn[3], [(1-onOff)+ctlIn[1], (1-sine)]).clip(0, 1.0), 0.1);
 
-				filtFreq = Lag.kr(filtFreq.linexp(0, 1, 20, SampleRate.ir/2));
+				filtFreq = Lag.kr(filtFreq.linexp(0, 1, 20, 22050));
 
 				//res = Lag.kr(ctlIn[2].linlin(0,1,0,0.95));
-				q = Lag.kr(ctlIn[2].linlin(0,1,1,0.05));
+				q = Lag.kr(ctlIn[2].linlin(0,1,0.8,0.075));
 
 				//filt = MoogVCF2.ar(in, filtFreq, res);
 				filt = RLPF.ar(in, filtFreq, q);
 
-				//sig = SelectX.ar((onOff.lag(0.1)*ctlIn[1].bilin(0.9, 0, 1, 1, 1, 0).poll).poll, [in, filt]);
 
 				Out.ar(outBus, filt);
 			}).writeDefFile;

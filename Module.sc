@@ -1,6 +1,6 @@
 MidiOscObject {
 	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
-	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController, path;
+	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController, path, waitToLoad = false;
 
 	initControlsAndSynths {arg num;
 		//oscMsgs holds the
@@ -39,18 +39,18 @@ MidiOscObject {
 		var unmapped, temp;
 
 		if(oscMsgs[num]!=nil) {
-/*			if(oscMsgs[num].asString.contains("/Switches")) {
-				if(controls[num].value==1,{
-					Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
-				});
+			/*			if(oscMsgs[num].asString.contains("/Switches")) {
+			if(controls[num].value==1,{
+			Lemur_Mod.sendSwitchOSC(oscMsgs[num].asString)
+			});
 			}{*/
 
-				if(val.size<2){
-					try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
-					//Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
-					temp = oscMsgs[num].asString;
-					OSCReceiver_Mod.sendOSC(temp.copyRange(0, temp.size-3), unmapped);
-				}
+			if(val.size<2){
+				try {unmapped = controls[num].controlSpec.unmap(val)} {unmapped = val};
+				//Lemur_Mod.sendOSC(oscMsgs[num], unmapped);
+				temp = oscMsgs[num].asString;
+				OSCReceiver_Mod.sendOSC(temp.copyRange(0, temp.size-3), unmapped);
+			}
 			//}
 		}
 	}
@@ -157,151 +157,158 @@ MidiOscObject {
 
 	load {arg loadArray;
 
-		loadArray[1].do{arg controlLevel, i;
-			var control;
-			try { control=controls[i] } { control = nil };
 
-			if(control!=nil,{
-				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				//controls[i].valueAction_(controlLevel);
-				if(dontLoadControls.includes(i).not){
-					try {
-					if(controls[i].value!=controlLevel)
-					{
-						controls[i].valueAction_(controlLevel);
-					}
-					}{}
-				}{
-					if(controls[i].class==TypeOSCFuncObject)
-					{
-						//if we aren't loading the value of a TypeOSCFuncObject, still load the label
-						controls[i].valueAction_(controlLevel[0]);
-					}
-				}
-			});
-		};
+		Routine({
+			while{waitToLoad==true}{"waiting".postln;0.2.wait};
 
-		loadArray[2].do{arg msg, i;
-			var control;
-			waitForSetNum = i;
-			try { control=controls[i] } { control = nil;};
-			if((msg!=nil)&&(control!=nil)&&(control.class!=TypeOSCFuncObject),{
-				if(isGlobalController==true,{
-					//this is only true for the server switcher and Modular Inputs Array
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
-				},{
-					MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+			loadArray[1].do{arg controlLevel, i;
+				var control;
+				try { control=controls[i] } { control = nil };
+
+				if(control!=nil,{
+					//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+					//controls[i].valueAction_(controlLevel);
+					if(dontLoadControls.includes(i).not){
+						try {
+							if(controls[i].value!=controlLevel)
+							{
+								controls[i].valueAction_(controlLevel);
+							}
+						}{}
+					}{
+						if(controls[i].class==TypeOSCFuncObject)
+						{
+							//if we aren't loading the value of a TypeOSCFuncObject, still load the label
+							controls[i].valueAction_(controlLevel[0]);
+						}
+					}
 				});
-				if(assignButtons[i]!=nil){
-					{assignButtons[i].instantButton.value_(1)}.defer;
-				}
-			})
-		};
+			};
 
-		if(win!=nil,{
-			win.bounds_(loadArray[3]);
-			win.visible_(false);
-		});
-
-		this.loadExtra(loadArray[4]);
-
-		this.sendGUIVals;
-	}
-}
-
-Module_Mod : MidiOscObject {
-	var <>outBus, <>mixerToSynthBus, xmlSynth, numChannels = 2, rout;
-
-
-	*new {arg group, outBus;
-		^super.new.group_(group).outBus_(outBus).init;
-	}
-
-	makeWindow {arg name, rect;
-		if(rect!=nil, {win = Window.new(name, rect)},{win = Window.new(name)});
-		win.userCanClose_(false);
-		path = PathName(this.class.filenameSymbol.asString).pathOnly;
-		modName = name;
-	}
-
-	makeMixerToSynthBus {arg numChannels;
-		numChannels ?? {numChannels = 1};
-		mixerToSynthBus = Bus.audio(group.server, numChannels);
-	}
-
-	getInternalBus {
-		^mixerToSynthBus;
-	}
-
-	pause {
-		synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
-		if(bigSynthGroup!=nil){bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false)};
-	}
-
-	unpause {
-		synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
-		if(bigSynthGroup!=nil){bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1)};
-	}
-
-	show {
-		win.visible = true;
-		win.front;
-	}
-
-	hide {
-		win.visible = false;
-	}
-
-	numBusses {
-		^mixerToSynthBus.numChannels;
-	}
-
-	killMe {
-		oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
-		win.close;
-		if(synths!=nil,{
-			synths.do{arg item; if(item!=nil,{item.set(\gate, 0)})};
-		});
-		mixerToSynthBus.free;
-		this.killMeSpecial;
-	}
-
-	killMeSpecial {
-
-	}
-}
-
-
-TypeOSCModule_Mod : Module_Mod {
-	load {arg loadArray;
-
-		loadArray[1].do{arg controlLevel, i;
-			var control;
-			try { control=controls[i] } { control = nil; };
-			if(control!=nil,{
-				//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
-				if(dontLoadControls.includes(i).not){
-					if(controls[i].value!=controlLevel)
-					{
-						controls[i].valueAction_(controlLevel);
+			loadArray[2].do{arg msg, i;
+				var control;
+				waitForSetNum = i;
+				try { control=controls[i] } { control = nil;};
+				if((msg!=nil)&&(control!=nil)&&(control.class!=TypeOSCFuncObject),{
+					if(isGlobalController==true,{
+						//this is only true for the server switcher and Modular Inputs Array
+						MidiOscControl.getFunctionNSetController(this, controls[i], msg, 'global');
+					},{
+						MidiOscControl.getFunctionNSetController(this, controls[i], msg, group.server);
+					});
+					if(assignButtons[i]!=nil){
+						{assignButtons[i].instantButton.value_(1)}.defer;
 					}
-				}{
-					if(controls[i].class==TypeOSCFuncObject)
-					{
-						//if we aren't loading the value of a TypeOSCFuncObject, still load the label
-						controls[i].valueAction_(controlLevel[0]);
-					}
-				}
+				})
+			};
+
+			if(win!=nil,{
+				win.bounds_(loadArray[3]);
+				win.visible_(false);
 			});
-		};
 
-		if(win!=nil,{
-			win.bounds_(loadArray[3]);
-			win.visible_(false);
-		});
+			this.loadExtra(loadArray[4]);
 
-		this.loadExtra(loadArray[4]);
+			this.sendGUIVals;
+		}).play(AppClock)
 
-		this.sendGUIVals;
+
 	}
 }
+
+	Module_Mod : MidiOscObject {
+		var <>outBus, <>mixerToSynthBus, xmlSynth, numChannels = 2, rout;
+
+
+		*new {arg group, outBus;
+			^super.new.group_(group).outBus_(outBus).init;
+		}
+
+		makeWindow {arg name, rect;
+			if(rect!=nil, {win = Window.new(name, rect)},{win = Window.new(name)});
+			win.userCanClose_(false);
+			path = PathName(this.class.filenameSymbol.asString).pathOnly;
+			modName = name;
+		}
+
+		makeMixerToSynthBus {arg numChannels;
+			numChannels ?? {numChannels = 1};
+			mixerToSynthBus = Bus.audio(group.server, numChannels);
+		}
+
+		getInternalBus {
+			^mixerToSynthBus;
+		}
+
+		pause {
+			synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
+			if(bigSynthGroup!=nil){bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false)};
+		}
+
+		unpause {
+			synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
+			if(bigSynthGroup!=nil){bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1)};
+		}
+
+		show {
+			win.visible = true;
+			win.front;
+		}
+
+		hide {
+			win.visible = false;
+		}
+
+		numBusses {
+			^mixerToSynthBus.numChannels;
+		}
+
+		killMe {
+			oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
+			win.close;
+			if(synths!=nil,{
+				synths.do{arg item; if(item!=nil,{item.set(\gate, 0)})};
+			});
+			mixerToSynthBus.free;
+			this.killMeSpecial;
+		}
+
+		killMeSpecial {
+
+		}
+	}
+
+
+	TypeOSCModule_Mod : Module_Mod {
+		load {arg loadArray;
+
+			loadArray[1].do{arg controlLevel, i;
+				var control;
+				try { control=controls[i] } { control = nil; };
+				if(control!=nil,{
+					//it will not load the value if the value is already correct (because Button seems messed up) or if dontLoadControls contains the number of the controller
+					if(dontLoadControls.includes(i).not){
+						if(controls[i].value!=controlLevel)
+						{
+							controls[i].valueAction_(controlLevel);
+						}
+					}{
+						if(controls[i].class==TypeOSCFuncObject)
+						{
+							//if we aren't loading the value of a TypeOSCFuncObject, still load the label
+							controls[i].valueAction_(controlLevel[0]);
+						}
+					}
+				});
+			};
+
+			if(win!=nil,{
+				win.bounds_(loadArray[3]);
+				win.visible_(false);
+			});
+
+			this.loadExtra(loadArray[4]);
+
+			this.sendGUIVals;
+		}
+	}

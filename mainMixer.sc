@@ -49,10 +49,6 @@ QtModularMixerStrip : Module_Mod {
 
 	init3 {arg isMainMixer;
 
-		//replace the 2 channel transferSynth with a 22 channel synth
-		//transferSynth.free;
-		//transferSynth = Synth.tail(reducerGroup, "transferSynthB22_mod", [\transferBus, transferBus, \outBus, outBus]);
-
 		location = 1;
 
 
@@ -65,7 +61,6 @@ QtModularMixerStrip : Module_Mod {
 		controls.add(NumberBox().clipLo_(1).clipHi_(22)
 			.action_{arg box;
 				parent.setOutBus(location, box.value);
-				//synths[location].set(\outBus, outBus.index+(box.value-1)) //set the out of the parent to the correct channel
 			};
 		);
 

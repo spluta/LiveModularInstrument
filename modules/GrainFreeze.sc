@@ -1,5 +1,5 @@
 GrainFreezeDrums_Mod : Module_Mod {
-	var volBus, recordGroup, playGroup, buffer, fftBuf, phaseBus, trigButton, getTrig;
+	var volBus, recordGroup, playGroup, buffer, fftBuf, phaseBus, trigButton, getTrig, serverNum;
 
 	*initClass {
 		{
@@ -18,8 +18,8 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 			}).writeDefFile;
 
-			SynthDef(\gfdPlay2_mod, { arg inBus, phaseBus, outBus = 0, bufnum = 0, volBus, thresh = 0.1, trigDiv = 2, addPulse = 2, whichTrig=0, useOnOff = 0, offDensity = 0, impDust=0, t_trigShifter=0, t_trigShiftStay=0, shiftTime = 3, lockGate = 1, muteGate = 1, gate = 1, pauseGate = 1;
-				var sound, impulse, trig, trig1, trig2, phase, impRate, out, latchPhase = 0, amp, toggleEnv, shiftTrig, shiftEnv, shiftStay, shift, vol, env, pauseEnv, muteEnv, onOffSwitch, phaseOffset, buf, chain;
+			SynthDef(\gfdPlay2_mod, { arg inBus, phaseBus, outBus = 0, bufnum = 0, volBus, thresh = 0.1, trigDiv = 2, addPulse = 2, whichTrig=0, useOnOff = 0, offDensity = 0, impDust=0, t_trigShifter=0, t_trigShiftStay=0, shiftTime = 3, triggerVal = 0, lockGate = 1, muteGate = 1, gate = 1, pauseGate = 1;
+				var sound, impulse, trig, trig1, trig2, phase, impRate, out, latchPhase = 0, amp, toggleEnv, shiftTrig, shiftEnv, shiftStay, shift, vol, env, pauseEnv, muteEnv, onOffSwitch, phaseOffset, buf, chain, grainDur;
 
 				sound = In.ar(inBus);
 
@@ -28,7 +28,8 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 				trig = Trig1.kr((Coyote.kr(sound, thresh: thresh)*EnvGen.kr(Env.asr(0.001, 1, 0.001), lockGate)),0.01);
 
-				SendTrig.kr(trig,0, 1);
+				//this needs to be more specific
+				SendTrig.kr(trig, triggerVal, 1);
 
 				shiftTrig = Trig1.kr(t_trigShifter, shiftTime);
 
@@ -41,7 +42,7 @@ GrainFreezeDrums_Mod : Module_Mod {
 				trig1 = PulseDivider.kr(trig, trigDiv, 0);
 				trig2 = PulseDivider.kr(trig, trigDiv, addPulse);
 
-				latchPhase = Latch.kr(phase, trig1);
+				latchPhase = Latch.kr(phase, trig);
 
 				trig = Select.kr(whichTrig, [trig, trig1]);
 
@@ -55,9 +56,13 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 				onOffSwitch = Select.kr(useOnOff, [1, Lag.kr(TChoose.kr(trig, [1,0], [1-offDensity, offDensity].normalizeSum), 0.01)]);
 
-				phaseOffset = (LagUD.kr(1-trig, TRand.kr(2, 4, trig), 0)*TExpRand.kr(0.001, 0.025, trig));
+				//phaseOffset = (LagUD.kr(1-trig, TRand.kr(2, 4, trig), 0)*TExpRand.kr(0.001, 0.025, trig));
 
-				out = TGrains.ar(2, impulse, bufnum,1 /*(1+shiftEnv+shiftStay)*/, ((latchPhase-512)/44100)/*+phaseOffset*/, TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
+				phaseOffset = TRand.kr(0.011, 0.02);
+
+				grainDur = TRand.kr(2/impRate, 4/impRate, trig);
+				//changed SampleRate from 44100
+				out = TGrains.ar(2, impulse, bufnum,1, (latchPhase/SampleRate.ir-(1/impRate)).clip(1/impRate, BufDur.kr(bufnum)-(1/impRate)), TRand.kr(2/impRate, 4/impRate, trig), TRand.kr(-1, 1, trig), 4);
 
 				vol = In.kr(volBus);
 
@@ -77,6 +82,9 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 		this.makeMixerToSynthBus;
 
+		serverNum = group.server.name.asString;
+		serverNum = serverNum.copyRange(3, serverNum.size).asInteger;
+
 		buffer = Buffer.alloc(group.server, group.server.sampleRate*120, 1);
 
 		volBus = Bus.control(group.server);
@@ -87,7 +95,7 @@ GrainFreezeDrums_Mod : Module_Mod {
 		playGroup = Group.tail(group);
 
 		synths.put(0, Synth("gfdRecord_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \bufnum, buffer.bufnum], recordGroup));
-		synths.put(1, Synth("gfdPlay2_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer, \volBus, volBus.index], playGroup));
+		synths.put(1, Synth("gfdPlay2_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer, \volBus, volBus.index, \triggerVal, serverNum], playGroup));
 
 		controls.add(QtEZSlider.new("vol", ControlSpec(0.0,4.0,\amp),
 			{|v|
@@ -170,37 +178,10 @@ GrainFreezeDrums_Mod : Module_Mod {
 
 		this.makeWindow("GrainFreezeDrums",Rect(718, 758, 380, 98));
 
-
-
 		getTrig = OSCFunc({|msg, time|
-			if(msg[2]==0, {
+			if(msg[1]==synths[1].nodeID&&msg[2]==serverNum, {
 				{trigButton.value = (trigButton.value+1).wrap(0,1)}.defer
 		})}, '/tr');
-
-		//multichannel button
-		numChannels = 2;
-		controls.add(Button.new()
-			.states_([["2", Color.black, Color.white],["4", Color.black, Color.white],["8", Color.black, Color.white]])
-			.action_{|butt|
-				switch(butt.value,
-					0, {
-						numChannels = 2;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("gfdPlay2_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer.bufnum, \volBus, volBus.index], playGroup));
-					},
-					1, {
-						numChannels = 4;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("gfdPlay4_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer.bufnum, \volBus, volBus.index], playGroup));
-					},
-					2, {
-						numChannels = 8;
-						synths[1].set(\gate, 0);
-						synths.put(1, Synth("gfdPlay8_mod", [\inBus, mixerToSynthBus.index, \phaseBus, phaseBus.index, \outBus, outBus, \bufnum, buffer.bufnum, \volBus, volBus.index], playGroup));
-					}
-				)
-			};
-		);
 
 		win.layout_(VLayout(
 			HLayout(controls[0],assignButtons[0]),

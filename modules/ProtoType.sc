@@ -124,6 +124,6 @@ synths.add(Synth("++($")++exportName.value.toLower++($")++", ['inBus', mixerToSy
 	}
 
 	killMeSpecial {
-		group.free;
+		group.freeAll;
 	}
 }
