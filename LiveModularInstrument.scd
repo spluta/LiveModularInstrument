@@ -20,7 +20,7 @@ LiveModularInstrument.boot(8, startChan+[1,2,3,4,5,6,7,8], (128!7).add(2)/*sets 
 )
 
 
-Seaboard_Mod.trace
+
 
 
 (
