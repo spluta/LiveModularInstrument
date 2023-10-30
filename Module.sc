@@ -1,5 +1,5 @@
 MidiOscObject {
-	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons;
+	var <>group, <>synthGroup, <>bigSynthGroup, <>win, <>oscMsgs, <>controls, assignButtons, paused=false;
 	var waitForSetNum, modName, dontLoadControls, <>synths, visibleArray, isGlobalController, path, waitToLoad = false;
 
 	initControlsAndSynths {arg num;
@@ -243,11 +243,13 @@ MidiOscObject {
 		pause {
 			synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
 			if(bigSynthGroup!=nil){bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false)};
+		paused = true;
 		}
 
 		unpause {
 			synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
 			if(bigSynthGroup!=nil){bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1)};
+		paused = false;
 		}
 
 		show {

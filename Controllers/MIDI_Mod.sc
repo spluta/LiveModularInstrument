@@ -35,6 +35,8 @@ MIDI_Mod {
 
 			var address = "/note/"++num.asString++"/"++chan.asString++"/";
 
+			[val, num, chan, src].postln;
+
 			MidiOscControl.respond(address, 1);
 
 			if(sendRequest, {
@@ -78,7 +80,9 @@ MIDI_Mod {
 			},
 			'note', {
 				function = {|val|
-					{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer};
+					//{localControlObject.valueAction_(((localControlObject.value+1).wrap(0, localControlObject.states.size-1)))}.defer
+				{localControlObject.valueAction_(val)}.defer;
+				};
 			}
 		);
 

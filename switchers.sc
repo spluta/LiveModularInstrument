@@ -277,7 +277,9 @@ ServerSwitcher2 : MidiOscObject {
 		);
 		win.layout.spacing = 0;
 		win.layout.margins = [0,0,0,0];
-		win.view.maxWidth_(numServers*60).maxHeight_(numIPads*3*15+15);
+		//win.view.maxWidth_(numServers*60).maxHeight_(numIPads*3*15+15);
+		//win.view.minWidth_(numServers*60).minHeight_(numIPads*3*15+15);
+		win.bounds.height = numIPads*3*15+15;
 
 		win.front
 	}

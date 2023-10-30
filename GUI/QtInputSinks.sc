@@ -35,7 +35,7 @@ QtBusAssignSink {
 					busInLabels.remove(butt.states[0][0].asSymbol);
 					buttons[butt.states[0][0].asSymbol].setProperty(\visible, false);
 					buttons.removeAt(butt.states[0][0].asSymbol);
-					"busInLabels".post;
+					//"busInLabels".post;
 					if(parent!=nil, {parent.setInputBusses(busInLabels)});
 					this.updateButtons;
 				});

@@ -141,7 +141,12 @@ ModularInputsArray : Module_Mod {
 		win.front;
 	}
 
-	front {win.front}
+	front {
+		Routine({
+			while{waitToLoad==true}{"waiting".postln;0.2.wait};
+			win.front
+		}).play(AppClock)
+	}
 
 	addServer{arg server;
 		dispArray.do{arg item;

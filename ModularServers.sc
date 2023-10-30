@@ -317,6 +317,7 @@ ModularServers {
 	*getDirectInBus {arg serverName;
 		^servers[serverName.asSymbol].mixerDirectInBus.index;
 	}
+
 	*getObjectBusses {arg serverName;
 		^servers[serverName.asSymbol].objectBusses;
 	}

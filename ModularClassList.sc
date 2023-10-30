@@ -12,7 +12,7 @@ ModularClassList {
 
 		switch(whichArray,
 			'normal', {
-				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop"/*, "CutterThrough"*/, "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise", "MFCCHarmonySynth", "Gain", "MFCCTimbreSynth", "MFCCTimbreSynth2", "BrynHarrison", "StraightLoop2", "PitchShift", "NN_Synths", "KlankFilter", "SpaceInterruption", "DJMixer", "TinyLoops", "ProtoType", "RingMod2", "LPFInterupter", "AmpMod2", "NessStretchRT", "DustAmpMod", "SnareSwitch", "FB100"].sort;
+				classArray = ["GlassSines", "FilterDelays", "PulsatingDelays", "BitCrusher", "TriggerDelays", "OverLapSamples", "LoopBuf", "Combulation", "BuchlaFilters", "BuchlaModelSolo", "ReverbDrone", "ShifterFeedback", "Compander", "Distortion2D", "CycleGripper", "Mixer", "Freeze", "AmpMod", "SignalSwitcher", "LoopMachine", "GrainAge", "GingerMan", "SwoopDown", "EQ", "DistortMono", "GrainFreezeNoise", "TFreeze", "PulseBP", "DownShift", "InterruptDistortion", "GrabNLoop", "HarmDoublerUp", "GrainFreezeDrums", "AmpFollower", "EightDelays2", "Melter", "GVerb", "HarmonicDoubler2", "Cutter", "LongDelay", "Filters", "ShifterX2", "Record", "RingModStereo", "BitInterrupter", "InterruptDelays", "InterruptLoop"/*, "CutterThrough"*/, "SpecDelay", "EnvGen", "FilterGrainsB", "ScaleShifterB", "UpDownSines", "SinArray", "SweepingNoise", "SpaceJunk", "BandPassFreeze", "NoisePulse", "GFNoiseMini", "Mute", "ResonDraw", "TestSine", "SampleMashup", "CrackleSynth", "LargeArcLoops", "SampleBank", "Timer", "LoopMachineOverLap", "Convolution", "FeedbackControl", "DistGrains", "MixerSolo", "MixerSoloMono", "GreatExpectations", "GFNoiseMiniSky", "MuteSky", "LowPass", "VDelayInline", "MantaToMidi"/*, "RageTrombones"*/, "Sampler", "TVFeedback", "FeedbackSynth", "DelayLine", "VST", "SinOsc", "PinkNoise"/*, "MFCCHarmonySynth"*/, "Gain", /*"MFCCTimbreSynth", "MFCCTimbreSynth2", */"BrynHarrison", "StraightLoop2", "PitchShift", "NN_Synths", "KlankFilter", "SpaceInterruption", "SpaceTrigger", "DJMixer", "TinyLoops", "ProtoType", "RingMod2", "LPFInterupter", "AmpMod2", "NessStretchRT", "NessStretchRTBells", "DustAmpMod", "SnareSwitch", "FB100", "FB100B", "Tectonics", "Matrix4GL"].sort;
 			},
 			'feedback', {classArray = ["Convolution", "CombFilter", "KlankFilter", "KlankFilter2","OscilMidBump", "Compander", "DistortMono", "PinkNoise", "LoopBuf", "AnalysisFilters", "SignalSwitcher", "TVFeedback", "Mixer", "RingModStereo", "LongDelay", "FeedbackControl"].sort},
 
@@ -41,12 +41,15 @@ ModularClassList {
 			})
 		};
 
-		PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
+
+try {	PathName(PathName(NN_Synth_Mod.filenameSymbol.asString).pathOnly).folders.collect{arg folder;
 			folder.files.select{arg file;
 				file.extension=="sc"
 			}
 		}.flatten.collect{arg item; item.fileNameWithoutExtension}.do{arg item;
 			classDictionary.add((item.asString++"_NNMod").asSymbol->(("{arg synthGroup, outBus; "++item++"_NNMod(synthGroup, outBus)}").compile.value));
+		};
+
 		};
 	}
 
@@ -54,7 +57,7 @@ ModularClassList {
 		var item;
 		item = classDictionary[className.asSymbol].value(synthGroup, bus);
 		className = className.asString;
-		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower")||(className=="TVFeedback")||(className=="DJMixer")||(className=="SpaceInterruption")||(className=="NessStretchRT"),{
+		if((className=="SignalSwitcher")||(className=="RingModStereo")||(className=="Convolution")||(className=="AmpFollower")||(className=="TVFeedback")||(className=="DJMixer")||(className=="SpaceInterruption")||(className=="SpaceTrigger")||(className=="NessStretchRT")||(className=="NessStretchRTBells")||(className=="Tectonics"),{
 			item.init2(2,false)
 		});
 		^item

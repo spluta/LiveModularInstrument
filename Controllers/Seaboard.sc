@@ -50,7 +50,7 @@ Seaboard {
 		^super.new.init();
 	}
 
-	*start {arg modeIn = 0, ipIn = "127.0.0.1", lowNoteIn=48, keyboardWidthIn = 24, triggerBoardDimensionsIn = [6,6];
+	*start {arg modeIn = 0, ipIn = "127.0.0.1", lowNoteIn=48, keyboardWidthIn = 24, triggerBoardDimensionsIn = [6,6], map;
 
 		MIDIIn.disconnectAll;
 		MIDIIn.connectAll;
@@ -66,21 +66,42 @@ Seaboard {
 		keys = ();
 		freshKeys = ();
 
+
+		map = IdentityDictionary[ ('8' -> IdentityDictionary[]), ('9' -> IdentityDictionary[]) ];
+
+(60..63).do{|i| map['8'].add(i.asSymbol->(i-12).asSymbol)};
+(60..63).do{|i| map['9'].add(i.asSymbol->(i-8).asSymbol)};
+(64..67).do{|i| map['8'].add(i.asSymbol->(i-8).asSymbol)};
+(64..67).do{|i| map['9'].add(i.asSymbol->(i-4).asSymbol)};
+(68..71).do{|i| map['8'].add(i.asSymbol->(i-4).asSymbol)};
+(68..71).do{|i| map['9'].add(i.asSymbol->(i).asSymbol)};
+(72..75).do{|i| map['8'].add(i.asSymbol->(i).asSymbol)};
+(72..75).do{|i| map['9'].add(i.asSymbol->(i+4).asSymbol)};
+
+
 		responders = List.newClear(0);
 		responders.add(
 			MIDIFunc.noteOn({arg vel, num, chan, src;
 				keys.put((chan.asString++"/"++src.asString).asSymbol, num);
 				freshKeys.put((chan.asString++"/"++src.asString).asSymbol, num);
+
+				num = map[chan.asSymbol][num.asSymbol];
+
 				switch(mode,
 					0, {netAddr.sendMsg("/SeaboardNote/"++num.asString, 1, vel)},
 					1,  {netAddr.sendMsg("/SeaboardNote", num.asString, 1, vel)},
 				);
-		}, nil, channel));
+		}, nil, nil));
+
+
 		responders.add(
 			MIDIFunc.noteOff({arg vel, num, chan, src;
 				keys.put((chan.asString++"/"++src.asString).asSymbol, nil);
 				freshKeys.put((chan.asString++"/"++src.asString).asSymbol, nil);
-				switch(mode,
+
+				num = map[chan.asSymbol][num.asSymbol];
+
+				switch(mode,`
 					0, {netAddr.sendMsg("/SeaboardNote/"++num.asString, 0, vel)},
 					1,  {netAddr.sendMsg("/SeaboardNote", num.asString, 0, vel)}
 				);
@@ -109,6 +130,7 @@ Seaboard {
 
 		responders.add(
 			MIDIFunc.bend({ arg val, chan, src;
+
 				key = keys[(chan.asString++"/"++src.asString).asSymbol];
 				if(key!=nil,{
 					switch(mode,
@@ -118,16 +140,36 @@ Seaboard {
 				})
 		}, channel));
 
+
+
 		responders.add(
-			MIDIFunc.touch({ arg val, chan, src;
+			MIDIFunc.polytouch({ arg val, key, chan, src;
+				//[val, key, chan].postln;
+				key = map[chan.asSymbol][key.asSymbol];
+				//key.postln;
+				if(key!=nil,{
+					switch(mode,
+								0, {netAddr.sendMsg(("/SeaboardPressure/"++key.asString), val/127)},
+								1, {netAddr.sendMsg("/SeaboardPressure", key.asString, val/127)}
+					)
+				})
+		}, nil, nil));
+
+/*		responders.add(
+			MIDIFunc.touch({ arg val, chan, num, src;
+				9.postln;
 				key = keys[(chan.asString++"/"++src.asString).asSymbol];
+				[key, val].
+		ln;
 				if(key!=nil,{
 					switch(mode,
 								0, {netAddr.sendMsg("/SeaboardPressure/"++key.asString, val/127)},
 								1, {netAddr.sendMsg("/SeaboardPressure", key.asString, val/127)}
 					)
 				})
-		}, channel));
+		}, 8));*/
+
+
 
 	}
 

@@ -161,16 +161,33 @@ ModularMixer {
 
 
 			if(busIn.asString.beginsWith("D"),{
-				var size;
-				busIn = busIn.asString;
-				symbol = busIn.asSymbol;
-				busIn = busIn.copyRange(1,busIn.size-1).asInteger-1;
-				busIn = busIn+ModularServers.getDirectInBus(group.server);
-				if(outBus.numChannels == 1,{
-					this.add21InputMixer(symbol, busIn);
-				},{
-					this.add22InputMixer(symbol, busIn);
-				})
+				if(busIn.asString.beginsWith("DM"))
+				{
+					var size;
+					"add mono input".postln;
+					busIn = busIn.asString;
+					symbol = busIn.asSymbol;
+					busIn = busIn.copyRange(2,busIn.size-1).asInteger-1;
+					busIn.postln;
+					busIn = busIn+ModularServers.getDirectInBus(group.server);
+					if(outBus.numChannels == 1,{
+						this.add11InputMixer(symbol, busIn);
+					},{
+						this.add12InputMixer(symbol, busIn);
+					})
+				}{
+					var size;
+					"add stereo input".postln;
+					busIn = busIn.asString;
+					symbol = busIn.asSymbol;
+					busIn = busIn.copyRange(1,busIn.size-1).asInteger-1;
+					busIn = busIn+ModularServers.getDirectInBus(group.server);
+					if(outBus.numChannels == 1,{
+						this.add21InputMixer(symbol, busIn);
+					},{
+						this.add22InputMixer(symbol, busIn);
+					})
+				}
 			});
 
 			if(busIn.asString.beginsWith("S"),{

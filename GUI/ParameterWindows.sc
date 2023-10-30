@@ -18,7 +18,7 @@ ParameterWindow_Mod {
 
 InBusWindow_Mod : ParameterWindow_Mod {
 
-	classvar soundInBoxes, directStereoBoxes;
+	classvar soundInBoxes, directStereoBoxes, directMonoBoxes;
 
 	*makeWindow {
 		soundInBoxes = List.new;
@@ -32,7 +32,7 @@ InBusWindow_Mod : ParameterWindow_Mod {
 		};
 
 		directStereoBoxes = List.newClear(0);
-		11.do{arg i;
+		80.do{arg i;
 			directStereoBoxes.add(DragSource().maxWidth_(40).maxHeight_(15).font_(Font("Helvetica",10))
 				.setProperty(\align,\center)
 				.object_(["D"++(i*2+1).asString, "D"++(i*2+1).asString])
@@ -41,10 +41,35 @@ InBusWindow_Mod : ParameterWindow_Mod {
 			)
 		};
 
+		directMonoBoxes = List.newClear(0);
+		160.do{arg i;
+			directMonoBoxes.add(DragSource().maxWidth_(40).maxHeight_(15).font_(Font("Helvetica",10))
+				.setProperty(\align,\center)
+				.object_(["DM"++(i+1).asString, "D"++(i+1).asString])
+					.string_("DM"++(i+1).asString)
+						.dragLabel_("DM"++(i+1).asString)
+			)
+		};
+
 		win = Window("Sound In Busses");
-		win.view.maxHeight_(40);
+		win.view.maxHeight_(80);
+		win.view.resizeTo(800,80);
 		win.layout_(
-			GridLayout.rows(soundInBoxes, directStereoBoxes).spacing_(1).margins_(1!4)
+			GridLayout.rows(
+				soundInBoxes,
+				directStereoBoxes.copyRange(0,19),
+				directStereoBoxes.copyRange(20,39),
+				directStereoBoxes.copyRange(40,59),
+				directStereoBoxes.copyRange(60,79),
+				directMonoBoxes.copyRange(0,19),
+				directMonoBoxes.copyRange(20,39),
+				directMonoBoxes.copyRange(40,59),
+				directMonoBoxes.copyRange(60,79),
+				directMonoBoxes.copyRange(80,99),
+				directMonoBoxes.copyRange(100,119),
+				directMonoBoxes.copyRange(120,139),
+				directMonoBoxes.copyRange(140,169)
+			).spacing_(1).margins_(1!4)
 		);
 		visible = true;
 		win.front;

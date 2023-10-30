@@ -31,6 +31,8 @@ OSCReceiver_Mod {
 
 		//expects a message like /6001/radio3 or /6001/xy3 and the value
 
+		//"sendOSC".postln;
+
 		if(controllerKey!=""){
 			try {
 				portKeyList = controllerKey.asString.split;
@@ -42,6 +44,7 @@ OSCReceiver_Mod {
 						portKeyList.copyRange(2, portKeyList.size).do{|item|
 							localKey=localKey++item++"/"};
 						localKey.pop;
+						//nnnnnnnnnnnn[item, localKey, val].postln;
 						item.sendMsg(localKey, *val);
 					}
 

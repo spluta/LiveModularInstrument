@@ -114,7 +114,7 @@ QtEZSlider {
 	}
 
 	map {arg val;
-		^controlSpec.unmap(value);
+		^controlSpec.unmap(val);
 	}
 
 	valueAction_ { arg val;

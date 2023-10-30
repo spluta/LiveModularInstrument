@@ -165,7 +165,9 @@ MainProcessingWindow : MidiOscObject {
 		}});
 
 		win = Window("Live Modular Instrument"+group.server);
-		win.view.maxWidth_(objectView.bounds.height+40).maxHeight_(objectView.bounds.width);
+		//win.view.maxWidth_(objectView.bounds.height+40).maxHeight_(objectView.bounds.width);
+
+		win.view.bounds.width_(objectView.bounds.height+40).height_(objectView.bounds.width);
 
 		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(modularObjects.size.sqrt)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
@@ -177,6 +179,8 @@ MainProcessingWindow : MidiOscObject {
 		AppClock.play(cpuUsageRoutA);
 
 		win.front;
+
+		win.view.bounds.width_(objectView.bounds.height+40).height_(objectView.bounds.width);
 
 		win.onClose = {
 			//kill all the stuff
@@ -260,6 +264,7 @@ LiveModularInstrument {
 						Server.local.options.device = device;
 						if(device=="MacBook Pro Speakers"){Server.local.options.inDevice="MacBook Pro Microphone"};
 						if(device=="MacBook Pro Microphone"){Server.local.options.outDevice="MacBook Pro Speakers"};
+						if(device=="External Headphones"){Server.local.options.inDevice="MacBook Pro Microphone"};
 						ModularServers.device_(device);
 						ModularServers.boot(numServers, inBusses, blockSizes); //sends readyToRoll messages once the servers are loaded
 						driverWin.close;

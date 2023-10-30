@@ -1,56 +1,130 @@
+n = NetAddr("left.local", 7000);
+n.sendMsg('/1/fader26', 1.0.rand);
 
-Get Feedback control working
+n = NetAddr("right.local", 7001);
+n.sendMsg('/fader33', 1.0.rand);
 
-NN control of eq.
+thisProcess.openUDPPort(6000);
+thisProcess.openUDPPort(6001);
 
-Server.local.options.sampleRate_(88200)
+OSCFunc.trace(true);
+OSCFunc.trace(false);
 
-ModularServers.modularInputsArray.front
 
-Joystick_Mod.running
+FeedbackSynth_Mod
+Joystick_Mod.start
+
+MIDIClient.init;
+MIDIIn.connectAll
+(
+"dscacheutil -q host -a name 'right.local'".unixCmd;
+"dscacheutil -q host -a name 'left.local'".unixCmd;
+)
+
 
 (
 var blackChans = 16;
+var analogChans = 0;//8;
+var micChans = 0;//4;
+var aesADAT = 0;//18;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+//July2022
+OSCReceiver_Mod.ips_(["left.local","right.local"]);
+
+LiveModularInstrument.boot(8, startChan+[1,2,3,4,5,6,7,8], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/Oct_27_23");
+)
+
+
+(
+var blackChans = 16;
+var analogChans = 0;//8;
+var micChans = 0;//4;
+var aesADAT = 0;//18;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+//July2022
+OSCReceiver_Mod.ips_(["left.local","right.local"]);
+
+LiveModularInstrument.boot(8, startChan+[1,2,3,4,5,6,7,8], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"])/*, Seaboard.channel_(9), Seaboard_Mod*/, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/June_26_23B");
+)
+
+(
+var blackChans = 0;
+var analogChans = 0;//8;
+var micChans = 0;//4;
+var aesADAT = 0;//10;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+//July2022
+LiveModularInstrument.boot(1, startChan+[1,2,3,4,5,6,7,8], (128!1)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"])/*, Seaboard.channel_(9), Seaboard_Mod*/, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/testProto");
+)
+
+
+
+//add this to June_22_23 as its own page
+//add mariel's proto stuff to that page
+
+(
+var blackChans = 16;
+var analogChans = 8;
+var micChans = 4;
+var aesADAT = 18;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+//July2022
+LiveModularInstrument.boot(1, startChan+[1,2,3,4,5,6,7,8], (128!7).add(64)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/Mincek_08_21_I");
+)
+
+
+
+
+ProtoType_Mod
+
+{SinOsc.ar(200, 0, 0.1)}.play
+
+MIDIClient.init
+
+(
+//Matrix4GL - April 2023
+//
+LiveModularInstrument.boot(1, [1,2,3,4,5,6,7,8], [128]/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]);
+)
+
+(
+//TECTONICS
+var blackChans = 16;
+var analogChans = 8;
+var micChans = 4;
+var aesADAT = 18;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+LiveModularInstrument.boot(4, startChan+[1,2,3,4,5,6,7,8], [128,128,64], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/tectonics_2_9B");
+)
+
+
+
+(
+//TECTONICS
+var blackChans = 16;
+var analogChans = 8;
+var micChans = 4;
+var aesADAT = 18;
+var startChan = blackChans+analogChans+micChans+aesADAT;
+LiveModularInstrument.boot(4, startChan+[1,2,3,4,5,6,7,8], [128,128,64], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/tectonics_2_9B");
+)
+
+
+
+(
+//TV Feedback 2023
+LiveModularInstrument.boot(2, [1,2,5,6,7,8,3,4], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod],"/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/TVs2023E");
+)
+
+
+
+
+(var blackChans = 0;
 var analogChans = 0;
 var micChans = 0;
 var aesADAT = 0;
 var startChan = blackChans+analogChans+micChans+aesADAT;
-//July2022
-LiveModularInstrument.boot(8, startChan+[1,2,3,4,5,6,7,8], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/Jan_10_23B");
-)
-
-
-
-
-
-(
-//July2022
-LiveModularInstrument.boot(8, [17,18,21, 22,23,24, 19,20], (128!7).add(2)/*sets the blockSize*/, 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]);
-)
-
-AtkTests
-
-Quarks.install("https://github.com/ambisonictoolkit/atk-sc3.git");
-
-Atk.downloadKernels;
-Atk.downloadMatrices;
-Atk.downloadSounds;
-Quarks.install("https://github.com/JamesWenlock/AmbiVerbSC")
-
-
-(
-//Nothing
-LiveModularInstrument.boot(1, [17,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/feedback_1_7_23B");
-)
-teapotFeedback_1_8_23
-(
-//Nothing
-LiveModularInstrument.boot(1, [17,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard.channel_(9), Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod], "/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/FeedbackSax/teapotFeedback_1_12_23");
-)
-
-
-(
-LiveModularInstrument.boot(1, [1,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod]));
+LiveModularInstrument.boot(1, startChan+[1,2,5,6,7, 8,9,8], [128], 'normal', [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), Seaboard, Seaboard_Mod, TypeOSCFunc_Mod, MIDI_Mod],"/Users/spluta1/Library/Application Support/SuperCollider/saved LMI Sessions/testVerb"));
 )
 
 
@@ -101,7 +175,7 @@ LiveModularInstrument.boot(1, [1,2,3,4,9,10,13,13], 'normal', [OSCReceiver_Mod, 
 
 
 
-ModularServers.servers[\lmi8].server.queryAllNodes
+ModularServers.servers[\lmi1].server.queryAllNodes
 
 FluidMLPRegressor
 
