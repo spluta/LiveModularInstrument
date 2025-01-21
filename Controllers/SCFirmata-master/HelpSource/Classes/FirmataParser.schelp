@@ -1,8 +1,0 @@
-CLASS:: FirmataParser
-SUMMARY:: interface for Firmata
-CATEGORIES:: External Control
-RELATED:: Classes/FirmataDevice
-
-CLASSMETHODS::
-
-INSTANCEMETHODS::

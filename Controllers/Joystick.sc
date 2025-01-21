@@ -46,7 +46,7 @@ Joystick_Mod {
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar <>portIDs, <>paths, <>devices, <>running = true;
-	classvar <>joystick0, <>joystick1, <>buttons;
+	classvar <>joystick0, <>joystick1, <>buttons, <>muteStick = false;
 	classvar temp;
 	classvar address, type, <>swProTransform;
 
@@ -124,7 +124,12 @@ Joystick_Mod {
 		if(running){
 			MidiOscControl.respond(address.asSymbol, val);
 			if(sendRequest){
-				type = \onOff;
+				if(address.contains("bt")){
+					type = \onOff;
+				}{
+					type = \continuous
+				};
+				
 				MidiOscControl.setController(address.asSymbol, type);
 			};
 			if(sendTypeRequest,{
@@ -166,8 +171,10 @@ Joystick_Mod {
 				['x','y','z'].do{|item2|
 
 					item.elAt(\joy, item2).action={|el|
-						address = "/"++item.name.asString++"/joy/"++item2.asString;
-						this.logiRespondNCheck(address, el.value);
+						if(muteStick.not){
+							address = "/"++item.name.asString++"/joy/"++item2.asString;
+							this.logiRespondNCheck(address, el.value);
+						}
 					}
 				};
 
@@ -192,13 +199,13 @@ Joystick_Mod {
 
 		controllerKey = controllerKey.asString;
 
-		if(controllerKey.contains("HIDButton"),{
+		if(controllerKey.contains("bt"),{
 			function = {|val|
 				{localControlObject.valueAction_(val)}.defer;
 			};
 		});
 
-		if(controllerKey.contains("HIDSlider"),{
+		if((controllerKey.contains("slider")and:controllerKey.contains("logi")),{
 			if(localControlObject.isKindOf(QtEZSlider2D)){
 				function = [
 					{|val|

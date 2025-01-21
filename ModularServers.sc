@@ -6,7 +6,7 @@ ModularServer_ID {
 }
 
 ModularServerObject {
-	var <>serverName, <>blockSize, <>server, <>objectBusses, mainGroup, <>inGroup, <>mixerGroup, <>postMixerGroup, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id, directIns;
+	var <>serverName, <>blockSize, <>server, <>objectBusses, mainGroup, <>inGroup, <>preSynthGroup, <>mixerGroup, <>postMixerGroup, <>mixerDirectInBus, synthGroup, <>synthGroups, <>inBusses, <>preSynthBusses, <>stereoInBusIndexes, volumeInRack, modularObjects, dimensions, <>mainMixer, mainWindow, <>busMap, <>isVisible, id, directIns, <>globalControlBus;
 
 	*new {|serverName, blockSize|
 		^super.new.serverName_(serverName).blockSize_(blockSize).init;
@@ -29,9 +29,6 @@ ModularServerObject {
 
 		Server.local.options.blockSize_(blockSize);
 
-		Server.local.options.blockSize.postln;
-		Server.local.options.device.postln;
-
 		server = Server.new(serverName, NetAddr("localhost", id), Server.local.options);
 		server.waitForBoot({
 			//set up groups
@@ -40,6 +37,7 @@ ModularServerObject {
 			server.sync;
 			1.wait;
 			inGroup = Group.tail(mainGroup);
+			preSynthGroup = Group.tail(mainGroup);
 			synthGroup = Group.tail(mainGroup);
 			mixerGroup = Group.tail(mainGroup);
 			postMixerGroup = Group.tail(mainGroup);
@@ -53,14 +51,18 @@ ModularServerObject {
 				inBusses.add(Bus.audio(server,1));
 			};
 
+			preSynthBusses = List.fill(8, {Bus.audio(server,2)});
+
 			//create objectBusses and groups in the shape of the dimensions array
 
-			objectBusses = List.new;
-
+			//objectBusses = List.new;
 			dimensions = [5,5]; //for now this is hard-coded
-
-
 			objectBusses = List.fill((dimensions[0]*dimensions[1]), {Bus.audio(server,2)});
+
+			server.sync;
+			//make the global control bus to pass control data between Modules
+			globalControlBus = Bus.control(server,256);
+
 			server.sync;
 			synthGroups = List.fill((dimensions[0]*dimensions[1]), {Group.tail(synthGroup)});
 			server.sync;
@@ -93,11 +95,8 @@ ModularServerObject {
 	makeBusMap {arg loadArray;
 
 		busMap = Array.fill(3, {Dictionary.new});
-
 		11.do{arg i; busMap.add((loadArray[0].asInteger+(i*2)).asSymbol -> (i*2))};
-
 		loadArray[1].do{arg item, i; busMap[1].add(item.asSymbol -> i)};
-
 		loadArray[2].do{arg item, i; busMap[2].add(item.asSymbol -> objectBusses[i].index)};
 	}
 
@@ -125,9 +124,7 @@ ModularServerObject {
 		//save and load inputsArray
 
 		saveServer = List.newClear(0);
-
 		saveServer.add(mainWindow.save);
-
 		saveServer.add(mixerDirectInBus.index);
 
 		temp = List.newClear(0);
@@ -160,7 +157,6 @@ ModularServerObject {
 		mainWindow.load(loadArray[0]);
 
 		this.makeBusMap(loadArray.copyRange(1,3));
-		//{
 		loadArray[4].do{arg item, i;
 			if(item.size>0){
 				modularObjects[i].load(item);
@@ -219,13 +215,18 @@ ModularServers {
 	*boot {arg numServersIn, inBussesIn, blockSizesIn;
 		numServers = numServersIn; inBusses = inBussesIn;
 		servers = Dictionary.new(0);
-		{
-			numServers.do{arg i;
-				servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1), blockSizesIn[i]));
-				0.5.wait;
-			}
-		}.fork(AppClock);
-
+		//doing this to "warm up" the booting process 
+		Server.local.waitForBoot({
+			Server.local.quit({
+				{
+					"now for real".postln;
+					numServers.do{arg i;
+						servers.add(("lmi"++(i+1)).asSymbol-> ModularServerObject.new("lmi"++(i+1), blockSizesIn[i]));
+						0.5.wait;
+					}
+				}.fork(AppClock);
+			})
+		});
 	}
 
 	*save {arg path, serverName;
@@ -312,6 +313,10 @@ ModularServers {
 
 	*getSoundInBusses {arg serverName;
 		^servers[serverName.asSymbol].inBusses.collect({arg item; item.index});
+	}
+
+	*getPreSynthBusses {arg serverName;
+		^servers[serverName.asSymbol].preSynthBusses.collect({arg item; item.index});
 	}
 
 	*getDirectInBus {arg serverName;

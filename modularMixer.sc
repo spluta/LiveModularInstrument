@@ -157,18 +157,30 @@ ModularMixer {
 	addABus {arg busIn;
 		var symbol;
 
-		if(busIn.asString.beginsWith("D")||busIn.asString.beginsWith("S"),{
+		if(busIn.asString.beginsWith("D")||busIn.asString.beginsWith("S")||busIn.asString.beginsWith("P"),{
 
+			if(busIn.asString.beginsWith("P"))
+			{
+				var size;
+				busIn = busIn.asString;
+				symbol = busIn.asSymbol;
+				busIn = busIn.copyRange(2,busIn.size-1).asInteger-1;
+				busIn = ModularServers.getPreSynthBusses(group.server).at(busIn);
+
+				if(outBus.numChannels == 1,{
+					this.add11InputMixer(symbol, busIn);
+				},{
+					this.add12InputMixer(symbol, busIn);
+				})
+			};
 
 			if(busIn.asString.beginsWith("D"),{
 				if(busIn.asString.beginsWith("DM"))
 				{
 					var size;
-					"add mono input".postln;
 					busIn = busIn.asString;
 					symbol = busIn.asSymbol;
 					busIn = busIn.copyRange(2,busIn.size-1).asInteger-1;
-					busIn.postln;
 					busIn = busIn+ModularServers.getDirectInBus(group.server);
 					if(outBus.numChannels == 1,{
 						this.add11InputMixer(symbol, busIn);
@@ -177,7 +189,6 @@ ModularMixer {
 					})
 				}{
 					var size;
-					"add stereo input".postln;
 					busIn = busIn.asString;
 					symbol = busIn.asSymbol;
 					busIn = busIn.copyRange(1,busIn.size-1).asInteger-1;

@@ -1,8 +1,0 @@
-CLASS:: Firmata2
-SUMMARY:: interface for Firmata
-CATEGORIES:: External Control
-RELATED:: Classes/FirmataDevice
-
-CLASSMETHODS::
-
-INSTANCEMETHODS::

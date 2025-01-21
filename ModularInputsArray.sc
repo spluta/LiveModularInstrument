@@ -30,7 +30,10 @@ ModularVolumeObject {
 			this.addServer(server);
 		};
 
-		rms = LevelIndicator();
+		rms = LevelIndicator().warning_(0.9).critical_(1.0)
+		.drawsPeak_(true)
+		.numTicks_(9)
+		.numMajorTicks_(3);
 	}
 
 	addServer{arg server;
@@ -143,7 +146,7 @@ ModularInputsArray : Module_Mod {
 
 	front {
 		Routine({
-			while{waitToLoad==true}{"waiting".postln;0.2.wait};
+			while{waitToLoad==true}{0.2.wait};
 			win.front
 		}).play(AppClock)
 	}

@@ -3,7 +3,7 @@ TypeOSCFunc_Mod {
 	classvar <>responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar <>netAddrs, ip;
-	classvar <>speedLimiters;
+	//classvar <>speedLimiters;
 
 	*initClass {}
 
@@ -15,14 +15,14 @@ TypeOSCFunc_Mod {
 		if(responders.size!=0,{responders.do{arg item; item.free}});
 
 		responders = ();
-		speedLimiters = ();
 	}
 
 	*addResponder {arg path;
-		speedLimiters.put(path.asSymbol, SpeedLimit({|msg| MidiOscControl.respond(msg[0], msg[1])},0.02));
+		//speedLimiters.put(path.asSymbol, SpeedLimit({|msg| MidiOscControl.respond(msg[0], msg[1])},0.02));
 		responders.put(path.asSymbol,
 			OSCFunc({ |msg|
-				speedLimiters[path.asSymbol].value(msg);
+				//speedLimiters[path.asSymbol].value(msg);
+				MidiOscControl.respond(msg[0], msg[1]);
 		}, path.asSymbol));
 	}
 
@@ -32,12 +32,11 @@ TypeOSCFunc_Mod {
 		if(oscMsg.last!=($z)){
 			OSCReceiver_Mod.sendOSCTypeOSC(oscMsg.copyRange(0,oscMsg.size-3), val);
 		};
-		//Lemur_Mod.sendOSC(oscMsg, val)
 	}
 
 	*removeResponder {arg path;
 		responders.removeAt(path.asSymbol);
-		speedLimiters.removeAt(path.asSymbol);
+		//speedLimiters.removeAt(path.asSymbol);
 	}
 
 	*getFunctionFromKey {arg module, controllerKey, object;
@@ -53,6 +52,40 @@ MyTextView : TextView {
 	value {
 		^this.string;
 	}
+}
+
+TextObject {
+	var <>mama, <>text, <>function, path, label, textField, <>view;
+
+	*new {arg mama, text, function;
+		^super.new.mama_(mama).text_(text).function_(function).init;
+	}
+
+	init {
+		label = StaticText().font_(Font("Helvetica", 10)).string_(text);
+		textField = TextField().font_(Font("Helvetica", 10)).maxHeight_(15)
+		.action_{arg field;
+			function.value(field.string);
+		};
+
+		view = CompositeView();
+		view.layout_(HLayout(label, textField).spacing_(0).margins_([0,0,0,0])).maxHeight_(15);
+	}
+
+	value_ {|val|
+		textField.string = val;
+	}
+
+	valueAction_{|val|
+		textField.string = val;
+		function.value(val);
+	}
+
+	value {
+		^(textField.string)
+	}
+
+	asView {^view}
 }
 
 TypeOSCFuncObject {
@@ -79,12 +112,8 @@ TypeOSCFuncObject {
 			oscMsg = field.value.asString;
 			functions = List[function];
 
-			speedLimit = SpeedLimit({|val| {numberBox.value_(val)}.defer}, 0.1);
-			speedLimitSend = SpeedLimit({|val|
-				TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)}, 0.1);
-
-			functions.add({|val| speedLimit.value(val)});
-			functions.add({|val| speedLimitSend.value(val)});
+			functions.add({|val| {numberBox.value_(val)}.defer});
+			functions.add({|val| TypeOSCFunc_Mod.sendOSC(oscMsgs[location], val)});
 
 			MidiOscControl.setControllerNoGui(oscMsg, functions, mama.group.server);
 		};

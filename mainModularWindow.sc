@@ -1,5 +1,5 @@
 MainProcessingWindow : MidiOscObject {
-	var <>modularObjects;
+	var <>modularObjects, <>rootDirectory;
 	var synthList, availableModules;
 	var sendGUIVals, listeningPort, cpuUsage0, cpuUsage1, cpuUsageRout, cpuUsageRoutA, waitRand, waitRandA;
 	var modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton;
@@ -10,7 +10,7 @@ MainProcessingWindow : MidiOscObject {
 	}
 
 	init {
-
+		//rootDirectory = PathName(PathName(this.class.filenameSymbol.asString).pathOnly).pathOnly;
 		this.initControlsAndSynths(0);
 
 		buttonView = CompositeView().maxHeight_(15);
@@ -116,41 +116,6 @@ MainProcessingWindow : MidiOscObject {
 		listeningPort = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		listeningPort.string = NetAddr.langPort.asString;
 
-/*		if(group.server.asString=="lmi1",{
-			lemurPorts = Array.fill(2, {|i|
-				TextField().maxWidth_(60)
-				.string_(Lemur_Mod.netAddrs[i].port)
-				.action_{arg val;
-					Lemur_Mod.setPorts(lemurPorts.collect{|item| item.string.asInteger});
-				}
-			});
-
-			tempOSCs = List.newClear(2);
-			lemurPorts.do{|item, i|
-				try{item.string = Lemur_Mod.netAddrs[i].port.asString}{("no port "++i.asString)};
-
-				item.focusGainedAction = {
-					tempOSCs.put(0, OSCFunc({|msg, time, addr|
-						{item.string = addr.port}.defer;
-						tempOSCs[1].free;
-					}, '/Switches/x').oneShot);
-					tempOSCs.put(1, OSCFunc({|msg, time, addr|
-						{item.string = addr.port}.defer;
-						tempOSCs[0].free;
-					}, '/Container2/Switches/x').oneShot);
-				};
-				item.focusLostAction = {
-					tempOSCs.do{|i2| i2.free}
-				}
-			};
-		},{
-			lemurPorts = Array.fill(2, {|i|
-				Button().maxWidth_(60)
-			})
-		});*/
-
-
-
 		cpuUsage0 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 		cpuUsage1 = StaticText().font_(Font("Helvetica", 10)).maxWidth_(60);
 
@@ -165,13 +130,12 @@ MainProcessingWindow : MidiOscObject {
 		}});
 
 		win = Window("Live Modular Instrument"+group.server);
-		//win.view.maxWidth_(objectView.bounds.height+40).maxHeight_(objectView.bounds.width);
 
 		win.view.bounds.width_(objectView.bounds.height+40).height_(objectView.bounds.width);
 
 		objectView.layout_(GridLayout.rows(*modularObjects.collect({arg item; item.view}).clump(modularObjects.size.sqrt)).margins_(0!4).spacing_(0));
 		buttonView.layout_(HLayout(modulesButton, inputsButton, saveButton, loadButton, saveServerButton, loadServerButton).margins_(0!4).spacing_(0));
-		infoView.layout_(HLayout(listeningPort,/*lemurPorts[0], lemurPorts[1], */sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
+		infoView.layout_(HLayout(listeningPort, sendGUIVals, cpuUsage0, cpuUsage1).margins_(0!4).spacing_(0));
 
 		win.layout_(VLayout(buttonView, objectView, infoView).margins_(0!4).spacing_(0));
 
@@ -201,8 +165,6 @@ MainProcessingWindow : MidiOscObject {
 
 }
 
-
-
 LiveModularInstrument {
 	classvar <>numServers, <>inBusses, <>blockSizes, <>outBusses, hardwareBufferSize, whichClassList, servers, <>controllers, path;
 	classvar numServers, windows, driverWin, device, sampleRate;
@@ -212,18 +174,16 @@ LiveModularInstrument {
 		^super.new.init;
 	}
 
-	*boot {arg numServersIn=1, inBussesIn, blockSizesIn, whichClassListIn, controllersIn, pathIn=nil;
+	*boot {arg numServersIn=1, inBussesIn, blockSizesIn, whichClassListIn, controllersIn, audioDevice, pathIn=nil;
 		if(
 			(controllersIn.indexOf(OSCReceiver_Mod)!=nil)
 			and:(OSCReceiver_Mod.inPorts.collect{|item| thisProcess.openUDPPort(item).asInteger}.sum!=OSCReceiver_Mod.inPorts.size)
-		)
-		{
+		){
 			5.do{
 			"OSC port issue".postln;
 			"".postln;
 			}
-		}
-		{
+		}{ //else
 			path = pathIn;
 			numServers=numServersIn;
 			inBusses = List.newClear(8);
@@ -249,32 +209,58 @@ LiveModularInstrument {
 
 			readyToRollCounter = 0;
 
-			device = "BlackMac";
-			sampleRate = 88200;
+			if(audioDevice.notNil){
+				this.bootWDevice(audioDevice);
+			}{
+				device = "BlackUCX";
+				sampleRate = 88200;
 
-			driverWin = Window("Which Interface?", Rect(500, 500, 200, 100)).layout_(
-				VLayout(
-					PopUpMenu().items_(ServerOptions.devices).value_(ServerOptions.devices.indexOfEqual("BlackMac"))
-					.action_{|menu| device = menu.item.asString},
-					PopUpMenu().items_(["44100", "48000", "88200", "96000"]).value_(2)
-					.action_{|menu| sampleRate = menu.item.asInteger; Server.local.options.sampleRate_(sampleRate)},
-					Button().states_([["GO", Color.green, Color.black]])
-					.action_{|butt|
-						device.postln;
-						Server.local.options.device = device;
-						if(device=="MacBook Pro Speakers"){Server.local.options.inDevice="MacBook Pro Microphone"};
-						if(device=="MacBook Pro Microphone"){Server.local.options.outDevice="MacBook Pro Speakers"};
-						if(device=="External Headphones"){Server.local.options.inDevice="MacBook Pro Microphone"};
-						ModularServers.device_(device);
-						ModularServers.boot(numServers, inBusses, blockSizes); //sends readyToRoll messages once the servers are loaded
-						driverWin.close;
-					}
-				)
-			);
-			driverWin.front;
-
-
+				driverWin = Window("Which Interface?", Rect(500, 500, 200, 100)).layout_(
+					VLayout(
+						PopUpMenu().items_(ServerOptions.devices).value_(ServerOptions.devices.indexOfEqual("BlackUCX"))
+						.action_{|menu| device = menu.item.asString},
+						PopUpMenu().items_(["44100", "48000", "88200", "96000"]).value_(2)
+						.action_{|menu| sampleRate = menu.item.asInteger; Server.local.options.sampleRate_(sampleRate)},
+						Button().states_([["GO", Color.green, Color.black]])
+						.action_{|butt|
+							this.bootWDevice(device);
+							driverWin.close;
+						}
+					)
+				);
+				driverWin.front;
+			}
 		}
+	}
+
+	*bootWDevice {|device|
+		Server.local.options.device = device;
+		if(device=="MacBook Pro Speakers"){Server.local.options.inDevice="MacBook Pro Microphone"};
+		if(device=="MacBook Pro Microphone"){Server.local.options.outDevice="MacBook Pro Speakers"};
+		if(device=="External Headphones"){Server.local.options.inDevice="MacBook Pro Microphone"};
+		ModularServers.device_(device);
+		ModularServers.boot(numServers, inBusses, blockSizes); //sends readyToRoll messages once the servers are loaded
+	}
+
+	*colorize_APC {|color=true|
+		var num;
+		MIDIClient.init;
+		num = (0..MIDIClient.destinations.size-1).select{|i| (MIDIClient.destinations[i].device=="APC mini mk2"&&MIDIClient.destinations[i].name=="Control")};
+		num.postln;
+		
+		if(num.size>0){
+			var device = MIDIOut(num[0]);
+			60.do{|i|device.noteOn(6, i, 0)};
+			if(color){
+				
+				[0,1,2,3,8,9,10,11].do{|i| device.noteOn(6, i, 53)};
+				[4, 5, 6, 7, 12, 13, 14, 15,23].do{|i| device.noteOn(6, i, 114)};
+				[28, 29, 30, 31, 36, 37, 38, 39,47].do{|i| device.noteOn(6, i, 57)};
+				[48, 49, 50, 51, 56, 57, 58, 59, 40,41,42,43,35].do{|i| device.noteOn(6, i, 21)};
+			}
+		}{
+			"APC Mini not found".postln;
+		};
 	}
 
 	*addServer {
@@ -288,11 +274,20 @@ LiveModularInstrument {
 		//set the controllers only on the first readyToRoll message
 		if(readyToRollCounter==0,{
 			if(controllers == nil, {
-				controllers = [MantaCocoa_Mod, Lemur_Mod, MIDI_Mod];
+				controllers = [OSCReceiver_Mod, Joystick_Mod.setPaths(["logitech-extreme-3d-pro2"]), TypeOSCFunc_Mod, MIDI_Mod];
 			});
 			controllers.do{arg item; item.start};
 			MidiOscControl.new;
 		});
+
+		// try{
+		// 	var m = MIDIOut.newByName("APC mini mk2", "Control");
+		// 	2.do{|i|4.do{|i2| m.noteOn(6, 8*i+i2, 67 )}};
+		// 	2.do{|i|4.do{|i2| m.noteOn(6, 8*i+i2+4, 94 )}}; 
+		// 	m.noteOn(6, 23, 94);
+		// }{
+		// 	"no APC mini mk2".postln;
+		// };
 
 		readyToRollCounter = readyToRollCounter+1;
 		if(addingServer,{
@@ -314,11 +309,8 @@ LiveModularInstrument {
 				MidiOscControl.responding_(true);
 				ModularServers.modularInputsArray.front;
 			});
-			//Window.allWindows.do{arg item, i; item.front};
 
 		});
-
-
 	}
 
 	*killMe {

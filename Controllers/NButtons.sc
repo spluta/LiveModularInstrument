@@ -25,18 +25,16 @@ NButtons {
 	buttonChange {|buttonNum, val|
 		if(buttonNum>=0&&buttonNum<numButtons){
 			if(val==1){
-				numNotes=numNotes+1;//numNotes.postln;
+				numNotes=numNotes+1;
 				buttonsArray.do{|item, i| if(item>0){buttonsArray[i]=item+1}};
 				buttonsArray[buttonNum]=1;
-
-				//buttonsArray.postln;
 			}{
 				val = buttonsArray[buttonNum];
 				if(val>0){
 					buttonsArray[buttonNum]=0;
 					buttonsArray.do{|item, i| if(item>val){buttonsArray[i]=item-1}};
 				};
-				numNotes=(numNotes-1).clip(0,numButtons-1);//numNotes.postln;
+				numNotes=(numNotes-1).clip(0,numButtons-1);
 			};
 
 			^buttonsArray.reverse.collect{|item|

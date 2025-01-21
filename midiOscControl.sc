@@ -100,10 +100,10 @@ MidiOscControl {
 	*setFunction {|module, controllerKey, function, server, setMsg=true|
 		var throttledFunction;
 
-		throttledFunction = SpeedLimit(function, 0.01);
+		//throttledFunction = SpeedLimit(function, 0.01);
 
 		if(actions[server.asSymbol][controllerKey.asSymbol]==nil,{
-			actions[server.asSymbol].add(controllerKey.asSymbol->throttledFunction);
+			actions[server.asSymbol].add(controllerKey.asSymbol->function);
 		});
 		if(setMsg,{module.setOscMsg(controllerKey.asSymbol)});
 	}
@@ -121,6 +121,7 @@ MidiOscControl {
 	*setController {arg controllerKey, typeOfController;
 		//possible control types are onOff, continuous, note, slider2D, and range
 		var function, localControlObject;
+
 		if((typeOfController==instantTypeOfController),{
 
 			localControlObject = instantControlObject;

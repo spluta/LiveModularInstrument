@@ -144,9 +144,7 @@ Seaboard {
 
 		responders.add(
 			MIDIFunc.polytouch({ arg val, key, chan, src;
-				//[val, key, chan].postln;
 				key = map[chan.asSymbol][key.asSymbol];
-				//key.postln;
 				if(key!=nil,{
 					switch(mode,
 								0, {netAddr.sendMsg(("/SeaboardPressure/"++key.asString), val/127)},
@@ -154,23 +152,6 @@ Seaboard {
 					)
 				})
 		}, nil, nil));
-
-/*		responders.add(
-			MIDIFunc.touch({ arg val, chan, num, src;
-				9.postln;
-				key = keys[(chan.asString++"/"++src.asString).asSymbol];
-				[key, val].
-		ln;
-				if(key!=nil,{
-					switch(mode,
-								0, {netAddr.sendMsg("/SeaboardPressure/"++key.asString, val/127)},
-								1, {netAddr.sendMsg("/SeaboardPressure", key.asString, val/127)}
-					)
-				})
-		}, 8));*/
-
-
-
 	}
 
 	*getXY {|freshKey, val|

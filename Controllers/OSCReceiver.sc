@@ -31,8 +31,6 @@ OSCReceiver_Mod {
 
 		//expects a message like /6001/radio3 or /6001/xy3 and the value
 
-		//"sendOSC".postln;
-
 		if(controllerKey!=""){
 			try {
 				portKeyList = controllerKey.asString.split;
@@ -44,11 +42,13 @@ OSCReceiver_Mod {
 						portKeyList.copyRange(2, portKeyList.size).do{|item|
 							localKey=localKey++item++"/"};
 						localKey.pop;
-						//nnnnnnnnnnnn[item, localKey, val].postln;
 						item.sendMsg(localKey, *val);
 					}
 
 				}
+			} {|error| 
+				// "this has to be it".postln;
+				// error.postln
 			}
 		}
 	}
@@ -175,32 +175,64 @@ OSCReceiver_Mod {
 
 		if(controllerKey.contains("fader"),{
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-3);
-			speedLimit = SpeedLimit({|val| this.sendOSC(controllerKey, val)}, 0.05);
+			//speedLimit = SpeedLimit({|val| this.sendOSC(controllerKey, val)}, 0.05);
 			function = [
 				{|val|
 					localControlObject.valueAction_(localControlObject.controlSpec.map(val));
-					speedLimit.value(val);
+					//speedLimit.value(val);
+					this.sendOSC(controllerKey, val);
 				},
 				{|val| localControlObject.zAction.value(val)}]
 		});
 
 		if(controllerKey.contains("xy"),{
 			controllerKey = controllerKey.copyRange(0, controllerKey.size-3);
-			speedLimit = SpeedLimit({this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol])}, 0.05);
+			//speedLimit = SpeedLimit({this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol])}, 0.05);
 			function = [
 				{|val|
 					if(localControlObject.isKindOf(QtEZSlider2D)){
 					localControlObject.activex_(val);};
-					speedLimit.value;
+					//speedLimit.value;
+					this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol]);
 				},
 				{|val|
 					if(localControlObject.isKindOf(QtEZSlider2D)){
 					localControlObject.activey_(val);};
-					speedLimit.value;
+					//speedLimit.value;
+					this.sendOSC(controllerKey, oscDict[controllerKey.asSymbol]);
 				},
 				{|val| localControlObject.zAction.value(val)}]
 		});
 		^function
+	}
+
+	*testIPad {arg ipad_name="left.local", action = {};
+		var address = nil;
+		//var ipad_name = "right.local";
+		var count = 15;
+		var keepGoing = true;
+		var pos = nil;
+		
+		if (("dns-sd -t 1 -G v4 " ++ ipad_name).unixCmdGetStdOut.containsi(ipad_name).not, 
+		{(ipad_name ++ " is not connected").postln},
+		{
+			fork{
+				while({count > 0 && keepGoing}, {
+					address = ("dns-sd -t 1 -G v4 " ++ ipad_name).unixCmdGetStdOut;
+					1.1.wait;
+					// pos = address.find("169.254.");
+					pos = address.findRegexp("169\.254\.[0-9]+\.[0-9]+")[0];
+					if (pos.isNil, {
+						count = count.postln - 1;
+					}, {
+						keepGoing = false;
+						pos[1].postln;
+						action.(pos)
+					});
+				})
+			};
+		});
+		
 	}
 
 }

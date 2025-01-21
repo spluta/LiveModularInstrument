@@ -176,7 +176,7 @@ MidiOscObject {
 							}
 						}{}
 					}{
-						if(controls[i].class==TypeOSCFuncObject)
+						if((controls[i].class==TypeOSCFuncObject)||controls[i].class==TextObject)
 						{
 							//if we aren't loading the value of a TypeOSCFuncObject, still load the label
 							controls[i].valueAction_(controlLevel[0]);
@@ -241,13 +241,13 @@ MidiOscObject {
 		}
 
 		pause {
-			synths.do{|item| if(item!=nil, item.set(\pauseGate, 0))};
+			synths.flat.do{|item| if(item!=nil) {item.set(\pauseGate, 0)}};
 			if(bigSynthGroup!=nil){bigSynthGroup.set(\pauseGate, 0);bigSynthGroup.run(false)};
 		paused = true;
 		}
 
 		unpause {
-			synths.do{|item| if(item!=nil,{item.set(\pauseGate, 1); item.run(true);})};
+			synths.flat.do{|item| if(item!=nil) {item.set(\pauseGate, 1); item.run(true);}};
 			if(bigSynthGroup!=nil){bigSynthGroup.run(true); bigSynthGroup.set(\pauseGate, 1)};
 		paused = false;
 		}
@@ -268,10 +268,11 @@ MidiOscObject {
 		killMe {
 			oscMsgs.do{arg item; MidiOscControl.clearController(group.server, item)};
 			win.close;
+			mixerToSynthBus.free;
+			synths = synths.flat;
 			if(synths!=nil,{
 				synths.do{arg item; if(item!=nil,{item.set(\gate, 0)})};
 			});
-			mixerToSynthBus.free;
 			this.killMeSpecial;
 		}
 

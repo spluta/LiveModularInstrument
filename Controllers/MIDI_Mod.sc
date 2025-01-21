@@ -3,11 +3,38 @@ MIDI_Mod {
 	classvar responders;
 	classvar <>sendRequest = false, <>sendTypeRequest = false;
 	classvar addr;
+	classvar lastCCVals, lastPolytouchVals;
 
-	*initClass {}
+	*initClass {
+		lastCCVals = Dictionary.new;
+		lastPolytouchVals = Dictionary.new;
+	}
 
 	*new {
 		^super.new.init();
+	}
+
+	*doCCPolytouch {|address, val, lastVal|
+		MidiOscControl.respond(address, val/127);
+
+		//this should add a z value to midi sliders where a 1 is passed when the value goes above 8 and a 0 is passed with the value goes below 8
+		if (lastVal!=nil){
+			if((lastVal<8)&&(val>=8)){
+				MidiOscControl.respond(address++"z", 1);
+			}{
+				if((lastVal>=8)&&(val<8)){
+					MidiOscControl.respond(address++"z", 0);
+				}
+			}
+		};
+
+		if(sendRequest, {
+			MidiOscControl.setController(address, \continuous);
+			MidiOscControl.setController(address, \onOff)
+		});
+		if(sendTypeRequest,{
+			MidiOscControl.setInstantTypeObject(address)
+		});
 	}
 
 	*start {
@@ -19,31 +46,31 @@ MIDI_Mod {
 
 		responders.add(MIDIFunc.cc({|val, num, chan, src|
 			var address = "/cc/"++num.asString++"/"++chan.asString++"/";
+			var lastVal = lastCCVals[address];
 
-			MidiOscControl.respond(address, val/127);
-			if(sendRequest, {
-				MidiOscControl.setController(address, \continuous);
-				MidiOscControl.setController(address, \onOff)
-		});
-			if(sendTypeRequest,{
-				MidiOscControl.setInstantTypeObject(address)
-			});
+			this.doCCPolytouch(address,val,lastVal);
+			lastCCVals[address] = val;
 
+		}, nil));
+
+		responders.add(MIDIFunc.polytouch({|val, num, chan, src|
+			var address = "/polytouch/"++num.asString++"/"++chan.asString++"/";
+			var lastVal = lastPolytouchVals[address];
+
+			this.doCCPolytouch(address,val,lastVal);
+			lastPolytouchVals[address] = val;
 		}, nil));
 
 		responders.add(MIDIFunc.noteOn({|val, num, chan, src|
 
 			var address = "/note/"++num.asString++"/"++chan.asString++"/";
 
-			[val, num, chan, src].postln;
-
 			MidiOscControl.respond(address, 1);
 
 			if(sendRequest, {
 				MidiOscControl.setController(address, \onOff);
 				/*MidiOscControl.setController("/noteOff/"++num.asString++"/"++chan.asString++"/", \onOff)*/
-		});
-
+			});
 			//need to fix noteOn/noteOff to work
 			if(sendTypeRequest,{
 				MidiOscControl.setInstantTypeObject(address);
@@ -55,6 +82,16 @@ MIDI_Mod {
 		responders.add(MIDIFunc.noteOff({ |val, num, chan, src|
 			var address = "/note/"++num.asString++"/"++chan.asString++"/";
 			MidiOscControl.respond(address, 0);
+
+			if(sendRequest, {
+				MidiOscControl.setController(address, \onOff);
+				/*MidiOscControl.setController("/noteOff/"++num.asString++"/"++chan.asString++"/", \onOff)*/
+			});
+			//need to fix noteOn/noteOff to work
+			if(sendTypeRequest,{
+				MidiOscControl.setInstantTypeObject(address);
+
+			});
 		}, nil));
 
 	}

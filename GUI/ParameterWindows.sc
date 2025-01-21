@@ -18,9 +18,19 @@ ParameterWindow_Mod {
 
 InBusWindow_Mod : ParameterWindow_Mod {
 
-	classvar soundInBoxes, directStereoBoxes, directMonoBoxes;
+	classvar preSynthBusses, soundInBoxes, directStereoBoxes, directMonoBoxes;
 
 	*makeWindow {
+		preSynthBusses = List.new;
+		8.do{arg i;
+			preSynthBusses.add(DragSource().maxWidth_(40).maxHeight_(15).font_(Font("Helvetica",10))
+				.setProperty(\align,\center)
+				.object_(["PS"++(i+1).asString, "PS"++(i+1).asString])
+				.string_("PS"++(i+1).asString)
+				.dragLabel_("PS"++(i+1).asString)
+			)
+		};
+
 		soundInBoxes = List.new;
 		8.do{arg i;
 			soundInBoxes.add(DragSource().maxWidth_(40).maxHeight_(15).font_(Font("Helvetica",10))
@@ -68,7 +78,8 @@ InBusWindow_Mod : ParameterWindow_Mod {
 				directMonoBoxes.copyRange(80,99),
 				directMonoBoxes.copyRange(100,119),
 				directMonoBoxes.copyRange(120,139),
-				directMonoBoxes.copyRange(140,169)
+				directMonoBoxes.copyRange(140,169),
+				preSynthBusses,
 			).spacing_(1).margins_(1!4)
 		);
 		visible = true;

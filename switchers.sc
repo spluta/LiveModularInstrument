@@ -199,7 +199,7 @@ ServerSwitcher2 : MidiOscObject {
 		modName = "ServerSwitcher2";
 		isGlobalController = true;
 
-		numIPads = Lemur_Mod.netAddrs.size;
+		numIPads = 2;
 
 		this.initControlsAndSynths(numServers*3+1);
 
